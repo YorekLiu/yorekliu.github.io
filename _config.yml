@@ -8,10 +8,10 @@
 minimal_mistakes_skin    : "sunrise" # "default", "air", "aqua", "contrast", "dark", "dirt", "neon", "mint", "plum", "sunrise"
 
 # Site Settings
-locale                   : "en"
-title                    : "Yorek's Blog."
-title_separator          : "-"
-name                     : "刘扬窑Yorek"
+locale                   : "zh"
+title                    : "Yorek's Blog"
+title_separator          : "|"
+name                     : "刘扬窑"
 description              : "An Android Developer."
 url                      : # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
@@ -96,7 +96,7 @@ author:
   flickr           :
   facebook         :
   foursquare       :
-  github           :
+  github           : "YorekLiu"
   gitlab           :
   google_plus      :
   keybase          :
@@ -110,9 +110,11 @@ author:
   tumblr           :
   twitter          :
   vine             :
-  weibo            :
+  weibo            : 
   xing             :
   youtube          : # "https://youtube.com/c/MichaelRoseDesign"
+  jianshu          : "http://www.jianshu.com/u/98aecabc495d"
+  csdn             : "http://blog.csdn.net/u013412764"
 
 
 # Reading Files
@@ -250,5 +252,5 @@ defaults:
       author_profile: true
       read_time: true
       comments: # true
-      share: true
+      share: false
       related: true
