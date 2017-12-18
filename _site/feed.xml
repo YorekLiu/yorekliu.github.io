@@ -1,4 +1,544 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.6.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-12-18T21:03:14+08:00</updated><id>http://localhost:4000/</id><title type="html">Yorek’s Blog</title><subtitle>An Android Developer.</subtitle><author><name>刘扬窑Yorek</name></author><entry><title type="html">Android四大组件(1)</title><link href="http://localhost:4000/android%20sdk/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6(1)/" rel="alternate" type="text/html" title="Android四大组件(1)" /><published>2017-12-18T00:00:00+08:00</published><updated>2017-12-18T00:00:00+08:00</updated><id>http://localhost:4000/android%20sdk/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6(1)</id><content type="html" xml:base="http://localhost:4000/android%20sdk/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6(1)/">&lt;p&gt;Android四大组件分别是Activity、Service、ContentProvider以及BroadcastReceiver。&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.6.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-12-18T23:04:44+08:00</updated><id>http://localhost:4000/</id><title type="html">Yorek’s Blog</title><subtitle>An Android Developer.</subtitle><author><name>刘扬窑Yorek</name></author><entry><title type="html">Android四大组件(4)</title><link href="http://localhost:4000/android%20sdk/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6(4)/" rel="alternate" type="text/html" title="Android四大组件(4)" /><published>2017-12-18T00:00:00+08:00</published><updated>2017-12-18T00:00:00+08:00</updated><id>http://localhost:4000/android%20sdk/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6(4)</id><content type="html" xml:base="http://localhost:4000/android%20sdk/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6(4)/">&lt;p&gt;本章的主要内容是&lt;a href=&quot;https://developer.android.com/guide/topics/providers/content-providers.html&quot;&gt;Content Providers&lt;/a&gt;以及&lt;a href=&quot;https://developer.android.com/guide/components/fragments.html&quot;&gt;Fragment&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;ContentProvider可以帮助应用程序管理自身存储的数据，并提供了一种与其他应用程序共享数据的方式。它们封装数据，并提供数据安全的机制。ContentProvider是代码运行的进程与另一个进程连接数据的标准接口。实现ContentProvider有很多优点。更重要的是，你可以配置一个ContentProvider，以允许其他应用程序能够安全地访问和修改应用程序数据，如下图所示。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/2525608-03233404671ddf53.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;content-provider-overview.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;系统预置了很多ContentProvider，比如MediaProvider、CalendarProvider、ContactsProvider等等，要跨进程访问这些信息，只需要通过ContentProvider的query、update、insert和delete方法即可。而创建一个ContentProvider也很简单，只需要实现onCreate、query、update、insert、delete和getType。onCreate可以做一些初始化工作，getType用来返回一个URI请求所对应的mimeType，如果应用不关注这个，可以返回null或者”*/*“。剩下的四个方法对应CRUD操作。
+根据Binder的工作原理，除了onCreate由系统回调运行在主线程中，其他五个方法运行在Binder线程池中。&lt;/p&gt;
+
+&lt;h2 id=&quot;1-自定义contentprovider&quot;&gt;1 自定义ContentProvider&lt;/h2&gt;
+&lt;ol&gt;
+  &lt;li&gt;ContentProvider的注册
+```xml
+ &amp;lt;provider android:authorities=”list”
+       android:directBootAware=[“true” | “false”]
+       android:enabled=[“true” | “false”]
+       android:exported=[“true” | “false”]
+       android:grantUriPermissions=[“true” | “false”]
+       android:icon=”drawable resource”
+       android:initOrder=”integer”
+       android:label=”string resource”
+       android:multiprocess=[“true” | “false”]
+       android:name=”string”
+       android:permission=”string”
+       android:process=”string”
+       android:readPermission=”string”
+       android:syncable=[“true” | “false”]
+       android:writePermission=”string” &amp;gt;
+ . . .&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&amp;lt;/provider&amp;gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;- android:authorities
+ContentProvider唯一授权码，通过这个可以访问此Provider。另外该字串必须唯一，因此建议加上包名。
+- android:name
+ 实现了ContentProvider的类名，指注册那个Provider。
+- Permissions
+有如下几种权限
+  - android:grantUriPermssions: 临时权限标记
+  - android:permission: 单个Provider范围读写权限
+  - android:readPermission: Provider范围读权限
+  - android:writePermission: Provider范围写权限
+- 启动和控制属性
+  这些属性决定了Android系统如何以及何时启动Provider，Provider的进程特性以及其他运行时设置：
+  - android:enabled: 是否允许系统启动provider
+  - android:exported: 是否允许其他应用启动provider
+  - android:initOrder: 相对于同一进程中的其他提供者，应该启动此provider的顺序。
+  - android:multiProcess: 允许系统在与调用客户端相同的进程中启动Provider。
+  - android:process: Provider应该运行的进程名。
+  - android:syncable: Provider的数据要与服务端数据同步。
+- 信息化属性
+  可以选择设置provider的图标和名称
+  - android:icon: provider的图标. 图标的显示紧挨着Provider的名称，可以在Settings &amp;gt; Apps &amp;gt; All中查看。
+  - android:label: 可显示Provider或者其数据或者两者的描述信息的文本，可以在Settings &amp;gt; Apps &amp;gt; All中查看。
+
+完整文档可以查看[&amp;lt;provider&amp;gt;](https://developer.android.com/guide/topics/manifest/provider-element.html)
+
+2. ContentProvider的实现
+ContentProvider通过URI来区分外界要访问的数据集合，为了更好的知道URI对应的是什么表、什么字段，我们可以使用`UriMatcher`来简化操作。
+该办法的原理就是在addURI方法中将`authority`与`path`组合，然后等match时与传入的URI比较。如果相等则返回`code`。 
+```java
+public class LocalProvider extends ContentProvider {
+    private static final String TAG = &quot;LocalProvider&quot;;
+
+    private SQLiteOpenHelper mOpenHelper;
+
+    private static final int DATA = 1;
+    private static final int DATA_ID = 2;
+    private static final UriMatcher sURLMatcher = new UriMatcher(
+            UriMatcher.NO_MATCH);
+
+    static {
+        sURLMatcher.addURI(&quot;*&quot;, &quot;data&quot;, DATA);
+        sURLMatcher.addURI(&quot;*&quot;, &quot;data/#&quot;, DATA_ID);
+    }
+
+    private static class DatabaseHelper extends SQLiteOpenHelper {
+        private static final String DATABASE_NAME = &quot;local.db&quot;;
+        private static final int DATABASE_VERSION = 1;
+
+        public DatabaseHelper(Context context) {
+            super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        }
+
+        @Override
+        public void onCreate(SQLiteDatabase db) {
+            db.execSQL(&quot;CREATE TABLE data (&quot; +
+                       &quot;_id INTEGER PRIMARY KEY,&quot; +
+                       &quot;text TEXT, &quot; +
+                       &quot;integer INTEGER);&quot;);
+
+            // insert alarms
+            db.execSQL(&quot;INSERT INTO data (text, integer) VALUES ('first data', 100);&quot;);
+        }
+
+        @Override
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int currentVersion) {
+            Log.w(TAG, &quot;Upgrading test database from version &quot; +
+                  oldVersion + &quot; to &quot; + currentVersion +
+                  &quot;, which will destroy all old data&quot;);
+            db.execSQL(&quot;DROP TABLE IF EXISTS data&quot;);
+            onCreate(db);
+        }
+    }
+
+    public LocalProvider() {
+    }
+
+    @Override
+    public boolean onCreate() {
+        mOpenHelper = new DatabaseHelper(getContext());
+        return true;
+    }
+
+    @Override
+    public Cursor query(Uri url, String[] projectionIn, String selection,
+            String[] selectionArgs, String sort) {
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+
+        // Generate the body of the query
+        int match = sURLMatcher.match(url);
+        switch (match) {
+            case DATA:
+                qb.setTables(&quot;data&quot;);
+                break;
+            case DATA_ID:
+                qb.setTables(&quot;data&quot;);
+                qb.appendWhere(&quot;_id=&quot;);
+                qb.appendWhere(url.getPathSegments().get(1));
+                break;
+            default:
+                throw new IllegalArgumentException(&quot;Unknown URL &quot; + url);
+        }
+
+        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+        Cursor ret = qb.query(db, projectionIn, selection, selectionArgs,
+                              null, null, sort);
+
+        if (ret == null) {
+            if (false) Log.d(TAG, &quot;Alarms.query: failed&quot;);
+        } else {
+            ret.setNotificationUri(getContext().getContentResolver(), url);
+        }
+
+        return ret;
+    }
+
+    @Override
+    public String getType(Uri url) {
+        int match = sURLMatcher.match(url);
+        switch (match) {
+            case DATA:
+                return &quot;vnd.android.cursor.dir/vnd.google.unit_tests.local&quot;;
+            case DATA_ID:
+                return &quot;vnd.android.cursor.item/vnd.google.unit_tests.local&quot;;
+            default:
+                throw new IllegalArgumentException(&quot;Unknown URL&quot;);
+        }
+    }
+
+    @Override
+    public int update(Uri url, ContentValues values, String where, String[] whereArgs) {
+        int count;
+        long rowId = 0;
+        int match = sURLMatcher.match(url);
+        SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        switch (match) {
+            case DATA_ID: {
+                String segment = url.getPathSegments().get(1);
+                rowId = Long.parseLong(segment);
+                count = db.update(&quot;data&quot;, values, &quot;_id=&quot; + rowId, null);
+                break;
+            }
+            default: {
+                throw new UnsupportedOperationException(
+                        &quot;Cannot update URL: &quot; + url);
+            }
+        }
+        if (false) Log.d(TAG, &quot;*** notifyChange() rowId: &quot; + rowId);
+        getContext().getContentResolver().notifyChange(url, null);
+        return count;
+    }
+
+
+    @Override
+    public Uri insert(Uri url, ContentValues initialValues) {
+        return null;
+    }
+
+    @Override
+    public int delete(Uri url, String where, String[] whereArgs) {
+        throw new UnsupportedOperationException(&quot;delete not supported&quot;);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt; 值得注意的是，&lt;code class=&quot;highlighter-rouge&quot;&gt;update&lt;/code&gt;、&lt;code class=&quot;highlighter-rouge&quot;&gt;insert&lt;/code&gt;、&lt;code class=&quot;highlighter-rouge&quot;&gt;delete&lt;/code&gt;方法会引起数据源的改变，此时需要通过ContentResolver的notifyChange方法通知当前ContentProvider中的数据已经发生了变化。
+要观察ContentProvider的数据改变情况，可以通过ContentResolver的&lt;code class=&quot;highlighter-rouge&quot;&gt;registerContentObserver&lt;/code&gt;方法来注册观察，通过&lt;code class=&quot;highlighter-rouge&quot;&gt;unregisterContentObserver&lt;/code&gt;来解除观察。
+上面已经提到过，除了onCreate之外的其他五个方法都是运行在Binder线程池中，&lt;strong&gt;因此CRUD四大方法是存在多线程并发访问的。但是SQLiteDatabase内部对数据库的操作是有同步处理的，因此此时无需考虑线程同步问题。但是多个SQLiteDatabase同时操作数据库就无法保证线程同步了。如果ContentProvider底层的数据集是一块内存(比如List)，此时就要进行数据同步处理。&lt;/strong&gt;
+ContentProvider除了支持对数据源的增删改查操作外，还支持自定义的Call方法，这个过程可以通过ContentProvider的Call方法和ContentResolver的Call方法来完成。&lt;/p&gt;
+
+&lt;h2 id=&quot;2-fragment&quot;&gt;2 Fragment&lt;/h2&gt;
+&lt;p&gt;Fragment表示Activity中的部分行为或者UI。我们可以将多个framgent组合进一个Activity来构建一个多窗格的UI，一个fragment也能在多个Activity中进行复用。我们可以将fragment理解为Activity的一个模块，它有自己的生命周期，接收自己的输入事件，我们可以在Activity运行时添加或者删除一个fragment。
+Fragment必须嵌入到Activity中，且其生命周期会直接被宿主Activity的生命周期影响。&lt;/p&gt;
+
+&lt;h3 id=&quot;21-fragment的创建&quot;&gt;2.1 Fragment的创建&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/2525608-4777a686caeb3c4a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;fragment_lifecycle.png&quot; /&gt;
+通常我们至少需要实现以下生命周期方法：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;onCreate()
+创建Fragment时调用。我们应该初始化Fragment暂停或停止，然后恢复时要保留的必要组件。&lt;/li&gt;
+  &lt;li&gt;onCreateView()
+第一次绘制UI时调用。我们在这里要返回fragment布局的根view，如果Fragment不提供UI，可以返回null。&lt;/li&gt;
+  &lt;li&gt;onPause()
+用户正在离开fragment时调用，这并不总是意味着Fragment正在被销毁。我们应该在这里提供需要持久化的用户的更改操作，因为用户可能不再回来。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;22-添加layout&quot;&gt;2.2 添加layout&lt;/h3&gt;
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ExampleFragment&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Fragment&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;View&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;onCreateView&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;LayoutInflater&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inflater&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ViewGroup&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;container&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+                             &lt;span class=&quot;n&quot;&gt;Bundle&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;savedInstanceState&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// Inflate the layout for this fragment&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inflater&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;inflate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;layout&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;example_fragment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;container&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;inflate&lt;/code&gt;方法有三个参数：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;待填充的layout的id&lt;/li&gt;
+  &lt;li&gt;一个被填充layout的parent的ViewGroup&lt;/li&gt;
+  &lt;li&gt;填充时被填充layout是否被添加到第二个参数上。此处用false因为系统已经处理了，如果传递true将会导致冗余。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;23-将fragment添加至activity&quot;&gt;2.3 将Fragment添加至Activity&lt;/h3&gt;
+&lt;ol&gt;
+  &lt;li&gt;在Activity的layout中声明fragment
+```java
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; android:orientation=&quot;horizontal&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;match_parent&quot;&gt;
+    &lt;fragment android:name=&quot;com.example.news.ArticleListFragment&quot; android:id=&quot;@+id/list&quot; android:layout_weight=&quot;1&quot; android:layout_width=&quot;0dp&quot; android:layout_height=&quot;match_parent&quot; /&gt;
+    &lt;fragment android:name=&quot;com.example.news.ArticleReaderFragment&quot; android:id=&quot;@+id/viewer&quot; android:layout_weight=&quot;2&quot; android:layout_width=&quot;0dp&quot; android:layout_height=&quot;match_parent&quot; /&gt;
+&lt;/LinearLayout&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;2. 代码添加Fragment到已存在的ViewGroup中
+```java
+FragmentManager fragmentManager = getFragmentManager();
+FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+ExampleFragment fragment = new ExampleFragment();
+fragmentTransaction.add(R.id.fragment_container, fragment);
+fragmentTransaction.commit();
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;添加没有UI界面的Fragment&lt;/strong&gt;
+有时我们也想为Activity添加一个后台运行的Fragment，此时可以使用&lt;code class=&quot;highlighter-rouge&quot;&gt;fragmentTransaction.add(Fragment, String)&lt;/code&gt;，提供一个唯一的String作为tag，而不是布局的id。可以使用&lt;code class=&quot;highlighter-rouge&quot;&gt;fragmentManager.findFragmentByTag()&lt;/code&gt;获取Fragment。&lt;/p&gt;
+
+&lt;h3 id=&quot;24-管理fragment&quot;&gt;2.4 管理Fragment&lt;/h3&gt;
+&lt;p&gt;我们可以使用&lt;code class=&quot;highlighter-rouge&quot;&gt;FragmentManager&lt;/code&gt;管理Fragment。在Activity中使用&lt;code class=&quot;highlighter-rouge&quot;&gt;getFragmentManager()&lt;/code&gt;来获取它。
+&lt;code class=&quot;highlighter-rouge&quot;&gt;FragmentManager&lt;/code&gt;可以做以下事情：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;从Activity中获取已存在的Fragment，&lt;code class=&quot;highlighter-rouge&quot;&gt;findFragmentById()&lt;/code&gt;获取有UI的，&lt;code class=&quot;highlighter-rouge&quot;&gt;findFragmentByTag()&lt;/code&gt;获取没有UI的。&lt;/li&gt;
+  &lt;li&gt;使用&lt;code class=&quot;highlighter-rouge&quot;&gt;popBackStack()&lt;/code&gt;（模拟用户的Back命令）从返回栈中弹出Fragment。&lt;/li&gt;
+  &lt;li&gt;使用&lt;code class=&quot;highlighter-rouge&quot;&gt;addOnBackStackChangedListener()&lt;/code&gt;注册一个监听器监听返回栈的更改。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;25-执行fragmenttransaction&quot;&gt;2.5 执行FragmentTransaction&lt;/h3&gt;
+&lt;p&gt;FragmentTransaction可以执行add、remove、replace，完成后执行commit生效。&lt;/p&gt;
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// Create new fragment and transaction&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;Fragment&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;newFragment&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ExampleFragment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;FragmentTransaction&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;transaction&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getFragmentManager&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;beginTransaction&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// Replace whatever is in the fragment_container view with this fragment,&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// and add the transaction to the back stack&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;transaction&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;replace&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;fragment_container&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;newFragment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;transaction&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;addToBackStack&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// Commit the transaction&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;transaction&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;commit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;通过调用&lt;code class=&quot;highlighter-rouge&quot;&gt;addToBackStack()&lt;/code&gt;，替换的事务将保存到返回栈，以便用户可以通过按Back按钮来反转事务并返回上一个Fragment。
+为了从返回栈中取回碎片，必须在Activity中重写&lt;code class=&quot;highlighter-rouge&quot;&gt;onBackPressed()&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;onBackPressed&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getFragmentManager&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getBackStackEntryCount&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;getFragmentManager&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;popBackStack&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;onBackPressed&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;如果不重写该方法，会导致不能回退Fragment。
+如果在一个事务提交中操作了多次，这多次操作将会作为一个独立的事务提交，如果回退事务，这些事务将会一起回退。
+在我们remove一个Fragment时，如果没有调用&lt;code class=&quot;highlighter-rouge&quot;&gt;addToBackStack()&lt;/code&gt;，Fragment将会被销毁；如果调用了，Fragment将会stopped。&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;提示：对于每个Fragment的事务，在提交之前可以调用&lt;code class=&quot;highlighter-rouge&quot;&gt;setTransition()&lt;/code&gt;来应用转场动画。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;调用&lt;code class=&quot;highlighter-rouge&quot;&gt;commit()&lt;/code&gt;并不会立刻执行事务。当主线程能够执行时，会按照顺序执行。如果有必要，可以在主线程调用&lt;code class=&quot;highlighter-rouge&quot;&gt;executePendingTransactions()&lt;/code&gt;来立刻执行通过&lt;code class=&quot;highlighter-rouge&quot;&gt;commit()&lt;/code&gt;提交的事务。除非事务依赖于其他线程的作业，一般不需要这么做。&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;：只有在Activity保存状态（用户离开Activity）之前，才可以使用&lt;code class=&quot;highlighter-rouge&quot;&gt;commit()&lt;/code&gt;提交事务。 如果您尝试在此之后提交，将抛出异常。 这是因为如果活动需要恢复，则提交后的状态可能会丢失。 对于丢失提交的情况如果OK的话，可以使用&lt;code class=&quot;highlighter-rouge&quot;&gt;commitAllowingStateLoss()&lt;/code&gt;。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;26-与activity通信&quot;&gt;2.6 与Activity通信&lt;/h3&gt;
+&lt;p&gt;Fragment中可以使用&lt;code class=&quot;highlighter-rouge&quot;&gt;getActivity()&lt;/code&gt;获取Activity的实例。&lt;/p&gt;
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;View&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;listView&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getActivity&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;findViewById&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;list&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;在Activity中可以使用FragmentManager的&lt;code class=&quot;highlighter-rouge&quot;&gt;findFragmentById()&lt;/code&gt;或者&lt;code class=&quot;highlighter-rouge&quot;&gt;findFragmentByTag()&lt;/code&gt;获取Fragment实例。&lt;/p&gt;
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;ExampleFragment&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fragment&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ExampleFragment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getFragmentManager&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;findFragmentById&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;example_fragment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;261-创建与activity的事件回调&quot;&gt;2.6.1 创建与Activity的事件回调&lt;/h4&gt;
+&lt;p&gt;可以在Fragment中声明一个回调接口，宿主Activity必须实现该接口。为了保证宿主Activity实现了该接口，可以在Fragment的&lt;code class=&quot;highlighter-rouge&quot;&gt;onAttach(Activity)&lt;/code&gt;中将宿主Activity进行强制类型转换，若宿主Activity没有实现该接口，则会抛出错误。&lt;/p&gt;
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;FragmentA&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ListFragment&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;OnArticleSelectedListener&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mListener&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// Container Activity must implement this interface&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;interface&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;OnArticleSelectedListener&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;onArticleSelected&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Uri&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;articleUri&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;onAttach&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Activity&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;activity&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;onAttach&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;activity&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;mListener&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;OnArticleSelectedListener&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;activity&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ClassCastException&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ClassCastException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;activity&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;toString&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot; must implement OnArticleSelectedListener&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h4 id=&quot;262-给app-bar添加item&quot;&gt;2.6.2 给App bar添加Item&lt;/h4&gt;
+&lt;p&gt;Fragment通过实现&lt;code class=&quot;highlighter-rouge&quot;&gt;onCreateOptionsMenu()&lt;/code&gt;可以给Activity添加菜单项。但是，为了使该方法能够接受调用，我们必须在&lt;code class=&quot;highlighter-rouge&quot;&gt;onCreate()&lt;/code&gt;期间调用&lt;code class=&quot;highlighter-rouge&quot;&gt;setHasOptionsMenu()&lt;/code&gt;，该方法表明Fragment将会为Activity添加菜单项；否则，Fragment不会接受&lt;code class=&quot;highlighter-rouge&quot;&gt;onCreateOptionsMenu()&lt;/code&gt;方法的调用。
+我们从Fragment中添加到选项菜单中的菜单项都会附加到已存在的菜单项中。Fragment在菜单项被选中时也能接受&lt;code class=&quot;highlighter-rouge&quot;&gt;onOptionsItemSelected()&lt;/code&gt;回调。
+在Fragment中也能使用&lt;code class=&quot;highlighter-rouge&quot;&gt;registerForContextMenu()&lt;/code&gt;为View注册上下文菜单。当用户打开上下文菜单时，Fragment会接受到&lt;code class=&quot;highlighter-rouge&quot;&gt;onCreateContextMenu()&lt;/code&gt;方法的调用。当用户选择一个菜单时，Fragment会接受到&lt;code class=&quot;highlighter-rouge&quot;&gt;onContextItemSelected()&lt;/code&gt;的回调。&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;: 虽然Fragment会接受到每一个由它添加的菜单的on-item-selected回调，但是宿主Activity首先会接受到这些回调。如果Activity实现的on-item-selected回调方法没有处理这些菜单项，那么事件会被传递到Fragment的回调。这对于选项菜单和上下文菜单都适用。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;For more information about menus, see the &lt;a href=&quot;https://developer.android.com/guide/topics/ui/menus.html&quot;&gt;Menus&lt;/a&gt; developer guide and the &lt;a href=&quot;https://developer.android.com/training/appbar/index.html&quot;&gt;App Bar&lt;/a&gt; training class.&lt;/p&gt;
+
+&lt;h3 id=&quot;27-处理fragment的生命周期&quot;&gt;2.7 处理Fragment的生命周期&lt;/h3&gt;
+&lt;p&gt;管理Fragment的生命周期就像管理Activity的生命周期。就像一个Activity一样，Fragment也有三种状态：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Resumed
+Fragment在运行的Activity中处于可见状态&lt;/li&gt;
+  &lt;li&gt;Paused
+另一个Activity处于前台并且获得了焦点，但是宿主Activity仍然处于可见状态（前台Activity部分透明或者没有覆盖整个屏幕）。&lt;/li&gt;
+  &lt;li&gt;Stopped
+Fragment完全不可见。宿主Activity已经停止了或者Fragment已经从Activity中移除但是被添加到了返回栈中。处于停止状态的Fragment仍然是活着的（所有的状态和成员信息被系统保留）。但是，它不再对用户可见，如果宿主Activity被杀，它也会被杀。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;像Activity一样，我们能够使用&lt;code class=&quot;highlighter-rouge&quot;&gt;Bundle&lt;/code&gt;保留Fragment的状态，如果Activity进程被杀死，当Activity重新创建时，我们需要恢复Fragment的状态。我们可以在Fragment的&lt;code class=&quot;highlighter-rouge&quot;&gt; onSaveInstanceState()&lt;/code&gt;期间保存状态，然后在&lt;code class=&quot;highlighter-rouge&quot;&gt;onCreate&lt;/code&gt;或者&lt;code class=&quot;highlighter-rouge&quot;&gt;onCreateView()&lt;/code&gt;或者&lt;code class=&quot;highlighter-rouge&quot;&gt;onActivityCreated()&lt;/code&gt;期间恢复。&lt;/p&gt;
+
+&lt;p&gt;Activity与Fragment之间最重要的不同在于两者在返回栈的保存方式。Activity被放置在由系统管理的返回栈中（ &lt;a href=&quot;https://developer.android.com/guide/components/tasks-and-back-stack.html&quot;&gt;Tasks and Back Stack&lt;/a&gt;）。然而，Fragment被放置在由宿主Activity管理的返回栈中。&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;：如果我们需要一个&lt;code class=&quot;highlighter-rouge&quot;&gt;Context&lt;/code&gt;对象，我们可以调用&lt;code class=&quot;highlighter-rouge&quot;&gt;getActivity()&lt;/code&gt;方法。但是，仅仅当Fragment已经附加到Activity上时才可以。放Fragment还没有附上时，或者已经解除附加，&lt;code class=&quot;highlighter-rouge&quot;&gt;getActivity()&lt;/code&gt;会返回null。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h4 id=&quot;271-与activity生命周期的联系&quot;&gt;2.7.1 与Activity生命周期的联系&lt;/h4&gt;
+&lt;p&gt;Fragment所在的Activity的生命周期会直接影响到Fragment的生命周期，每一个Activity的生命周期回调都会导致Fragment的相似的回调。
+Fragment还有少许额外的生命周期回调，它处理与Activity的独特交互，以执行诸如构建和销毁Fragment UI的动作。下面是这些回调：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;onAttach()
+当Fragment已经和Activity产生了关联时调用&lt;/li&gt;
+  &lt;li&gt;onCreateView()
+当创建Fragment的视图时调用&lt;/li&gt;
+  &lt;li&gt;onActivityCreated()
+当Activity的&lt;code class=&quot;highlighter-rouge&quot;&gt;onCreate&lt;/code&gt;方法返回之后调用&lt;/li&gt;
+  &lt;li&gt;onDestroyView()
+当Fragment的视图正在被移除时调用&lt;/li&gt;
+  &lt;li&gt;onDetach()
+当Fragment正在与Activity解除关联时调用&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/2525608-5aa9349477ebea27.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;activity_fragment_lifecycle.png&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;28-fragment嵌套fragment的生命周期&quot;&gt;2.8 Fragment嵌套Fragment的生命周期&lt;/h3&gt;
+&lt;p&gt;有时候，我们有这样的需求:MainActivity有三个tab页，其中有个tab有两种显示样式，比如日历样式与列表样式。点击tab中的某个按钮，可以切换样式。
+我们可以使用一个空壳子Fragment A来作为tab的Fragment，然后在里面创建两个Fragment B、C，动态的替换A里面的Fragment。这样达到了我们的目的。
+然后我们又需要Fragment B、C每次可见的时候（比如从别的tab页切回来、进入一个Activity后退回来，从别的样式的Fragment切回来）刷新数据。这时候我们需要知道这些操作哪些方法被回调了。&lt;/p&gt;
+
+&lt;p&gt;当这个tab是第二个tab时：&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;点击tab2 &lt;strong&gt;setUserVisibleHint(boolean isVisibleToUser)&lt;/strong&gt;
+A isVisibleToUser = [true]
+页面切换 &lt;strong&gt;onHiddenChanged(boolean hidden)&lt;/strong&gt;
+B onHiddenChanged  false
+C onHiddenChanged  true
+从别的页面回来  &lt;strong&gt;onStart&lt;/strong&gt;
+B onStart
+C onStart&lt;/p&gt;
+&lt;/blockquote&gt;</content><author><name>刘扬窑Yorek</name></author><category term="Content Providers" /><category term="Fragment" /><summary type="html">本章的主要内容是Content Providers以及Fragment</summary></entry><entry><title type="html">Android四大组件(3)</title><link href="http://localhost:4000/android%20sdk/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6(3)/" rel="alternate" type="text/html" title="Android四大组件(3)" /><published>2017-12-18T00:00:00+08:00</published><updated>2017-12-18T00:00:00+08:00</updated><id>http://localhost:4000/android%20sdk/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6(3)</id><content type="html" xml:base="http://localhost:4000/android%20sdk/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6(3)/">&lt;p&gt;本章的主要内容是&lt;a href=&quot;https://developer.android.com/guide/components/broadcasts.html&quot;&gt;Broadcasts&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Broadcasts是一种通讯组件，Android应用程序可以发送或接收来自Android系统和其他Android应用程序的广播消息，类似于观察者设计模式。当感兴趣的事件发生时，这些广播被发送。例如，当各种系统事件（例如系统启动或设备开始充电）发生时，Android系统会发送广播。应用程序还可以发送自定义广播，例如，通知其他应用程序可能感兴趣的内容（例如，一些新数据已被下载）。&lt;/p&gt;
+
+&lt;h2 id=&quot;1-系统广播&quot;&gt;1 系统广播&lt;/h2&gt;
+&lt;p&gt;系统广播的action的列表，可以在SDK中找到，目录是&lt;code class=&quot;highlighter-rouge&quot;&gt;platforms/android-25/data/broadcast_actions.txt&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;11-系统广播的变更&quot;&gt;1.1 系统广播的变更&lt;/h3&gt;
+&lt;p&gt;Android 7.0及以上平台不可以发送以下系统广播，该项优化影响所有的应用，不仅仅是目标为Android 7.0的应用：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;ACTION_NEW_PICTURE&lt;/li&gt;
+  &lt;li&gt;ACTION_NEW_VIDEO&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;应用目标为Android 7.0 (API level 24)及更高平台必须动态注册以下广播，静态注册无效：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;CONNECTIVITY_ACTION&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;2-广播的注册&quot;&gt;2 广播的注册&lt;/h2&gt;
+&lt;p&gt;应用可以有两种方式注册BroadcastReceiver，第一种为在manifest中注册的静态注册，第二种为通过context在代码中注册的动态注册。&lt;/p&gt;
+
+&lt;h3 id=&quot;21-静态注册&quot;&gt;2.1 静态注册&lt;/h3&gt;
+&lt;p&gt;通过静态注册的receiver，在应用安装时系统包管理器会注册此receiver。此receiver会变成应用的一个独立入口点，这意味着如果应用没有正在运行，系统可以启动应用然后在传递广播。
+系统会创建新的BroadcastReceiver组件处理每一个接收到的广播。该对象仅仅在调用&lt;code class=&quot;highlighter-rouge&quot;&gt;onReceive(Context, Intent)&lt;/code&gt;方法期间才是合法的，一旦该方法返回了，系统会认为此组件不再是active状态。&lt;/p&gt;
+
+&lt;h3 id=&quot;22-动态注册&quot;&gt;2.2 动态注册&lt;/h3&gt;
+&lt;p&gt;动态注册时需要注意，不再需要该接受者或者context不再合法时&lt;code class=&quot;highlighter-rouge&quot;&gt;unregisterReceiver&lt;/code&gt;。
+动态注册的广播接收者只要它们注册的上下文有效就一直接收广播。例如，如果用Activity的context注册，主要Activity不被销毁，你就可以接收广播。如果使用Application的context，应用在运行时都可以接收广播。&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;ol&gt;
+    &lt;li&gt;在&lt;code class=&quot;highlighter-rouge&quot;&gt;onReceive&lt;/code&gt;中不易进行耗时操作，其最长只有10s的周期。如果需要多一点点时间执行作业的话，可以使用&lt;code class=&quot;highlighter-rouge&quot;&gt;goAsync()&lt;/code&gt;或者启动&lt;code class=&quot;highlighter-rouge&quot;&gt;JobSchedule&lt;/code&gt;&lt;/li&gt;
+    &lt;li&gt;如果只需要应用内广播，可以使用本地广播&lt;code class=&quot;highlighter-rouge&quot;&gt;LocalBroadcastManager.registerReceiver(BroadcastReceiver, IntentFilter)&lt;/code&gt;来替代。&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;3-广播的发送&quot;&gt;3 广播的发送&lt;/h2&gt;
+&lt;p&gt;Android提供了四种广播的发送方式：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;sendOrderedBroadcast(Intent, String)&lt;/code&gt;发送有序广播
+该广播一次发送给一个接受者，每个接受者轮流执行，该广播可以携带结果给下一个接受者，或者被接受者丢弃，这样就不会传递给下一个接受者了。接受者的顺序按照&lt;code class=&quot;highlighter-rouge&quot;&gt;android:priority&lt;/code&gt;排列，同一优先级的广播接收者将会无序执行。&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;sendBroadcast(Intent)&lt;/code&gt;发送普通广播&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;sendStickyBroadcast&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;sendStickyOrderedBroadcast&lt;/code&gt;发送粘性广播，不过此类广播由于不安全（都能访问）、没有保护（都能修改）以及其他的问题，已经被弃用了。&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;LocalBroadcastManager.sendBroadcast&lt;/code&gt;发送本地广播
+在不需要发送跨app广播时，发送本地广播是最佳的选择。第一，其效率比较高(因为不用考虑IPC)；第二，也不用当心其他应用接收或者发送该广播而导致的安全性问题。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;如果想要只发送广播给特定的应用，可以使用Intent的&lt;code class=&quot;highlighter-rouge&quot;&gt;setPackage(String)&lt;/code&gt;方法&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;4-使用权限限制广播&quot;&gt;4 使用权限限制广播&lt;/h2&gt;
+&lt;h3 id=&quot;41-带权限发送&quot;&gt;4.1 带权限发送&lt;/h3&gt;
+&lt;p&gt;调用&lt;code class=&quot;highlighter-rouge&quot;&gt;sendBroadcast(Intent, String)&lt;/code&gt;或&lt;code class=&quot;highlighter-rouge&quot;&gt;sendOrderedBroadcast(Intent, String, BroadcastReceiver，Handler, int, String, Bundle)&lt;/code&gt;时，可以指定权限参数。 只有已经请求了标签中的权限标签（或者因为是危险权限后面被运行时授予的权限）的接收者才可以接收广播。 
+例如，下面代码发送广播：&lt;/p&gt;
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;sendBroadcast&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Intent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;com.example.NOTIFY&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Manifest&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;permission&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;SEND_SMS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;要接收广播，接收应用程序必须如下所示请求权限：&lt;/p&gt;
+&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;uses-permission&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;android：&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;name =&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;“android.permission.SEND_SMS”/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;可以指定现有的系统权限，如SEND_SMS或定义一个自定义权限 &lt;permission&gt;元素。&lt;/permission&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;42-带权限接收&quot;&gt;4.2 带权限接收&lt;/h3&gt;
+&lt;p&gt;当注册广播接收者(无论是通过&lt;code class=&quot;highlighter-rouge&quot;&gt;registerReceiver(BroadcastReceiver, IntentFilter, String, Handler)&lt;/code&gt;注册还是通过在manifest文件&lt;receiver&gt;标签中)，特别申明一个权限参数时，只有已经请求了标签中的权限标签（或者因为是危险权限后面被运行时授予的权限）的接收者才可以发送广播。 
+例如，假设接收广播的应用已经在manifest文件中声明了如下receiver：&lt;/receiver&gt;&lt;/p&gt;
+&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;receiver&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;android:name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;.MyBroadcastReceiver&quot;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt; &lt;/span&gt;&lt;span class=&quot;na&quot;&gt;android:permission=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;android.permission.SEND_SMS&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;intent-filter&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;action&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;android:name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;android.intent.action.AIRPLANE_MODE&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;    
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/intent-filter&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/receiver&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;或者通过动态注册的receiver有如下代码：&lt;/p&gt;
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;IntentFilter&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;filter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IntentFilter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Intent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;ACTION_AIRPLANE_MODE_CHANGED&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;registerReceiver&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;receiver&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Manifest&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;permission&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;SEND_SMS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;为了能够发射广播到这些receivers，发射应用必须请求下面的权限：&lt;/p&gt;
+&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;uses-permission&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;android:name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;android.permission.SEND_SMS&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>刘扬窑Yorek</name></author><category term="Broadcasts" /><summary type="html">本章的主要内容是Broadcasts</summary></entry><entry><title type="html">Android四大组件(2)</title><link href="http://localhost:4000/android%20sdk/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6(2)/" rel="alternate" type="text/html" title="Android四大组件(2)" /><published>2017-12-18T00:00:00+08:00</published><updated>2017-12-18T00:00:00+08:00</updated><id>http://localhost:4000/android%20sdk/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6(2)</id><content type="html" xml:base="http://localhost:4000/android%20sdk/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6(2)/">&lt;p&gt;本章的主要角色是&lt;a href=&quot;https://developer.android.com/guide/components/services.html&quot;&gt;Service&lt;/a&gt;。&lt;/p&gt;
+
+&lt;p&gt;Service是一种能够在后台执行长期运行操作的组件，它并没有UI界面。所有应用都可以开启一个Service，甚至当用户切换其他应用时，它也能继续在后台运行。另外，别的组件可以跟一个Service绑定，甚至可以执行IPC操作。比如，Service可以处理网络事务、播放音乐、处理文件I/O，或者与一个content provider交互，这一切都在后台运行。&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;注意：Service运行在宿主进程的主线程中。Service并不会创建自己的线程，在没有特别申明的情况下也不会运行在分离的进程中。如果你的Service打算执行消耗CPU的工作或者阻塞的操作，比如播放MP3或网络操作等，你应该在Service内创建新的线程。这能减少ANR的风险，主线程也能专心与处于UI事务。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;1-service的类型&quot;&gt;1 Service的类型&lt;/h2&gt;
+&lt;p&gt;现在有三种类型的Service，主要说后面两种。&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Scheduled
+Google强烈推荐在Android 5.0 (API level 21)或以上上面，使用&lt;a href=&quot;https://developer.android.com/reference/android/app/job/JobScheduler.html&quot;&gt;JobScheduler&lt;/a&gt;来启动Service，系统会在合适的时间优雅的按计划执行这些任务。&lt;/li&gt;
+  &lt;li&gt;Started 启动状态
+当一个应用组件调用了&lt;code class=&quot;highlighter-rouge&quot;&gt;startService&lt;/code&gt;时，Service会处于启动状态。当Service启动后，它能够无期限的运行在后台，甚至开启该Service的组件已经销毁了。通常，处于启动状态的Service执行单一的操作，而且不返回操作结果给调用者。比如，从网络下载文件。当任务完成后，Service应该停止它本身。可以在Service内部调用&lt;code class=&quot;highlighter-rouge&quot;&gt;stopSelf()&lt;/code&gt;或者其他组件调用&lt;code class=&quot;highlighter-rouge&quot;&gt;stopService()&lt;/code&gt;来终止Service。&lt;/li&gt;
+  &lt;li&gt;Bound 绑定状态
+当一个应用组件调用了&lt;code class=&quot;highlighter-rouge&quot;&gt;bindService&lt;/code&gt;时，Service会处于绑定状态。处于绑定状态的Service提供了一个允许其他组件与该Service交互的C/S接口，这些交互可能是发送请求，接收数据，甚至执行IPC操作。只要其他应用组件绑定了他，它就会开始运行。多个组件能绑定到一个Service实例上，当它们都解绑时，此Service实例就会销毁。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;启动状态与绑定状态不是互斥的。你能绑定一个以&lt;code class=&quot;highlighter-rouge&quot;&gt;startService()&lt;/code&gt;启动的Service。比如，你可以通过&lt;code class=&quot;highlighter-rouge&quot;&gt;startService()&lt;/code&gt;启动一个Service播放音乐。然后，用户可能想切歌或者获取当前歌曲的信息，此时Activity可以通过&lt;code class=&quot;highlighter-rouge&quot;&gt;bindService()&lt;/code&gt;绑定到该Service。这种情况下，事实上直到客户端解绑，&lt;code class=&quot;highlighter-rouge&quot;&gt;stopService()&lt;/code&gt;或&lt;code class=&quot;highlighter-rouge&quot;&gt;stopSelf()&lt;/code&gt;才能停止Service。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;2-service的生命周期方法&quot;&gt;2 Service的生命周期方法&lt;/h2&gt;
+&lt;p&gt;Service主要有四个生命周期方法：&lt;code class=&quot;highlighter-rouge&quot;&gt;onCreate()&lt;/code&gt;、&lt;code class=&quot;highlighter-rouge&quot;&gt;onStartCommand()&lt;/code&gt;、&lt;code class=&quot;highlighter-rouge&quot;&gt;onBind()&lt;/code&gt;、&lt;code class=&quot;highlighter-rouge&quot;&gt;onDestroy()&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;onCreate()
+Service第一次创建时，系统会调用此方法进行一次性初始化设置。调用时间在&lt;code class=&quot;highlighter-rouge&quot;&gt;onStartCommand&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;onBind&lt;/code&gt;之前。如果该Service已经处于运行状态，此方法不会调用。&lt;/li&gt;
+  &lt;li&gt;onStartCommand()
+当其他组件(比如Activity)通过调用&lt;code class=&quot;highlighter-rouge&quot;&gt;startService&lt;/code&gt;来请求Service启动时，系统会调用此方法。该方法执行时，Service将启动并可以无限期地在后台运行。如果实现了此功能，那么通过调用&lt;code class=&quot;highlighter-rouge&quot;&gt;stopSelf()&lt;/code&gt;或&lt;code class=&quot;highlighter-rouge&quot;&gt;stopService()&lt;/code&gt;来停止其工作是很有必要的。如果只想提供绑定功能，则不需要实现此方法。
+onStartCommand()有三种返回值：
+    &lt;ul&gt;
+      &lt;li&gt;START_NOT_STICKY
+如果系统在&lt;code class=&quot;highlighter-rouge&quot;&gt;onStartCommand()&lt;/code&gt;方法返回之后杀死这个服务，那么直到接受到新的Intent对象，这个服务才会被重新创建。这是最安全的选项，用来避免在不需要的时候运行你的服务。&lt;/li&gt;
+      &lt;li&gt;START_STICKY
+如果系统在&lt;code class=&quot;highlighter-rouge&quot;&gt;onStartCommand()&lt;/code&gt;返回后杀死了这个服务，系统就会重新创建这个服务并且调用&lt;code class=&quot;highlighter-rouge&quot;&gt;onStartCommand()&lt;/code&gt;方法，但是它不会重新传递最后的Intent对象，系统会用一个null的Intent对象来调用&lt;code class=&quot;highlighter-rouge&quot;&gt;onStartCommand()&lt;/code&gt;方法，在这个情况下，除非有一些被发送的Intent对象在等待启动服务。这适用于不执行命令的媒体播放器（或类似的服务），它只是无限期的运行着并等待工作的到来。&lt;/li&gt;
+      &lt;li&gt;START_REDELIVER_INTENT
+如果系统在&lt;code class=&quot;highlighter-rouge&quot;&gt;onStartCommand()&lt;/code&gt;方法返回后，系统就会重新创建了这个服务，并且用发送给这个服务的最后的Intent对象调用了&lt;code class=&quot;highlighter-rouge&quot;&gt;onStartCommand()&lt;/code&gt;方法。任意等待中的Intent对象会依次被发送。这适用于那些应该立即恢复正在执行的工作的服务，如下载文件。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;onBind()
+当其他组件想要通过调用&lt;code class=&quot;highlighter-rouge&quot;&gt;bindService()&lt;/code&gt;与Service绑定（例如执行RPC）时，系统会调用此方法。 在实现此方法时，必须返回IBinder对象给客户端，使客户端可以与Service进行通信。这个方法是必须要实现的， 如果不支持绑定，可以直接返回null。同时，对于支持绑定的Service，可以在此方法中进行验证，如果验证失败，可以返回null，这样客户端绑定不上。&lt;/li&gt;
+  &lt;li&gt;onDestroy()
+当Service不在使用时，系统会调用此方法。可以在此进行资源的回收，比如线程、注册过的监听器、receiver等。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;3-service的生命周期&quot;&gt;3 Service的生命周期&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/2525608-4b3666a8cccfa8f6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;service_lifecycle.png&quot; /&gt;
+Service也有两个主要的生命周期循环：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;完整的生命周期&lt;/strong&gt;：从&lt;code class=&quot;highlighter-rouge&quot;&gt;onCreate&lt;/code&gt;调用开始，到&lt;code class=&quot;highlighter-rouge&quot;&gt;onDestroy&lt;/code&gt;返回为止。像Activity一样，Service可以做一些初始化设置在&lt;code class=&quot;highlighter-rouge&quot;&gt;onCreate&lt;/code&gt;方法中，然后在&lt;code class=&quot;highlighter-rouge&quot;&gt;onDestroy&lt;/code&gt;中释放所有剩余的资源。比如音乐播放Service，可以在&lt;code class=&quot;highlighter-rouge&quot;&gt;onCreate&lt;/code&gt;中创建音乐播放线程，然后在&lt;code class=&quot;highlighter-rouge&quot;&gt;onDestroy&lt;/code&gt;中停止线程。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;活动的生命周期&lt;/strong&gt;：开始于对&lt;code class=&quot;highlighter-rouge&quot;&gt;onStartCommand()&lt;/code&gt;或&lt;code class=&quot;highlighter-rouge&quot;&gt;onBind()&lt;/code&gt;的调用。如果服务启动，则活动生命周期将在完整生命周期结束的同时结束（即使在&lt;code class=&quot;highlighter-rouge&quot;&gt;onStartCommand()&lt;/code&gt;返回后，该服务仍然处于活动状态）。如果服务被绑定，当&lt;code class=&quot;highlighter-rouge&quot;&gt;onUnbind()&lt;/code&gt;返回时，活动生命周期结束。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;对于已经处于active状态的Service，再次通过&lt;code class=&quot;highlighter-rouge&quot;&gt;startService&lt;/code&gt;或&lt;code class=&quot;highlighter-rouge&quot;&gt;bindService&lt;/code&gt;来启动同一个Service，其&lt;code class=&quot;highlighter-rouge&quot;&gt;onCreate&lt;/code&gt;不会再次调用，而是直接调用对应的&lt;code class=&quot;highlighter-rouge&quot;&gt;onStartCommand()&lt;/code&gt;或者&lt;code class=&quot;highlighter-rouge&quot;&gt;onBind()&lt;/code&gt;方法。&lt;/p&gt;
+
+&lt;h2 id=&quot;4-intentservice&quot;&gt;4 IntentService&lt;/h2&gt;
+&lt;p&gt;IntentService是使用一个工作线程串行(one at a time)处理所有开始请求的Service的子类。如果你的Service不需要同时处理多个请求的话，这是最好的选择。仅仅需要实现&lt;code class=&quot;highlighter-rouge&quot;&gt;onHandleIntent()&lt;/code&gt;方法来完成&lt;code class=&quot;highlighter-rouge&quot;&gt;onStartCommand()&lt;/code&gt;接收到Intent后分发过来的请求。
+IntentService有以下特点：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;它创建一个默认的工作线程，此工作线程用来处理Service接收到的Intent请求。&lt;/li&gt;
+  &lt;li&gt;工作线程由HandlerThread+用来将Intent分发给&lt;code class=&quot;highlighter-rouge&quot;&gt;onHandleIntent()&lt;/code&gt;方法的Handler实例组成。&lt;/li&gt;
+  &lt;li&gt;在所有的开始请求执行完成后，会自动调用&lt;code class=&quot;highlighter-rouge&quot;&gt;stopSelf()&lt;/code&gt;方法，因此不需要自己手动调用。&lt;/li&gt;
+  &lt;li&gt;提供默认的会返回null的&lt;code class=&quot;highlighter-rouge&quot;&gt;onBind()&lt;/code&gt;方法。&lt;/li&gt;
+  &lt;li&gt;提供&lt;code class=&quot;highlighter-rouge&quot;&gt;onStartCommand()&lt;/code&gt;的默认实现，它将Intent发送到工作队列，然后转发到&lt;code class=&quot;highlighter-rouge&quot;&gt;onHandleIntent()&lt;/code&gt;。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;这就是实现一个IntentService所需要的：一个构造函数和一个&lt;code class=&quot;highlighter-rouge&quot;&gt;onHandleIntent()&lt;/code&gt;的实现。 如果要覆盖其他回调方法，例如&lt;code class=&quot;highlighter-rouge&quot;&gt;onCreate()&lt;/code&gt;，&lt;code class=&quot;highlighter-rouge&quot;&gt;onStartCommand()&lt;/code&gt;或&lt;code class=&quot;highlighter-rouge&quot;&gt;onDestroy()&lt;/code&gt;，要调用父类的实现，以便IntentService可以正确处理工作线程的生命周期。当Service需要提供绑定状态时，你需要重写&lt;code class=&quot;highlighter-rouge&quot;&gt;onBind()&lt;/code&gt;方法。&lt;/p&gt;
+
+&lt;p&gt;关于IntentService的源码部分，可以查看另外一篇文章：&lt;a href=&quot;http://www.jianshu.com/p/d6d599f764cf&quot;&gt;Android线程与线程池&lt;/a&gt;&lt;/p&gt;</content><author><name>刘扬窑Yorek</name></author><category term="Service" /><summary type="html">本章的主要角色是Service。</summary></entry><entry><title type="html">Android四大组件(1)</title><link href="http://localhost:4000/android%20sdk/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6(1)/" rel="alternate" type="text/html" title="Android四大组件(1)" /><published>2017-12-18T00:00:00+08:00</published><updated>2017-12-18T00:00:00+08:00</updated><id>http://localhost:4000/android%20sdk/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6(1)</id><content type="html" xml:base="http://localhost:4000/android%20sdk/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6(1)/">&lt;p&gt;Android四大组件分别是Activity、Service、ContentProvider以及BroadcastReceiver。&lt;/p&gt;
 
 &lt;p&gt;其中，Activity是使用最频繁的一个组件，可以翻译为界面。当然，我们常见的界面除了Activity，还有Window(这里指悬浮窗，类似于360的悬浮球)、Dialog以及Toast。Android中所有的视图都是通过Window来呈现的。&lt;/p&gt;
 
