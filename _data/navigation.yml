@@ -1,10 +1,10 @@
 # main links links
 main:
   - title: "Android"
-    url: /categories/#android/
+    url: /categories/#android
   - title: "工具相关"
-    url: /categories/#android-sdk/
+    url: /categories/#工具相关
   - title: "Machine Learning"
-    url: /categories/#machine-learning/
+    url: /categories/#machine-learning
   - title: "归档"
     url: /year-archive/
