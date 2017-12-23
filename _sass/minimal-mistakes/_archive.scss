@@ -35,11 +35,12 @@
 }
 
 .archive__item-title {
-  margin-bottom: 0.25em;
+  margin-bottom: 0.125em;
   font-family: $sans-serif-narrow;
   line-height: initial;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: $type-size-5;
 
   a + a {
     opacity: 0.5;

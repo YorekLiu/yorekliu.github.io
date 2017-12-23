@@ -261,9 +261,10 @@
       margin: 0;
       padding: 10px 20px;
       font-size: $type-size-5;
+      color: $masthead-link-color-hover;
 
       &:hover {
-        color: $masthead-link-color-hover;
+        color: $footer-background-color;
         background: $navicon-link-color-hover;
       }
     }
