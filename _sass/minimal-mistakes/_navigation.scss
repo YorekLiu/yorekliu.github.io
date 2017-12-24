@@ -12,7 +12,7 @@
   max-width: 100%;
   padding-left: 2em;
   padding-right: 2em;
-  font-family: $sans-serif;
+  font-family: $roboto;
   -webkit-animation: $intro-transition;
   animation: $intro-transition;
   -webkit-animation-delay: 0.3s;
@@ -66,7 +66,7 @@
     margin: 0;
     padding: 0;
     list-style-type: none;
-    font-family: $sans-serif;
+    font-family: $roboto;
   }
 
   li {
@@ -78,7 +78,7 @@
       display: block;
       margin-bottom: 0.25em;
       padding: 0.5em 1em;
-      font-family: $sans-serif;
+      font-family: $roboto;
       font-size: 14px;
       font-weight: bold;
       line-height: 1.5;
@@ -128,7 +128,7 @@
     padding: 1em 2em;
     float: left;
     width: 50%;
-    font-family: $sans-serif;
+    font-family: $roboto;
     font-size: $type-size-5;
     font-weight: bold;
     text-align: center;
@@ -455,7 +455,7 @@
 .nav__title {
   margin: 0;
   padding: 0.5rem 1rem;
-  font-family: $sans-serif-narrow;
+  font-family: $roboto;
   font-size: $type-size-5;
   font-weight: bold;
 }
@@ -464,7 +464,7 @@
   display: block;
   margin: 0.5rem 0;
   padding: 0.5rem 0;
-  font-family: $sans-serif-narrow;
+  font-family: $roboto;
   font-size: $type-size-6;
   font-weight: bold;
   text-transform: uppercase;
@@ -476,7 +476,7 @@
      ========================================================================== */
 
 .toc {
-  font-family: $sans-serif-narrow;
+  font-family: $roboto;
   color: $gray;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -499,13 +499,12 @@
   padding: 0;
   width: 100%;
   list-style: none;
-  font-size: 0.8rem;
 
   a {
     display: block;
     padding: 0.5rem 1rem;
     color: $muted-text-color;
-    font-size: $type-size-7;
+    font-size: $type-size-6;
     font-weight: bold;
     line-height: 1.5;
     border-bottom: 1px solid $border-color;
