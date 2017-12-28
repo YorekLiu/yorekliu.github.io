@@ -51,7 +51,7 @@ reCaptcha:
   secret                 : "FWjgM0HXeQS1HGhfIR0D5EzXQQQgNIAiudUDil7wrj19ze6HmqXBufz8ZufTBYu6IufnynTfE8whElGQ/bloXHNYMMqgYgEQuw/PGAc+pri5FvCoEzfI6R1njoxoVBQyr57PuecrppFqqNGrwYh5RV6qSnxKBmXU6S3j6p8vmS4="
 atom_feed:
   path                   : # blank (default) uses feed.xml
-search                   : # true, false (default)
+search                   : true # true, false (default)
 
 # SEO Related
 google_site_verification :
@@ -76,7 +76,7 @@ social:
 
 # Analytics
 analytics:
-  provider               : false # false (default), "google", "google-universal", "custom"
+  provider               : "google" # false (default), "google", "google-universal", "custom"
   google:
     tracking_id          :
 

@@ -13,14 +13,14 @@
   margin-right: 1rem;
   border: 0;
   outline: none;
-  color: $muted-text-color;
+  color: rgba(#fff, 0.8);
   background-color: transparent;
   cursor: pointer;
   -webkit-transition: 0.2s;
   transition: 0.2s;
 
   &:hover {
-    color: $text-color;
+    color: #fff;
   }
 }
 
