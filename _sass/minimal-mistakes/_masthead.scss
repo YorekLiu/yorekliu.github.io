@@ -21,7 +21,7 @@
     display: flex;
     -webkit-box-pack: justify;
     justify-content: space-between;
-    font-family: $roboto;
+    font-family: $sans-serif;
 
     @include breakpoint($x-large) {
       max-width: $x-large;

@@ -79,6 +79,18 @@
     font-size: $type-size-6;
   }
 
+  ul li,
+  ol li {
+    font-size: 16px;
+    margin-bottom: 0.5em;
+  }
+
+  li ul,
+  li ol {
+    font-size: 16px;
+    margin-top: 0.5em;
+  }
+
   /* paragraph indents */
   p {
     margin: 0 0 $indent-var;
@@ -104,13 +116,13 @@
 
   dt {
     margin-top: 1em;
-    font-family: $roboto;
+    font-family: $sans-serif;
     font-weight: bold;
   }
 
   dd {
     margin-left: 1em;
-    font-family: $roboto;
+    font-family: $sans-serif;
     font-size: $type-size-6;
   }
 
@@ -249,7 +261,7 @@
 .page__meta {
   margin-top: 2em;
   color: $muted-text-color;
-  font-family: $roboto;
+  font-family: $sans-serif;
   font-size: $type-size-6;
 
   p {

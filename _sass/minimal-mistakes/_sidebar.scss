@@ -42,11 +42,11 @@
 
   h2, h3, h4, h5, h6 {
     margin-bottom: 0;
-    font-family: $roboto;
+    font-family: $sans-serif;
   }
 
   p, li {
-    font-family: $roboto;
+    font-family: $sans-serif;
     font-size: $type-size-6;
     line-height: 1.5;
   }
@@ -144,7 +144,7 @@
   }
 }
 .sidebar .author__name {
-  font-family: $roboto;
+  font-family: $sans-serif;
   font-size: $type-size-5;
 }
 
@@ -161,7 +161,7 @@
   position: relative;
   display: table-cell;
   vertical-align: middle;
-  font-family: $roboto;
+  font-family: $sans-serif;
   z-index: 10;
   position: relative;
   cursor: pointer;
