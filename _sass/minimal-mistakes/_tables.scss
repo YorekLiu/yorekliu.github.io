@@ -15,14 +15,18 @@ table {
 }
 
 thead {
-  background-color: $border-color;
-  border-bottom: 2px solid mix(#000, $border-color, 25%);
+  background-color: $footer-background-color;
+}
+
+tbody {
+  background-color: $code-background-color;
 }
 
 th {
   padding: 0.5em;
   font-weight: bold;
   text-align: left;
+  color: #fff;
 }
 
 td {
