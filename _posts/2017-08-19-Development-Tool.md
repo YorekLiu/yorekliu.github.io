@@ -1,9 +1,8 @@
 ---
+title: "神兵利器——大杂烩"
+excerpt: "在各种工具中的一些技巧，有助于装逼以及提升战斗力"
 categories:
-  - 工具相关
-toc: true
-toc_label: "目录"
-toc_icon: "heart"
+  - 神兵利器
 ---
 
 # Sublime Text
@@ -17,4 +16,5 @@ toc_icon: "heart"
 4. Delete
 
 大工告成，:wq回车
+
 ---

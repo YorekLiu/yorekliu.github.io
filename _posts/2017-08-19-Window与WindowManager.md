@@ -1,16 +1,23 @@
 ---
+title: "Window与WindowManager"
+excerpt: "如何添加Window，Window的添加、删除、更新过程，Activity、Dialog、Toast的Window创建过程"
 categories:
   - Android
   - Android SDK
 tags:
   - Window
+  - PhoneWindow
   - WindowManager
+  - Activity的Window
+  - Dialog的Window
+  - Toast的Window
 toc: true
 toc_label: "目录"
 toc_icon: "heart"
 ---
 
 Window表示一个窗口的概念，它存在于Window、Dialog以及Toast中，但是日常开发中并不多见，它可以实现悬浮窗。Window是一个抽象类，其具体实现是`PhoneWindow`。
+
 WindowManager是外界访问Window的入口，WindowManager的具体实现是`WindowManagerImpl`中，WindowManager与`WindowManagerService`与两者之间的交互是一个IPC过程。
 
 ## 1 Window与WindowManager
@@ -84,24 +91,26 @@ public class WindowTestActivity extends ActivityBase {
     }
 }
 ```
-这段代码适配了Android M，在M及以后使用系统级别悬浮窗需要引导用户打开此设置。实际添加Window的方法是`addFloatView`。这个方法可以将Button添加到屏幕坐标的(100, 300)处。当然使用系统级别的悬浮窗不要忘记注册权限(`<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />`)，不然在L上会报错，在M上没有`Draw over other apps`设置项。
+这段代码适配了Android M，在M及以后使用系统级别悬浮窗需要引导用户打开此设置。
 
-> 注意： 通过Google Play Store(Version 6.05 or heigher is required)下载的需要该权限的应用，会被framework自动授予该权限。These are the commits [[1]](https://github.com/android/platform_frameworks_base/commit/01af6a42a6a008d4b208a92510537791b261168c) [[2]](https://github.com/android/platform_frameworks_base/commit/4ff3b614ab73539763343e0981869c7ab5ee9979) that allow the Play Store to give the automatic grant of the SYSTEM_ALERT_WINDOW permission.
+实际添加Window的方法是`addFloatView`。这个方法可以将Button添加到屏幕坐标的(100, 300)处。当然使用系统级别的悬浮窗不要忘记注册权限(`<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />`)，不然在L上会报错，在M上没有`Draw over other apps`设置项。
+
+> **注意**： <span style="color: #0092ca">WindowManager.LayoutParams的x和y是与gravity的相对值。也就是说window会会先根据gravity确定位置，然后根据x,y确定偏移量。</span>gravity参数表示Window出现的位置，默认是屏幕中间。x、y的值是相对于gravity的。  
+> 通过Google Play Store(Version 6.05 or heigher is required)下载的需要该权限的应用，会被framework自动授予该权限。These are the commits [[1]](https://github.com/android/platform_frameworks_base/commit/01af6a42a6a008d4b208a92510537791b261168c) [[2]](https://github.com/android/platform_frameworks_base/commit/4ff3b614ab73539763343e0981869c7ab5ee9979) that allow the Play Store to give the automatic grant of the SYSTEM_ALERT_WINDOW permission.
 
 WindowManager的flags、type属性比较重要。上面构造函数的第三个、第四个就是它们：`layoutParams(int w, int h, int _type, int _flags, int _format)`。
+
 flags属性表示Window的属性，它有很多选项，我们这里只说三种，剩下的可以查看[官方文档](https://developer.android.com/reference/android/view/WindowManager.LayoutParams.html)
-- FLAG_NOT_FOCUSABLE
-Window不需要获得焦点，因此也不会接收各种输入事件，此标记会同时启用FLAG_NOT_TOUCH_MODAL标记位，无论代码中有没有明确设置这个标记位。
+- FLAG_NOT_FOCUSABLE  
+Window不需要获得焦点，因此也不会接收各种输入事件，此标记会同时启用FLAG_NOT_TOUCH_MODAL标记位，无论代码中有没有明确设置这个标记位。  
 设置了此状态意味着不需要和软键盘进行交互，因为它是Z-ordered的，独立于任何激活状态的软键盘。因此，它可以处于激活状态软键盘的上面，如果必要，可以覆盖软键盘。我们可以使用FLAG_ALT_FOCUSABLE_IM修改这个行为。
-- FLAG_NOT_TOUCH_MODAL
-Window是否是modal状态。
+- FLAG_NOT_TOUCH_MODAL  
+Window是否是modal状态。  
 即使Window是可以获得焦点的（FLAG_NOT_FOCUSABLE没有设置），在Window外面的点击事件都会传递给后面的Window。否则，Window将会处理所有的点击事件，无论是否在它的范围内。
-- FLAG_SHOW_WHEN_LOCKED
+- FLAG_SHOW_WHEN_LOCKED  
 Window可以显示在keyGuard或者其他锁屏界面上。和FLAG_KEEP_SCREEN_ON一起使用可以在屏幕打开后直接显示Window，而不用经历KeyGuard。与FLAG_DISMISS_KEYGUARD一起使用可以自动跳过non-secure KeyGuard。此Flag只能用于最顶层全屏Window上。
 
-type参数表示Window的类型，Window可以分为三种类型：Application Window、子Window以及系统Window。Application Window对应着一个Activity；子Window不能单独存在，它需要附属在特定的父Window中，比如Dialog就是一个子Window；系统Window需要申明权限才能创建，比如Toast以及系统状态栏就是系统Window。
-
-gravity参数表示Window出现的位置，默认是屏幕中间。x、y的值是相对于gravity的。
+type参数表示Window的类型，**Window可以分为三种类型：Application Window、子Window以及系统Window。** Application Window对应着一个Activity；子Window不能单独存在，它需要附属在特定的父Window中，比如Dialog就是一个子Window；系统Window需要申明权限才能创建，比如Toast以及系统状态栏就是系统Window。
 
 Window是分层的，每个Window都有对应的Z-ordered，层级大的会覆盖在层级小的Window上面。在三种Window中，Application Window是1~99，子Window是1000~1999，系统Window是2000~2999。系统层级是最大的，我们一般可以选用TYPE_SYSTEM_OVERLAY或者TYPE_SYSTEM_ERROR，同时声明权限（见上面例子）。
 
@@ -118,7 +127,8 @@ public interface ViewManager
 ## 2 Window内部机制
 Window是一个抽象的概念，每一个Window都对应着一个View和一个ViewRootImpl，Window与View通过ViewRootImpl来建立联系，因此Window实际上并不存在，它是以View的形式存在的。在实际使用中无法访问Window，对Window的访问必须通过WindowManager。我们接下来分析下Window的三个方法。
 ### 2.1 Window的添加过程
-**本章源码基于Android 7.1.**
+**本章源码基于Android 7.1.**  
+
 Window的添加过程通过WindowManager的`addView`来实现，WindowManager是一个接口，其真正实现是WindowManagerImpl类：
 ```java
 @Override
@@ -154,10 +164,12 @@ private void applyDefaultToken(@NonNull ViewGroup.LayoutParams params) {
 }
 ```
 `applyDefaultToken`方法将会为Window设置默认token，这个token只有在`AccessibilityService`中才会设置。所以，一般情况下该方法没有任何效果，可以忽略。
+
 WindowManagerImpl并没有直接实现Window的三大操作，而是全部交给了WindowManagerGlobal处理。WindowManagerGlobal以单例的模式向外提供自己的实例，`private final WindowManagerGlobal mGlobal = WindowManagerGlobal.getInstance();`。
 
-接下来我们看WindowManagerGlobal的`addView`方法，该方法分为以下几部分：
-1. 检查传入参数，并调整子Window布局参数
+接下来我们看WindowManagerGlobal的`addView`方法，该方法分为以下几部分：  
+1.检查传入参数，并调整子Window布局参数
+
 ```java
 if (view == null) {
     throw new IllegalArgumentException("view must not be null");
@@ -185,7 +197,7 @@ if (parentWindow != null) {
 ```
 `adjustLayoutParamsForSubWindow`方法实现是在`Window`中，该方法的作用就是根据`wparams`的type判断属于哪种Window。如果是子Window，会使用DecorView的getWindowToken来设置其token；如果是应用Window，也会根据是否有父Parent来决定将应用Token还是父Parent的应用Token设置其Token。之后会设置其packageName以及是否使用硬件加速的flags。
 
-2. 设置系统属性监听器、检查View状态、为子Window查找parentView
+2.设置系统属性监听器、检查View状态、为子Window查找parentView
 ```java
 // Start watching for system property changes.
 if (mSystemPropertyUpdater == null) {
@@ -227,7 +239,7 @@ if (wparams.type >= WindowManager.LayoutParams.FIRST_SUB_WINDOW &&
 ```
 在View的检查操作中，如果View已经添加过了，且正在被删除，那么会立刻执行`doDie`进行一些相关的销毁操作；否则，如果View已经添加过，但是不在mDyingViews数组中，这说明是重复添加，会报`IllegalStateException("View " + view + " has already been added to the window manager.")`错。
 
-3. 创建ViewRootImpl并保存传入参数
+3.创建ViewRootImpl并保存传入参数
 在`WindowManagerGlobal`中有四个很重要的成员变量：
 ```java
 private final ArrayList<View> mViews = new ArrayList<View>();
@@ -247,7 +259,7 @@ mViews保存的是所有Window对应的View，mRoots存储的所有Window对应�
     mParams.add(wparams);
 ```
 
-4. 通过ViewRootImpl更新界面并完成Window的添加过程
+4.通过ViewRootImpl更新界面并完成Window的添加过程
 ```java
 // do this last because it fires off messages to start doing things
 try {
@@ -331,7 +343,7 @@ public int addToDisplay(IWindow window, int seq, WindowManager.LayoutParams attr
             outContentInsets, outStableInsets, outOutsets, outInputChannel);
 }
 ```
-mService就是WindowManagerService。如此一来，Window的添加请求就交给WindowManagerService了，在WindowManagerService内部会将传入的session、client等封装成WindowState并以client为key保存在`mWindowMap`中。至于WindowManagerService内部的操作，以后看了再细说。
+mService就是WindowManagerService。如此一来，Window的添加请求就交给WindowManagerService了，在WindowManagerService内部会将传入的session、client等封装成WindowState并以client为key保存在`mWindowMap`中。
 
 ### 2.2 Window的删除过程
 Window的删除过程也是WindowManagerImpl通过WindowManagerGlobal来实现的。我们看一下`WindowManagerGlobal#removeView`方法：
@@ -376,6 +388,7 @@ private void removeViewLocked(int index, boolean immediate) {
 }
 ```
 `removeViewLocked`是通过ViewRootImpl的`die(boolean)`来完成删除操作的。在`WindowManager`中提供了两种删除接口`removeView`和`removeViewImmediate`，他们会分别调用WindowManagerGlobal的`remove(view, false)`和`remove(view, true)`，后面的boolean变量就是这里的immediate，他们分别表示异步删除和同步删除。其中`removeViewImmediate`需要特别注意，这不是为普通应用准备的，一般不需要使用该方法。
+
 因此这里的immediate一般是false，也就是异步删除。我们看一`ViewRootImpl#die`方法：
 ```java
 boolean die(boolean immediate) {
@@ -397,6 +410,7 @@ boolean die(boolean immediate) {
 }
 ```
 在immediate为false的情况下，die方法只是发送了一个MSG_DIE消息后返回true了。因此从上面的`removeViewLocked`中可以看到，View没有立刻完成删除操作，只会将其加入mDyingViews中。
+
 这里的mHandler是一个`ViewRootHandler`对象，MSG_DIE消息会执行`doDie()`方法。因此immediate为true就会立刻调用`doDie`方法；为false，则会通过Handler来调用`doDie`方法，这就是两者的区别。
 ```java
 void doDie() {
@@ -440,6 +454,7 @@ void doDie() {
 }
 ```
 `doDie`方法会首先检查是否是UI线程，然后调用`dispatchDetachedFromWindow`方法，真正删除View的逻辑就在这里。在方法的最后调用了`WindowManagerGlobal#doRemoveView`方法，此方法会删除当前View的数据，包括`mRoots`、`mParams`、`mViews`以及`mDyingViews`。
+
 下面最后说说`dispatchDetachedFromWindow`干的事情：
 1. 通知ViewTree调用onWindowDetached；调用View的`dispatchDetachedFromWindow`方法，此方法会调用`onDetachedFromWindow`以及`onDetachedFromWindowInternal`方法。前者我们可以重写来在其内部做一些资源回收的操作；后者framework已经做了一些垃圾回收操作，如果我们重写了该方法，一定要调用`super`的该方法。
 2. 进行垃圾回收操作，比如清除数据、移除回调；
@@ -630,7 +645,7 @@ public void setContentView(int layoutResID) {
     mContentParentExplicitlySet = true;
 }
 ```
-1. 如果DecorView还没有创建，那么创建它
+1.如果DecorView还没有创建，那么创建它  
 mContentParent就是id为content的FrameLayout，如果它为null，说明DecorView还没有创建。因此会调用`installDecor`方法来完成DecorView的创建。
 ```java
 private void installDecor() {
@@ -685,10 +700,10 @@ void onResourcesLoaded(LayoutInflater inflater, int layoutResource) {
 ```
 我们可以看到在`DecorView#onResourcesLoaded`方法中，通过`inflater.inflate(layoutResource, null)`填充了布局，在后面通过`mDecorCaptionView.addView(root, ...)`或者`addView(root, ...)`的方式将content添加到了DecorView中。
 
-2. 将View添加至mContentParent中
+2.将View添加至mContentParent中  
 FEATURE_CONTENT_TRANSITIONS标志表示需要使用动画。如果带有这个FEATURE_CONTENT_TRANSITIONS，那么通过Scene处理填充，这样其内部可以播放enterAction、exitAction；否则直接使用`mLayoutInflater.inflate(layoutResID, mContentParent);`填充布局。
 
-3. 回调Activity的`onContentChanged`方法通知Activity视图已经发生改变
+3.回调Activity的`onContentChanged`方法通知Activity视图已经发生改变  
 ```java
 final Callback cb = getCallback();
 if (cb != null && !isDestroyed()) {
@@ -710,8 +725,8 @@ void makeVisible() {
 ```
 
 ### 3.2 Dialog的Window创建过程
-Dialog中Window的创建过程和Activity类似，不过比Activity的要简单的多：
-1. 创建Window
+Dialog中Window的创建过程和Activity类似，不过比Activity的要简单的多：  
+1.创建Window  
 在Dialog的构造器中创建了Window：
 ```java
 Dialog(@NonNull Context context, @StyleRes int themeResId, boolean createContextThemeWrapper) {
@@ -739,7 +754,7 @@ Dialog(@NonNull Context context, @StyleRes int themeResId, boolean createContext
 }
 ```
 
-2. 初始化DecorView并将Dialog的视图添加到DecorView
+2.初始化DecorView并将Dialog的视图添加到DecorView  
 此过程也和Window类是，通过调用`Window.setContentView`来实现
 ```java
 public void setContentView(@LayoutRes int layoutResID) {
@@ -747,7 +762,7 @@ public void setContentView(@LayoutRes int layoutResID) {
 }
 ```
 
-3. 将DecorView添加到Window中显示
+3.将DecorView添加到Window中显示  
 在Dialog的show方法中会完成这部操作。和Activity一样，都是在自身要出现在前台时才会将添加Window。
 ```java
 public void show() {
@@ -843,8 +858,9 @@ public void cancel() {
     }
 }
 ```
-TN继承至`ITransientNotification.Stub`，是一个Binder，在Toast与NMS进行IPC，NMS处理Toast的显示或隐藏时会回调TN中的方法，此过程发生在客户端的Binder线程池中，所以需要通过Handler将其切换到当前线程。
+TN继承至`ITransientNotification.Stub`，是一个Binder，在Toast与NMS进行IPC，NMS处理Toast的显示或隐藏时会回调TN中的方法，此过程发生在客户端的Binder线程池中，所以需要通过Handler将其切换到当前线程。  
 这里的service的服务端是NMS的`mService`成员变量，它是实现了`INotificationManager.Stub()`的内部匿名类。
+
 我们先看一下NMS的`enqueueToast`操作：
 ```java
 @Override
