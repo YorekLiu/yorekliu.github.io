@@ -24,3 +24,9 @@ $navicon-link-color-hover: mix(#fff, $text-color, 80%) !default;
 .page__footer-follow .social-icons .fa {
   color: inherit;
 }
+
+.highlight table td.rouge-gutter.gl {
+    width: 10px;
+    padding-right: 1em;
+    color: #bdc1c4;
+}
