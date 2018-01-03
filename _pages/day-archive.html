@@ -1,0 +1,17 @@
+---
+layout: archive
+permalink: /day-archive/
+title: "Posts by Day"
+author_profile: true
+---
+
+{% include base_path %}
+{% capture written_day %}'None'{% endcapture %}
+{% for post in site.posts %}
+  {% capture day %}{{ post.date | date: '%Y年%m月%d日' }}{% endcapture %}
+  {% if day != written_day %}
+    <h2 id="{{ day | slugify }}" class="archive__subtitle">{{ day }}</h2>
+    {% capture written_day %}{{ day }}{% endcapture %}
+  {% endif %}
+  {% include archive-single.html %}
+{% endfor %}

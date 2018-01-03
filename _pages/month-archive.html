@@ -1,0 +1,17 @@
+---
+layout: archive
+permalink: /month-archive/
+title: "Posts by Month"
+author_profile: true
+---
+
+{% include base_path %}
+{% capture written_month %}'None'{% endcapture %}
+{% for post in site.posts %}
+  {% capture month %}{{ post.date | date: '%B %Y' }}{% endcapture %}
+  {% if month != written_month %}
+    <h2 id="{{ month | slugify }}" class="archive__subtitle">{{ month }}</h2>
+    {% capture written_month %}{{ month }}{% endcapture %}
+  {% endif %}
+  {% include archive-single.html %}
+{% endfor %}

@@ -1,10 +1,10 @@
 # main links links
 main:
   - title: "Android"
-    url: /categories/#android
+    url: /android-archive/
   - title: "神兵利器"
-    url: /categories/#神兵利器
+    url: /tools-archive/
   - title: "Machine Learning"
-    url: /categories/#machine-learning
+    url: /ml-archive/
   - title: "归档"
-    url: /year-archive/
+    url: /day-archive/
