@@ -5,14 +5,6 @@ title: "Posts by Tools"
 author_profile: true
 ---
 
-{% include base_path %}
-{% include group-by-array collection=site.posts field="categories" %}
+{% capture category-name %}神兵利器{% endcapture %}
 
-{% for category in group_names %}
-  {% if category == "神兵利器" %}
-    {% assign posts = group_items[forloop.index0] %}
-    {% for post in posts %}
-      {% include archive-single.html %}
-    {% endfor %}
-  {% endif %}
-{% endfor %}
+{% include category-archive-base.html %}

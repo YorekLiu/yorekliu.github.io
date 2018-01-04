@@ -1,0 +1,18 @@
+<!--  DON'T MODIFY THE CODE BELOW -->
+{% include base_path %}
+{% include group-by-array collection=site.posts field="categories" %}
+{% capture written_day %}'None'{% endcapture %}
+
+{% for category in group_names %}
+  {% if category == category-name %}
+    {% assign posts = group_items[forloop.index0] %}
+    {% for post in posts %}
+      {% capture day %}{{ post.date | date: '%Y年%m月%d日' }}{% endcapture %}
+      {% if day != written_day %}
+        <h2 id="{{ day | slugify }}" class="archive__subtitle">{{ day }}</h2>
+        {% capture written_day %}{{ day }}{% endcapture %}
+      {% endif %}
+      {% include archive-single.html %}
+    {% endfor %}
+  {% endif %}
+{% endfor %}
