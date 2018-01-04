@@ -1,10 +1,48 @@
 ---
-layout: home
-author_profile: true
-search: true
+layout: splash
+title: "Welcome"
 header:
+  overlay_filter: "0.5"
   overlay_image: /assets/images/unsplash-home.jpg
-  overlay_filter: 0.5
-excerpt: "We learn something every day, and lots of times it’s that what we learned the day before was wrong.
-- <cite>Bill Vaughan</cite>"
+excerpt: "We learn something every day, and lots of times it’s that what we learned the day before was wrong. - <cite>Bill Vaughan</cite>"
+intro:
+  - excerpt: '前ODM从业者，熟悉SCM工作、熟悉MTK Camera app开发'
+  - excerpt: '现互联网app开发'
+  - excerpt: '专职Android、学习机器学习中'
+feature_row:
+  - image_path: /assets/images/preview-hero.png
+    alt: "ANDROID"
+    title: "关于Android的一些文章"
+    excerpt: '从Android四大组件这些基本知识到底层源码，日常开发中遇到的坑等，只要笔者有遇到，都会记录在这里'
+    url: "/android-archive/"
+    btn_label: "了解更多"
+    btn_class: "btn--primary"
+feature_row2:
+  - image_path: /assets/images/watermelon.jpg
+    alt: "MACHINE LEARNING"
+    title: "我的Machine Learning之路"
+    excerpt: '路且长，人且慢'
+    url: "/machine-learning-archive/"
+    btn_label: "和我一起学习吧"
+    btn_class: "btn--primary"
+  - image_path: /assets/images/atom-mark.png
+    alt: "TOOLS"
+    title: "神兵利器"
+    excerpt: '倚天青釭、奇技淫巧'
+    url: "/tools-archive/"
+    btn_label: "点击获取"
+    btn_class: "btn--primary"
+  - image_path: /assets/images/fall.png
+    alt: "ARCHIVE"
+    title: "归档"
+    excerpt: '所有我知道的，这儿都有'
+    url: "/year-archive/"
+    btn_label: "查看所有文章"
+    btn_class: "btn--primary"
 ---
+
+{% include feature_row id="intro" type="center" %}
+
+{% include feature_row type="left" %}
+
+{% include feature_row id="feature_row2" %}
