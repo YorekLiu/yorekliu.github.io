@@ -1,7 +1,6 @@
 ---
 categories:
   - Android
-  - Android杂记
 tags:
   - FileUriExposedException
   - FileProvider

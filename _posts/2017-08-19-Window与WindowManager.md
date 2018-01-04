@@ -3,7 +3,6 @@ title: "Window与WindowManager"
 excerpt: "如何添加Window，Window的添加、删除、更新过程，Activity、Dialog、Toast的Window创建过程"
 categories:
   - Android
-  - Android SDK
 tags:
   - Window
   - PhoneWindow
