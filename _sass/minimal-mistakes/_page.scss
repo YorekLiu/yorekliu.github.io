@@ -55,7 +55,7 @@
 .page__title {
   margin-top: 0;
   line-height: 1;
-  color: $footer-background-color;
+  color: $primary-color;
 
   & + .page__meta {
     margin-top: -0.5em;
@@ -304,8 +304,8 @@
 
   &:hover {
     text-decoration: none;
-    color: $footer-background-color;
-    border: 1px solid $footer-background-color;
+    color: $primary-color;
+    border: 1px solid $primary-color;
     border-radius: $border-radius;
   }
 }

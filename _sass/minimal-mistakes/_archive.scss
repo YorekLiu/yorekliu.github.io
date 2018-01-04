@@ -26,7 +26,7 @@
   margin: 1.414em 0 0;
   padding-bottom: 0.5em;
   font-size: $type-size-5;
-  color: $footer-background-color;
+  color: $primary-color;
   border-bottom: 1px solid $border-color;
 
   + .list__item .archive__item-title {
@@ -78,7 +78,7 @@
   }
 
   .archive__item-title {
-    text-decoration: underline;
+    color: $primary-color;
   }
 }
 
