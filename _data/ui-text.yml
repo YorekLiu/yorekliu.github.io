@@ -345,7 +345,7 @@ zh: &DEFAULT_ZH_HANS
   comment_form_comment_label : "评论"
   comment_form_md_info       : "已支持Markdown语法"
   comment_form_name_label    : "姓名"
-  comment_form_email_label   : "电子邮箱"
+  comment_form_email_label   : "电子邮箱（可选）"
   comment_form_website_label : "网站（可选）"
   comment_btn_submit         : "提交评论"
   comment_btn_submitted      : "已提交"
