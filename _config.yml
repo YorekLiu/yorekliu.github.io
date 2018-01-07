@@ -45,7 +45,7 @@ staticman:
     date:
       type               : "date"
       options:
-        format           : "iso8601" # "iso8601" (default), "timestamp-seconds", "timestamp-milliseconds"
+        format           : "timestamp-seconds" # "iso8601" (default), "timestamp-seconds", "timestamp-milliseconds"
 reCaptcha:
   siteKey                : "6LfAQj4UAAAAAErX5Vox7vmRdOimEJoY49Z4m1Bk"
   secret                 : "FWjgM0HXeQS1HGhfIR0D5EzXQQQgNIAiudUDil7wrj19ze6HmqXBufz8ZufTBYu6IufnynTfE8whElGQ/bloXHNYMMqgYgEQuw/PGAc+pri5FvCoEzfI6R1njoxoVBQyr57PuecrppFqqNGrwYh5RV6qSnxKBmXU6S3j6p8vmS4="

@@ -44,7 +44,7 @@ comments:
     date:
       type: "date"
       options:
-        format: "iso8601" # "iso8601" (default), "timestamp-seconds", "timestamp-milliseconds"
+        format: "timestamp-seconds" # "iso8601" (default), "timestamp-seconds", "timestamp-milliseconds"
 
   # Whether entries need to be approved before they are published to the main
   # branch. If set to `true`, a pull request will be created for your approval.
