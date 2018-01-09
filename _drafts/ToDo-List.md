@@ -1,4 +1,4 @@
-- [ ] Bitmap的加载与缓存
+- [x] Bitmap的加载与缓存
 - [ ] Drawable
 - [ ] JNI与NDK
 - [ ] RemoteViews
