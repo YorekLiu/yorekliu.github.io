@@ -1,6 +1,6 @@
 - [x] Bitmap的加载与缓存
-- [ ] Drawable
-- [ ] JNI与NDK
+- [x] Drawable
+- [x] JNI与NDK
 - [ ] RemoteViews
 - [ ] 性能优化
 - [ ] 综合技术
