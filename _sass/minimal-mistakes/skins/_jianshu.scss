@@ -30,3 +30,15 @@ $navicon-link-color-hover: mix(#fff, $text-color, 80%) !default;
     padding-right: 1em;
     color: #bdc1c4;
 }
+
+.highlight table {
+  margin-bottom: 0em;
+  
+  tbody {
+    background-color: $code-background-color;
+
+    tr, td, th {
+      border: 0px;
+    }
+  }
+}
