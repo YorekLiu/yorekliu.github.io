@@ -12,7 +12,6 @@ tags:
   - AppWidgetManager
   - PendingIntent
   - Intent
-comments: true
 toc: true
 toc_label: "目录"
 toc_icon: "heart"
