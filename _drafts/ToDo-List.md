@@ -3,5 +3,4 @@
 - [x] JNI与NDK
 - [x] RemoteViews
 - [ ] 性能优化
-- [ ] 综合技术
 - [ ] 超级截图
