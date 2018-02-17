@@ -2,5 +2,5 @@
 - [x] Drawable
 - [x] JNI与NDK
 - [x] RemoteViews
-- [ ] 性能优化
+- [x] 性能优化
 - [ ] 超级截图
