@@ -69,6 +69,7 @@ layout: default
   </article>
 
   {% comment %}<!-- show posts by related tags when `related: true` -->{% endcomment %}
+  <!-- tag related -->
   {% if page.related %}
     {% assign n_posts = 0 %}
     {% for post in site.posts %}
@@ -89,6 +90,28 @@ layout: default
       {% endfor %}
       {% if n_posts > 3 %}{% break %}{% endif %}
     {% endfor %}
+    <!-- category related -->
+    {% if n_posts < 3 %}
+    {% for post in site.posts %}
+      {% if post.id == page.id %}{% continue %}{% endif %}
+      {% for this_category in page.categories %}
+          {% if post.categories contains this_category %}
+            {% if n_posts == 0 %}
+              <div class="page__related">
+                {% if site.data.ui-text[site.locale].related_label %}
+                  <h4 class="page__related-title">{{ site.data.ui-text[site.locale].related_label | default: "You May Also Enjoy" }}</h4>
+                {% endif %}
+                <div class="grid__wrapper">
+            {% endif %}
+            {% include archive-single.html type="grid" %}
+            {% assign n_posts = n_posts | plus: 1 %}
+            {% break %}
+          {% endif %}
+      {% endfor %}
+      {% if n_posts > 3 %}{% break %}{% endif %}
+    {% endfor %}
+    {% endif %}
+    <!-- end -->
     {% if n_posts > 0 %}
       </div>
       </div>
