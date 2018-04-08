@@ -1,8 +1,8 @@
 ---
-title: "神兵利器——大杂烩"
+title: "Android神兵利器"
 excerpt: "在各种工具中的一些技巧，有助于装逼以及提升战斗力"
 categories:
-  - 神兵利器
+  - Android
 ---
 
 # Sublime Text

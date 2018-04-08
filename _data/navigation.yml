@@ -2,8 +2,8 @@
 main:
   - title: "Android"
     url: /android-archive/
-  - title: "神兵利器"
-    url: /tools-archive/
+  - title: "Design Patterns"
+    url: /dp-archive/
   - title: "Machine Learning"
     url: /machine-learning-archive/
   - title: "归档"
