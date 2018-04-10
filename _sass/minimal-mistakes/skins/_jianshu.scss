@@ -6,7 +6,7 @@
 $background-color: #ffffff !default;
 $text-color: #2f2f2f !default;
 $muted-text-color: #393e46 !default;
-$primary-color: #2196F3 !default;  // 主题色
+$primary-color: #2196F3 !default;  // 主题色 注意修改_include/head.html meta theme-color
 $border-color: mix(#fff, #393e46, 75%) !default;
 $footer-background-color: $primary-color !default;
 $code-background-color: #f6f6f6 !default;
