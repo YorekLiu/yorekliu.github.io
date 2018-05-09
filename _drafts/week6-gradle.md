@@ -68,4 +68,35 @@ def addChannel(File manifest) {
 }
 ```
 
-[Gradle开发入门]({{ basepath }}/assets/file/Gradle开发入门.pdf){: .btn .btn--success}
+## Link
+
+[Gradle开发入门]({{ basepath }}/assets/file/Gradle开发入门.pdf){: .btn .btn--success}  
+[Gradle从入门到实战 - Groovy基础](https://blog.csdn.net/singwhatiwanna/article/details/76084580)  
+[全面理解Gradle - 执行时序](https://blog.csdn.net/singwhatiwanna/article/details/78797506)  
+[全面理解Gradle - 定义Task](https://blog.csdn.net/singwhatiwanna/article/details/78898113)  
+
+## e.g. 在lib中重命名output并copy到主工程libs文件夹下面
+
+```groovy
+android.libraryVariants.all {
+    it.outputs.all {
+        outputFileName = "hruilib-${version}-${it.name}.aar"
+    }
+}
+
+project.afterEvaluate {
+    android.libraryVariants.each {
+        String variantName = it.name.capitalize()
+        if (variantName == 'Release') {
+            def assembleTask = project.tasks.getByName("assemble${variantName}")
+            assembleTask.doLast {
+                copy {
+                    from('build/outputs/aar/')
+                    into('../app/libs/')
+                    include("*-release.aar")
+                }
+            }
+        }
+    }
+}
+```
