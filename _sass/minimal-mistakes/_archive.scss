@@ -25,7 +25,7 @@
 .archive__subtitle {
   margin: 1.414em 0 0;
   padding-bottom: 0.5em;
-  font-size: $type-size-5;
+  font-size: $type-size-6;
   color: $primary-color;
   border-bottom: 1px solid $border-color;
 
@@ -40,7 +40,7 @@
   line-height: initial;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: $type-size-5;
+  font-size: $type-size-6;
 
   a + a {
     opacity: 0.5;
@@ -57,7 +57,7 @@
 
 .archive__item-excerpt {
   margin-top: 0;
-  font-size: $type-size-6;
+  font-size: $type-size-7;
 
   & + p {
     text-indent: 0;
@@ -78,7 +78,7 @@
   }
 
   .archive__item-title {
-    color: $primary-color;
+    text-decoration: underline;
   }
 }
 
@@ -89,6 +89,7 @@
 .list__item {
   .page__meta {
     margin: 0 0 4px;
+    font-size: $type-size-7;
   }
 }
 
