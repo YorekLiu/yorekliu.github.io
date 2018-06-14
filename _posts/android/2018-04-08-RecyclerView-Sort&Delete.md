@@ -20,7 +20,7 @@ RecyclerView支持拖拽排序以及滑动删除，实现过程也比较简单�
 
 下面先上一段demo效果视频：
 
-<iframe width="450" height="800" src="{{ base_path }}/assets/videos/recyclerview_drag_swipe.mp4" frameborder="0" allowfullscreen></iframe>
+<iframe width="320" height="568" src="{{ base_path }}/assets/videos/recyclerview_drag_swipe.mp4" frameborder="0" allowfullscreen></iframe>
 
 
 主要流程如下：

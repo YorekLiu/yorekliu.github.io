@@ -13,7 +13,7 @@ last_modified_at: 2018-02-08T13:26:00+08:00
 
 此交互是FAB的经典交互了，具体效果见如下视频：
 
-<iframe width="450" height="800" src="{{ base_path }}/assets/videos/fab_behavior.mp4" frameborder="0" allowfullscreen></iframe>
+<iframe width="320" height="568" src="{{ base_path }}/assets/videos/fab_behavior.mp4" frameborder="0" allowfullscreen></iframe>
 
 可以看到`RecyclerView`占满整个屏幕后，`RecyclerView`继续上滑会使`FloatingActionButton`隐藏，`RecyclerView`向下滑动会使`FloatingActionButton`显示。  
 
