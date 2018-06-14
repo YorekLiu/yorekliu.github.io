@@ -1,0 +1,110 @@
+---
+title: "桥接模式(Bridge)"
+excerpt: "将抽象部分与实现部分分离，使它们都可以独立地进行变化"
+categories:
+  - Design Patterns
+tags:
+  - Bridge
+toc: true
+toc_label: "目录"
+toc_icon: "heart"
+---
+
+## 1. 定义及使用场景
+将抽象部分与实现部分分离，使它们都可以独立地进行变化。
+
+使用场景  
+从模式的定义上我们大致可以了解到，这里Bridge的作用其实就是连接"抽象部分"与"实现部分"，但是事实上，任何多维度变化类或者多个树状类之间的耦合都可以使用桥接模式来实现解耦。  
+如果一个系统需要在构建的抽象化角色和具体化角色之间增加更多的灵活性，避免在两个层次之间建立静态的继承联系，可以通过桥接模式使它们在抽象层建立一个关联关系。  
+对于那些不希望使用继承或因为多层次继承导致系统类的个数急剧增加的系统，也可以考虑使用桥接模式。  
+一个类存在两个独立变化的维度，且这两个维度都需要进行扩展。
+
+## 2. UML图
+![bridge]({{ basepath }}/assets/images/design-pattern/bridge.png)
+
+- Abstraction  
+  抽象部分  
+  该类保持一个对实现部分对象的引用，抽象部分中的方法需要调用实现部分的对象来实现，该类一般为抽象类。
+- RefinedAbstraction  
+  抽象部分的具体实现，该类一般是对抽象部分的方法进行完善和扩展。
+- Implementor  
+  可以为接口或抽象类，其方法不一定要和抽象部分的中的一致，一般情况下是由实现部分提供基本的操作，而抽象部分定义的则是基于实现部分这些基本操作的业务方法。
+- ConcreteImplementor  
+  实现部分的具体实现
+- Client  
+  客户端
+
+## 3. 举个例子
+下面的例子描述了Shape的绘制。
+
+```kotlin
+/**
+ * Implementor
+ */
+interface DrawingAPI {
+    fun drawCircle(x: Double, y: Double, radius: Double)
+}
+
+/**
+ * ConcreteImplementor
+ */
+class DrawingAPI1 : DrawingAPI {
+    override fun drawCircle(x: Double, y: Double, radius: Double) {
+        println("API1.circle at $x:$y radius $radius")
+    }
+}
+
+/**
+ * ConcreteImplementor
+ */
+class DrawingAPI2 : DrawingAPI {
+    override fun drawCircle(x: Double, y: Double, radius: Double) {
+        println("API2.circle at $x:$y radius $radius")
+    }
+}
+
+/**
+ * Abstraction
+ */
+abstract class Shape(protected var drawingAPI: DrawingAPI) {
+
+    abstract fun draw()
+
+    abstract fun resizeByPercentage(pct: Double)
+}
+
+/**
+ * Refined Abstraction
+ */
+class CircleShape(
+        private var x: Double,
+        private var y: Double,
+        private var radius: Double,
+        drawingAPI: DrawingAPI
+) : Shape(drawingAPI) {
+
+    override fun draw() {
+        drawingAPI.drawCircle(x, y, radius)
+    }
+
+    override fun resizeByPercentage(pct: Double) {
+        radius *= (1.0 + pct / 100.0)
+    }
+}
+
+fun main(args: Array<String>) {
+    listOf(
+            CircleShape(1.0, 1.0, 1.0, DrawingAPI1()),
+            CircleShape(5.0, 7.0, 11.0, DrawingAPI2())
+    ).forEach {
+        it.resizeByPercentage(2.5)
+        it.draw()
+    }
+}
+```
+
+输出结果如下
+```text
+API1.circle at 1.0:1.0 radius 1.025
+API2.circle at 5.0:7.0 radius 11.274999999999999
+```

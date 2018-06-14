@@ -84,7 +84,7 @@ analytics:
 # Site Author
 author:
   name             : "刘扬窑Yorek"
-  avatar           : "/assets/images/bio-photo2.jpeg" # "/assets/images/bio-photo.jpg"
+  avatar           : "/assets/images/bio-photo2.png" # "/assets/images/bio-photo.jpg"
   bio              : "An Android Developer."
   location         : "Shanghai, China."
   email            :

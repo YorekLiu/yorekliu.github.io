@@ -1,0 +1,102 @@
+---
+title: "命令模式(Command)"
+excerpt: "将一个请求封装成一个对象，从而让用户使用不同的请求把客户端参数化；对请求排队或者记录请求日志，以及支持可撤销的操作"
+categories:
+  - Design Patterns
+tags:
+  - Command
+toc: true
+toc_label: "目录"
+toc_icon: "heart"
+---
+
+## 1. 定义及使用场景
+将一个请求封装成一个对象，从而让用户使用不同的请求把客户端参数化；对请求排队或者记录请求日志，以及支持可撤销的操作
+
+使用场景  
+- 需要抽象出待执行的行动，然后以参数的形式提供出来——类似于过程设计中的回调机制，而命令模式正是回调机制的一个面向对象的代替品。
+- 在不同的时刻指定、排列和执行请求，一个命令对象可以有与初始请求无关的生存期
+- 需要支持取消操作
+- 支持修改日志功能，这样当系统崩溃时，这些修改可以被重做一遍
+- 需要支持事务操作
+
+## 2. UML图
+![command]({{ basepath }}/assets/images/design-pattern/command.png)
+
+- Receiver  
+  接受者。负责具体实施或执行一个请求
+- Command  
+  命令角色。定义所有具体命令的抽象接口
+- ConcreteCommand  
+  具体命令。在execute方法中调用接收者角色的相关方法，在接受者和命令执行的具体行为之间加以弱耦合
+- Invoker  
+  请求者。调用命令对象执行具体的方法
+- Client  
+  客户端
+
+## 3. 举个例子
+下面这个例子中，我们用一个开关控制开灯、关灯两个命令。
+
+```kotlin
+/** The Command interface */
+interface Command {
+    fun execute()
+}
+
+/** The Invoker class */
+class Switch {
+    private val history = mutableListOf<Command>()
+
+    fun storeAndExecute(cmd: Command) {
+        history.add(cmd)
+        cmd.execute()
+    }
+}
+
+/** The Command for turning on the light - ConcreteCommand #1 */
+class FlipUpCommand(private val light: Light) : Command {
+    override fun execute() {
+        light.turnOn()
+    }
+}
+
+/** The Command for turning off the light - ConcreteCommand #2 */
+class FlipDownCommand(private val light: Light) : Command {
+    override fun execute() {
+        light.turnOff()
+    }
+}
+
+/** The Receiver class */
+class Light {
+    fun turnOn() = println("The light is on")
+
+    fun turnOff() = println("The light is off")
+}
+
+fun main(args: Array<String>) {
+    val inputArgs = listOf("ON", "OFF", "ON", "OFF")
+
+    val light = Light()
+
+    val switchUp = FlipUpCommand(light)
+    val switchDown = FlipDownCommand(light)
+
+    val switch = Switch()
+
+    inputArgs.forEach {
+        when (it) {
+            "ON" -> switch.storeAndExecute(switchUp)
+            "OFF" -> switch.storeAndExecute(switchDown)
+        }
+    }
+}
+```
+
+输出结果如下
+```text
+The light is on
+The light is off
+The light is on
+The light is off
+```
