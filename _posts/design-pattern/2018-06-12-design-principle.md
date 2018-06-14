@@ -22,6 +22,7 @@ tags:
 toc: true
 toc_label: "目录"
 toc_icon: "heart"
+last_modified_at: 2018-06-12T12:49:19+08:00
 ---
 
 ## 1. 单一职责原则
