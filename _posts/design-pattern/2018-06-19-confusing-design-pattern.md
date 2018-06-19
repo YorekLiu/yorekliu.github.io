@@ -3,6 +3,18 @@ title: "易混淆的设计模式"
 excerpt: "本章会简单分析那些容易混淆的模式"
 categories:
   - Design Patterns
+tags:
+  - Simple factory
+  - Factory method
+  - Abstract factory
+  - Proxy
+  - Decorator
+  - Bridge
+  - Facade
+  - Mediator
+  - Strategy
+  - State
+  - Command
 toc: true
 toc_label: "目录"
 toc_icon: "heart"
