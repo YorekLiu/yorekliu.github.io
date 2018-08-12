@@ -27,12 +27,12 @@ tags:
 &emsp;[6. 消除过期对象的引用](/effective%20java/chapter1/#第六条消除过期对象的引用)  
 &emsp;[7. 避免使用终结方法](/effective%20java/chapter1/#第七条避免使用终结方法)  
 
-**2. 对所有对象都通用的方法**  
-&emsp;8. 覆盖equals时请遵守通用约定  
-&emsp;9. 覆盖equals时总要覆盖hashCode  
-&emsp;10. 始终要覆盖toString  
-&emsp;11. 谨慎地覆盖clone  
-&emsp;12. 考虑实现Comparable接口
+**[2. 对所有对象都通用的方法](/effective%20java/chapter2/)**  
+&emsp;[8. 覆盖equals时请遵守通用约定](/effective%20java/chapter2/#第八条覆盖equals时请遵守通用约定)  
+&emsp;[9. 覆盖equals时总要覆盖hashCode](/effective%20java/chapter2/#第九条覆盖equals时总要覆盖hashcode)  
+&emsp;[10. 始终要覆盖toString](/effective%20java/chapter2/#第十条始终要覆盖tostring)  
+&emsp;[11. 谨慎地覆盖clone](/effective%20java/chapter2/#第十一条谨慎地覆盖clone)  
+&emsp;[12. 考虑实现Comparable接口](/effective%20java/chapter2/#第十二条考虑实现comparable接口)
 
 **3. 类和接口**  
 &emsp;13. 使类和成员的可访问性最小化  
