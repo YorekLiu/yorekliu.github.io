@@ -2,9 +2,10 @@
 title: "LeetCode"
 excerpt: "LeetCode总结"
 categories:
-  - LeetCode
+  - Algorithm
 tags:
-  - Arrays  
+  - LeetCode
+  - Array  
 toc: true
 toc_label: "目录"
 toc_icon: "heart"

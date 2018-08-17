@@ -191,8 +191,8 @@ if [ "${READY_RELEASE}" == true ];then
     if [ "${GIT_TAG}" == "origin/dev" ];then
         git co dev
         git co release
-        git push
         git merge dev
+        git push
     fi
     git co master
     git merge release
