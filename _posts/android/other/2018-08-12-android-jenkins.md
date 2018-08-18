@@ -9,7 +9,7 @@ tags:
 toc: true
 toc_label: "目录"
 toc_icon: "heart"
-last_modified_at: 2018-08-12T14:53:00+08:00
+last_modified_at: 2018-08-18T11:19:00+08:00
 ---
 
 Jenkins在CentOS以及MacOS上搭建了好几次，遇到了一些问题。这里主要记录MacOS上的搭建过程。
@@ -167,7 +167,10 @@ git是内置的，不需要管。
 - `Gradle Version`  
 选择在`Manage Jenkins -> Global Tool Configuration`里面配置过的gradle版本。
 - `Tasks`  
-执行的编译命令。Jenkins在每次编译时，并不会删掉原来的代码重新拉取。所以我们要先`clean`一下，然后在执行真正的编译命令。
+执行的编译命令。Jenkins在每次编译时，并不会删掉原来的代码重新拉取。所以我们要先`clean`一下，然后在执行真正的编译命令。同时我们可以将此次编译的commit id作为参数传入工程。所以这样填写`-PGIT_COMMIT=${GIT_COMMIT} clean assemble${BUILD_TYPE}`  
+此外注意展开`Advanced`，勾选`Pass all job parameters as Project properties`。不然在3.1节中配置的参数不会传递给工程。  
+一切正常时，可以从具体build的`Console Output`中查找到对应的日志  
+`[bikedai] $ "/Applications/Android Studio.app/Contents/gradle/gradle-4.4/bin/gradle" -PTAG_MESSAGE= -PGIT_TAG=origin/dev -PAPP_NAME=bikedai -PBUILD_TYPE=debug -PIS_JENKINS=true -PBUILD_TIME=20180818-111553 -PENABLE_ABIFILTERS=true -PREADY_RELEASE=false -PTAG_NAME=v -PGIT_COMMIT=fa4aa05312a629d2747aa3cc7c8e6ee52e01cd9d clean assembledebug`
 - `Execute shell`  
 编译完成后执行shell命令。  
 示例操作为  
@@ -236,7 +239,7 @@ BUILD_TIME=notime
 
 ### 4.2 添加jenkins-build.gradle
 在项目根目录下新建gradle脚本文件，在打包时向manifest文件中插入打包参数的meta-data  
-这里选了三个打包参数`IS_JENKINS`、`GIT_TAG`、`BUILD_TIME`  
+这里选了三个打包参数`IS_JENKINS`、`GIT_TAG`、``GIT_COMMIT`、`BUILD_TIME`  
 
 ```gradle
 import groovy.xml.XmlUtil
@@ -249,6 +252,7 @@ project.afterEvaluate {
                 def manifest = new File("$manifestOutputDirectory/AndroidManifest.xml")
                 addProperties2Meta(manifest, "IS_JENKINS")
                 addProperties2Meta(manifest, "GIT_TAG")
+                addProperties2Meta(manifest, "GIT_COMMIT")
                 addProperties2Meta(manifest, "BUILD_TIME")
             }
         }
@@ -291,6 +295,9 @@ android {
 }
 // -----------------------------------------------------------------------------------------
 ```
+我们可以在app中获取这些meta-data，便于debug  
+![debug](/assets/images/android/jenkins_build_info.jpeg)
+
 
 ### 4.3 修改app/build.gradle文件
 
