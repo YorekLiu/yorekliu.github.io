@@ -14,3 +14,7 @@ toc_icon: "heart"
 
 - 本地分支push到远程新分支
   git push origin <local>:<master>
+
+- 删除远程分支  
+  git branch -r -d origin/branch-name
+  git push origin :branch-name
