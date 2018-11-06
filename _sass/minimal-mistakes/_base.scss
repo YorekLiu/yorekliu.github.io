@@ -13,7 +13,7 @@ body {
   padding: 0;
   color: $text-color;
   font-family: $global-font-family;
-  line-height: 1.7;
+  line-height: 1.5;
 
   &.overflow--hidden {
     /* when primary navigation is visible, the content in the background won't scroll */
@@ -110,9 +110,11 @@ blockquote {
   margin: 2em 1em 2em 0;
   padding-left: 1em;
   padding-right: 1em;
+  font-style: italic;
   border-left: 0.25em solid $primary-color;
 
   cite {
+    font-style: italic;
 
     &:before {
       content: "\2014";
@@ -124,22 +126,17 @@ blockquote {
 /* links */
 
 a {
-  &:link {
-    text-decoration: none;
-  }
-
   &:focus {
     @extend %tab-focus;
   }
 
-  &:hover,
-  &:active {
-    color: $link-color-hover;
-    outline: 0;
-  }
-
   &:visited {
     color: $link-color-visited;
+  }
+
+  &:hover {
+    color: $link-color-hover;
+    outline: 0;
   }
 }
 
@@ -156,7 +153,7 @@ code,
 kbd,
 samp,
 pre {
-  font-family: $sans-serif;
+  font-family: $monospace;
 }
 
 pre {
@@ -168,12 +165,11 @@ a > code,
 li > code,
 figcaption > code,
 td > code {
-  padding: 2px 4px;
-  font-size: 0.9em;
+  padding-top: 0.1rem;
+  padding-bottom: 0.1rem;
+  font-size: $type-size-6;
   background: $code-background-color;
-  border: none;
-  color: #657b83;
-  white-space: pre-wrap;
+  border-radius: $border-radius;
 
   &:before,
   &:after {

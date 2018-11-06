@@ -1,6 +1,6 @@
 {% if page.author_profile or layout.author_profile or page.sidebar %}
   <div class="sidebar sticky">
-  {% if jekyll.environment == 'production' and page.author_profile or layout.author_profile %}{% include author-profile.html %}{% endif %}
+  {% if page.author_profile or layout.author_profile %}{% include author-profile.html %}{% endif %}
   {% if page.sidebar %}
     {% for s in page.sidebar %}
       {% if s.image %}
@@ -8,7 +8,7 @@
         {% if s.image contains "://" %}
           "{{ s.image }}"
         {% else %}
-          "{{ s.image | absolute_url }}"
+          "{{ s.image | relative_url }}"
         {% endif %}
         alt="{% if s.image_alt %}{{ s.image_alt }}{% endif %}">
       {% endif %}

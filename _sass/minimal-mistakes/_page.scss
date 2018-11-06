@@ -5,7 +5,6 @@
 #main {
   @include clearfix;
   margin-left: auto;
-  margin-top: 2em;
   margin-right: auto;
   padding-left: 1em;
   padding-right: 1em;
@@ -34,6 +33,7 @@
 
   .page__inner-wrap {
     float: left;
+    margin-top: 1em;
     margin-left: 0;
     margin-right: 0;
     width: 100%;
@@ -75,19 +75,7 @@
   p,
   li,
   dl {
-    font-size: $type-size-6;
-  }
-
-  ul li,
-  ol li {
-    font-size: 0.75em;
-    margin-bottom: 0.5em;
-  }
-
-  li ul,
-  li ol {
-    font-size: 0.75em;
-    margin-top: 0.5em;
+    font-size: 1em;
   }
 
   /* paragraph indents */
@@ -221,10 +209,6 @@
   a {
     color: #fff;
     text-decoration: none;
-
-    &:hover {
-      color: $primary-color;
-    }
   }
 }
 
@@ -263,7 +247,7 @@
 
 .page__meta {
   margin-top: 2em;
-  color: #787878;
+  color: $muted-text-color;
   font-family: $sans-serif;
   font-size: $type-size-6;
 
@@ -307,10 +291,76 @@
 
   &:hover {
     text-decoration: none;
-    color: $primary-color;
-    border: 1px solid $primary-color;
-    border-radius: $border-radius;
+    color: $link-color-hover;
   }
+}
+
+.taxonomy__section {
+  margin-bottom: 2em;
+  padding-bottom: 1em;
+
+  &:not(:last-child) {
+    border-bottom: solid 1px $border-color;
+  }
+
+  .archive__item-title {
+    margin-top: 0;
+  }
+
+  .archive__subtitle {
+    clear: both;
+    border: 0;
+  }
+
+  + .taxonomy__section {
+    margin-top: 2em;
+  }
+}
+
+.taxonomy__title {
+  margin-bottom: 0.5em;
+  color: lighten($text-color, 60%);
+}
+
+.taxonomy__count {
+  color: lighten($text-color, 50%);
+}
+
+.taxonomy__index {
+  display: grid;
+  grid-column-gap: 2em;
+  grid-template-columns: repeat(2, 1fr);
+  margin: 1.414em 0;
+  padding: 0;
+  font-size: 0.75em;
+  list-style: none;
+
+  @include breakpoint($large) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  a {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    padding: 0.25em 0;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid $border-color;
+  }
+}
+
+.back-to-top {
+  display: block;
+  clear: both;
+  color: lighten($text-color, 50%);
+  font-size: 0.6em;
+  text-transform: uppercase;
+  text-align: right;
+  text-decoration: none;
 }
 
 /*
@@ -441,4 +491,30 @@
   margin-bottom: 10px;
   font-size: $type-size-6;
   text-transform: uppercase;
+}
+
+/*
+   Wide Pages
+   ========================================================================== */
+
+.wide {
+  .page {
+    @include breakpoint($large) {
+      padding-right: 0;
+    }
+
+    @include breakpoint($x-large) {
+      padding-right: 0;
+    }
+  }
+
+  .page__related {
+    @include breakpoint($large) {
+      padding-right: 0;
+    }
+
+    @include breakpoint($x-large) {
+      padding-right: 0;
+    }
+  }
 }

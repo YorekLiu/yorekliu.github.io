@@ -9,7 +9,7 @@ theme                    : "minimal-mistakes-jekyll"
 minimal_mistakes_skin    : "default" # "air", "aqua", "contrast", "dark", "dirt", "neon", "mint", "plum", "sunrise"
 
 # Site Settings
-locale                   : "en"
+locale                   : "en-US"
 title                    : "Minimal Mistakes Development Test Site"
 title_separator          : "-"
 name                     : "Your Name"
@@ -34,7 +34,7 @@ comments:
 staticman:
   allowedFields          : ['name', 'email', 'url', 'message']
   branch                 : # "master", "gh-pages"
-  commitMessage          : "New comment."
+  commitMessage          : "New comment by {fields.name}"
   filename               : comment-{@timestamp}
   format                 : "yml"
   moderation             : true
@@ -47,9 +47,17 @@ staticman:
       type               : "date"
       options:
         format           : "iso8601" # "iso8601" (default), "timestamp-seconds", "timestamp-milliseconds"
+  endpoint               : # URL of your own deployment with trailing slash, will fallback to the public instance
 atom_feed:
   path                   : # blank (default) uses feed.xml
 search                   : true # true, false (default)
+search_full_content      : true # true, false (default)
+search_provider          : "algolia"
+algolia:
+  application_id         : "QB6HVGBSBA"
+  index_name             : "dev_minimal-mistakes"
+  search_only_api_key    : "9d5014e5bbc77372547bce778dfa5663"
+  powered_by             : true
 
 # SEO Related
 google_site_verification :
@@ -84,31 +92,33 @@ author:
   avatar           : "/assets/images/bio-photo.jpg"
   bio              : "I am an amazing person."
   location         : "Somewhere"
-  email            :
-  uri              :
-  home             : # null (default), "absolute or relative url to link to author home"
-  bitbucket        :
-  codepen          :
-  dribbble         :
-  flickr           :
-  facebook         :
-  foursquare       :
-  github           :
-  google_plus      :
-  keybase          :
-  instagram        :
-  lastfm           :
-  linkedin         :
-  pinterest        :
-  soundcloud       :
-  stackoverflow    : # "123456/username" (the last part of your profile url, e.g. http://stackoverflow.com/users/123456/username)
-  steam            :
-  tumblr           :
-  twitter          : "mmistakes"
-  vine             :
-  weibo            :
-  xing             :
-  youtube          : # "https://youtube.com/c/MichaelRoseDesign"
+  links:
+    - label: "Your Website"
+      icon: "fas fa-fw fa-link"
+      url: "https://your-site.com"
+    - label: "Twitter"
+      icon: "fab fa-fw fa-twitter-square"
+      url: "https://twitter.com/"
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/"
+    - label: "Instagram"
+      icon: "fab fa-fw fa-instagram"
+      url: "https://instagram.com/"
+
+
+# Site Footer
+footer:
+  links:
+    - label: "Twitter"
+      icon: "fab fa-fw fa-twitter-square"
+      url: "https://twitter.com/"
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/"
+    - label: "Instagram"
+      icon: "fab fa-fw fa-instagram"
+      url: "https://instagram.com/"
 
 
 # Reading Files
@@ -190,6 +200,7 @@ plugins:
   - jekyll-gist
   - jekyll-feed
   - jemoji
+  - jekyll-include-cache
 
 # mimic GitHub Pages with --safe
 whitelist:
@@ -198,6 +209,7 @@ whitelist:
   - jekyll-gist
   - jekyll-feed
   - jemoji
+  - jekyll-include-cache
 
 
 # Archives

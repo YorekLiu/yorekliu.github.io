@@ -9,7 +9,7 @@ $muted-text-color: #393e46 !default;
 $primary-color: #0092ca !default;
 $border-color: mix(#fff, #393e46, 75%) !default;
 $footer-background-color: $primary-color !default;
-$link-color: mix(#000, $primary-color, 25%) !default; /* #393e46 !default; */
+$link-color: #393e46 !default;
 $masthead-link-color: $text-color !default;
 $masthead-link-color-hover: $text-color !default;
 $navicon-link-color-hover: mix(#fff, $text-color, 80%) !default;
@@ -18,6 +18,6 @@ $navicon-link-color-hover: mix(#fff, $text-color, 80%) !default;
   color: #fff !important; // override
 }
 
-.page__footer-follow .social-icons .fa {
+.page__footer-follow .social-icons .svg-inline--fa {
   color: inherit;
 }
