@@ -11,7 +11,7 @@ minimal_mistakes_skin    : "custom" # "default", "air", "aqua", "contrast", "dar
 locale                   : "en"
 title                    : "Yorek's"
 title_separator          : "-"
-name                     : "Yorek的博客"
+name                     : "Yorek"
 description              : "我的技术生涯"
 url                      : # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
