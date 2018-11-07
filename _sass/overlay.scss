@@ -15,6 +15,30 @@ html {
   }
 }
 
+.page__footer-follow .social-icons .svg-inline--fa {
+  color: inherit;
+}
+
+/* next/previous buttons */
+.pagination--pager {
+  color: $primary-text-color;
+  background-color: $background-color;
+  border-color: transparent;
+
+  &:hover {
+    color: $primary-text-color;
+    background: $code-background-color;
+  }
+
+  &:visited {
+    color: $primary-text-color;
+  }
+}
+
+.ais-search-box .ais-search-box--input {
+  background-color: $form-background-color;
+}
+
 /* Selected elements */
 
 ::-moz-selection {
@@ -29,10 +53,282 @@ html {
 
 
 .greedy-nav {
+  a {
+    padding: 1rem 0 1rem 0;
+
+    &.site-title {
+      margin-left: 1rem;
+    }
+  }
 
   &__toggle {
     color: $muted-text-color;
     background-color: transparent;
   }
 
+}
+
+.masthead {
+  border-bottom: 0px;
+  // position: fixed;
+  width: 100%;
+  box-shadow: 2px 4px 10px rgba(0,0,0,.2);
+}
+
+.masthead__inner-wrap {
+  padding: 0;
+}
+
+.breadcrumbs {
+  padding-top: 1em;
+  // position: fixed;
+}
+/*
+   Default button
+   ========================================================================== */
+
+.btn {
+  /* default */
+  border-width: 0;
+  border-radius: 0;
+  box-shadow: 0 1px 2px rgba(0,0,0,.3);
+  color: $accent-color;
+
+  /* button colors */
+  $buttoncolors:
+  (primary, #FFF),
+  (inverse, #fff),
+  (light-outline, transparent),
+  (success, #FFF),
+  (warning, #FFF),
+  (danger, #FFF),
+  (info, #FFF);
+
+  @each $buttoncolor, $color in $buttoncolors {
+    &--#{$buttoncolor} {
+      @include yiq-contrasted($color);
+      @if ($buttoncolor == inverse) {
+        box-shadow: none;
+        border: 1px solid $border-color;
+      }
+      @if ($buttoncolor == light-outline) {
+        box-shadow: none;
+        border: 1px solid #fff;
+      }
+
+      &:visited {
+        background-color: inherit;
+        color: inherit;
+      }
+
+      &:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,.3);
+        background-color: inherit;
+        color: inherit;
+      }
+    }
+  }
+}
+
+blockquote {
+  margin: 2em 0em 2em 0;
+  padding: 1em;
+  padding-bottom: 0.001em;
+  background: $code-background-color;
+  font-style: normal;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+img {
+  border: 1px solid $divider-color;
+}
+
+
+/* ==========================================================================
+   NOTICE TEXT BLOCKS
+   ========================================================================== */
+
+/**
+ *  Default Kramdown usage (no indents!):
+ *  <div class="notice" markdown="1">
+ *  #### Headline for the Notice
+ *  Text for the notice
+ *  </div>
+ */
+
+@mixin notice($notice-color) {
+  margin: 2em 0 !important;  /* override*/
+  padding: 1em;
+  color: $dark-gray;
+  font-family: $global-font-family;
+  font-size: $type-size-6 !important;
+  text-indent: initial; /* override*/
+  background-color: mix(#fff, $notice-color, 90%);
+  border-radius: $border-radius;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+
+  h4 {
+    margin-top: 0 !important; /* override*/
+    margin-bottom: 0.75em;
+  }
+
+  @at-root .page__content #{&} h4 {
+    /* using at-root to override .page-content h4 font size*/
+    margin-bottom: 0;
+    font-size: 1em;
+  }
+
+  p {
+    &:last-child {
+      margin-bottom: 0 !important; /* override*/
+    }
+  }
+
+  h4 + p {
+    /* remove space above paragraphs that appear directly after notice headline*/
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  a {
+    color: $notice-color;
+
+    &:hover {
+      color: mix(#000, $notice-color, 40%);
+    }
+  }
+
+  code {
+    background-color: mix(#fff, $notice-color, 95%)
+  }
+
+  ul {
+    &:last-child {
+      margin-bottom: 0; /* override*/
+    }
+  }
+}
+
+/* Default notice */
+
+.notice {
+  @include notice($light-gray);
+}
+
+/* Primary notice */
+
+.notice--primary {
+  @include notice($primary-color);
+}
+
+/* Info notice */
+
+.notice--info {
+  @include notice($info-color);
+}
+
+/* Warning notice */
+
+.notice--warning {
+  @include notice($warning-color);
+}
+
+/* Success notice */
+
+.notice--success {
+  @include notice($success-color);
+}
+
+/* Danger notice */
+
+.notice--danger {
+  @include notice($danger-color);
+}
+
+.archive__item {
+  &-title {
+    a {
+      color: inherit;
+      text-decoration: none;
+
+      &:visited {
+        color: $link-color-visited;
+      }
+
+      &:hover {
+        color: $link-color-hover;
+        text-decoration: none;
+      }
+    }
+  }
+
+  &-excerpt {
+    font-size: 1em;
+  }
+}
+
+.grid__item {
+  .archive__item {
+    &-title {
+      a {
+        color: inherit;
+        text-decoration: none;
+
+        &:visited {
+          color: $link-color-visited;
+        }
+
+        &:hover {
+          color: $link-color-hover;
+          text-decoration: none;
+        }
+      }
+
+      &-excerpt {
+        font-size: 1em;
+      }
+    }
+  }
+
+  .page__meta {
+    font-size: 0.8em;
+  }
+}
+
+.list__item {
+  .page__meta {
+    font-size: 0.8em;
+  }
+}
+
+.toc {
+  box-shadow: 0 4px 8px rgba(0,0,0,.3);
+  padding: 1em;
+
+  .nav__title {
+    font-size: 1.2em;
+    padding: 1rem 0.75rem;
+    background: $background-color;
+    color: $primary-text-color;
+  }
+}
+
+.toc__menu {
+  font-size: $type-size-5;
+
+  a {
+    padding: 0.5rem 0.75rem;
+    color: $primary-text-color;
+    border-bottom: 0px solid $border-color;
+    text-decoration: none;
+
+    &:hover {
+      color: $link-color-hover;
+      text-decoration: none;
+    }
+  }
+}
+
+.page__meta {
+  font-size: 0.8em;
 }

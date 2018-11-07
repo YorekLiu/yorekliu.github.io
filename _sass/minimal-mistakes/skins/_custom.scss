@@ -8,22 +8,22 @@ $primary-color:        #9E9E9E;
 $primary-color-light:  #F5F5F5;
 $primary-color-text:   #212121;
 $accent-color:         #9E9E9E;
-$primary-text-color:   #212121;
-$secondary-text-color: #757575;
-$divider-color:        #BDBDBD;
+$primary-text-color:   #202124;
+$secondary-text-color: #5f6368;
+$divider-color:        #dadce0;
 
 /* Colors */
 $text-color: $primary-text-color !default;
 $muted-text-color: $secondary-text-color !default;
 $primary-color: $primary-color !default;
 $border-color: $divider-color !default;
-$footer-background-color: $primary-color !default;
 $link-color: $secondary-text-color !default;
 $masthead-link-color: $primary-color-dark !default;
 $masthead-link-color-hover: $primary-color-dark !default;
 $navicon-link-color-hover: mix(#fff, $primary-color-dark, 80%) !default;
 /* No Modify */
-$background-color: #FAFAFA !default;
+$background-color: #FFFFFF !default;
+$footer-background-color: #F1F3F4 !default;
 $code-background-color: #F5F5F5 !default;
 $code-background-color-dark: #F5F5F5 !default;
 $form-background-color: #F5F5F5 !default;
@@ -32,7 +32,7 @@ $link-color-visited: mix(#000, $link-color, 25%) !default;
 
 /* syntax highlighting (base16) */
 /* from https://github.com/purpleKarrot/base16-one-light-scheme/blob/master/one-light.yaml */
-$base00: #ffffff !default;
+$base00: $code-background-color !default;
 $base01: #f0f0f1 !default;
 $base02: #e5e5e6 !default;
 $base03: #a0a1a7 !default;
@@ -48,45 +48,3 @@ $base0c: #0184bc !default;
 $base0d: #4078f2 !default;
 $base0e: #a626a4 !default;
 $base0f: #986801 !default;
-
-.page__footer {
-  // page footer text color
-  color: #F5F5F5 !important; // override
-}
-
-.page__footer-follow .social-icons .svg-inline--fa {
-  color: inherit;
-}
-
-/* next/previous buttons */
-.pagination--pager {
-  color: $primary-text-color;
-  background-color: $primary-color;
-  border-color: transparent;
-
-  &:visited {
-    color: $primary-text-color;
-  }
-}
-
-.ais-search-box .ais-search-box--input {
-  background-color: $form-background-color;
-}
-
-.archive__item {
-  &-title {
-    a {
-      color: inherit;
-      text-decoration: none;
-
-      &:visited {
-        color: inherit;
-      }
-
-      &:hover {
-        color: inherit;
-        text-decoration-line: underline;
-      }
-    }
-  }
-}
