@@ -5,14 +5,14 @@
 # For technical reasons, this file is *NOT* reloaded automatically when you use
 # `jekyll serve`. If you change this file, please restart the server process.
 
-minimal_mistakes_skin    : "jianshu" # "default", "air", "aqua", "contrast", "dark", "dirt", "neon", "mint", "plum", "sunrise"
+minimal_mistakes_skin    : "custom" # "default", "air", "aqua", "contrast", "dark", "dirt", "neon", "mint", "plum", "sunrise"
 
 # Site Settings
-locale                   : "zh"
+locale                   : "en"
 title                    : "Yorek's"
 title_separator          : "-"
-name                     : "Yorek Liu"
-description              : "An Android Developer."
+name                     : "Yorek的博客"
+description              : "我的技术生涯"
 url                      : # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : YorekLiu/yorekliu.github.io # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
@@ -52,8 +52,8 @@ reCaptcha:
   secret                 : "FWjgM0HXeQS1HGhfIR0D5EzXQQQgNIAiudUDil7wrj19ze6HmqXBufz8ZufTBYu6IufnynTfE8whElGQ/bloXHNYMMqgYgEQuw/PGAc+pri5FvCoEzfI6R1njoxoVBQyr57PuecrppFqqNGrwYh5RV6qSnxKBmXU6S3j6p8vmS4="
 atom_feed:
   path                   : # blank (default) uses feed.xml
-search                   : # true, false (default)
-search_full_content      : # true, false (default)
+search                   : true # true, false (default)
+search_full_content      : true  # true, false (default)
 search_provider          : # lunr (default), algolia, google
 algolia:
   application_id         : # YOUR_APPLICATION_ID
@@ -86,7 +86,7 @@ social:
 
 # Analytics
 analytics:
-  provider               : "google" # false (default), "google", "google-universal", "custom"
+  provider               : # false (default), "google", "google-universal", "custom"
   google:
     tracking_id          :
     anonymize_ip         : # true, false (default)
@@ -98,14 +98,13 @@ author:
   avatar           : "/assets/images/bio-photo2.png" # "/assets/images/bio-photo.jpg"
   bio              : "An Android Developer."
   location         : "Shanghai, China."
-  email            :
   links:
     - label: "Email"
       icon: "fas fa-fw fa-envelope-square"
-      # url: mailto:your.name@email.com
+      url: mailto:lyytogether@gmail.com
     - label: "Website"
       icon: "fas fa-fw fa-link"
-      # url: "https://your-website.com"
+      url: "http://yorek.xyz"
     - label: "Twitter"
       icon: "fab fa-fw fa-twitter-square"
       # url: "https://twitter.com/"
@@ -114,7 +113,7 @@ author:
       # url: "https://facebook.com/"
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
-      # url: "https://github.com/"
+      url: "https://github.com/YorekLiu/"
     - label: "Instagram"
       icon: "fab fa-fw fa-instagram"
       # url: "https://instagram.com/"
@@ -130,7 +129,7 @@ footer:
       # url:
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
-      # url:
+      url: "https://github.com/YorekLiu/"
     - label: "GitLab"
       icon: "fab fa-fw fa-gitlab"
       # url:
@@ -212,7 +211,7 @@ sass:
 permalink: /:categories/:title/
 paginate: 10 # amount of posts to show
 paginate_path: /page:num/
-timezone: # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+timezone: Asia/Shanghai # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 
 
 # Plugins (previously gems:)
