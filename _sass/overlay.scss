@@ -26,3 +26,13 @@ html {
   color: inherit;
   background: #a6d1fe;
 }
+
+
+.greedy-nav {
+
+  &__toggle {
+    color: $muted-text-color;
+    background-color: transparent;
+  }
+
+}
