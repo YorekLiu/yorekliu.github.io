@@ -133,7 +133,7 @@ html {
 blockquote {
   margin: 2em 0em 2em 0;
   padding: 1em;
-  padding-bottom: 0.001em;
+  padding-bottom: 0.01em;
   background: $code-background-color;
   font-style: normal;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
@@ -141,6 +141,10 @@ blockquote {
 
 img {
   border: 1px solid $divider-color;
+}
+
+.page__related {
+  width: 100%;
 }
 
 
