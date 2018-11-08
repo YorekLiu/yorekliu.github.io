@@ -39,19 +39,6 @@ html {
   background-color: $form-background-color;
 }
 
-/* Selected elements */
-
-::-moz-selection {
-  color: inherit;
-  background: #a6d1fe;
-}
-
-::selection {
-  color: inherit;
-  background: #a6d1fe;
-}
-
-
 .greedy-nav {
   a {
     padding: 1rem 0 1rem 0;
