@@ -63,7 +63,7 @@
 
   img {
     width: 100%;
-    
+
     &.emoji {
       width: 20px;
       height: 20px;
@@ -79,7 +79,8 @@
     top: 0;
     right: 0;
     width: $right-sidebar-width-narrow;
-    margin-right: -1 * $right-sidebar-width-narrow;
+    //margin-right: -1 * $right-sidebar-width-narrow;
+    margin-right: -1 * $right-sidebar-width-narrow - 16;
     padding-left: 1em;
     z-index: 10;
 
@@ -94,7 +95,8 @@
 
   @include breakpoint($x-large) {
     width: $right-sidebar-width;
-    margin-right: -1 * $right-sidebar-width;
+    //margin-right: -1 * $right-sidebar-width;
+    margin-right: -1 * $right-sidebar-width - 20;
   }
 }
 
@@ -315,4 +317,3 @@
     margin-right: initial;
   }
 }
-

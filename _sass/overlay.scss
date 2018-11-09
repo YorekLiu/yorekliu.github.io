@@ -42,6 +42,7 @@ html {
 .greedy-nav {
   a {
     padding: 1rem 0 1rem 0;
+    color: $primary-text-color;
 
     &.site-title {
       margin-left: 1rem;
@@ -236,8 +237,23 @@ img {
   @include notice($danger-color);
 }
 
+.archive__subtitle {
+  margin: 0;
+  padding-bottom: 0;
+  font-size: $type-size-5;
+  color: $muted-text-color;
+  border-bottom: none;
+
+  + .list__item .archive__item-title {
+    margin-top: 0em;
+  }
+}
+
 .archive__item {
+
   &-title {
+    margin-top: 0em;
+
     a {
       color: inherit;
       text-decoration: none;
@@ -255,6 +271,10 @@ img {
 
   &-excerpt {
     font-size: 1em;
+  }
+
+  p {
+    margin: 0;
   }
 }
 
@@ -287,13 +307,18 @@ img {
 }
 
 .list__item {
+  box-shadow: 0px 1px 2px rgba(0,0,0,.3);
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 16px;
+
   .page__meta {
     font-size: 0.8em;
   }
 }
 
 .toc {
-  box-shadow: 0 4px 8px rgba(0,0,0,.3);
+  box-shadow: 0 1px 2px rgba(0,0,0,.3);
   padding: 1em;
 
   .nav__title {
@@ -320,6 +345,32 @@ img {
   }
 }
 
+.page__inner-wrap {
+  float: left;
+  margin-top: 1em;
+  margin-left: 0;
+  margin-right: 0;
+  width: 100%;
+  clear: both;
+  box-shadow: 0 1px 2px rgba(0,0,0,.3);
+  padding: 16px;
+
+  .page__content,
+  .page__meta,
+  .page__share {
+    position: relative;
+    float: left;
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+    clear: both;
+  }
+}
+
 .page__meta {
   font-size: 0.8em;
+}
+
+.masthead__inner-wrap {
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
 }
