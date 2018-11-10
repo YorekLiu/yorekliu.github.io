@@ -26,7 +26,7 @@ body {
 // whole header
 .masthead {
   border-bottom: 0px;
-  // position: fixed;
+  position: fixed;
   width: 100%;
   box-shadow: 2px 4px 10px rgba(0, 0, 0, .2);
   background: $header-background-color;
@@ -35,6 +35,10 @@ body {
     padding: 0;
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
   }
+}
+
+.initial-content {
+  padding-top: $nav-height + 2em;
 }
 
 // website title & navigation
@@ -209,6 +213,21 @@ body {
   }
 }
 
+// side bar
+.sidebar__right {
+  @include breakpoint($large) {
+    margin-right: -1 * $right-sidebar-width-narrow - 16;
+
+    &.sticky {
+      top: 5em;
+    }
+  }
+
+  @include breakpoint($x-large) {
+    margin-right: -1 * $right-sidebar-width - 20;
+  }
+}
+
 // toc
 .toc {
   background: $header-background-color;
@@ -318,7 +337,6 @@ blockquote {
   width: 100%;
 }
 
-///////////////////////////////
 .grid__item {
   border-radius: 4px;
   background: $footer-background-color;
@@ -355,7 +373,14 @@ blockquote {
   }
 }
 
-
+/*
+   Default button
+   ==========================================================================
+*/
+/*
+   Default button
+   ==========================================================================
+*/
 /*
    Default button
    ==========================================================================
@@ -404,9 +429,17 @@ blockquote {
 }
 
 /* ==========================================================================
-   NOTICE TEXT BLOCKS
-   ==========================================================================
- */
+NOTICE TEXT BLOCKS
+==========================================================================
+*/
+/* ==========================================================================
+NOTICE TEXT BLOCKS
+==========================================================================
+*/
+/* ==========================================================================
+NOTICE TEXT BLOCKS
+==========================================================================
+*/
 
 /**
  *  Default Kramdown usage (no indents!):
@@ -468,8 +501,6 @@ blockquote {
     }
   }
 }
-
-/* Default notice */
 
 .notice {
   @include notice($light-gray);
