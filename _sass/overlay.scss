@@ -23,6 +23,20 @@ body {
 	line-height: 20px
 }
 
+a {
+  text-decoration: none;
+
+  &:visited {
+    color: $link-color-visited;
+    text-decoration: none;
+  }
+
+  &:hover {
+    color: $link-color-hover;
+    text-decoration: none;
+  }
+}
+
 // whole header
 .masthead {
   border-bottom: 0px;
@@ -169,16 +183,6 @@ body {
 
       a {
         color: inherit;
-        text-decoration: none;
-
-        &:visited {
-          color: $link-color-visited;
-        }
-
-        &:hover {
-          color: $link-color-hover;
-          text-decoration: none;
-        }
       }
     }
 
@@ -210,6 +214,16 @@ body {
 
   .page__meta {
     font-size: 0.8em;
+
+    a {
+      &:visited {
+        color: inherit;
+      }
+
+      &:hover {
+        color: $link-color-hover;
+      }
+    }
   }
 
   .page__title {
@@ -297,8 +311,21 @@ div.highlighter-rouge,
 figure.highlight {
   > pre,
   pre.highlight {
-    border-radius: 4px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    border: 1px solid #ebebeb;
+  }
+}
+
+.highlight table {
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-size: 13px;
+  line-height: 20px;
+
+  td {
+    /* line numbers*/
+    &.gutter,
+    &.rouge-gutter {
+      border-right: 1px solid $divider-color;
+    }
   }
 }
 
@@ -311,9 +338,8 @@ blockquote {
   padding: 1em;
   padding-bottom: 0.01em;
   font-style: normal;
-  border-radius: 4px;
   background: $code-background-color;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  border-left: 0.25em solid $accent-color;
 }
 
 /* next/previous buttons */
@@ -338,7 +364,9 @@ blockquote {
 
 // page__related
 .page__related {
-  width: 100%;
+  border-top: none;
+  margin-top: 0;
+  padding-top: 0;
 }
 
 .grid__item {
@@ -357,7 +385,7 @@ blockquote {
         font-weight: bold;
 
         &:visited {
-          color: $link-color-visited;
+          color: $primary-text-color;
         }
 
         &:hover {
@@ -420,13 +448,13 @@ blockquote {
 
       &:visited {
         background-color: inherit;
-        color: inherit;
+        color: $accent-color;
       }
 
       &:hover {
         box-shadow: 0 4px 8px rgba(0,0,0,.3);
         background-color: inherit;
-        color: inherit;
+        color: $accent-color;
       }
     }
   }
@@ -453,16 +481,25 @@ NOTICE TEXT BLOCKS
  *  </div>
  */
 
-@mixin notice($notice-color) {
-  margin: 2em 0 !important;  /* override*/
-  padding: 1em;
-  color: $dark-gray;
-  font-family: $global-font-family;
-  font-size: $type-size-6 !important;
+@mixin notice($notice-color, $notice-background-color) {
+  margin: 16px 0 !important;  /* override*/
+  padding: 12px 24px 12px 60px;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-size: 14px !important;
   text-indent: initial; /* override*/
-  background-color: mix(#fff, $notice-color, 90%);
-  border-radius: $border-radius;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  border-radius: 0px;
+  box-shadow: none;
+  background: $notice-background-color;
+  color: $notice-color;
+
+  &:before {
+    color: $notice-color;
+    content: "\2605";
+    float: left;
+    text-rendering: optimizeLegibility;
+    word-wrap: normal;
+    margin-left: -36px;
+  }
 
   h4 {
     margin-top: 0 !important; /* override*/
@@ -491,12 +528,13 @@ NOTICE TEXT BLOCKS
     color: $notice-color;
 
     &:hover {
-      color: mix(#000, $notice-color, 40%);
+      color: $notice-color;
     }
   }
 
   code {
-    background-color: mix(#fff, $notice-color, 95%)
+    font-size: 12px !important;
+    background-color: mix(#fff, $notice-background-color, 50%);
   }
 
   ul {
@@ -507,35 +545,55 @@ NOTICE TEXT BLOCKS
 }
 
 .notice {
-  @include notice($light-gray);
+  @include notice($primary-text-color, $code-background-color);
+
+  padding: 12px 24px 12px 24px;
+
+  &:before {
+    content: none;
+    margin-left: 0px;
+  }
 }
 
 /* Primary notice */
 
 .notice--primary {
-  @include notice($primary-color);
+  @include notice($accent-color, #e1f5fe);
 }
 
 /* Info notice */
 
 .notice--info {
-  @include notice($info-color);
+  @include notice($accent-color, #e1f5fe);
+  &:before {
+    content: "\27A4";
+    font-weight: bold;
+  }
 }
 
 /* Warning notice */
 
 .notice--warning {
-  @include notice($warning-color);
+  @include notice(#dd2c00, #fff3e0);
+  &:before {
+    content: "\2639";
+    font-size: 18px;
+    font-weight: bold;
+  }
 }
 
 /* Success notice */
 
 .notice--success {
-  @include notice($success-color);
+  @include notice($accent-color, #e1f5fe);
 }
 
 /* Danger notice */
 
 .notice--danger {
-  @include notice($danger-color);
+  @include notice(#dd2c00, #fff3e0);
+  &:before {
+    content: "\2715";
+    font-weight: bold;
+  }
 }

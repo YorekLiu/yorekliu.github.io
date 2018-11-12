@@ -565,3 +565,68 @@ class Solution {
 1.如果匹配，继续读`needle`下一个字符，直到`needle`被读完，此时已经找到匹配结果了。  
 2.如果第0个字符不匹配，且index不为0，说明`needle`的头部匹配，此时将i回退到当时的后一位（根据模式匹配算法，应该可以优化，不太确定），继续开始匹配。
 {: .notice--success }
+
+## 29. Divide Two Integers
+
+[Binary Search](/tags/#binary-search){: .btn .btn--inverse }
+
+Given two integers `dividend` and `divisor`, divide two integers without using multiplication, division and mod operator.
+
+Return the quotient after dividing `dividend` by `divisor`.
+
+The integer division should truncate toward zero.
+
+**Example 1:**  
+
+Input: dividend = 10, divisor = 3  
+Output: 3
+{: .notice }
+
+**Example 2:**  
+
+Input: dividend = 7, divisor = -3  
+Output: -2
+{: .notice }
+
+**Note:**  
+- Both dividend and divisor will be 32-bit signed integers.
+- The divisor will never be 0.
+- Assume we are dealing with an environment which could only store integers within the 32-bit signed integer range: [−2^31,  2^31 − 1]. For the purpose of this problem, assume that your function returns 2^31 − 1 when the division result overflows.
+
+**Code:**  
+```java
+class Solution {
+    public int divide(int dividend, int divisor) {
+        if (divisor == 0 || (dividend == Integer.MIN_VALUE && divisor == -1)) {
+            return Integer.MAX_VALUE;
+        }
+        int sign = ((dividend < 0) ^ (divisor < 0)) ? -1 : 1;
+        long dvd = Math.abs((long) dividend);
+        long dvs = Math.abs((long) divisor);
+        long res = 0;
+
+        while (dvd >= dvs) {
+            long tmp = dvs, multi = 1;
+            while (dvd >= (tmp << 1)) {
+                tmp <<= 1;
+                multi <<= 1;
+            }
+            dvd -= tmp;
+            res += multi;
+        }
+
+        return sign == 1 ? (int) res : (int) -res;
+    }
+}
+```
+
+由于题目限制不能使用x、/、%操作符。所以高票答案采取了位运算的思路。  
+1.处理边界情况  
+2.获取结果符号，将除数与被除数转为正数，后续操作可以不用关心符号问题  
+3.对被除数进行进位，找出最接近除数的被除数进位，并相减；累计进位结果  
+4.对第1步的剩余，循环进行第1步的操作  
+5.返回带符号的结果  
+**Note**:  
+1.注意`Math.abs(Integer.MIN_VALUE)=Integer.MIN_VALUE`，所以在第二步中采取了`Math.abs((long) dividend)`操作  
+2.返回结果时不要`return (int) sign * res;`，这里的「\*」违反了规则
+{: .notice--success }

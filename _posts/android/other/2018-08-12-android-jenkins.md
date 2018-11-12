@@ -195,11 +195,11 @@ if [ "${READY_RELEASE}" == true ];then
         git co dev
         git co release
         git merge dev
-        git push
+        git push origin release
     fi
     git co master
     git merge release
-    git push
+    git push origin master
     git tag -a "${TAG_NAME}" -m "${TAG_MESSAGE}"
     git push --tags
     git co release

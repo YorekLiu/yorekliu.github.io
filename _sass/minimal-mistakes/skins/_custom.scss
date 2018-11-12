@@ -7,7 +7,7 @@ $primary-color-dark:   #616161;
 $primary-color:        #9E9E9E;
 $primary-color-light:  #F5F5F5;
 $primary-color-text:   #212121;
-$accent-color:         #9E9E9E;
+$accent-color:         #039be5;
 $primary-text-color:   #202124;
 $secondary-text-color: #5f6368;
 $divider-color:        #dadce0;
@@ -17,7 +17,7 @@ $text-color: $primary-text-color !default;
 $muted-text-color: $secondary-text-color !default;
 $primary-color: $primary-color !default;
 $border-color: $divider-color !default;
-$link-color: $secondary-text-color !default;
+$link-color: $accent-color !default;
 $masthead-link-color: $primary-color-dark !default;
 $masthead-link-color-hover: $primary-color-dark !default;
 $navicon-link-color-hover: mix(#fff, $primary-color-dark, 80%) !default;
@@ -25,11 +25,11 @@ $navicon-link-color-hover: mix(#fff, $primary-color-dark, 80%) !default;
 $background-color: #F5F5F5 !default;
 $header-background-color: #FFFFFF !default;
 $footer-background-color: #FFFFFF !default;
-$code-background-color: #F5F5F5 !default;
-$code-background-color-dark: #F5F5F5 !default;
-$form-background-color: #F5F5F5 !default;
-$link-color-hover: mix(#fff, $link-color, 25%) !default;
-$link-color-visited: mix(#000, $link-color, 25%) !default;
+$code-background-color: #F7F7F7 !default;
+$code-background-color-dark: #F7F7F7 !default;
+$form-background-color: #F7F7F7 !default;
+$link-color-hover: $link-color !default;
+$link-color-visited: $link-color !default;
 
 /* syntax highlighting (base16) */
 /* from https://github.com/purpleKarrot/base16-one-light-scheme/blob/master/one-light.yaml */
