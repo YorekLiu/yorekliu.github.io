@@ -41,6 +41,10 @@ body {
   padding-top: $nav-height + 2em;
 }
 
+.search-content {
+  padding-top: $nav-height + 3em;
+}
+
 // website title & navigation
 .greedy-nav {
   background: $header-background-color;
