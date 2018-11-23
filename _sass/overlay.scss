@@ -42,7 +42,7 @@ a {
   border-bottom: 0px;
   position: fixed;
   width: 100%;
-  box-shadow: 2px 4px 10px rgba(0, 0, 0, .2);
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, .1);
   background: $header-background-color;
 
   &__inner-wrap {
@@ -52,11 +52,11 @@ a {
 }
 
 .initial-content {
-  padding-top: $nav-height + 2em;
+  padding-top: $nav-height;
 }
 
 .search-content {
-  padding-top: $nav-height + 3em;
+  padding-top: $nav-height + 2em;
 }
 
 // website title & navigation
@@ -81,11 +81,6 @@ a {
   .hidden-links {
     background: $header-background-color;
   }
-}
-
-// footer
-.page__footer-follow .social-icons .svg-inline--fa {
-  color: inherit;
 }
 
 // splash overlay
@@ -202,16 +197,44 @@ a {
 
 // article
 .breadcrumbs {
-  padding-top: 1em;
+  padding-top: 1.5em;
+  padding-bottom: 0.5em;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
 
   ol {
     width: 100%;
+    font-size: 14px;
+    padding-left: 36px;
+
+    &:before {
+      color: $link-color-visited;
+      content: "\27A0";
+      float: left;
+      text-rendering: optimizeLegibility;
+      word-wrap: normal;
+      margin-left: -36px;
+    }
+  }
+
+  .current {
+    font-weight: 400;
   }
 }
 
 // article page content
 .page {
   width: 100%;
+
+  &__content {
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      padding-top: 1.5em;
+      padding-bottom: 0.5em;
+    }
+  }
 }
 
 .page__inner-wrap {
@@ -251,6 +274,27 @@ a {
 
   @include breakpoint($x-large) {
     margin-right: -1 * $right-sidebar-width - 20;
+  }
+}
+
+// author sidebar
+.social-icons {
+  color: $primary-text-color;
+
+  a {
+    color: $primary-text-color;
+
+    &:hover {
+      color: $primary-text-color;
+    }
+
+    &:visited {
+      color: $primary-text-color;
+    }
+
+    .svg-inline--fa {
+      color: inherit;
+    }
   }
 }
 
@@ -305,10 +349,10 @@ a {
   }
 
   .nav__title {
-    font-size: 30px;
+    font-size: 24px;
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
     font-weight: 400;
-    padding-left: 8px;
+    padding: 8px 8px 8px 8px;
     color: $primary-text-color;
     background-color: inherit;
   }

@@ -2,6 +2,8 @@
 main:
   - title: "Android"
     url: /android-archive/
+  - title: "Flutter"
+    url: /flutter-archive/
   - title: "Design Patterns"
     url: /design%20patterns/design-pattern/
   - title: "Machine Learning"
