@@ -535,6 +535,7 @@ NOTICE TEXT BLOCKS
 
   a {
     color: $notice-color;
+    text-decoration: underline;
 
     &:hover {
       color: $notice-color;
