@@ -12,7 +12,6 @@ tags:
   - Toast的Window
 toc: true
 toc_label: "目录"
-toc_icon: "heart"
 ---
 
 Window表示一个窗口的概念，它存在于Window、Dialog以及Toast中，但是日常开发中并不多见，它可以实现悬浮窗。Window是一个抽象类，其具体实现是`PhoneWindow`。

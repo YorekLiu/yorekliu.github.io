@@ -372,7 +372,12 @@ figure.highlight {
   font-size: 13px;
   line-height: 20px;
 
+  tr {
+    border: 0;
+  }
+
   td {
+    background: $code-background-color;
     /* line numbers*/
     &.gutter,
     &.rouge-gutter {
@@ -650,4 +655,41 @@ NOTICE TEXT BLOCKS
     content: "\2715";
     font-weight: bold;
   }
+}
+
+/* ==========================================================================
+   TABLES
+   ========================================================================== */
+table {
+  margin: 0 0 16px;
+  font: 14px/20px "Roboto", "Helvetica", "Arial", sans-serif;
+
+  & + table {
+    margin-top: 16px;
+  }
+}
+
+thead {
+  border: 0;
+}
+
+th {
+  color: #fff;
+  padding: 8px;
+  font: 500 16px/24px "Roboto", "Helvetica", "Arial", sans-serif;
+  text-align: left;
+}
+
+td {
+  background: rgba(255, 255, 255, .95);
+  vertical-align: top;
+  color: #212121;
+  padding: 7px 8px 8px;
+  border: 0;
+}
+
+tr {
+  background-color: #78909c;
+  border: 0;
+  border-top: 1px solid #cfd8dc;
 }

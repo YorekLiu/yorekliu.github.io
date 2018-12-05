@@ -14,7 +14,6 @@ tags:
   - /sdcard
 toc: true
 toc_label: "目录"
-toc_icon: "heart"
 ---
 
 在Android 7.0及以上版本上，通过以下方式调用相机会报`android.os.FileUriExposedException`错

@@ -14,7 +14,6 @@ tags:
   - Intent
 toc: true
 toc_label: "目录"
-toc_icon: "heart"
 last_modified_at: 2018-01-29T16:47:00+08:00
 ---
 

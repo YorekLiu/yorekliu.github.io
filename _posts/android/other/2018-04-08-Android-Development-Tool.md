@@ -5,7 +5,6 @@ categories:
   - Android
 toc: true
 toc_label: "目录"
-toc_icon: "heart"
 ---
 
 ## Sublime Text

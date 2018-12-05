@@ -8,7 +8,6 @@ tags:
   - Array  
 toc: true
 toc_label: "目录"
-toc_icon: "heart"
 ---
 
 ### 832. Flipping an Image

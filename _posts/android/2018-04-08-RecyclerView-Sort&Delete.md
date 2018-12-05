@@ -10,7 +10,6 @@ tags:
 comments: true
 toc: true
 toc_label: "目录"
-toc_icon: "heart"
 last_modified_at: 2018-04-08T22:31:19+08:00
 ---
 

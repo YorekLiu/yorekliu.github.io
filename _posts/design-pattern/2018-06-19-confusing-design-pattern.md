@@ -17,7 +17,6 @@ tags:
   - Command
 toc: true
 toc_label: "目录"
-toc_icon: "heart"
 last_modified_at: 2018-06-19T17:13:00+08:00
 ---
 

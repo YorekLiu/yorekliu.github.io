@@ -8,7 +8,6 @@ tags:
   - CI
 toc: true
 toc_label: "目录"
-toc_icon: "heart"
 last_modified_at: 2018-08-18T11:19:00+08:00
 ---
 

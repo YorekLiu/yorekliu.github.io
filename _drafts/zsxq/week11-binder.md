@@ -7,7 +7,6 @@ tags:
   - Binder
 toc: true
 toc_label: "目录"
-toc_icon: "star"
 ---
 
 ## Question
