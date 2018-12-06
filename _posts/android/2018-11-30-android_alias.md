@@ -192,10 +192,10 @@ android {
             applicationId "com.xxx.xxxxxxx.app"
             versionCode 100080
             versionName "1.0.8"
-            def qq_id = '"xxxxxxx"'
+            def qq_id = 1000xxxxxx
             buildConfigField('String', 'BUGLY_ID', '"xxxxxxx"')
             buildConfigField('String', 'UMCONFIGURE_ID', '"xxxxxxx"')
-            buildConfigField('String', 'QQ_SHARE_ID', qq_id)
+            buildConfigField('String', 'QQ_SHARE_ID', "\"$qq_id\"")
             buildConfigField('String', 'QQ_SHARE_SECRET', '"xxxxxxx"')
             buildConfigField('String', 'WX_SHARE_ID', '"xxxxxxx"')
             buildConfigField('String', 'WX_SHARE_SECRET', '"xxxxxxx"')
@@ -211,10 +211,10 @@ android {
             applicationId "com.xxx.flavor.app"
             versionCode 101030
             versionName "1.1.3"
-            def qq_id = '"xxxxxxx"'
+            def qq_id = 1000xxxxxx
             buildConfigField('String', 'BUGLY_ID', '"xxxxxxx"')
             buildConfigField('String', 'UMCONFIGURE_ID', '"xxxxxxx"')
-            buildConfigField('String', 'QQ_SHARE_ID', qq_id)
+            buildConfigField('String', 'QQ_SHARE_ID', "\"$qq_id\"")
             buildConfigField('String', 'QQ_SHARE_SECRET', '"xxxxxxx"')
             buildConfigField('String', 'WX_SHARE_ID', '"xxxxxxx"')
             buildConfigField('String', 'WX_SHARE_SECRET', '"xxxxxxx"')
@@ -409,6 +409,9 @@ manifestPlaceholders = [
 总结一下上面的`AndroidManifest.xml`代码：
 - applicationId在微信分享回调页面、FileProvider两处位置要配置。  
 - manifestPlaceholders中scheme配置到SplashActivity上，qq_id配置到QQ分享AuthActivity上
+
+QQ分享配置需要注意，qq_id定义的是int类型。所以QQ_SHARE_ID配置为`"\"$qq_id\""`。且AndroidManifest中对应的scheme也将为正确的tencent1000xxxxxx。
+{: .notice--info }
 
 微信分享回调Activity必须是应用实际包名目录下的wxapi子目录中的WXEntryActivity文件，任意更改目录都不会收到微信分享回调。  
 比如在在hdd马甲下配置微信分享回调，需要在`com.xxx.xxxxxxx.app.wxapi`下创建WXEntryActivity文件。  
