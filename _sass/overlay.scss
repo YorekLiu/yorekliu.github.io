@@ -20,7 +20,7 @@ body {
 	font-family: "Roboto", "Helvetica", "Arial", sans-serif;
 	font-size: 14px;
 	font-weight: 400;
-	line-height: 20px
+	line-height: 20px;
 }
 
 a {
@@ -358,6 +358,12 @@ a {
   }
 }
 
+// figure
+figcaption {
+  text-align: center;
+  font-size: 12px;
+}
+
 // code
 div.highlighter-rouge,
 figure.highlight {
@@ -365,6 +371,17 @@ figure.highlight {
   pre.highlight {
     border: 1px solid #ebebeb;
   }
+}
+
+p > code,
+a > code,
+li > code,
+figcaption > code,
+td > code {
+  color: #008f83;
+  padding: 0;
+  font-size: 14px;
+
 }
 
 .highlight table {

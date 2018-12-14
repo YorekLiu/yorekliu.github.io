@@ -53,7 +53,7 @@ reCaptcha:
 atom_feed:
   path                   : # blank (default) uses feed.xml
 search                   : true # true, false (default)
-search_full_content      : true  # true, false (default)
+search_full_content      : false  # true, false (default)
 search_provider          : # lunr (default), algolia, google
 algolia:
   application_id         : # YOUR_APPLICATION_ID
@@ -104,7 +104,7 @@ author:
       url: mailto:lyytogether@gmail.com
     - label: "Website"
       icon: "fas fa-fw fa-link"
-      url: "http://yorek.xyz"
+      url: "http://blog.yorek.xyz"
     - label: "Twitter"
       icon: "fab fa-fw fa-twitter-square"
       # url: "https://twitter.com/"
