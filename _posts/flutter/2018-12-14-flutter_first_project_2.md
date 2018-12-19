@@ -1107,7 +1107,7 @@ return Card(
                       ),
                       Text(
                         // Flutter格式化时间 1️⃣
-                        Utils.duration(DateTime.fromMillisecondsSinceEpoch(task.deadLine)),
+                        Utils.duration(DateTime.fromMillisecondsSinceEpoch(task.deadline)),
                         style: Theme.of(context).textTheme.caption,
                       ),
                     ],
@@ -1185,7 +1185,7 @@ bottomNavigationBar: Theme(
 ```dart
 import '../utils.dart' as Utils;
 
-Utils.duration(DateTime.fromMillisecondsSinceEpoch(task.deadLine))
+Utils.duration(DateTime.fromMillisecondsSinceEpoch(task.deadline))
 ```
 `show`、`hide`关键词可以让我们指定包中特定的类、方法等可见或不可见。下面指定了我们只能访问utils.dart的duration方法。
 ```dart
