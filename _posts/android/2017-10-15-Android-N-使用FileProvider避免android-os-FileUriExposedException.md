@@ -10,8 +10,6 @@ tags:
   - ExternalStorageDirectory
   - ExternalFilesDir
   - ExternalCacheDir
-  - /data/data
-  - /sdcard
 toc: true
 toc_label: "目录"
 ---
