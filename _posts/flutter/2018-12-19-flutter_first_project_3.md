@@ -25,6 +25,7 @@ tags:
   - async
   - await
   - then
+  - FutureBuilder
 toc: true
 toc_label: "目录"
 last_modified_at: 2018-12-19T17:31:01+08:00
@@ -743,6 +744,55 @@ class DBManager {
 DBManager使用单例模式实现，关于dart中单例模式的实现：[https://stackoverflow.com/a/12649574/7440866](https://stackoverflow.com/a/12649574/7440866)  
 首先通过`getDatabasesPath`获取数据库路径，然后使用`Path.join`拼接数据库文件得到一个具体数据库文件的路径。  
 接着使用`openDatabase`打开数据库得到一个`Database`，最后通过这个`Database`就能进行各种数据库操作了。
+
+另外，从数据库中加载到了数据之后如何展示出来呢，这就需要用到`FutureBuilder`了。  
+`FutureBuilder`接收一个Future对象，当Future执行完毕后会调用builder的回调。如下面例子所示  
+
+```dart
+class _TaskListPageState extends State<TaskListPage> {
+
+  // 获取数据的Future
+  Future<List<Task>> getTasks() async {
+    var db = await DBManager().db;
+    return await TaskProvider.getTasks(db);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final Widget body = FutureBuilder(
+      future: getTasks(),
+      builder: (context, snapshot) {
+        // getTasks执行完毕，可以解析数据或处理异常
+        if (snapshot.hasError) {
+          return Center(child: Text(snapshot.error.toString()),);
+        } else if (snapshot.data == null || snapshot.data.isEmpty) {
+          return Center(child: Text("Are you Ready?"),);
+        } else {
+          return _buildList(snapshot.data);
+        }
+      },
+    );
+
+    return Scaffold(
+      appBar: AppBar(
+        brightness: Brightness.dark,
+        title: Text('Ready'),
+      ),
+      body: body,
+    );
+  }
+
+  Widget _buildList(List<Task> tasks) {
+    return ListView.builder(
+      itemCount: tasks.length,
+      itemBuilder: (context, index) {
+        final task = tasks[index];
+        return TaskListItem(task, _navigateDetailOrAdd, _refresh);
+      },
+    );
+  }
+}
+```
 
 ## 4. Flutter中的异步操作
 
