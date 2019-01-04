@@ -86,3 +86,8 @@ tags:
 1.注意`Math.abs(Integer.MIN_VALUE)=Integer.MIN_VALUE`，所以在第二步中采取了`Math.abs((long) dividend)`操作  
 2.返回结果时不要`return (int) sign * res;`，这里的「\*」违反了规则
 {: .notice--danger }
+
+<figure style="width: 50%" class="align-center">
+    <img src="/assets/images/android/remoteviews-custom-notification.png">
+    <figcaption>自定义通知样式</figcaption>
+</figure>

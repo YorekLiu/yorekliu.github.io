@@ -51,7 +51,10 @@ NotificationManager notificationManager = (NotificationManager) getSystemService
 notificationManager.notify(1, notification);
 ```
 
-![remoteviews-system-notification]({{ basepath }}/assets/images/remoteviews-system-notification.png)  
+<figure style="width: 50%" class="align-center">
+    <img src="/assets/images/android/remoteviews-system-notification.png">
+    <figcaption>系统默认的通知样式</figcaption>
+</figure>
 
 **2.自定义通知样式**  
 自定义通知样式需要我们提供一个布局文件，然后通过`RemoteViews`来加载这个布局即可以改变通知的样式，代码如下所示：
@@ -78,7 +81,11 @@ notification.flags = Notification.FLAG_AUTO_CANCEL;
 NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 notificationManager.notify(2, notification);
 ```
-![remoteviews-custom-notification]({{ basepath }}/assets/images/remoteviews-custom-notification.png)
+
+<figure style="width: 50%" class="align-center">
+    <img src="/assets/images/android/remoteviews-custom-notification.png">
+    <figcaption>自定义通知样式</figcaption>
+</figure>
 
 我们只需要提供当前应用的包名和布局文件的资源id就可以创建一个`RemoteViews`。更新`RemoteViews`里面的View需要通过`RemoteViews`提供的一系列的方法来更新View。
 

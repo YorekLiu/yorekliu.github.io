@@ -32,7 +32,7 @@ try {
 
 ## 1. 创建目录
 在java目录下创建`android/os`目录，如下  
-![system_prorities_project]({{ basepath }}/assets/images/system_prorities_project.png)
+![system_prorities_project]({{ basepath }}/assets/images/android/system_prorities_project.png)
 
 ## 2. 创建文件并复制内容
 在上面的目录下创建`SystemProperties.java`文件，内容如下
