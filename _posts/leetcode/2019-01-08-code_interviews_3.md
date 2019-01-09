@@ -42,7 +42,7 @@ last_modified_at: 2019-01-08T18:24:26+08:00
 实现函数double Power(double base, int exponent)，求base的exponent次方。不得使用库函数，同时不需要考虑大数问题。
 {: .notice }
 
-与[LeetCode-50-Pow(x, n)](https://leetcode.com/problems/powx-n/)类似。
+与[LeetCode-50-Pow(x, n)](https://leetcode.com/problems/powx-n/)类似。 不过LeetCode上需要注意n的溢出问题。
 
 此题看起来简单，但却有一些情况需要考虑到。  
 首先需要考虑到指数为0或负数的情况。当指数为负数时，可以先对指数求绝对值，算出结果之后再取倒数。在求倒数的时候，如果底数是0怎么办，如何告诉函数的调用者出现了这种错误。  
@@ -61,14 +61,14 @@ private double power(double base, int exponent) {
         return 0;
     }
 
-    int absExponent = Math.abs(exponent);
+    long absExponent = Math.abs(exponent * 1L);
 
     double result = powerInner(base, absExponent);
 
     return exponent < 0 ? 1.0 / result : result;
 }
 
-private double powerInner(double base, int exponent) {
+private double powerInner(double base, long exponent) {
     double result = 1.0;
 
     for (int i = 1; i <= exponent; i++) {
@@ -89,7 +89,7 @@ $$a^n=\begin{cases} a^{n/2} \cdot a^{n/2}, & n为偶数 \\ a^{(n-1)/2} \cdot a^{
 我们在介绍用$$O$$(log$$n$$)时间求斐波那契数列时讨论过这个公式，这个公式很容易通过递归实现。新的`powerInner`方法如下所示：
 
 ```java
-private double powerInner(double base, int exponent) {
+private double powerInner(double base, long exponent) {
     if (exponent == 0) {
         return 1;
     } else if (exponent == 1) {
