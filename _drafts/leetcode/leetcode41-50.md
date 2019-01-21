@@ -11,7 +11,7 @@ toc_label: "目录"
 #last_modified_at: 2018-12-03T16:25:29+08:00
 ---
 
-## 41. Next Permutation
+## 41. First Missing Positive
 
 [Array](/tags/#array){: .btn .btn--inverse }  
 
