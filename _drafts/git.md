@@ -91,3 +91,7 @@ tags:
     <img src="/assets/images/android/remoteviews-custom-notification.png">
     <figcaption>自定义通知样式</figcaption>
 </figure>
+
+分段函数  
+
+$$f(n,m)=\begin{cases} 0 & n=1 \\ [f(n-1,m)+m]\%n & n>1 \end{cases}$$
