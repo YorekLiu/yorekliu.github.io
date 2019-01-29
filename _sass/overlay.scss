@@ -81,6 +81,23 @@ a {
   .hidden-links {
     background: $header-background-color;
   }
+
+  .visible-links {
+    a {
+      &:before {
+        left: 50%;
+        right: 50%;
+        width: inherit;  
+        -webkit-transform: none;
+        transform: none; // hide
+      }
+
+      &:hover:before {
+        left: 0;
+        right: 0;
+      }
+    }
+  }
 }
 
 // splash overlay

@@ -9,6 +9,7 @@ tags:
   - Singleton
 toc: true
 toc_label: "目录"
+last_modified_at: 2018-11-13T16:38:50+08:00
 ---
 
 ## Question
