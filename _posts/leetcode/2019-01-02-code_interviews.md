@@ -8,6 +8,7 @@ tags:
   - String
   - Linked list
   - Tree
+  - Red Black Tree
   - Stack
   - Queue
   - Recursion
@@ -345,7 +346,7 @@ private void printListReversingly2(ListNode pHead) {
 上面的代码看起来很简洁，但**当链表非常长的时候，就会导致函数调用的层级很深，从而导致函数调用栈溢出**。显然用栈基于循环实现的代码鲁棒性要好一点。  
 
 ## 4. 树
-[Tree](/tags/#tree){: .btn .btn--inverse }  
+[Tree](/tags/#tree){: .btn .btn--inverse }  [Red Black Tree](/tags/#red-black-tree){: .btn .btn--inverse }  
 
 树的逻辑结构很简单：除根节点之外的每个节点只有一个父节点，根节点没有父节点；除叶节点之外所有节点都有一个或多个子节点，叶节点没有子节点。父节点与子节点之间用指针链接。  
 
@@ -553,8 +554,38 @@ private static void levelIterative(BinaryTreeNode node) {
 在二叉搜索树中，左子节点总是小于或者等于根节点，而右子节点总是大于或者等于根节点。上图的二叉树就是一颗二叉搜索树。我们平均在O(logn)的时间内根据数值在二叉搜索树中找到一个节点。
 
 二叉树的另外两个特例是**堆**和**红黑树**。  
+
 堆分为最大堆和最小堆。在最大堆中根节点的值最大，在最小堆中根节点的值最小。有很多需要快速找到最大值或者最小值的问题都可以用堆解决。  
-红黑树是把树中的节点定义为红、黑两种颜色，并通过规则确保从根节点到叶节点的最长路径的长度不超过最短路径的两倍。
+
+红黑树是一种近似平衡的二叉查找树，它把树中的节点定义为红、黑两种颜色，并通过规则确保从根节点到叶节点的最长路径的长度不超过最短路径的两倍。  
+具体来说，红黑树是满足如下条件的二叉查找树：
+1. 每个节点要么是红色，要么是黑色。
+2. 根节点必须是黑色
+3. 红色节点不能连续（也即是，红色节点的孩子和父亲都不能是红色）。
+4. 对于每个节点，从该点至null（树尾端）的任何路径，都含有相同个数的黑色节点。  
+
+在树的结构发生改变时（插入或者删除操作），往往会破坏上述条件3或条件4，需要通过调整使得查找树重新满足红黑树的条件。  
+调整可以分为两类：
+- 一类是颜色调整，即改变某个节点的颜色；
+- 另一类是结构调整，集改变检索树的结构关系。  
+
+结构调整过程包含两个基本操作：左旋（Rotate Left），右旋（Rotate Right）。
+
+最小堆、最大堆在Java中可以这样实现：
+```java
+// 最小堆
+PriorityQueue<Integer> minHeap = new PriorityQueue<Integer>();
+
+// 最大堆
+PriorityQueue<Integer> maxHeap = new PriorityQueue<Integer>(n, new Comparator<Integer>(){
+    @Override
+    public int compare(Integer o1, Integer o2) {
+        return o2 - o1;
+    }
+});
+```
+
+Java中`TreeMap`底层通过红黑树来实现，这样插入删除都只有$$O(logn)$$的时间复杂度。
 
 ### 4.1 (7)重建二叉树
 
