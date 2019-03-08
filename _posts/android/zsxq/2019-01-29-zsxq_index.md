@@ -21,3 +21,4 @@ last_modified_at: 2019-01-29T17:26:50+08:00
 - [Week8-Java基础知识学习](/android/week8-reference&singleton/)
 - [Week10-Android中的ClassLoader](/android/week10-classloader/)
 - [Week11-Binder](/android/week11-binder/)
+- [Week12-OkHttp和Retrofit](/android/week12-retrofit-okhttp/)
