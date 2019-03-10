@@ -4,7 +4,7 @@ excerpt: "Effective Java中文版第二版笔记"
 categories:
   - Effective Java
 tags:
-  - overview
+  - content
 last_modified_at: 2018-07-16T22:49:25+08:00
 ---
 

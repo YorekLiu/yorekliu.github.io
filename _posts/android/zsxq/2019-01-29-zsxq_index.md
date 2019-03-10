@@ -22,3 +22,5 @@ last_modified_at: 2019-01-29T17:26:50+08:00
 - [Week10-Android中的ClassLoader](/android/week10-classloader/)
 - [Week11-Binder](/android/week11-binder/)
 - [Week12-OkHttp和Retrofit](/android/week12-retrofit-okhttp/)
+- [Week13-从源码的角度描述下Activity的启动过程](/android/%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/#2-activity%E7%9A%84%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B)
+- [Week14-JVM的垃圾回收策略](/android/week14-jvm-gc/)

@@ -4,7 +4,7 @@ excerpt: "设计模式中设计原则、设计模式的概述"
 categories:
   - Design Patterns
 tags:
-  - overview
+  - content
 last_modified_at: 2018-06-12T11:49:19+08:00
 ---
 

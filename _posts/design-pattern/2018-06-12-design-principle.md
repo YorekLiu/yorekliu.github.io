@@ -4,7 +4,7 @@ excerpt: "遵循面向对象的六大原则，是我们走向灵活软件之路�
 categories:
   - Design Patterns
 tags:
-  - overview
+  - content
   - Principle
   - Single Responsibility Principle
   - SRP
