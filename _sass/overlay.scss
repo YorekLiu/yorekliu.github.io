@@ -43,7 +43,7 @@ a {
   position: fixed;
   width: 100%;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, .1);
-  background: $header-background-color;
+  background: mix(rgba(255, 255, 255, 0.0), $header-background-color, 15%);
 
   &__inner-wrap {
     padding: 0;
@@ -61,7 +61,7 @@ a {
 
 // website title & navigation
 .greedy-nav {
-  background: $header-background-color;
+  background: mix(rgba(255, 255, 255, 0.0), $header-background-color, 15%);
 
   a {
     padding: 1rem 0 1rem 0;
