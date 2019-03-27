@@ -8,8 +8,14 @@ tags:
   - 防抖
   - 去抖
   - onClickListener
+  - onClick
   - BindingAdapter
 last_modified_at: 2019-03-27T21:14:50+08:00
+---
+
+该方案基于MVVM，对`android:onClickListener="@{() -> listener.onTogglePwd()}"`和`android:onClick="@{vm::onTogglePwd}"`两种类型的点击事件防抖。  
+原理简单、共40行代码、无侵入。
+
 ---
 
 最近在考虑按钮防抖的方案，本来看上了RxView，但是觉得实施起来好麻烦，因为在项目中点击事件都是这么写的：
@@ -22,7 +28,7 @@ last_modified_at: 2019-03-27T21:14:50+08:00
 
 但是我就是不想改代码:)  
 
-既然xml中的属性可以通过`@BindingAdapter`注解修饰的方法来设置，那么我们是不是可以从这方面入手。答案是肯定的，要不然这篇文章怎么会急迫的想蹦出来。
+既然xml中的属性可以通过`@BindingAdapter`注解修饰的方法来设置，那么我们是不是可以从这方面入手。答案是肯定的，要不然这篇文章怎么急迫的想蹦出来。
 
 **首先，我们让`android:onClickListener`走我们指定的方法**  
 
@@ -37,7 +43,9 @@ object ViewThrottleBindingAdapter {
 }
 ```
 
-这样我们就捕获了所有`android:onClickListener`方式的点击事件。然后我们将这个原始的`OnClickListener`包装一下，加上防抖的逻辑就可以了。
+这样我们就捕获了所有`android:onClickListener`方式的点击事件。然后我们将这个原始的`OnClickListener`包装一下，加上防抖的逻辑就可以了。  
+
+另外，对于`android:onClick="@{vm::onTogglePwd}"`这种类型的点击事件，只需要额外加一个`@BinderAdapter`也能生效。👍👍👍👍
 
 **全部代码**
 
@@ -45,6 +53,11 @@ object ViewThrottleBindingAdapter {
 object ViewThrottleBindingAdapter {
     @BindingAdapter("android:onClickListener")
     @JvmStatic fun setViewOnClickListener(view: View, callback: View.OnClickListener) {
+        view.setOnClickListener(ThrottleOnClickListener(callback))
+    }
+
+    @BindingAdapter("android:onClick")
+    @JvmStatic fun setViewOnClick(view: View, callback: View.OnClickListener) {
         view.setOnClickListener(ThrottleOnClickListener(callback))
     }
 
