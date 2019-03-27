@@ -25,3 +25,4 @@ last_modified_at: 2019-01-29T17:26:50+08:00
 - [Week13-从源码的角度描述下Activity的启动过程](/android/%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/#2-activity%E7%9A%84%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B)，*一句话总结在该节的末尾*
 - [Week14-JVM的垃圾回收策略](/android/week14-jvm-gc/)
 - [Week15-RxJava & RxAndroid](/android/week15-rxjava&rxandroid/)
+- [Week16-进程保活](/android/week16-keep-app-alive/)
