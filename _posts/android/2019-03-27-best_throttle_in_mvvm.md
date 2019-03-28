@@ -1,5 +1,6 @@
 ---
 title: "这可能是MVVM中最优雅的按键防抖方案"
+excerpt: "原理简单、共40行代码、无侵入"
 classes: wide
 categories:
   - Android
