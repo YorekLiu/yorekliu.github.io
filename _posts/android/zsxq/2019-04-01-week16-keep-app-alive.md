@@ -5,9 +5,18 @@ categories:
 tags:
   - 知识星球
   - 进程保活
+  - 进程优先级
+  - ProcessList
+  - OOM_ADJ
+  - startForeground
+  - Notification
+  - NotificationChannel
+  - JobScheduler
+  - JobService
+  - AccountManager
 toc: true
 toc_label: "目录"
-# last_modified_at: 2019-03-20T17:51:34+08:00
+last_modified_at: 2019-04-01T11:31:50+08:00
 ---
 
 ## Question
@@ -167,6 +176,10 @@ static final int NATIVE_ADJ = -17;
 - 0 <= OOM_ADJ <= 3，表示不容易被杀死的Android进程
 - 其他小于0的表示非Android进程，这些都是纯Linux进程
 
+上面这些数值是6.0源码里面的值，从7.0开始取值不一样了。但是优先级关系还是一致的。  
+see [7.0.0_r1_ProcessList.java](http://androidxref.com/7.0.0_r1/xref/frameworks/base/services/core/java/com/android/server/am/ProcessList.java#58)
+{: .notice--warning }
+
 可有通过shell查看进程的优先级：
 
 ```shell
@@ -185,7 +198,7 @@ m3note:/ # cat proc/6320/oom_adj
 3. 按下HOME键回到桌面，此时结果是12，介于`CACHED_APP_MIN_ADJ`和`CACHED_APP_MAX_ADJ`之间
 4. 重新进入app，退出应用回到桌面，结果为15，为`CACHED_APP_MAX_ADJ`
 
-另外，在使用了前台通知提升优先级的情况下，获取的结果为3。*当然，此方法有一些注意点，在遇到具体方案时再说*。
+另外，在使用了前台通知提升优先级的情况下，获取的结果为1。*当然，此方法有一些注意点，在下面具体方案讨论时再说*。
 
 下面正式分析一些保活方案，还是从两个方面来说。
 
@@ -205,7 +218,8 @@ m3note:/ # cat proc/6320/oom_adj
 此方式主要解决息屏后被系统杀死的情况。我们可以监听息屏和解锁的广播，在息屏时启动一个只有一个像素的透明Activity，此时应用就位于前台了，优先级为0。在解锁时将此Activity销毁。这样不会让用户感觉到流氓。  
 
 **关于息屏和解锁的广播：**在8.0开始，不能在manifest文件中声明这些广播，只能在代码中动态注册。所以，如果保活的Activity位于另外一个进程中，需要特别注意一下进程问题。  
-[Broadcasts overview - Android 8.0](https://developer.android.com/guide/components/broadcasts#android_80)
+系统广播改动——[Changes to system broadcasts](https://developer.android.com/guide/components/broadcasts#changes-system-broadcasts)  
+可静态注册广播的列表——[Implicit Broadcast Exceptions](https://developer.android.com/guide/components/broadcast-exceptions)
 {: .notice--warning }
 
 在下面的代码中，由于保活的Activity位于`:live`进程中，所以导致receiver也在要此进程中进行动态注册，才能有效地管理保活Activity。于是在`:live`进程中新增了一个`Service`达到了此目的。
@@ -302,6 +316,7 @@ class KeepLiveActivity : Activity() {
           android:excludeFromRecents="true"
           android:exported="false"
           android:finishOnTaskLaunch="false"
+          android:launchMode="singleInstance"
           android:process=":live"
           android:theme="@style/KeepLiveTheme"/>
 <service android:name=".activity.KeepLiveActivity$KLService"
@@ -321,14 +336,154 @@ generic_x86:/ # cat proc/5201/oom_adj  # 锁屏时
 
 #### 带通知的前台Service
 
-将Service设置为前台，可以使整个进程优先级变为
+将Service设置通过`startForeground`为前台，可以使整个进程变为前台进程。可以通过一些手段将通知栏通知取消掉，但在7.1及以后失效了。  
+另外在[前面](/android/week16-keep-app-alive/#%E8%BF%9B%E7%A8%8B%E5%9B%9E%E6%94%B6%E7%AD%96%E7%95%A5)提到，由于7.0源码的更新，进程优先级的值有了些许差别，但是整个优先级序列是没有改变的。
 
-### 进程保活
-  
+在各版本模拟器上测的进程位于后台时的优先级如下：
+
+| API Level | 进程优先级 | 注意事项 |
+| :-------: | :----------: | ------------- |
+| 7.0之前 | 1 | 通知栏没有前台服务的通知，可以被黑科技取消 |
+| 7.0 | 3 | 通知栏没有前台服务的通知，可以被黑科技取消 |
+| 7.1 | 3 | 通知栏有前台服务的通知，黑科技开始失效 |
+| 8.0 | 3 | 通知栏有前台服务的通知<br />需要给Notification配置Channel了 |
+| 9.0 | 3 | 通知栏有前台服务的通知<br />需要给Notification配置Channel<br />此外需要在AndroidManifest中注册`android.permission.FOREGROUND_SERVICE`权限 |
+| Q beta1  | su指令缺失<br />无法获取 | 通知栏有前台服务的通知<br />需要给Notification配置Channel<br />要求`android.permission.FOREGROUND_SERVICE`权限 |
+
+下面所有的代码：
+
+```kotlin
+class KeepLiveService : Service() {
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            startForeground(NOTIFY_ID, Notification())
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val channelName = "channel_name"
+                val desc = "channel_desc"
+                val importance = NotificationManager.IMPORTANCE_LOW
+
+                NotificationChannel(CHANNEL_ID, channelName, importance).apply {
+                    description = desc
+                    val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                    notificationManager.createNotificationChannel(this)
+                }
+            }
+
+            val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .build()
+            startForeground(NOTIFY_ID, notification)
+            startService(Intent(this, StopNotificationService::class.java))
+        }
+        return START_STICKY
+    }
+
+    companion object {
+        const val NOTIFY_ID = 10000
+        const val CHANNEL_ID = "channel_id"
+    }
+
+    class StopNotificationService : Service() {
+        override fun onBind(intent: Intent?) = null
+
+        override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+            val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .build()
+            startForeground(NOTIFY_ID, notification)
+            stopSelf()
+
+            return super.onStartCommand(intent, flags, startId)
+        }
+    }
+}
+```
+
+此外还需要在`AndroidManifest.xml`中配置两个Service以及一个权限。
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="xyz.yorek.xxx">
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <application
+            ...>
+
+        <service android:name=".service.KeepLiveService"/>
+        <service android:name=".service.KeepLiveService$StopNotificationService"/>
+
+    </application>
+
+</manifest>
+```
+
+此方法tinker也有在用：[TinkerPatchService#increasingPriority](https://github.com/Tencent/tinker/blob/master/tinker-android/tinker-android-lib/src/main/java/com/tencent/tinker/lib/service/TinkerPatchService.java#L159)
+{: .notice--success }
+
+### 进程拉活
+
+1. 利用系统广播  
+   - 思想：在发生特定系统事件时，系统会发出响应的广播，通过“静态”注册对应的广播监听器，即可在发生响应事件时拉活。
+   - 适用范围：适用于全部Android平台
+   - 缺点：  
+      * 在前文中有提到，从8.0开始，很多广播只能在代码中动态注册，无法静态注册。也就是说，App被杀死后，无法接收到系统的广播了。
+      * 广播接收器被管理软件、系统软件通过“自启管理”等功能禁用的场景无法接收到广播，从而无法自启
+      * 系统广播事件不可控，只能保证发生事件时拉活进程，但无法保证进程挂掉后立即拉活
+2. 利用第三方应用广播
+   - 思想：与接收系统广播类似，此处接收第三方头部应用的广播，这时候是可以静态注册的。
+   - 适用范围：与系统广播一样。
+   - 缺点：
+      - 反编译分析过的第三方应用的多少
+      - 第三方应用的广播属于应用私有，当前版本中有效的广播，在后续版本随时就可能被移除或被改为不外发
+3. 利用系统Service机制
+   - 思想：将`Service#onStartCommand`返回值设置为`START_STICKY`，利用系统在`Service`挂掉后会自动拉活。
+   - 缺点：
+      - Service第一次被异常杀死后很快被重启，第二次会比第一次慢，第三次又会比前一次慢，一旦在短时间内Service被杀死4-5次，则系统不再拉起。
+      - 进程被取得Root权限的管理工具或系统工具通过force stop掉，无法重启
+4. Native进程监听主进程的状态
+   - 思想：利用Linux中的`fork`机制创建Native进程，在Native进程中监控主进程的存活，当主进程挂掉后，在Native进程中立即对主进程进行拉活
+   - 适用范围：  
+   主要适用于Android 5.0以下版本手机。  
+   对于Android 5.0以上手机，系统虽然会将Native进程内的所有进程都杀死，这里其实就是系统“依次”杀死进程时间与拉活逻辑执行时间赛跑的问题，如果可以跑的比系统逻辑快，依然可以有效拉起。
+   - 方法实现挑战：
+      - 在Native进程中如何感知主进程死亡
+         1. 在Native进程中通过死循环或定时器，轮训判断主进程是否存活，档主进程不存活时进行拉活。该方案的很大缺点是不停的轮询执行判断逻辑，非常耗电。
+         2. 在主进程中创建一个监控文件，并且在主进程中持有文件锁。在拉活进程启动后申请文件锁将会被堵塞，一旦可以成功获取到锁，说明主进程挂掉，即可进行拉活。由于Android中的应用都运行于虚拟机之上，Java层的文件锁与Linux层的文件锁是不同的，要实现该功能需要封装Linux层的文件锁供上层调用。
+      - 在Native进程中如何拉活主进程  
+        通过am命令进行拉活。通过指定“--include-stopped-packages”参数来拉活主进程处于forestop状态的情况
+      - 如何保证Native进程的唯一  
+        从可扩展性和进程唯一等多方面考虑，将Native进程设计成C/S结构模式，主进程与Native进程通过`Localsocket`进行通信。在Native进程中利用Localsocket保证Native进程的唯一性，不至于出现创建多个Native进程以及Native进程变成僵尸进程等问题。
+5. 双进程守护
+   - 思想：Service被系统杀死时会回调`ServiceConnection.onServiceDisconnected`方法。利用此原理，可以在两个进程中开启两个Service互绑。
+6. 利用JobScheduler机制
+   - 思想：5.0以后系统对native进程等加强了管理，native拉活方式失效。系统在Android 5.0以上版本提供了`JobScheduler`接口，系统会定时调用该进程以使应用进行一些逻辑操作。可以搭配前台Service技术提高进程优先级。
+   - 适用范围：主要适用于Android 5.0以上版本手机。该方案在Android 5.0以上版本中不受force stop影响，被强制停止的应用依然可以被拉活，在Android 5.0以上版本拉活效果非常好。仅在小米手机可能会出现有时无法拉活的问题。
+7. 利用账号同步机制
+   - 思想：Android系统的账号同步机制会定期同步账号进行，该方案目的在于利用同步机制进行进程的拉活。
+   - 适用范围：该方案适用于所有的Android版本，包括被force stop掉的进程也可以进行拉活。最新Android版本（Android N）中系统好像对账户同步这里做了变动，该方法不再有效。
+
+### 其他策略
+
+经研究发现还有其他一些系统拉活措施可以使用，但在使用时需要用户授权，用户感知比较强烈。这些方案包括：
+
+1. 利用系统通知管理权限进行拉活
+2. 利用辅助功能拉活，将应用加入厂商或管理软件白名单。
+
+这些方案需要结合具体产品特性。
+
+其他还有一些技术之外的措施，比如说应用内Push通道的选择：
+
+- 国外版应用：接入Google的GCM/FCM。
+- 国内版应用：根据终端不同，在小米手机（包括 MIUI）接入小米推送、华为手机接入华为推送；其他手机可以考虑接入极光、个推等。
 
 ## 参考资料
 
-
 - [进程保活方案 - 简书](https://www.jianshu.com/p/845373586ac1)
-- [Android常见进程保活方法](https://www.jianshu.com/p/6665bdb6c948)
+- [【腾讯Bugly干货分享】Android 进程保活招式大全](https://segmentfault.com/a/1190000006251859)
 - [Android进程保活招数概览](https://www.jianshu.com/p/c1a9e3e86666)
