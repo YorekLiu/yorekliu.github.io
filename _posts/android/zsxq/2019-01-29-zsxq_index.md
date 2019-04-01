@@ -26,3 +26,4 @@ last_modified_at: 2019-01-29T17:26:50+08:00
 - [Week14-JVM的垃圾回收策略](/android/week14-jvm-gc/)
 - [Week15-RxJava & RxAndroid](/android/week15-rxjava&rxandroid/)
 - [Week16-进程保活](/android/week16-keep-app-alive/)
+- [Week17-四大组件的作用以及多进程](/android/week17-android-components/)

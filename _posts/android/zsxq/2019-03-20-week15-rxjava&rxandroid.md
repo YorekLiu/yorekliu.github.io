@@ -1,5 +1,6 @@
 ---
 title: "Week15-RxJava & RxAndroid"
+excerpt: "用过RxJava和RxAndroid吗？RxAndroid切换线程是怎么实现的呢？"
 categories:
   - Android
 tags:

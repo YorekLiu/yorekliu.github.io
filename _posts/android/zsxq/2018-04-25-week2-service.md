@@ -1,5 +1,6 @@
 ---
 title: "Week2-理解Service"
+excerpt: "清晰地理解Service"
 categories:
   - Android
 tags:

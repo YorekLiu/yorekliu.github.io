@@ -1,5 +1,6 @@
 ---
 title: "Week16-进程保活"
+excerpt: "进程保活的方案"
 categories:
   - Android
 tags:

@@ -1,5 +1,6 @@
 ---
 title: "Week1-理解Java中synchronized关键词"
+excerpt: "理解Java中的synchronized关键字"
 categories:
   - Android
 tags:

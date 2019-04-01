@@ -1,5 +1,6 @@
 ---
 title: "Week3-理解Activity的启动模式"
+excerpt: "理解Activity的启动模式"
 categories:
   - Android
 tags:
