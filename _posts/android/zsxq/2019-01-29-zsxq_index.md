@@ -30,3 +30,4 @@ last_modified_at: 2019-01-29T17:26:50+08:00
 - [Week18-AIDL](/android/week18-aidl/)
 - [Week19-线程池](/android/Android线程与线程池/#3--android中的线程池)
 - [Week20-网络协议](/android/week20-network-protocol/)
+- [Week21-MVC、MVP和MVVM](/android/week21-mvc&mvp&mvvm/)

@@ -5,6 +5,7 @@ categories:
   - Design Patterns
 tags:
   - Singleton
+  - volatile
 toc: true
 toc_label: "目录"
 last_modified_at: 2018-06-12T13:49:19+08:00

@@ -15,6 +15,7 @@ tags:
   - ACK
   - seq
   - SYN
+  - MSL
 toc: true
 toc_label: "目录"
 last_modified_at: 2019-04-09T12:06:20+08:00
@@ -79,6 +80,7 @@ TCP/UDP都属于传输层的协议，其区别在于：
 2. SYN为SYNchronize
 3. ACK为ACKnowledge
 4. FIN为FINish
+5. MSL为the maximum segment lifetime
 
 SYN、ACK大写时为标志位，值为0或1；小写时表示序号。
 
