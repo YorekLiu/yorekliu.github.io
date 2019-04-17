@@ -32,3 +32,4 @@ last_modified_at: 2019-01-29T17:26:50+08:00
 - [Week20-网络协议](/android/week20-network-protocol/)
 - [Week21-MVC、MVP和MVVM](/android/week21-mvc&mvp&mvvm/)
 - [Week22-Android Studio build过程](/android/week22-android-studio-build/)
+- [Week23-大尺寸图片加载问题](/android/week23-load-large-bitmap/)
