@@ -96,4 +96,4 @@ tags:
 
 $$f(n,m)=\begin{cases} 0 & n=1 \\ [f(n-1,m)+m]\%n & n>1 \end{cases}$$
 
-HTTPS: https://blog.csdn.net/iispring/article/details/51615631
+HTTPS原理简述: https://blog.csdn.net/iispring/article/details/51615631
