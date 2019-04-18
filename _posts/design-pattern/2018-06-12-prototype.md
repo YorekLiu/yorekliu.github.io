@@ -15,7 +15,7 @@ last_modified_at: 2018-06-12T14:49:19+08:00
 
 使用场景：
 1. 类初始化需要消耗非常多的资源，这个资源包括数据、硬件资源等，通过原型拷贝避免这些消耗
-2. 通过new产生一个对象需要非常繁琐的数据准备或访问权限，这时可以使用原型模式
+2. 原型模式是在内存中二进制流的拷贝，要比直接new一个对象性能好很多，特别是要在一个循环体内产生大量的对象时，原型模式可以更好滴体现其优点
 3. 一个对象需要提供给其他对象访问，而且各个调用者可能需要修改其值时，可以考虑使用原型模式拷贝多个对象供调用者使用，即保护性拷贝
 
 需要注意的是，通过实现`Cloneable`接口的原型模式在调用`clone`函数构造实例并不一定比通过new操作速度快，只有当通过new构造对象较为耗时或者成本比较高时，通过clone方法才能获得效率上的提升。当然，实现原型模式也不一定非的要实现`Cloneable`接口，也有其他实现方式。
@@ -25,7 +25,11 @@ last_modified_at: 2018-06-12T14:49:19+08:00
 {: .notice--warning }
 
 ## 2. UML图
-![Prototype]({{ basepath }}/assets/images/design-pattern/prototype.png)
+
+<figure style="width: 50%" class="align-center">
+    <img src="/assets/images/design-pattern/prototype.png">
+    <figcaption>原型模式UML图</figcaption>
+</figure>
 
 - Client  
   客户端角色
@@ -105,4 +109,24 @@ WordDocument(text='This is an article (Edition 2)', images=[image 1, image 2, im
 ---------- WordDocument print start ----------
 WordDocument(text='This is an article', images=[image 1, image 2, image 3, image 4])
 ---------- WordDocument print end ----------
+```
+
+## 4. 源码中的例子
+
+比如`Intent#clone`:
+
+```java
+public class Intent implements Parcelable, Cloneable
+    /**
+     * Copy constructor.
+     */
+    public Intent(Intent o) {
+        this(o, COPY_MODE_ALL);
+    }
+
+    @Override
+    public Object clone() {
+        return new Intent(this);
+    }
+}
 ```

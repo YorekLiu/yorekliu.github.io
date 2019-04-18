@@ -429,11 +429,10 @@ img {
 
 blockquote {
   margin: 2em 0em 2em 0;
-  padding: 1em;
-  padding-bottom: 0.01em;
+  padding: 16px 24px 0.1px 24px;
   font-style: normal;
   background: $code-background-color;
-  border-left: 0.25em solid $accent-color;
+  border-left: 0.25em solid #77d5ff;
 }
 
 /* next/previous buttons */
@@ -515,8 +514,14 @@ blockquote {
 .btn {
   /* default */
   border-width: 0;
-  border-radius: 0;
-  box-shadow: 0 3px 1px -2px rgba(0,0,0,.14), 0 2px 2px 0 rgba(0,0,0,.098), 0 1px 5px 0 rgba(0,0,0,.084);
+  border-radius: 4px;
+  height: 36px;
+  min-width: 64px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: .0892857143em;
+  box-sizing: border-box;
+  box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
   color: $accent-color;
 
   /* button colors */
@@ -547,7 +552,7 @@ blockquote {
       }
 
       &:hover {
-        box-shadow: 0 4px 8px rgba(0,0,0,.3);
+        box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);;
         background-color: inherit;
         color: $accent-color;
       }

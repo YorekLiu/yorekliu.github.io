@@ -33,3 +33,4 @@ last_modified_at: 2019-01-29T17:26:50+08:00
 - [Week21-MVC、MVP和MVVM](/android/week21-mvc&mvp&mvvm/)
 - [Week22-Android Studio build过程](/android/week22-android-studio-build/)
 - [Week23-大尺寸图片加载问题](/android/week23-load-large-bitmap/)
+- [Week24-设计模式的原则、模式](/design%20patterns/design-pattern/)

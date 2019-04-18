@@ -34,25 +34,25 @@ last_modified_at: 2018-06-19T17:13:00+08:00
 3. 抽象工厂模式：为创建一组相关或者是相互依赖的对象提供一个接口，而不需要指定它们的具体类。
 
 我们可以提炼一下它们的**核心定义**
-1. 简单工厂模式：一个工厂方法创建不同类型的对象
-2. 工厂方法模式：一个具体的工厂类负责创建一个具体对象类型
-3. 抽象工厂模式：一个具体的工厂类负责创建一系列相关的对象
+1. 简单工厂模式：**一个工厂方法创建不同类型的对象**
+2. 工厂方法模式：**一个具体的工厂类负责创建一个具体对象类型**
+3. 抽象工厂模式：**一个具体的工厂类负责创建一系列相关的对象**
 
 下面是这三种模式的UML图
 
-<figure>
-  <img src="{{ site.url }}{{ site.baseurl }}/assets/images/design-pattern/simple-factory.png" alt="">
+<figure style="width: 66%" class="align-center">
+  <img src="/assets/images/design-pattern/simple-factory.png">
   <figcaption>简单工厂模式UML图</figcaption>
 </figure>
 
-<figure>
-  <img src="{{ site.url }}{{ site.baseurl }}/assets/images/design-pattern/abstract-factory.png" alt="">
-  <figcaption>抽象工厂模式UML图</figcaption>
+<figure style="width: 66%" class="align-center">
+  <img src="/assets/images/design-pattern/factory-method.png">
+  <figcaption>工厂方法模式UML图</figcaption>
 </figure>
 
-<figure>
-  <img src="{{ site.url }}{{ site.baseurl }}/assets/images/design-pattern/factory-method.png" alt="">
-  <figcaption>工厂方法模式UML图</figcaption>
+<figure style="width: 66%" class="align-center">
+  <img src="/assets/images/design-pattern/abstract-factory.png">
+  <figcaption>抽象工厂模式UML图</figcaption>
 </figure>
 
 ## 2.  代理、装饰、桥接模式
