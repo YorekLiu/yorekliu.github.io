@@ -1,6 +1,6 @@
 ---
 title: "高质量的代码"
-excerpt: "剑指Offer笔记2——高质量的代码"
+excerpt: "剑指Offer笔记2——高质量的代码 16-26"
 categories:
   - Algorithm
 tags:

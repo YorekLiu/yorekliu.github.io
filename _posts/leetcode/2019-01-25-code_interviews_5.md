@@ -1,12 +1,15 @@
 ---
 title: "优化时间和空间效率"
-excerpt: "剑指Offer笔记4——优化时间和空间效率"
+excerpt: "剑指Offer笔记4——优化时间和空间效率 39-52"
 categories:
   - Algorithm
 tags:
   - Array
   - Tree
   - String
+  - Max Heap
+  - Min Heap
+  - PriorityHeap
 toc: true
 toc_label: "目录"
 last_modified_at: 2019-01-25T13:18:17+08:00

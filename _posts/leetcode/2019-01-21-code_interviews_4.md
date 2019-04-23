@@ -1,6 +1,6 @@
 ---
 title: "解决问题的思路"
-excerpt: "剑指Offer笔记3——解决面试题的思路"
+excerpt: "剑指Offer笔记3——解决面试题的思路 27-38"
 categories:
   - Algorithm
 tags:
