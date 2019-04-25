@@ -62,6 +62,7 @@ a {
 // website title & navigation
 .greedy-nav {
   background: mix(rgba(255, 255, 255, 0.0), $header-background-color, 15%);
+  min-height: inherit;
 
   a {
     padding: 1rem 0 1rem 0;
@@ -69,6 +70,8 @@ a {
 
     &.site-title {
       margin-left: 1rem;
+      color: $accent-color;
+      font-weight: 300;
     }
   }
 
@@ -87,7 +90,9 @@ a {
       &:before {
         left: 50%;
         right: 50%;
-        width: inherit;  
+        width: inherit;
+        background: $accent-color;
+        border-radius: 4px;
         -webkit-transition: all 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
         transition: all 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
         -webkit-transform: none;

@@ -1,6 +1,6 @@
 ---
-title: "数据结构"
-excerpt: "剑指Offer笔记1——数据结构 3-15"
+title: "数据结构、算法和数据操作"
+excerpt: "剑指Offer笔记1—数据结构、算法和数据操作 3-15"
 categories:
   - Algorithm
 tags:
