@@ -2398,8 +2398,8 @@ public <A> List<ModelLoader<A, ?>> getModelLoaders(@NonNull A model) {
   //noinspection ForLoopReplaceableByForEach to improve perf
   for (int i = 0; i < size; i++) {
     ModelLoader<A, ?> loader = modelLoaders.get(i);
-    // 对于每个ModelLoader，看看真正能不能处理这种类型的数据
-    // 此处会过滤第一个
+    // 对于每个ModelLoader，看看是否可能处理这种类型的数据
+    // 此处会过滤第一个，因为我们传入的url不已data:image开头
     if (loader.handles(model)) {
       if (isEmpty) {
         filteredLoaders = new ArrayList<>(size - i);
@@ -2487,8 +2487,134 @@ private static class Entry<Model, Data> {
 }
 ```
 
-下面我们看看`entry.factory.build(this)`创建了四个什么样的ModelLoader：
+这里的entry的值我们在上面提到过，下面我们看看`entry.factory.build(this)`创建了四个什么样的ModelLoader：
+
+- `append(String.class, InputStream.class, new DataUrlLoader.StreamFactory<String>())`  
+  该Factory会创建一个处理data scheme(格式为`data:[mediatype][;base64],encoded_data`, e.g. data:image/gif;base64,R0lGO...lBCBMQiB0UjIQA7)类型数据的`DataUrlLoader`  
+  **能处理以**`data:image`**开头的model**
+- `append(String.class, InputStream.class, new StringLoader.StreamFactory())`  
+  该Factory能够从String中加载InputStream  
+  **可能处理所有的model**
+- `.append(String.class, ParcelFileDescriptor.class, new StringLoader.FileDescriptorFactory())`  
+  该Factory能够从String中加载ParcelFileDescriptor  
+  **可能处理所有的model**
+- `.append(String.class, AssetFileDescriptor.class, new StringLoader.AssetFileDescriptorFactory())`  
+  该Factory能够从String中加载AssetFileDescriptor    
+  **可能处理所有的model**
+
+此处的四个ModelLoader中，`DataUrlLoader.StreamFactory`的逻辑非常清晰明了，其他三个有点麻烦。因为它们都是创建的`StringLoader`，而`StringLoader`内部也有一个`ModelLoader`，在Factory中build`StringLoader`时，会调用`multiFactory.build`创建一个内部的`ModelLoader`。这是责任链模式。
+
+我们看看`StringLoader.StreamFactory()`的build过程：
 
 ```java
+/**
+  * Factory for loading {@link InputStream}s from Strings.
+  */
+public static class StreamFactory implements ModelLoaderFactory<String, InputStream> {
 
+  @NonNull
+  @Override
+  public ModelLoader<String, InputStream> build(
+      @NonNull MultiModelLoaderFactory multiFactory) {
+    return new StringLoader<>(multiFactory.build(Uri.class, InputStream.class));
+  }
+
+  @Override
+  public void teardown() {
+    // Do nothing.
+  }
+}
 ```
+
+这里调用了`MultiModelLoaderFactory.build(Class, Class)`方法，该方法的重载方法`MultiModelLoaderFactory.build(Class)`我们在上面遇到过，两个方法有一些差别，不要弄混淆了。
+
+```java
+@NonNull
+public synchronized <Model, Data> ModelLoader<Model, Data> build(@NonNull Class<Model> modelClass /* Uri.class */,
+    @NonNull Class<Data> dataClass /* InputStream.class */) {
+  try {
+    List<ModelLoader<Model, Data>> loaders = new ArrayList<>();
+    boolean ignoredAnyEntries = false;
+    for (Entry<?, ?> entry : entries) {
+      // Avoid stack overflow recursively creating model loaders by only creating loaders in
+      // recursive requests if they haven't been created earlier in the chain. For example:
+      // A Uri loader may translate to another model, which in turn may translate back to a Uri.
+      // The original Uri loader won't be provided to the intermediate model loader, although
+      // other Uri loaders will be.
+      // 
+      // 防止递归时重复加载到，造成StackOverflow
+      if (alreadyUsedEntries.contains(entry)) {
+        ignoredAnyEntries = true;
+        continue;
+      }
+      // ⚡⚡️⚡️ 差别1，这里会检查两个class
+      if (entry.handles(modelClass, dataClass)) {
+        alreadyUsedEntries.add(entry);
+        loaders.add(this.<Model, Data>build(entry));
+        alreadyUsedEntries.remove(entry);
+      }
+    }
+    // ⚡⚡️⚡️ 差别2，这里会检查loaders的数量，并做相应的处理
+    if (loaders.size() > 1) {
+      return factory.build(loaders, throwableListPool);
+    } else if (loaders.size() == 1) {
+      return loaders.get(0);
+    } else {
+      // Avoid crashing if recursion results in no loaders available. The assertion is supposed to
+      // catch completely unhandled types, recursion may mean a subtype isn't handled somewhere
+      // down the stack, which is often ok.
+      if (ignoredAnyEntries) {
+        return emptyModelLoader();
+      } else {
+        throw new NoModelLoaderAvailableException(modelClass, dataClass);
+      }
+    }
+  } catch (Throwable t) {
+    alreadyUsedEntries.clear();
+    throw t;
+  }
+}
+```
+
+⚡⚡️⚡️ 我们看一下这里面所有的递归过程：
+
+`append(String.class, InputStream.class, new DataUrlLoader.StreamFactory<String>())` 
+- build -> `DataUrlLoader` -> return
+
+`append(String.class, InputStream.class, new StringLoader.StreamFactory())`  
+- build -> `StringLoader` 参数urlLoader = `multiFactory.build(Uri.class, InputStream.class)`
+   - `append(Uri.class, InputStream.class, new DataUrlLoader.StreamFactory<Uri>())`  
+      - build -> `DataUrlLoader` -> return 
+   - `append(Uri.class, InputStream.class, new HttpUriLoader.Factory())`  
+      - build -> `HttpUriLoader` 参数urlLoader = `multiFactory.build(GlideUrl.class, InputStream.class)`
+         - `.append(GlideUrl.class, InputStream.class, new HttpGlideUrlLoader.Factory())`  
+            - build -> `HttpGlideUrlLoader` -> return 
+   - `append(Uri.class, InputStream.class, new AssetUriLoader.StreamFactory(context.getAssets()))`  
+      - build -> `AssetUriLoader` -> return
+   - `append(Uri.class, InputStream.class, new MediaStoreImageThumbLoader.Factory(context))`  
+      - build -> `MediaStoreImageThumbLoader` -> return
+   - `append(Uri.class, InputStream.class, new MediaStoreVideoThumbLoader.Factory(context))`  
+      - build -> `MediaStoreVideoThumbLoader` -> return
+   - `append(Uri.class, InputStream.class, new UriLoader.StreamFactory(contentResolver))`  
+      - build -> `UriLoader` -> return
+   - `append(Uri.class, InputStream.class, new UrlUriLoader.StreamFactory())`  
+      - build -> `UrlUriLoader` 参数urlLoader = `multiFactory.build(GlideUrl.class, InputStream.class)`
+         - `.append(GlideUrl.class, InputStream.class, new HttpGlideUrlLoader.Factory())`  
+            - build -> `HttpGlideUrlLoader` -> return 
+   - `MultiModelLoader` -> return
+
+`append(String.class, ParcelFileDescriptor.class, new StringLoader.FileDescriptorFactory())`  
+- build -> `StringLoader` 参数urlLoader = `multiFactory.build(Uri.class, ParcelFileDescriptor.class)`
+   - `append(Uri.class, ParcelFileDescriptor.class, new AssetUriLoader.FileDescriptorFactory(context.getAssets()))`  
+      - build -> `AssetUriLoader` -> return
+   - `append(Uri.class, ParcelFileDescriptor.class, new UriLoader.FileDescriptorFactory(contentResolver))`   
+      - build -> `UriLoader` -> return
+   - `MultiModelLoader` -> return
+
+`append(String.class, AssetFileDescriptor.class, new StringLoader.AssetFileDescriptorFactory())`  
+- build -> `StringLoader` 参数urlLoader = `multiFactory.build(Uri.class, AssetFileDescriptor.class)`  
+   - `append(Uri.class, AssetFileDescriptor.class, new UriLoader.AssetFileDescriptorFactory(contentResolver))`  
+      - build -> `UriLoader` -> return
+   - `UriLoader` -> return
+
+上面就是`multiModelLoaderFactory.build(modelClass)`获得到的4个loader，然后在`modelLoaderRegistry.getModelLoaders(model)`方法中被过滤掉一个，现在就返回3.5节刚开始的`DecodeHelper.getLoadData`方法里面了。

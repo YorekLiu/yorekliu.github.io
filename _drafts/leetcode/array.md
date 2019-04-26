@@ -411,3 +411,101 @@ class Solution {
 ```
 
 > 注意字符串最后是一个large group的情况
+
+### 349. Intersection of Two Arrays
+
+[Array](/tags/#array){: .btn .btn--inverse }  [Two Pointers](/tags/#two-pointers){: .btn .btn--inverse }  [Set](/tags/#set){: .btn .btn--inverse }
+
+Given two arrays, write a function to compute their intersection.
+
+**Example 1:**
+
+Input: nums1 = [1,2,2,1], nums2 = [2,2]  
+Output: [2]
+{: .notice }
+
+**Example 2:**
+
+Input: nums1 = [4,9,5], nums2 = [9,4,9,8,4]  
+Output: [9,4]
+{: .notice }
+
+**Note:**
+
+- Each element in the result must be unique.
+- The result can be in any order.
+
+**解法一：利用Set的特点，时间复杂度为O(n)**
+
+```java
+class Solution {
+    public int[] intersection(int[] nums1, int[] nums2) {
+        if (nums1 == null || nums1.length == 0 || nums2 == null || nums2.length == 0) {
+            return new int[0];
+        }
+
+        Set<Integer> set = new HashSet<>(nums1.length);
+        Set<Integer> intersect = new HashSet<>();
+        
+        for (int i : nums1) {
+            set.add(i);
+        }
+        for (int i : nums2) {
+            if (set.contains(i)) {
+                intersect.add(i);
+            }
+        }
+        
+        int[] result = new int[intersect.size()];
+        int i = 0;
+        for (int item : intersect) {
+            result[i++] = item;
+        }
+        
+        return result;
+    }
+}
+```
+
+**解法二：先排序，后two pointers，时间复杂度为O(nlogn)**  
+
+时间复杂度主要是因为排了序，所以慢了点。
+
+```java
+class Solution {
+    public int[] intersection(int[] nums1, int[] nums2) {
+        if (nums1 == null || nums1.length == 0 || nums2 == null || nums2.length == 0) {
+            return new int[0];
+        }
+
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        
+        final int n = nums1.length;
+        final int m = nums2.length;
+        
+        List<Integer> result = new ArrayList<>();
+        int i = 0, j = 0;
+        while (i < n && j < m) {
+            if (nums1[i] < nums2[j]) {
+                i++;
+            } else if (nums1[i] > nums2[j]) {
+                j++;
+            } else {
+                int tmp = nums1[i];
+                result.add(tmp);
+                i++;
+                j++;
+                while (i < n && nums1[i] == tmp) { i++; }
+                while (j < m && nums2[j] == tmp) { j++; }
+            }
+        }
+        
+        int[] res = new int[result.size()];
+        for (i = 0; i < res.length; i++) {
+            res[i] = result.get(i);
+        }
+        return res;
+    }
+}
+```
