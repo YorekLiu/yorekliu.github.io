@@ -841,7 +841,7 @@ public ViewTarget<ImageView, TranscodeType> into(@NonNull ImageView view) {
     // Clone in this method so that if we use this RequestBuilder to load into a View and then
     // into a different target, we don't retain the transformation applied based on the previous
     // View's scale type.
-    // 
+    //
     // 根据ImageView的ScaleType设置不同的down sample和transform选项
     switch (view.getScaleType()) {
       case CENTER_CROP:
@@ -1305,7 +1305,7 @@ public synchronized void begin() {
   // new load etc. This does mean that users who want to restart a load because they expect that
   // the view size has changed will need to explicitly clear the View or Target before starting
   // the new load.
-  // 
+  //
   // 如果我们在请求完成后想重新开始加载，那么就会返回已经加载好的资源
   // 如果由于view尺寸的改变，我们的确需要重新来加载，此时我们需要明确地清除View或Target
   if (status == Status.COMPLETE) {
@@ -1315,7 +1315,7 @@ public synchronized void begin() {
 
   // Restarts for requests that are neither complete nor running can be treated as new requests
   // and can run again from the beginning.
-  // 
+  //
   // 请求岂没有完成也没有在运行，就当作新请求来对待。此时可以从beginning开始运行
 
   // 如果指定了overrideWidth和overrideHeight，那么直接调用onSizeReady方法
@@ -2025,7 +2025,7 @@ public void run() {
   GlideTrace.beginSectionFormat("DecodeJob#run(model=%s)", model);
   // Methods in the try statement can invalidate currentFetcher, so set a local variable here to
   // ensure that the fetcher is cleaned up either way.
-  // 
+  //
   // currentFetcher目前为null
   DataFetcher<?> localFetcher = currentFetcher;
   try {
@@ -2127,356 +2127,48 @@ private void runGenerators() {
 
 在该方法中会依次调用各个状态生成的`DataFetcherGenerator`的`startNext()`尝试fetch数据，直到有某个状态的`DataFetcherGenerator.startNext()`方法可以胜任。若状态抵达到了`Stage.FINISHED`或job被取消，且所有状态的`DataFetcherGenerator.startNext()`都无法满足条件，则调用`SingleRequest.onLoadFailed`进行错误处理。  
 
+这里总共有三个`DataFetcherGenerator`，依次是：
+
+1. ResourceCacheGenerator  
+   获取采样后、transformed后资源文件的缓存文件
+2. DataCacheGenerator  
+   获取原始的没有修改过的资源文件的缓存文件
+3. SourceGenerator  
+   获取原始源数据
+
 这里面fetch数据逻辑有点复杂，因为涉及到`Registry`类，该类是用来管理Glide注册进来的用来拓展或替代Glide默认加载、解码、编码逻辑的组件。在Glide创建的时候，绝大多数代码都是对`Registry`的操作。
 
-### 3.5 ResourceCacheGenerator
+我们先大致说一下`Registry`类里面各个组件的功能吧。
 
-下面我们看看`ResourceCacheGenerator.startNext`方法，由于方法这里面方法调用层次非常深，所以先直接写上每一步执行的结果，有一个大体上的了解：
+### 3.5 Registry
 
-```java
-@Override
-public boolean startNext() {
-  // list里面只有一个GlideUrl对象
-  List<Key> sourceIds = helper.getCacheKeys();
-  if (sourceIds.isEmpty()) {
-    return false;
-  }
-  // 获得了三个resourceClass
-  // GifDrawable、Bitmap、BitmapDrawable
-  List<Class<?>> resourceClasses = helper.getRegisteredResourceClasses();
-  if (resourceClasses.isEmpty()) {
-    if (File.class.equals(helper.getTranscodeClass())) {
-      return false;
-    }
-    throw new IllegalStateException(
-        "Failed to find any load path from " + helper.getModelClass() + " to "
-            + helper.getTranscodeClass());
-  }
-  // 遍历sourceIds中的每一个key、resourceClasses中每一个class，以及其他的一些值组成key
-  // 尝试在磁盘缓存中以key找到缓存文件
-  while (modelLoaders == null || !hasNextModelLoader()) {
-    resourceClassIndex++;
-    if (resourceClassIndex >= resourceClasses.size()) {
-      sourceIdIndex++;
-      if (sourceIdIndex >= sourceIds.size()) {
-        return false;
-      }
-      resourceClassIndex = 0;
-    }
+Glide在创建时，会向`Registry`实例中注入相当多的配置，每个配置都会转发给对应的一个专门的类，这些专门的类有7个。  
+在这7个类中，除了`DataRewinderRegistry`和`ImageHeaderParserRegistry`外，其他的Registry都会将注入的配置保存到内部的`Entry`类中。`Entry`类的作用就是判断该项配置能够满足条件（`handles`）。  
+`handles`方法都是以`isAssignableFrom`方法判断，但被判断参数有一些差别。
 
-    Key sourceId = sourceIds.get(sourceIdIndex);
-    Class<?> resourceClass = resourceClasses.get(resourceClassIndex);
-    Transformation<?> transformation = helper.getTransformation(resourceClass);
-    // PMD.AvoidInstantiatingObjectsInLoops Each iteration is comparatively expensive anyway,
-    // we only run until the first one succeeds, the loop runs for only a limited
-    // number of iterations on the order of 10-20 in the worst case.
-    currentKey =
-        new ResourceCacheKey(// NOPMD AvoidInstantiatingObjectsInLoops
-            helper.getArrayPool(),
-            sourceId,
-            helper.getSignature(),
-            helper.getWidth(),
-            helper.getHeight(),
-            transformation,
-            resourceClass,
-            helper.getOptions());
-    cacheFile = helper.getDiskCache().get(currentKey);
-    // 如果找到了缓存文件，那么循环条件则会为false，也就退出循环了
-    if (cacheFile != null) {
-      sourceKey = sourceId;
-      modelLoaders = helper.getModelLoaders(cacheFile);
-      modelLoaderIndex = 0;
-    }
-  }
+在各个Registry中`Entry`类的`hanldes`实现前，先理解一下这里面出现的各种class：
 
-  // 找没找到缓存文件，都会执行这里的方法
-  // 如果找到了hasNextModelLoader方法则会为true，可以执行循环
-  // 没有找到缓存文件，则不会进入循环，会直接返回false
-  loadData = null;
-  boolean started = false;
-  while (!started && hasNextModelLoader()) {
-    ModelLoader<File, ?> modelLoader = modelLoaders.get(modelLoaderIndex++);
-    loadData = modelLoader.buildLoadData(cacheFile,
-        helper.getWidth(), helper.getHeight(), helper.getOptions());
-    if (loadData != null && helper.hasLoadPath(loadData.fetcher.getDataClass())) {
-      started = true;
-      loadData.fetcher.loadData(helper.getPriority(), this);
-    }
-  }
+- `modelClass`  
+  Glide.with(..).load()中被load参数的类型，在实例中就是String.class
+- `dataClass`  
+  比较原始的数据，根据`ModelLoaderRegistry`中的配置，可以得到所有由`modelClass`有可能到达的`dataClass`  
+  同时，一起注入的`ModelLoaderFactory<Model, Data>`是一个可以创建如何从`modelClass`到`dataClass`进行转换的`ModelLoader<Model, Data>`的类的工厂，可以根据`modelClass`获得
+- `resourceClass`  
+  解码后的资源类型，根据`ResourceDecoderRegistry`中的配置，可以由`dataClass`和`resourceClass`获得所有`registeredResourceClasses`  
+  同时，一起注入的`ResourceDecoder<Data, Resource>`是一个将`dataClass`解码成`resourceClass`的类，可以由有可能到达的`dataClass`以及`registeredResourceClass`获得
+- `transcodeClass`  
+  最终要转换成的数据类型，一般情况下Drawable.class；若Glide加载是指定了asBitmap、asGif、asFile，那么此类型就是Bitmap.class、GifDrawable.class、File.class  
+  若`registeredResourceClass`不是`transcodeClass`类型，则通过`TranscoderRegistry`注入的`ResourceTranscoder<Resource, T>`可以将`resourceClass`转为`transcodeClass`
 
-  return started;
-}
-```
 
-我们一行行解析这里面的代码，先看看`helper.getCacheKeys()`是如何把我们绕晕后，成功的将String转换为GlideUrl的。
-
-**DecodeHelper.java**
-```java
-List<Key> getCacheKeys() {
-  // 这里使用了一个标志位，防止在DataCacheGenerator中重复加载
-  if (!isCacheKeysSet) {
-    isCacheKeysSet = true;
-    cacheKeys.clear();
-    // 得到可以处理该请求的ModelLoader的LoadData列表
-    List<LoadData<?>> loadData = getLoadData();
-    //noinspection ForLoopReplaceableByForEach to improve perf
-    // 将每一个loadData里的sourceKey以及每一个alternateKeys添加到cacheKeys中
-    for (int i = 0, size = loadData.size(); i < size; i++) {
-      LoadData<?> data = loadData.get(i);
-      // cacheKeys显然为null，所以添加了一个GlideUrl
-      if (!cacheKeys.contains(data.sourceKey)) {
-        cacheKeys.add(data.sourceKey);
-      }
-      // 实例中alternateKeys为空集合
-      for (int j = 0; j < data.alternateKeys.size(); j++) {
-        if (!cacheKeys.contains(data.alternateKeys.get(j))) {
-          cacheKeys.add(data.alternateKeys.get(j));
-        }
-      }
-    }
-  }
-  return cacheKeys;
-}
-
-List<LoadData<?>> getLoadData() {
-  // 这里也使用了一个标志位，防止在重复加载
-  if (!isLoadDataSet) {
-    isLoadDataSet = true;
-    loadData.clear();
-    // 获得了注册的3个ModelLoader
-    List<ModelLoader<Object, ?>> modelLoaders = glideContext.getRegistry().getModelLoaders(model);
-    //noinspection ForLoopReplaceableByForEach to improve perf
-    for (int i = 0, size = modelLoaders.size(); i < size; i++) {
-      ModelLoader<Object, ?> modelLoader = modelLoaders.get(i);
-      // 对每个ModelLoader调用buildLoadData，看看其是否可以满足条件
-      LoadData<?> current =
-          modelLoader.buildLoadData(model, width, height, options);
-      if (current != null) {
-        loadData.add(current);
-      }
-    }
-  }
-  // 返回可以处理该请求的ModelLoader的LoadData列表
-  return loadData;
-}
-```
-
-上面代码中比较麻烦的部分在`glideContext.getRegistry().getModelLoaders(model)`，在深入探索该方法的代码之前，我们还是先看看`Registry`类的相关代码吧。
-
-`Registry`类中提供了很多用来拓展、替换默认组件的方法，根据组件功能的不同，会交给内部很多不同的`XxxRegistry`处理：
+下面是5个在各个Registry中`Entry`类的`hanldes`实现：
 
 ```java
-public class Registry {
-  public static final String BUCKET_GIF = "Gif";
-  public static final String BUCKET_BITMAP = "Bitmap";
-  public static final String BUCKET_BITMAP_DRAWABLE = "BitmapDrawable";
-  private static final String BUCKET_PREPEND_ALL = "legacy_prepend_all";
-  private static final String BUCKET_APPEND_ALL = "legacy_append";
-
-  private final ModelLoaderRegistry modelLoaderRegistry;
-  private final EncoderRegistry encoderRegistry;
-  private final ResourceDecoderRegistry decoderRegistry;
-  private final ResourceEncoderRegistry resourceEncoderRegistry;
-  private final DataRewinderRegistry dataRewinderRegistry;
-  private final TranscoderRegistry transcoderRegistry;
-  private final ImageHeaderParserRegistry imageHeaderParserRegistry;
-
-  private final ModelToResourceClassCache modelToResourceClassCache =
-      new ModelToResourceClassCache();
-  private final LoadPathCache loadPathCache = new LoadPathCache();
-  private final Pool<List<Throwable>> throwableListPool = FactoryPools.threadSafeList();
-
-  public Registry() {
-    this.modelLoaderRegistry = new ModelLoaderRegistry(throwableListPool);
-    this.encoderRegistry = new EncoderRegistry();
-    this.decoderRegistry = new ResourceDecoderRegistry();
-    this.resourceEncoderRegistry = new ResourceEncoderRegistry();
-    this.dataRewinderRegistry = new DataRewinderRegistry();
-    this.transcoderRegistry = new TranscoderRegistry();
-    this.imageHeaderParserRegistry = new ImageHeaderParserRegistry();
-    setResourceDecoderBucketPriorityList(
-        Arrays.asList(BUCKET_GIF, BUCKET_BITMAP, BUCKET_BITMAP_DRAWABLE));
-  }
-  ...
-}
-```
-
-拿马上要遇到的`modelLoaderRegistry`来说，相关的管理组件的三个方法为：
-
-```java
-@NonNull
-public <Model, Data> Registry append(
-    @NonNull Class<Model> modelClass, @NonNull Class<Data> dataClass,
-    @NonNull ModelLoaderFactory<Model, Data> factory) {
-  modelLoaderRegistry.append(modelClass, dataClass, factory);
-  return this;
-}
-
-@NonNull
-public <Model, Data> Registry prepend(
-    @NonNull Class<Model> modelClass, @NonNull Class<Data> dataClass,
-    @NonNull ModelLoaderFactory<Model, Data> factory) {
-  modelLoaderRegistry.prepend(modelClass, dataClass, factory);
-  return this;
-}
-
-@NonNull
-public <Model, Data> Registry replace(
-    @NonNull Class<Model> modelClass,
-    @NonNull Class<Data> dataClass,
-    @NonNull ModelLoaderFactory<? extends Model, ? extends Data> factory) {
-  modelLoaderRegistry.replace(modelClass, dataClass, factory);
-  return this;
-}
-```
-
-上面这三个方法实际上又会交给`MultiModelLoaderFactory`来处理，这是一个代理模式：
-
-```java
-public synchronized <Model, Data> void append(
-    @NonNull Class<Model> modelClass,
-    @NonNull Class<Data> dataClass,
-    @NonNull ModelLoaderFactory<? extends Model, ? extends Data> factory) {
-  multiModelLoaderFactory.append(modelClass, dataClass, factory);
-  cache.clear();
-}
-
-public synchronized <Model, Data> void prepend(
-    @NonNull Class<Model> modelClass,
-    @NonNull Class<Data> dataClass,
-    @NonNull ModelLoaderFactory<? extends Model, ? extends Data> factory) {
-  multiModelLoaderFactory.prepend(modelClass, dataClass, factory);
-  cache.clear();
-}
-
-public synchronized <Model, Data> void remove(@NonNull Class<Model> modelClass,
-    @NonNull Class<Data> dataClass) {
-  tearDown(multiModelLoaderFactory.remove(modelClass, dataClass));
-  cache.clear();
-}
-```
-
-`MultiModelLoaderFactory`中会使用一个`entries`的list来保存所有注入的内容。
-
-前面已经提到过，Glide在构造时会对`Registry`进行大量的操作。因为我们示例是load的String类型的Url，所以`Registry`中相关的操作如下：
-
-```java
-/* Models */
-.append(String.class, InputStream.class, new DataUrlLoader.StreamFactory<String>())
-.append(String.class, InputStream.class, new StringLoader.StreamFactory())
-.append(String.class, ParcelFileDescriptor.class, new StringLoader.FileDescriptorFactory())
-.append(
-    String.class, AssetFileDescriptor.class, new StringLoader.AssetFileDescriptorFactory())
-```
-
-了解了这些之后，我们回过头看看`Registry.getModelLoaders`方法干了啥：
-
-```java
-// Registry.java
-@NonNull
-public <Model> List<ModelLoader<Model, ?>> getModelLoaders(@NonNull Model model) {
-  List<ModelLoader<Model, ?>> result = modelLoaderRegistry.getModelLoaders(model);
-  if (result.isEmpty()) {
-    throw new NoModelLoaderAvailableException(model);
-  }
-  return result;
-}
-```
-
-这里只是调用了`modelLoaderRegistry.getModelLoaders(model)`，如果返回结果不为空则返回该结果，否则抛出异常。我们继续跟踪一下：
-
-```java
-// ModelLoaderRegistry.java
-// getModelLoaders方法会获取所有可以处理String类型的ModelLoader
-@NonNull
-public <A> List<ModelLoader<A, ?>> getModelLoaders(@NonNull A model) {
-  // 返回所有注册过的modelClass为String的ModelLoader，就是上面列出来的四个
-  List<ModelLoader<A, ?>> modelLoaders = getModelLoadersForClass(getClass(model));
-  int size = modelLoaders.size();
-  boolean isEmpty = true;
-  List<ModelLoader<A, ?>> filteredLoaders = Collections.emptyList();
-  //noinspection ForLoopReplaceableByForEach to improve perf
-  for (int i = 0; i < size; i++) {
-    ModelLoader<A, ?> loader = modelLoaders.get(i);
-    // 对于每个ModelLoader，看看是否可能处理这种类型的数据
-    // 此处会过滤第一个，因为我们传入的url不已data:image开头
-    if (loader.handles(model)) {
-      if (isEmpty) {
-        filteredLoaders = new ArrayList<>(size - i);
-        isEmpty = false;
-      }
-      filteredLoaders.add(loader);
-    }
-  }
-  return filteredLoaders;
-}
-
-// 返回所有注册过的modelClass为String的ModelLoader
-@NonNull
-private synchronized <A> List<ModelLoader<A, ?>> getModelLoadersForClass(
-    @NonNull Class<A> modelClass) {
-  List<ModelLoader<A, ?>> loaders = cache.get(modelClass);
-  if (loaders == null) {
-    loaders = Collections.unmodifiableList(multiModelLoaderFactory.build(modelClass));
-    cache.put(modelClass, loaders);
-  }
-  return loaders;
-}
-```
-
-我们看看`multiModelLoaderFactory.build(modelClass)`的逻辑：
-
-```java
-@NonNull
-synchronized <Model> List<ModelLoader<Model, ?>> build(@NonNull Class<Model> modelClass) {
-  try {
-    List<ModelLoader<Model, ?>> loaders = new ArrayList<>();
-    // 遍历所有注册进来的entry
-    for (Entry<?, ?> entry : entries) {
-      // Avoid stack overflow recursively creating model loaders by only creating loaders in
-      // recursive requests if they haven't been created earlier in the chain. For example:
-      // A Uri loader may translate to another model, which in turn may translate back to a Uri.
-      // The original Uri loader won't be provided to the intermediate model loader, although
-      // other Uri loaders will be.
-      if (alreadyUsedEntries.contains(entry)) {
-        continue;
-      }
-      // 注册过的entry有很多，但是entry.modelClass是modelClass（即String.class）的同类或基类、基接口的却只有四个
-      if (entry.handles(modelClass)) {
-        alreadyUsedEntries.add(entry);
-        // 对每一个符合条件的entry调用build接口
-        loaders.add(this.<Model, Object>build(entry));
-        alreadyUsedEntries.remove(entry);
-      }
-    }
-    return loaders;
-  } catch (Throwable t) {
-    alreadyUsedEntries.clear();
-    throw t;
-  }
-}
-
-@NonNull
-@SuppressWarnings("unchecked")
-private <Model, Data> ModelLoader<Model, Data> build(@NonNull Entry<?, ?> entry) {
-  return (ModelLoader<Model, Data>) Preconditions.checkNotNull(entry.factory.build(this));
-}
-
-// Entry类还是比较简单的
+// MultiModelLoaderFactory.Entry
 private static class Entry<Model, Data> {
   private final Class<Model> modelClass;
   @Synthetic final Class<Data> dataClass;
-  @Synthetic final ModelLoaderFactory<? extends Model, ? extends Data> factory;
-
-  public Entry(
-      @NonNull Class<Model> modelClass,
-      @NonNull Class<Data> dataClass,
-      @NonNull ModelLoaderFactory<? extends Model, ? extends Data> factory) {
-    this.modelClass = modelClass;
-    this.dataClass = dataClass;
-    this.factory = factory;
-  }
-
+  ...
   public boolean handles(@NonNull Class<?> modelClass, @NonNull Class<?> dataClass) {
     return handles(modelClass) && this.dataClass.isAssignableFrom(dataClass);
   }
@@ -2485,44 +2177,422 @@ private static class Entry<Model, Data> {
     return this.modelClass.isAssignableFrom(modelClass);
   }
 }
+
+// EncoderRegistry.Entry
+private static final class Entry<T> {
+  private final Class<T> dataClass;
+  ...
+  boolean handles(@NonNull Class<?> dataClass) {
+    return this.dataClass.isAssignableFrom(dataClass);
+  }
+}
+
+// ResourceEncoderRegistry.Entry
+private static final class Entry<T> {
+  private final Class<T> resourceClass;
+  ...
+  @Synthetic
+  boolean handles(@NonNull Class<?> resourceClass) {
+    return this.resourceClass.isAssignableFrom(resourceClass);
+  }
+}
+
+// ResourceDecoderRegistry.Entry
+private static class Entry<T, R> {
+  private final Class<T> dataClass;
+  @Synthetic final Class<R> resourceClass;
+  ...
+  public boolean handles(@NonNull Class<?> dataClass, @NonNull Class<?> resourceClass) {
+    return this.dataClass.isAssignableFrom(dataClass) && resourceClass
+        .isAssignableFrom(this.resourceClass);
+  }
+}
+
+// TranscoderRegistry.Entry
+private static final class Entry<Z, R> {
+  private final Class<Z> fromClass;
+  private final Class<R> toClass;
+  ...
+  public boolean handles(@NonNull Class<?> fromClass, @NonNull Class<?> toClass) {
+    return this.fromClass.isAssignableFrom(fromClass) && toClass.isAssignableFrom(this.toClass);
+  }
+}
 ```
 
-这里的entry的值我们在上面提到过，下面我们看看`entry.factory.build(this)`创建了四个什么样的ModelLoader：
+> `isAssignableFrom`判断该类是否是某个类的父类，`instanceof`判断该实例的类是否某个实例的类的子类。
+
+这7个Registry类作用如下：
+
+1. ModelLoaderRegistry  
+   构建`modelClass`到`dataClass`的桥梁
+2. EncoderRegistry  
+   数据持久化模块，提供将original source data encode到磁盘的能力，默认提供的有处理`ByteBuffer.class`、`InputStream.class`能力
+3. ResourceDecoderRegistry  
+   `dataClass`到`resourceClass`的桥梁  
+   且由`dataClass`和`resourceClass`查注册表可以获得`registeredResourceClasses`  
+4. ResourceEncoderRegistry  
+   资源持久化模块，提供将`Bitmap.class`、`BitmapDrawable.class`、`GifDrawable.class`进行持久化的能力
+5. DataRewinderRegistry  
+   提供对`ByteBuffer.class`、`InputStream.class`这两种data进行rewind操作的能力
+6. TranscoderRegistry  
+   构建`resourceClass`到`transcodeClass`的桥梁
+7. ImageHeaderParserRegistry  
+   提供解析Image头信息的能力
+
+### 3.6 ResourceCacheGenerator
+
+下面我们看看`ResourceCacheGenerator.startNext`方法，由于方法这里面方法调用层次非常深，所以先直接写上每一步执行的结果，有一个大体上的了解：
+
+```java
+@Override
+public boolean startNext() {
+ // list里面只有一个GlideUrl对象
+ List<Key> sourceIds = helper.getCacheKeys();
+ if (sourceIds.isEmpty()) {
+   return false;
+ }
+ // 获得了三个可以到达的registeredResourceClasses
+ // GifDrawable、Bitmap、BitmapDrawable
+ List<Class<?>> resourceClasses = helper.getRegisteredResourceClasses();
+ if (resourceClasses.isEmpty()) {
+   if (File.class.equals(helper.getTranscodeClass())) {
+     return false;
+   }
+   throw new IllegalStateException(
+       "Failed to find any load path from " + helper.getModelClass() + " to "
+           + helper.getTranscodeClass());
+ }
+ // 遍历sourceIds中的每一个key、resourceClasses中每一个class，以及其他的一些值组成key
+ // 尝试在磁盘缓存中以key找到缓存文件
+ while (modelLoaders == null || !hasNextModelLoader()) {
+   resourceClassIndex++;
+   if (resourceClassIndex >= resourceClasses.size()) {
+     sourceIdIndex++;
+     if (sourceIdIndex >= sourceIds.size()) {
+       return false;
+     }
+     resourceClassIndex = 0;
+   }
+
+   Key sourceId = sourceIds.get(sourceIdIndex);
+   Class<?> resourceClass = resourceClasses.get(resourceClassIndex);
+   Transformation<?> transformation = helper.getTransformation(resourceClass);
+   // PMD.AvoidInstantiatingObjectsInLoops Each iteration is comparatively expensive anyway,
+   // we only run until the first one succeeds, the loop runs for only a limited
+   // number of iterations on the order of 10-20 in the worst case.
+   currentKey =
+       new ResourceCacheKey(// NOPMD AvoidInstantiatingObjectsInLoops
+           helper.getArrayPool(),
+           sourceId,
+           helper.getSignature(),
+           helper.getWidth(),
+           helper.getHeight(),
+           transformation,
+           resourceClass,
+           helper.getOptions());
+   cacheFile = helper.getDiskCache().get(currentKey);
+   // 如果找到了缓存文件，那么循环条件则会为false，也就退出循环了
+   if (cacheFile != null) {
+     sourceKey = sourceId;
+     modelLoaders = helper.getModelLoaders(cacheFile);
+     modelLoaderIndex = 0;
+   }
+ }
+
+ // 找没找到缓存文件，都会执行这里的方法
+ // 如果找到了，hasNextModelLoader()方法则会为true，可以执行循环
+ // 没有找到缓存文件，则不会进入循环，会直接返回false
+ loadData = null;
+ boolean started = false;
+ while (!started && hasNextModelLoader()) {
+   ModelLoader<File, ?> modelLoader = modelLoaders.get(modelLoaderIndex++);
+   //  在循环中会依次判断某个ModelLoader能不能加载此文件
+   loadData = modelLoader.buildLoadData(cacheFile,
+       helper.getWidth(), helper.getHeight(), helper.getOptions());
+   if (loadData != null && helper.hasLoadPath(loadData.fetcher.getDataClass())) {
+     started = true;
+     // 如果某个ModelLoader可以，那么就调用其fetcher进行加载数据
+     // 加载成功或失败会通知自身
+     loadData.fetcher.loadData(helper.getPriority(), this);
+   }
+ }
+
+ return started;
+}
+```
+
+#### 3.6.1 helper.getCacheKeys
+
+我们一行行解析这里面的代码，先看看`helper.getCacheKeys()`是如何把我们绕晕后，成功的将String转换为GlideUrl的。
+
+**DecodeHelper.java**
+```java
+List<Key> getCacheKeys() {
+ // 这里使用了一个标志位，防止在DataCacheGenerator中重复加载
+ if (!isCacheKeysSet) {
+   isCacheKeysSet = true;
+   cacheKeys.clear();
+   // 得到可以处理该请求的ModelLoader的LoadData list
+   List<LoadData<?>> loadData = getLoadData();
+   // 将每一个loadData里的sourceKey以及每一个alternateKeys添加到cacheKeys中
+   // 在我们的三步例子中sourceKey为一个GlideUrl，alternateKeys为空
+   for (int i = 0, size = loadData.size(); i < size; i++) {
+     LoadData<?> data = loadData.get(i);
+     if (!cacheKeys.contains(data.sourceKey)) {
+       cacheKeys.add(data.sourceKey);
+     }
+     for (int j = 0; j < data.alternateKeys.size(); j++) {
+       if (!cacheKeys.contains(data.alternateKeys.get(j))) {
+         cacheKeys.add(data.alternateKeys.get(j));
+       }
+     }
+   }
+ }
+ return cacheKeys;
+}
+
+List<LoadData<?>> getLoadData() {
+ // 这里也使用了一个标志位，防止在重复加载
+ if (!isLoadDataSet) {
+   isLoadDataSet = true;
+   loadData.clear();
+   // 获得了注册的3个ModelLoader
+   List<ModelLoader<Object, ?>> modelLoaders = glideContext.getRegistry().getModelLoaders(model);
+   for (int i = 0, size = modelLoaders.size(); i < size; i++) {
+     ModelLoader<Object, ?> modelLoader = modelLoaders.get(i);
+     // 对每个ModelLoader调用buildLoadData，看看其是否可以满足条件
+     // 如果返回不为null，说明是可以处理的，那么添加进来
+     LoadData<?> current =
+         modelLoader.buildLoadData(model, width, height, options);
+     if (current != null) {
+       loadData.add(current);
+     }
+   }
+ }
+ // 返回可以处理该请求的ModelLoader的LoadData列表
+ return loadData;
+}
+```
+
+上面代码中比较麻烦的部分在`glideContext.getRegistry().getModelLoaders(model)`，在深入探索该方法的代码之前，我们还是先看看`Registry`类的相关代码吧。
+
+`Registry`类中提供了很多用来拓展、替换默认组件的方法，根据组件功能的不同，会交给内部很多不同的Registry处理：
+
+```java
+public class Registry {
+ private final ModelLoaderRegistry modelLoaderRegistry;
+ private final EncoderRegistry encoderRegistry;
+ private final ResourceDecoderRegistry decoderRegistry;
+ private final ResourceEncoderRegistry resourceEncoderRegistry;
+ private final DataRewinderRegistry dataRewinderRegistry;
+ private final TranscoderRegistry transcoderRegistry;
+ private final ImageHeaderParserRegistry imageHeaderParserRegistry;
+}
+```
+
+拿马上要遇到的`modelLoaderRegistry`来说，相关的管理组件的三个方法为：
+
+```java
+@NonNull
+public <Model, Data> Registry append(
+   @NonNull Class<Model> modelClass, @NonNull Class<Data> dataClass,
+   @NonNull ModelLoaderFactory<Model, Data> factory) {
+ modelLoaderRegistry.append(modelClass, dataClass, factory);
+ return this;
+}
+
+@NonNull
+public <Model, Data> Registry prepend(
+   @NonNull Class<Model> modelClass, @NonNull Class<Data> dataClass,
+   @NonNull ModelLoaderFactory<Model, Data> factory) {
+ modelLoaderRegistry.prepend(modelClass, dataClass, factory);
+ return this;
+}
+
+@NonNull
+public <Model, Data> Registry replace(
+   @NonNull Class<Model> modelClass,
+   @NonNull Class<Data> dataClass,
+   @NonNull ModelLoaderFactory<? extends Model, ? extends Data> factory) {
+ modelLoaderRegistry.replace(modelClass, dataClass, factory);
+ return this;
+}
+```
+
+上面这三个方法实际上又会交给`MultiModelLoaderFactory`来处理，这是一个代理模式：
+
+```java
+public synchronized <Model, Data> void append(
+   @NonNull Class<Model> modelClass,
+   @NonNull Class<Data> dataClass,
+   @NonNull ModelLoaderFactory<? extends Model, ? extends Data> factory) {
+ multiModelLoaderFactory.append(modelClass, dataClass, factory);
+ cache.clear();
+}
+
+public synchronized <Model, Data> void prepend(
+   @NonNull Class<Model> modelClass,
+   @NonNull Class<Data> dataClass,
+   @NonNull ModelLoaderFactory<? extends Model, ? extends Data> factory) {
+ multiModelLoaderFactory.prepend(modelClass, dataClass, factory);
+ cache.clear();
+}
+
+public synchronized <Model, Data> void remove(@NonNull Class<Model> modelClass,
+   @NonNull Class<Data> dataClass) {
+ tearDown(multiModelLoaderFactory.remove(modelClass, dataClass));
+ cache.clear();
+}
+```
+
+`MultiModelLoaderFactory`中会使用一个`entries`的list来保存所有注入的内容。
+
+前面已经提到过，Glide在构造时会对`Registry`进行大量的操作。因为我们示例是load的`String`类型的Url，也就是说，`modelClass` 为 `String.class`，所以`Registry`中符合的注册项只有4个：
+
+```java
+// model可能是一个base64格式的img，经过处理后可以变成InputStream类型(dataClass)的数据
+.append(String.class, InputStream.class, new DataUrlLoader.StreamFactory<String>())
+// model可能是一个uri，这种情况下可能性非常多，因为网络图片、assets图片、磁盘图片等等都是一个uri
+.append(String.class, InputStream.class, new StringLoader.StreamFactory())
+// model可能是一个本地图片、assets图片，所以可以处理成ParcelFileDescriptor.class类型的数据
+.append(String.class, ParcelFileDescriptor.class, new StringLoader.FileDescriptorFactory())
+// model可能是一个本地图片，所以可以处理成为AssetFileDescriptor.class类型的数据
+.append(
+   String.class, AssetFileDescriptor.class, new StringLoader.AssetFileDescriptorFactory())
+```
+
+
+
+了解了这些之后，我们回过头看看`Registry.getModelLoaders`方法干了啥：
+
+```java
+// Registry.java
+@NonNull
+public <Model> List<ModelLoader<Model, ?>> getModelLoaders(@NonNull Model model) {
+ List<ModelLoader<Model, ?>> result = modelLoaderRegistry.getModelLoaders(model);
+ if (result.isEmpty()) {
+   throw new NoModelLoaderAvailableException(model);
+ }
+ return result;
+}
+```
+
+这里只是调用了`modelLoaderRegistry.getModelLoaders(model)`，如果返回结果不为空则返回该结果，否则抛出异常。我们继续跟踪一下：
+
+```java
+// ModelLoaderRegistry.java
+// getModelLoaders方法会获取所有声明可以处理String类型的ModelLoader，并调用handles方法过滤掉肯定不能处理的
+@NonNull
+public <A> List<ModelLoader<A, ?>> getModelLoaders(@NonNull A model) {
+ // 返回所有注册过的modelClass为String的ModelLoader，就是上面列出来的四个
+ List<ModelLoader<A, ?>> modelLoaders = getModelLoadersForClass(getClass(model));
+ int size = modelLoaders.size();
+ boolean isEmpty = true;
+ List<ModelLoader<A, ?>> filteredLoaders = Collections.emptyList();
+ for (int i = 0; i < size; i++) {
+   ModelLoader<A, ?> loader = modelLoaders.get(i);
+   // 对于每个ModelLoader，看看是否可能处理这种类型的数据
+   // 此处会过滤第一个，因为我们传入的url不以data:image开头
+   if (loader.handles(model)) {
+     if (isEmpty) {
+       filteredLoaders = new ArrayList<>(size - i);
+       isEmpty = false;
+     }
+     filteredLoaders.add(loader);
+   }
+ }
+ return filteredLoaders;
+}
+
+// 返回所有声明可以处理modelClass为String的ModelLoader
+@NonNull
+private synchronized <A> List<ModelLoader<A, ?>> getModelLoadersForClass(
+   @NonNull Class<A> modelClass) {
+ List<ModelLoader<A, ?>> loaders = cache.get(modelClass);
+ if (loaders == null) {
+   loaders = Collections.unmodifiableList(multiModelLoaderFactory.build(modelClass));
+   cache.put(modelClass, loaders);
+ }
+ return loaders;
+}
+```
+
+我们看看`multiModelLoaderFactory.build(modelClass)`是如何获取所有声明可以处理modelClass的ModelLoader的：
+
+```java
+@NonNull
+synchronized <Model> List<ModelLoader<Model, ?>> build(@NonNull Class<Model> modelClass) {
+ try {
+   List<ModelLoader<Model, ?>> loaders = new ArrayList<>();
+   // 遍历所有注册进来的entry
+   for (Entry<?, ?> entry : entries) {
+     // Avoid stack overflow recursively creating model loaders by only creating loaders in
+     // recursive requests if they haven't been created earlier in the chain. For example:
+     // A Uri loader may translate to another model, which in turn may translate back to a Uri.
+     // The original Uri loader won't be provided to the intermediate model loader, although
+     // other Uri loaders will be.
+     if (alreadyUsedEntries.contains(entry)) {
+       continue;
+     }
+     // 注册过的entry有很多，但是entry.modelClass是modelClass（即String.class）的同类或父类的却只有四个
+     if (entry.handles(modelClass)) {
+       alreadyUsedEntries.add(entry);
+       // 对每一个符合条件的entry调用build接口，获取对应的ModelLoader
+       loaders.add(this.<Model, Object>build(entry));
+       alreadyUsedEntries.remove(entry);
+     }
+   }
+   return loaders;
+ } catch (Throwable t) {
+   alreadyUsedEntries.clear();
+   throw t;
+ }
+}
+
+@NonNull
+@SuppressWarnings("unchecked")
+private <Model, Data> ModelLoader<Model, Data> build(@NonNull Entry<?, ?> entry) {
+ return (ModelLoader<Model, Data>) Preconditions.checkNotNull(entry.factory.build(this));
+}
+```
+
+这里的entry的数据结构以及保存的值我们在上面提到过，下面我们看看`entry.factory.build(this)`创建了四个什么样的ModelLoader：
 
 - `append(String.class, InputStream.class, new DataUrlLoader.StreamFactory<String>())`  
-  该Factory会创建一个处理data scheme(格式为`data:[mediatype][;base64],encoded_data`, e.g. data:image/gif;base64,R0lGO...lBCBMQiB0UjIQA7)类型数据的`DataUrlLoader`  
-  **能处理以**`data:image`**开头的model**
+ 该Factory会创建一个处理data scheme(`data:[mediatype][;base64],encoded_data`, e.g. data:image/gif;base64,R0lGO...lBCBMQiB0UjIQA7)类型数据的`DataUrlLoader`  
+ **声明可能处理以**`data:image`**开头的model**
 - `append(String.class, InputStream.class, new StringLoader.StreamFactory())`  
-  该Factory能够从String中加载InputStream  
-  **可能处理所有的model**
+ 该Factory能够从String中加载InputStream  
+ **声明可能处理所有类型的model**
 - `.append(String.class, ParcelFileDescriptor.class, new StringLoader.FileDescriptorFactory())`  
-  该Factory能够从String中加载ParcelFileDescriptor  
-  **可能处理所有的model**
+ 该Factory能够从String中加载ParcelFileDescriptor  
+ **声明可能处理所有类型的model**
 - `.append(String.class, AssetFileDescriptor.class, new StringLoader.AssetFileDescriptorFactory())`  
-  该Factory能够从String中加载AssetFileDescriptor    
-  **可能处理所有的model**
+ 该Factory能够从String中加载AssetFileDescriptor    
+ **声明可能处理所有类型的model**
 
-此处的四个ModelLoader中，`DataUrlLoader.StreamFactory`的逻辑非常清晰明了，其他三个有点麻烦。因为它们都是创建的`StringLoader`，而`StringLoader`内部也有一个`ModelLoader`，在Factory中build`StringLoader`时，会调用`multiFactory.build`创建一个内部的`ModelLoader`。这是责任链模式。
+此处的四个ModelLoader中，`DataUrlLoader.StreamFactory`的逻辑非常清晰明了，其他三个有点麻烦。因为它们都是创建的`StringLoader`，而`StringLoader`内部也有一个`MultiModelLoader`，在Factory中build `StringLoader`时，会调用`multiFactory.build`创建一个内部的`MultiModelLoader`。  
+因为String可能指向的数据太多了，所以采取`MultiModelLoader`保存所有可能的`ModelLoader`，在处理时会遍历list找出所有可以处理的。
 
 我们看看`StringLoader.StreamFactory()`的build过程：
 
 ```java
 /**
-  * Factory for loading {@link InputStream}s from Strings.
-  */
+ * Factory for loading {@link InputStream}s from Strings.
+ */
 public static class StreamFactory implements ModelLoaderFactory<String, InputStream> {
 
-  @NonNull
-  @Override
-  public ModelLoader<String, InputStream> build(
-      @NonNull MultiModelLoaderFactory multiFactory) {
-    return new StringLoader<>(multiFactory.build(Uri.class, InputStream.class));
-  }
+ @NonNull
+ @Override
+ public ModelLoader<String, InputStream> build(
+     @NonNull MultiModelLoaderFactory multiFactory) {
+   return new StringLoader<>(multiFactory.build(Uri.class, InputStream.class));
+ }
 
-  @Override
-  public void teardown() {
-    // Do nothing.
-  }
+ @Override
+ public void teardown() {
+   // Do nothing.
+ }
 }
 ```
 
@@ -2531,90 +2601,1465 @@ public static class StreamFactory implements ModelLoaderFactory<String, InputStr
 ```java
 @NonNull
 public synchronized <Model, Data> ModelLoader<Model, Data> build(@NonNull Class<Model> modelClass /* Uri.class */,
-    @NonNull Class<Data> dataClass /* InputStream.class */) {
-  try {
-    List<ModelLoader<Model, Data>> loaders = new ArrayList<>();
-    boolean ignoredAnyEntries = false;
-    for (Entry<?, ?> entry : entries) {
-      // Avoid stack overflow recursively creating model loaders by only creating loaders in
-      // recursive requests if they haven't been created earlier in the chain. For example:
-      // A Uri loader may translate to another model, which in turn may translate back to a Uri.
-      // The original Uri loader won't be provided to the intermediate model loader, although
-      // other Uri loaders will be.
-      // 
-      // 防止递归时重复加载到，造成StackOverflow
-      if (alreadyUsedEntries.contains(entry)) {
-        ignoredAnyEntries = true;
-        continue;
-      }
-      // ⚡⚡️⚡️ 差别1，这里会检查两个class
-      if (entry.handles(modelClass, dataClass)) {
-        alreadyUsedEntries.add(entry);
-        loaders.add(this.<Model, Data>build(entry));
-        alreadyUsedEntries.remove(entry);
-      }
+   @NonNull Class<Data> dataClass /* InputStream.class */) {
+ try {
+   List<ModelLoader<Model, Data>> loaders = new ArrayList<>();
+   boolean ignoredAnyEntries = false;
+   for (Entry<?, ?> entry : entries) {
+     // Avoid stack overflow recursively creating model loaders by only creating loaders in
+     // recursive requests if they haven't been created earlier in the chain. For example:
+     // A Uri loader may translate to another model, which in turn may translate back to a Uri.
+     // The original Uri loader won't be provided to the intermediate model loader, although
+     // other Uri loaders will be.
+     //
+     // 防止递归时重复加载到，造成StackOverflow
+     if (alreadyUsedEntries.contains(entry)) {
+       ignoredAnyEntries = true;
+       continue;
+     }
+     // ⚡⚡️⚡️ 差别1，这里会检查两个class
+     if (entry.handles(modelClass, dataClass)) {
+       alreadyUsedEntries.add(entry);
+       loaders.add(this.<Model, Data>build(entry));
+       alreadyUsedEntries.remove(entry);
+     }
+   }
+   // ⚡⚡️⚡️ 差别2，这里会检查loaders的数量，并做相应的处理
+   if (loaders.size() > 1) {
+     return factory.build(loaders, throwableListPool);
+   } else if (loaders.size() == 1) {
+     return loaders.get(0);
+   } else {
+     // Avoid crashing if recursion results in no loaders available. The assertion is supposed to
+     // catch completely unhandled types, recursion may mean a subtype isn't handled somewhere
+     // down the stack, which is often ok.
+     if (ignoredAnyEntries) {
+       return emptyModelLoader();
+     } else {
+       throw new NoModelLoaderAvailableException(modelClass, dataClass);
+     }
+   }
+ } catch (Throwable t) {
+   alreadyUsedEntries.clear();
+   throw t;
+ }
+}
+```
+
+我们看一下四个注册项调用`this.<Model, Data>build(entry)`后返回的值：
+
+`append(String.class, InputStream.class, new DataUrlLoader.StreamFactory<String>())`
+- build --> `DataUrlLoader`
+
+`append(String.class, InputStream.class, new StringLoader.StreamFactory())`  
+- build --> `StringLoader` 参数urlLoader = `multiFactory.build(Uri.class, InputStream.class)`  
+  将String当作Uri来处理，下面开始在注册表中找所有modelClass为Uri.class，dataClass为InputStream.class的注册项  
+  - `append(Uri.class, InputStream.class, new DataUrlLoader.StreamFactory<Uri>())`  
+     - build --> `DataUrlLoader`
+  - `append(Uri.class, InputStream.class, new HttpUriLoader.Factory())`  
+     - build --> `HttpUriLoader` 参数urlLoader = `multiFactory.build(GlideUrl.class, InputStream.class)`  
+       Uri可能是一个GlideUrl，下面开始在注册表中找所有modelClass为GlideUrl.class，dataClass为InputStream.class的注册项
+        - `.append(GlideUrl.class, InputStream.class, new HttpGlideUrlLoader.Factory())`  
+           - build --> `HttpGlideUrlLoader`
+  - `append(Uri.class, InputStream.class, new AssetUriLoader.StreamFactory(context.getAssets()))`  
+     - build --> `AssetUriLoader`
+  - `append(Uri.class, InputStream.class, new MediaStoreImageThumbLoader.Factory(context))`  
+     - build --> `MediaStoreImageThumbLoader`
+  - `append(Uri.class, InputStream.class, new MediaStoreVideoThumbLoader.Factory(context))`  
+     - build --> `MediaStoreVideoThumbLoader`
+  - `append(Uri.class, InputStream.class, new UriLoader.StreamFactory(contentResolver))`  
+     - build --> `UriLoader`
+  - `append(Uri.class, InputStream.class, new UrlUriLoader.StreamFactory())`  
+     - build --> `UrlUriLoader` 参数urlLoader = `multiFactory.build(GlideUrl.class, InputStream.class)`  
+        Uri可能是一个GlideUrl，下面开始在注册表中找所有modelClass为GlideUrl.class，dataClass为InputStream.class的注册项
+        - `.append(GlideUrl.class, InputStream.class, new HttpGlideUrlLoader.Factory())`  
+           - build --> `HttpGlideUrlLoader`
+  - `MultiModelLoader`
+
+`append(String.class, ParcelFileDescriptor.class, new StringLoader.FileDescriptorFactory())`  
+- build --> `StringLoader` 参数urlLoader = `multiFactory.build(Uri.class, ParcelFileDescriptor.class)`  
+  将String当作Uri来处理，下面开始在注册表中找所有modelClass为Uri.class，dataClass为ParcelFileDescriptor.class的注册项  
+  - `append(Uri.class, ParcelFileDescriptor.class, new AssetUriLoader.FileDescriptorFactory(context.getAssets()))`  
+     - build --> `AssetUriLoader`
+  - `append(Uri.class, ParcelFileDescriptor.class, new UriLoader.FileDescriptorFactory(contentResolver))`   
+     - build --> `UriLoader`
+  - `MultiModelLoader`
+
+`append(String.class, AssetFileDescriptor.class, new StringLoader.AssetFileDescriptorFactory())`  
+- build --> `StringLoader` 参数urlLoader = `multiFactory.build(Uri.class, AssetFileDescriptor.class)`  
+  将String当作Uri来处理，下面开始在注册表中找所有modelClass为Uri.class，dataClass为AssetFileDescriptor.class的注册项  
+  - `append(Uri.class, AssetFileDescriptor.class, new UriLoader.AssetFileDescriptorFactory(contentResolver))`  
+     - build --> `UriLoader`
+  - `UriLoader`
+
+上面就是`this.<Model, Data>build(entry)`获得到的4个loader，然后在`modelLoaderRegistry.getModelLoaders(model)`方法中被过滤掉第一个，现在就返回3.6.1节刚开始的`DecodeHelper.getLoadData`方法里面了。
+
+在`DecodeHelper.getLoadData`方法中会遍历每个ModelLoader，并调用其`buildLoadData`方法，如果不为空则加入到数组中。由于此处的3个ModelLoader都是`StringLoader`，我们看看`StringLoader.buildLoadData`方法：
+
+```java
+@Override
+public LoadData<Data> buildLoadData(@NonNull String model, int width, int height,
+   @NonNull Options options) {
+ // 由于我们传入的model是一个网络图片地址，所以uri肯定是正常的
+ Uri uri = parseUri(model);
+ // 下面判断uriLoader是否有可能处理
+ // 如果没有可能，那么返回null
+ if (uri == null || !uriLoader.handles(uri)) {
+   return null;
+ }
+ // 否则调用uriLoader的buildLoadData方法
+ return uriLoader.buildLoadData(uri, width, height, options);
+}
+
+@Nullable
+private static Uri parseUri(String model) {
+ Uri uri;
+ if (TextUtils.isEmpty(model)) {
+   return null;
+ // See https://pmd.github.io/pmd-6.0.0/pmd_rules_java_performance.html#simplifystartswith
+ } else if (model.charAt(0) == '/') {
+   uri = toFileUri(model);
+ } else {
+   uri = Uri.parse(model);
+   String scheme = uri.getScheme();
+   if (scheme == null) {
+     uri = toFileUri(model);
+   }
+ }
+ return uri;
+}
+
+private static Uri toFileUri(String path) {
+ return Uri.fromFile(new File(path));
+}
+```
+
+所以重点就在于`StringLoader.uriLoader`了，该参数我们上面分析递归过程的时候分析到了，是一个`MultiModelLoader`对象：
+
+```java
+class MultiModelLoader<Model, Data> implements ModelLoader<Model, Data> {
+
+ private final List<ModelLoader<Model, Data>> modelLoaders;
+ private final Pool<List<Throwable>> exceptionListPool;
+
+ MultiModelLoader(@NonNull List<ModelLoader<Model, Data>> modelLoaders,
+     @NonNull Pool<List<Throwable>> exceptionListPool) {
+   this.modelLoaders = modelLoaders;
+   this.exceptionListPool = exceptionListPool;
+ }
+
+ @Override
+ public LoadData<Data> buildLoadData(@NonNull Model model, int width, int height,
+     @NonNull Options options) {
+   Key sourceKey = null;
+   int size = modelLoaders.size();
+   List<DataFetcher<Data>> fetchers = new ArrayList<>(size);
+   //noinspection ForLoopReplaceableByForEach to improve perf
+   for (int i = 0; i < size; i++) {
+     ModelLoader<Model, Data> modelLoader = modelLoaders.get(i);
+     if (modelLoader.handles(model)) {
+       LoadData<Data> loadData = modelLoader.buildLoadData(model, width, height, options);
+       if (loadData != null) {
+         sourceKey = loadData.sourceKey;
+         fetchers.add(loadData.fetcher);
+       }
+     }
+   }
+   return !fetchers.isEmpty() && sourceKey != null
+       ? new LoadData<>(sourceKey, new MultiFetcher<>(fetchers, exceptionListPool)) : null;
+ }
+
+ @Override
+ public boolean handles(@NonNull Model model) {
+   for (ModelLoader<Model, Data> modelLoader : modelLoaders) {
+     if (modelLoader.handles(model)) {
+       return true;
+     }
+   }
+   return false;
+ }
+}
+```
+
+`MultiModelLoader`类的`handles`方法和`buildLoadData`方法都比较清晰明了。  
+
+- `handles`方法是只要内部有一个ModelLoader有可能处理，就返回true。  
+- `buildLoadData`方法会先调用`hanldes`进行第一次筛选，然后在调用ModelLoader的`buildLoadData`方法，如果不为空则保存起来，最后返回`LoadData<>(sourceKey, new MultiFetcher<>(fetchers, exceptionListPool))`对象。
+
+我们还是走一下`DecodeHelper.getLoadData`方法中的流程，遍历一下调用三个`StringLoader`的`buildLoadData`方法：
+
+`append(String.class, InputStream.class, new StringLoader.StreamFactory())`  
+- build --> `StringLoader` 参数urlLoader = `MultiModelLoader`
+  - `DataUrlLoader`  处理data:image资源  
+     1 *handles*: **false**  
+     3 *buildLoadData*: 跳过 因为*handles* return **false**
+  - `HttpUriLoader` 处理http、https资源 参数urlLoader = `HttpGlideUrlLoader`  
+     2 *handles*: **true**  
+     4 *buildLoadData*: `HttpGlideUrlLoader.buildLoadData(GlideUrl)` --> `LoadData<>(url, new HttpUrlFetcher(url, timeout))` ---> `fetchers.add(loadData.fetcher)`
+  - `AssetUriLoader` 处理file:///android_asset/资源  
+     5 *buildLoadData*: 跳过 因为*handles* return **false**
+  - `MediaStoreImageThumbLoader` 处理content://media/且path segments中不包含video字符串的资源  
+     6 *buildLoadData*: 跳过 因为*handles* return **false**
+  - `MediaStoreVideoThumbLoader` 处理content://media/且path segments中包含video字符串的资源  
+     7 *buildLoadData*: 跳过 因为*handles* return **false**
+  - `UriLoader` 处理scheme为file、android.resource、content的资源  
+     8 *buildLoadData*: 跳过 因为*handles* return **false**
+  - `UrlUriLoader` 处理http、https资源 参数urlLoader = `HttpGlideUrlLoader`  
+     9 *buildLoadData*: `HttpGlideUrlLoader.buildLoadData(GlideUrl)` ---> `LoadData<>(url, new HttpUrlFetcher(url, timeout))` ---> `fetchers.add(loadData.fetcher)`
+- 得到 `LoadData<>(sourceKey, new MultiFetcher<>(fetchers, exceptionListPool))`
+
+`append(String.class, ParcelFileDescriptor.class, new StringLoader.FileDescriptorFactory())`  
+- build --> `StringLoader` 参数urlLoader = `MultiModelLoader`
+  - `AssetUriLoader` 处理file:///android_asset/资源  
+     1 *handles*: **false**  
+  - `UriLoader` 处理scheme为file、android.resource、content的资源  
+     2 *handles*: **false**  
+- 得到 `null`
+
+`append(String.class, AssetFileDescriptor.class, new StringLoader.AssetFileDescriptorFactory())`  
+- build --> `StringLoader` 参数urlLoader =
+  - `UriLoader` 处理scheme为file、android.resource、content的资源  
+     1 *handles*: **false**  
+- 得到 `null`
+
+由于`DecodeHelper.getLoadData`只添加不为null的`LoadData`，所以只返回了一个`StringLoader.StreamFactory()`生成的`LoadData`。  
+
+返回到上一个方法`DecodeHelper.getCacheKeys`中：
+
+```java
+List<Key> getCacheKeys() {
+ if (!isCacheKeysSet) {
+   isCacheKeysSet = true;
+   cacheKeys.clear();
+   List<LoadData<?>> loadData = getLoadData();
+   //noinspection ForLoopReplaceableByForEach to improve perf
+   for (int i = 0, size = loadData.size(); i < size; i++) {
+     LoadData<?> data = loadData.get(i);
+     if (!cacheKeys.contains(data.sourceKey)) {
+       cacheKeys.add(data.sourceKey);
+     }
+     for (int j = 0; j < data.alternateKeys.size(); j++) {
+       if (!cacheKeys.contains(data.alternateKeys.get(j))) {
+         cacheKeys.add(data.alternateKeys.get(j));
+       }
+     }
+   }
+ }
+ return cacheKeys;
+}
+```
+
+很显然，返回的list中只有一个key：上面的`LoadData`的`sourceKey`，即`GlideUrl`。
+
+#### 3.6.2 DH.getRegisteredResourceClasses
+
+接着返回到上一个方法，也就是本小节的第一个方法`ResourceCacheGenerator.startNext`中。  
+接下来要执行的代码是：
+
+```java
+// ResourceCacheGenerator.startNext
+List<Class<?>> resourceClasses = helper.getRegisteredResourceClasses();
+
+// DecodeHelper
+List<Class<?>> getRegisteredResourceClasses() {
+ return glideContext.getRegistry()
+     .getRegisteredResourceClasses(model.getClass(), resourceClass, transcodeClass);
+}
+```
+
+这里又回到了`Registry`类中，头疼。但还是要分析。
+
+```java
+@NonNull
+public <Model, TResource, Transcode> List<Class<?>> getRegisteredResourceClasses(
+   @NonNull Class<Model> modelClass,
+   @NonNull Class<TResource> resourceClass,
+   @NonNull Class<Transcode> transcodeClass) {
+ // modelClass = String.class
+ // resourceClass 默认为 Object.class
+ // transcodeClass = Drawable.class
+ //
+ // 首先取缓存
+ List<Class<?>> result =
+     modelToResourceClassCache.get(modelClass, resourceClass, transcodeClass);
+
+ // 有缓存就返回缓存，没有就加载，然后放入缓存
+ if (result == null) {
+   result = new ArrayList<>();
+   // 从modelLoaderRegistry中寻找所有modelClass为String或父类的entry，并返回其dataClass
+   // 此处得到的dataClasses为[InputStream.class, ParcelFileDescriptor.class, AssetFileDescriptor.class]  
+   // 因为四个注册项中，前两个dataClass都为InputStream.class，去重时肯定会去掉一个
+   List<Class<?>> dataClasses = modelLoaderRegistry.getDataClasses(modelClass);
+   for (Class<?> dataClass : dataClasses) {
+       // 🔥🔥🔥 看不懂了，先看看对应的ResourceDecoderRegistry数据结构吧
+       List<? extends Class<?>> registeredResourceClasses =
+           decoderRegistry.getResourceClasses(dataClass, resourceClass);
+       for (Class<?> registeredResourceClass : registeredResourceClasses) {
+         List<Class<Transcode>> registeredTranscodeClasses = transcoderRegistry
+             .getTranscodeClasses(registeredResourceClass, transcodeClass);
+         if (!registeredTranscodeClasses.isEmpty() && !result.contains(registeredResourceClass)) {
+           result.add(registeredResourceClass);
+         }
+       }
+     }
+   modelToResourceClassCache.put(
+       modelClass, resourceClass, transcodeClass, Collections.unmodifiableList(result));
+ }
+
+ return result;
+}
+```
+
+🔥🔥🔥 获取完dataClasses后，下面要对每一个dataClass调用`decoderRegistry.getResourceClasses`方法。  
+
+这里涉及到了`ResourceDecoderRegistry`类，同样该类中的数据也是Glide创建时注入的，我们看一下相关的代码。
+
+```java
+// Glide
+.append(Registry.BUCKET_BITMAP, ByteBuffer.class, Bitmap.class, byteBufferBitmapDecoder)
+.append(Registry.BUCKET_BITMAP, InputStream.class, Bitmap.class, streamBitmapDecoder)
+.append(Registry.BUCKET_BITMAP, ParcelFileDescriptor.class, Bitmap.class,
+parcelFileDescriptorVideoDecoder)
+.append(Registry.BUCKET_BITMAP, AssetFileDescriptor.class, Bitmap.class, VideoDecoder.asset(bitmapPool))
+.append(Registry.BUCKET_BITMAP, Bitmap.class, Bitmap.class, new UnitBitmapDecoder())
+.append(Registry.BUCKET_BITMAP_DRAWABLE, ByteBuffer.class, BitmapDrawable.class, new BitmapDrawableDecoder<>(resources, byteBufferBitmapDecoder))
+.append(Registry.BUCKET_BITMAP_DRAWABLE, InputStream.class, BitmapDrawable.class, new BitmapDrawableDecoder<>(resources, streamBitmapDecoder))
+.append(Registry.BUCKET_BITMAP_DRAWABLE, ParcelFileDescriptor.class, BitmapDrawable.class, new BitmapDrawableDecoder<>(resources, parcelFileDescriptorVideoDecoder))
+.append(Registry.BUCKET_GIF, InputStream.class, GifDrawable.class, new StreamGifDecoder(imageHeaderParsers, byteBufferGifDecoder, arrayPool))
+.append(Registry.BUCKET_GIF, ByteBuffer.class, GifDrawable.class, byteBufferGifDecoder)
+.append(Registry.BUCKET_BITMAP, GifDecoder.class, Bitmap.class, new GifFrameResourceDecoder(bitmapPool))
+.append(Uri.class, Drawable.class, resourceDrawableDecoder)
+.append(Uri.class, Bitmap.class, new ResourceBitmapDecoder(resourceDrawableDecoder, bitmapPool))
+.append(File.class, File.class, new FileDecoder())
+.append(Drawable.class, Drawable.class, new UnitDrawableDecoder())
+
+// Registry
+public class Registry {
+ public static final String BUCKET_GIF = "Gif";
+ public static final String BUCKET_BITMAP = "Bitmap";
+ public static final String BUCKET_BITMAP_DRAWABLE = "BitmapDrawable";
+ private static final String BUCKET_PREPEND_ALL = "legacy_prepend_all";
+ private static final String BUCKET_APPEND_ALL = "legacy_append";
+
+ private final ResourceDecoderRegistry decoderRegistry;
+
+ public Registry() {
+   this.decoderRegistry = new ResourceDecoderRegistry();
+   setResourceDecoderBucketPriorityList(
+       Arrays.asList(BUCKET_GIF, BUCKET_BITMAP, BUCKET_BITMAP_DRAWABLE));
+ }
+
+ @NonNull
+ public final Registry setResourceDecoderBucketPriorityList(@NonNull List<String> buckets) {
+   // See #3296 and https://bugs.openjdk.java.net/browse/JDK-6260652.
+   List<String> modifiedBuckets = new ArrayList<>(buckets.size());
+   modifiedBuckets.addAll(buckets);
+   modifiedBuckets.add(0, BUCKET_PREPEND_ALL);
+   modifiedBuckets.add(BUCKET_APPEND_ALL);
+   decoderRegistry.setBucketPriorityList(modifiedBuckets);
+   return this;
+ }
+
+ @NonNull
+ public <Data, TResource> Registry append(
+     @NonNull Class<Data> dataClass,
+     @NonNull Class<TResource> resourceClass,
+     @NonNull ResourceDecoder<Data, TResource> decoder) {
+   append(BUCKET_APPEND_ALL, dataClass, resourceClass, decoder);
+   return this;
+ }
+
+ @NonNull
+ public <Data, TResource> Registry append(
+     @NonNull String bucket,
+     @NonNull Class<Data> dataClass,
+     @NonNull Class<TResource> resourceClass,
+     @NonNull ResourceDecoder<Data, TResource> decoder) {
+   decoderRegistry.append(bucket, decoder, dataClass, resourceClass);
+   return this;
+ }
+
+ @NonNull
+ public <Data, TResource> Registry prepend(
+     @NonNull String bucket,
+     @NonNull Class<Data> dataClass,
+     @NonNull Class<TResource> resourceClass,
+     @NonNull ResourceDecoder<Data, TResource> decoder) {
+   decoderRegistry.prepend(bucket, decoder, dataClass, resourceClass);
+   return this;
+ }
+}
+
+// ResourceDecoderRegistry
+public class ResourceDecoderRegistry {
+ private final List<String> bucketPriorityList = new ArrayList<>();
+ private final Map<String, List<Entry<?, ?>>> decoders = new HashMap<>();
+
+ public synchronized void setBucketPriorityList(@NonNull List<String> buckets) {
+   List<String> previousBuckets = new ArrayList<>(bucketPriorityList);
+   bucketPriorityList.clear();
+   bucketPriorityList.addAll(buckets);
+   for (String previousBucket : previousBuckets) {
+     if (!buckets.contains(previousBucket)) {
+       // Keep any buckets from the previous list that aren't included here, but but them at the
+       // end.
+       bucketPriorityList.add(previousBucket);
+     }
+   }
+ }
+
+ public synchronized <T, R> void append(@NonNull String bucket,
+     @NonNull ResourceDecoder<T, R> decoder,
+     @NonNull Class<T> dataClass, @NonNull Class<R> resourceClass) {
+   getOrAddEntryList(bucket).add(new Entry<>(dataClass, resourceClass, decoder));
+ }
+
+ public synchronized <T, R> void prepend(@NonNull String bucket,
+     @NonNull ResourceDecoder<T, R> decoder,
+     @NonNull Class<T> dataClass, @NonNull Class<R> resourceClass) {
+   getOrAddEntryList(bucket).add(0, new Entry<>(dataClass, resourceClass, decoder));
+ }
+
+ @NonNull
+ private synchronized List<Entry<?, ?>> getOrAddEntryList(@NonNull String bucket) {
+   if (!bucketPriorityList.contains(bucket)) {
+     // Add this unspecified bucket as a low priority bucket.
+     bucketPriorityList.add(bucket);
+   }
+   List<Entry<?, ?>> entries = decoders.get(bucket);
+   if (entries == null) {
+     entries = new ArrayList<>();
+     decoders.put(bucket, entries);
+   }
+   return entries;
+ }
+}
+```
+
+`ResourceDecoderRegistry`内部维持着一个具有优先级 bucket 的 list，优先级顺序由BUCKET在`bucketPriorityList`中的顺序决定。  
+在`Registry`的构造器中，创建`ResourceDecoderRegistry`后，就调用`setResourceDecoderBucketPriorityList`方法调整了其优先级，优先级别为：  
+BUCKET_PREPEND_ALL, BUCKET_GIF, BUCKET_BITMAP, BUCKET_BITMAP_DRAWABLE, BUCKET_APPEND_ALL。  
+
+`ResourceDecoderRegistry`的`append`方法和`prepend`方法就是向对应的桶中将entry插入到尾部或头部。
+
+下面就是`ResourceDecoderRegistry`里面数据的图，decoders里面的数字表示的Entry与上面注册代码中行数相对应：
+
+<figure style="width: 66%" class="align-center">
+   <img src="/assets/images/android/glide-resource-decoder-registry-content.png">
+   <figcaption>ResourceDecoderRegistry内部数据模型</figcaption>
+</figure>
+
+了解完了`ResourceDecoderRegistry`之后，我们在回到🔥🔥🔥原来的位置继续看看`decoderRegistry.getResourceClasses`方法干了什么：
+
+```java
+@NonNull
+@SuppressWarnings("unchecked")
+public synchronized <T, R> List<Class<R>> getResourceClasses(@NonNull Class<T> dataClass,
+   @NonNull Class<R> resourceClass) {
+ List<Class<R>> result = new ArrayList<>();
+ for (String bucket : bucketPriorityList) {
+   List<Entry<?, ?>> entries = decoders.get(bucket);
+   if (entries == null) {
+     continue;
+   }
+   for (Entry<?, ?> entry : entries) {
+     if (entry.handles(dataClass, resourceClass)
+         && !result.contains((Class<R>) entry.resourceClass)) {
+       result.add((Class<R>) entry.resourceClass);
+     }
+   }
+ }
+ return result;
+}
+```
+
+那么，该方法的作用就是根据传入的dataClass以及resourceClass在桶中依次按顺序查找映射关系，如果可以找到就返回这条映射关系的resourceClass。
+
+这里的入参`dataClass in　[InputStream.class, ParcelFileDescriptor.class, AssetFileDescriptor.class]`, `resourceClass = Object.class`。  
+
+上面的方法会运行三次，每一次的结果如下：
+
+1. InputStream.class & Object.class  
+  注册表第11、3、9行所对应的resourceClass 即`GifDrawable.class`、`Bitmap.class`、`BitmapDrawable.class`
+2. ParcelFileDescriptor.class & Object.class  
+  注册表第4、10行所对应的resourceClass 即`Bitmap.class`、`BitmapDrawable.class`
+3. AssetFileDescriptor.class & Object.class  
+  注册表第6行所对应的resourceClass 即`Bitmap.class`
+
+OK，离看完这个部分的代码更近了一步，我的眼睛已经受不了了:(  
+
+回到`Registry.getRegisteredResourceClasses`方法中，下面将会对每次运行返回的resourceClasses数组进行遍历，并调用了`transcoderRegistry.getTranscodeClasses`方法：
+
+```java
+// Registry.getRegisteredResourceClasses
+for (Class<?> dataClass : dataClasses) {
+ // 我们刚才分析了这个方法，返回值看上面的分析
+ List<? extends Class<?>> registeredResourceClasses =
+     decoderRegistry.getResourceClasses(dataClass, resourceClass);
+ for (Class<?> registeredResourceClass : registeredResourceClasses) {
+   // 🔥🔥🔥 现在分析这个方法
+   List<Class<Transcode>> registeredTranscodeClasses = transcoderRegistry
+       .getTranscodeClasses(registeredResourceClass, transcodeClass);
+   if (!registeredTranscodeClasses.isEmpty() && !result.contains(registeredResourceClass)) {
+     result.add(registeredResourceClass);
+   }
+ }
+}
+```
+
+🔥🔥🔥 现在分析一下`transcoderRegistry.getTranscodeClasses`方法。
+
+和上面分析过的两个Registry一样，`TranscoderRegistry`也同样是在Glide构建的时候注册进来的，相关代码如下：
+
+```java
+// Glide
+.register(Bitmap.class, BitmapDrawable.class, new BitmapDrawableTranscoder(resources))
+.register(Bitmap.class, byte[].class, bitmapBytesTranscoder)
+.register(Drawable.class, byte[].class, new DrawableBytesTranscoder(bitmapPool, bitmapBytesTranscoder, gifDrawableBytesTranscoder))
+.register(GifDrawable.class, byte[].class, gifDrawableBytesTranscoder);
+
+// Registry
+public class Registry {
+ private final TranscoderRegistry transcoderRegistry;
+
+ public Registry() {
+   this.transcoderRegistry = new TranscoderRegistry();
+ }
+
+ @NonNull
+ public <TResource, Transcode> Registry register(
+     @NonNull Class<TResource> resourceClass, @NonNull Class<Transcode> transcodeClass,
+     @NonNull ResourceTranscoder<TResource, Transcode> transcoder) {
+   transcoderRegistry.register(resourceClass, transcodeClass, transcoder);
+   return this;
+ }
+}
+
+public class TranscoderRegistry {
+ private final List<Entry<?, ?>> transcoders = new ArrayList<>();
+
+ public synchronized <Z, R> void register(
+     @NonNull Class<Z> decodedClass, @NonNull Class<R> transcodedClass,
+     @NonNull ResourceTranscoder<Z, R> transcoder) {
+   transcoders.add(new Entry<>(decodedClass, transcodedClass, transcoder));
+ }
+}
+```
+
+注册代码很简单，就是保存到list中就完事了。看看`TranscoderRegistry.getTranscodeClasses`方法：
+
+```java
+@NonNull
+public synchronized <Z, R> List<Class<R>> getTranscodeClasses(
+   @NonNull Class<Z> resourceClass, @NonNull Class<R> transcodeClass) {
+ List<Class<R>> transcodeClasses = new ArrayList<>();
+ // GifDrawable -> Drawable is just the UnitTranscoder, as is GifDrawable -> GifDrawable.
+ // 🔥路径1
+ if (transcodeClass.isAssignableFrom(resourceClass)) {
+   transcodeClasses.add(transcodeClass);
+   return transcodeClasses;
+ }
+
+ // 🔥路径2
+ for (Entry<?, ?> entry : transcoders) {
+   if (entry.handles(resourceClass, transcodeClass)) {
+     transcodeClasses.add(transcodeClass);
+   }
+ }
+
+ // list添加的都是入参transcodeClass
+ return transcodeClasses;
+}
+```
+
+此方法的作用是根据resourceClass和transcodeClass，从自身或者注册表的“map”中找出`transcodeClass`。
+
+回到`Registry.getRegisteredResourceClasses`方法中的第二层for loop继续分析，下面就是对每个resourceClass得到的registeredTranscodeClasses（transcodeClass为`Drawable.class`）
+
+1. InputStream.class & Object.class  
+  resourceClass为
+  - `GifDrawable.class`  
+     路径1 允许添加resourceClass
+  - `Bitmap.class`  
+     路径2 走Glide注入代码片段的第2行 允许添加resourceClass
+  - `BitmapDrawable.class`  
+     路径1 允许添加resourceClass
+2. ParcelFileDescriptor.class & Object.class  
+  resourceClass为
+  - `Bitmap.class`  
+     路径2 走Glide注入代码片段的第2行 但resourceClass已经添加过
+  - `BitmapDrawable.class`  
+     路径1 但resourceClass已经添加过
+3. AssetFileDescriptor.class & Object.class  
+  resourceClass为
+  - `Bitmap.class`  
+     路径2 走Glide注入代码片段的第2行 但resourceClass已经添加过
+
+因此，`Registry.getRegisteredResourceClasses`返回了`[GifDrawable.class、Bitmap.class、BitmapDrawable.class]`数组，该数组会经过`DecodeHelper`返回到`ResourceCacheGenerator.startNext`方法的调用中。
+
+#### 3.6.3 寻找缓存文件并加载
+
+继续回到本小节的第一个方法`ResourceCacheGenerator.startNext`方法中。下面要执行的代码是一个while循环，循环结束的标志是找到了缓存文件：
+
+```java
+// 遍历sourceIds中的每一个key、resourceClasses中每一个class，以及其他的一些值组成key
+// 尝试在磁盘缓存中以key找到缓存文件
+while (modelLoaders == null || !hasNextModelLoader()) {
+ resourceClassIndex++;
+ if (resourceClassIndex >= resourceClasses.size()) {
+   sourceIdIndex++;
+   if (sourceIdIndex >= sourceIds.size()) {
+     return false;
+   }
+   resourceClassIndex = 0;
+ }
+
+ Key sourceId = sourceIds.get(sourceIdIndex);
+ Class<?> resourceClass = resourceClasses.get(resourceClassIndex);
+ Transformation<?> transformation = helper.getTransformation(resourceClass);
+ // PMD.AvoidInstantiatingObjectsInLoops Each iteration is comparatively expensive anyway,
+ // we only run until the first one succeeds, the loop runs for only a limited
+ // number of iterations on the order of 10-20 in the worst case.
+ currentKey =
+     new ResourceCacheKey(// NOPMD AvoidInstantiatingObjectsInLoops
+         helper.getArrayPool(),
+         sourceId,
+         helper.getSignature(),
+         helper.getWidth(),
+         helper.getHeight(),
+         transformation,
+         resourceClass,
+         helper.getOptions());
+ cacheFile = helper.getDiskCache().get(currentKey);
+ // 如果找到了缓存文件，那么循环条件则会为false，也就退出循环了
+ if (cacheFile != null) {
+   sourceKey = sourceId;
+   modelLoaders = helper.getModelLoaders(cacheFile);
+   modelLoaderIndex = 0;
+ }
+}
+```
+
+走到这里，由于是初次加载，所以DiskLruCache里面肯定是没有缓存的。  
+
+注意这里的Key的组成，在之前我们描述过`ResourceCacheGenerator`的作用：获取采样后、transformed后资源文件的缓存文件。在第3节中我们可以看到，DownsampleStrategy和Transformation保存在了`BaseRequestOptions`里面，前者保存在`BaseRequestOptions.Options`里，后者保存在`transformations`里。在这里这两个参数都作为了缓存文件的Key，这也侧面验证了`ResourceCacheGenerator`的作用。
+
+但在加载代码上加上话`.diskCacheStrategy(DiskCacheStrategy.RESOURCE)`，就可以到了缓存，这样可以接着一次性把后面的方法也分析完，先看看下面的这个方法：
+
+```java
+modelLoaders = helper.getModelLoaders(cacheFile);
+```
+
+内部调用了`Registry.getModelLoaders`方法：
+
+```java
+List<ModelLoader<File, ?>> getModelLoaders(File file)
+   throws Registry.NoModelLoaderAvailableException {
+ return glideContext.getRegistry().getModelLoaders(file);
+}
+```
+
+该方法我们上面具体分析过，稍加回忆后我们可以写出`getModelLoaders(File)`方法的过程：
+
+1. 首先找出注入时以`File.class`为modelClass的注入代码
+2. 调用所有注入的`factory.build`方法得到`ModelLoader`
+3. 过滤掉不可能处理`model`的`ModelLoader`
+
+这样得到了以下四个ModelLoader
+
+- `.append(File.class, ByteBuffer.class, new ByteBufferFileLoader.Factory())`
+  - `ByteBufferFileLoader`
+- `.append(File.class, InputStream.class, new FileLoader.StreamFactory())`
+  - `FileLoader`
+- `.append(File.class, ParcelFileDescriptor.class, new FileLoader.FileDescriptorFactory())`
+  - `FileLoader`
+- `.append(File.class, File.class, UnitModelLoader.Factory.<File>getInstance())`
+  - `UnitModelLoader`
+
+所以此时的modelLoaders值为`[ByteBufferFileLoader, FileLoader, FileLoader, UnitModelLoader]`。
+
+接下来会调用每一个ModelLoader尝试加载数据，直到找到第一个可以处理的ModelLoader：
+
+```java
+loadData = null;
+boolean started = false;
+while (!started && hasNextModelLoader()) {
+ ModelLoader<File, ?> modelLoader = modelLoaders.get(modelLoaderIndex++);
+ loadData = modelLoader.buildLoadData(cacheFile,
+     helper.getWidth(), helper.getHeight(), helper.getOptions());
+ if (loadData != null && helper.hasLoadPath(loadData.fetcher.getDataClass())) {
+   started = true;
+   loadData.fetcher.loadData(helper.getPriority(), this);
+ }
+}
+
+return started;
+```
+
+这四个ModelLoader都会调用`buildLoadData`方法创建`LoadData`对象，该对象重要的成员变量是`DataFetcher`；然后调用`helper.hasLoadPath`根据`resourceClass`参数和`transcodeClass`参数判断是否有路径达到`DataFetcher.getDataClass`，如果有那就调用此fetcher进行loadData，任务执行完毕。
+
+例子中符合条件的`ModelLoader`以及其`fetcher`如下：
+
+- `ByteBufferFileLoader`  
+  fetcher = `ByteBufferFetcher(file)`  
+  fetcher.dataClass = `ByteBuffer.class`
+- `FileLoader`  
+  fetcher = `FileFetcher(model, fileOpener)`  
+  fetcher.dataClass = `InputStream.class`
+- `FileLoader`  
+  fetcher = `FileFetcher(model, fileOpener)`  
+  fetcher.dataClass = `ParcelFileDescriptor.class`
+- `UnitModelLoader`  
+  fetcher = `UnitFetcher<>(model)`  
+  fetcher.dataClass = `File.class`
+
+
+看一下`DecodeHelper.getLoadPath`方法是如何判断路径的：
+
+```java
+// DecodeHelper
+<Data> LoadPath<Data, ?, Transcode> getLoadPath(Class<Data> dataClass) {
+ return glideContext.getRegistry().getLoadPath(dataClass, resourceClass, transcodeClass);
+}
+
+// Registry
+@Nullable
+public <Data, TResource, Transcode> LoadPath<Data, TResource, Transcode> getLoadPath(
+   @NonNull Class<Data> dataClass, @NonNull Class<TResource> resourceClass,
+   @NonNull Class<Transcode> transcodeClass) {
+ // 先取缓存
+ LoadPath<Data, TResource, Transcode> result =
+     loadPathCache.get(dataClass, resourceClass, transcodeClass);
+ // 如果取到NO_PATHS_SIGNAL这条LoadPath，那么返回null
+ if (loadPathCache.isEmptyLoadPath(result)) {
+   return null;
+ } else if (result == null) {
+   // 取到null，说明还没有获取过
+   // 那么先获取decodePaths，在创建LoadPath对象并存入缓存中
+   List<DecodePath<Data, TResource, Transcode>> decodePaths =
+       getDecodePaths(dataClass, resourceClass, transcodeClass);
+   // It's possible there is no way to decode or transcode to the desired types from a given
+   // data class.
+   if (decodePaths.isEmpty()) {
+     result = null;
+   } else {
+     result =
+         new LoadPath<>(
+             dataClass, resourceClass, transcodeClass, decodePaths, throwableListPool);
+   }
+   // 存入缓存
+   loadPathCache.put(dataClass, resourceClass, transcodeClass, result);
+ }
+ return result;
+}
+```
+
+可以看出，`getLoadPath`的关键就是`getDecodePaths`方法：
+
+```java
+@NonNull
+private <Data, TResource, Transcode> List<DecodePath<Data, TResource, Transcode>> getDecodePaths(
+   @NonNull Class<Data> dataClass, @NonNull Class<TResource> resourceClass,
+   @NonNull Class<Transcode> transcodeClass) {
+ List<DecodePath<Data, TResource, Transcode>> decodePaths = new ArrayList<>();
+ // 1
+ List<Class<TResource>> registeredResourceClasses =
+     decoderRegistry.getResourceClasses(dataClass, resourceClass);
+
+ for (Class<TResource> registeredResourceClass : registeredResourceClasses) {
+   // 2
+   List<Class<Transcode>> registeredTranscodeClasses =
+       transcoderRegistry.getTranscodeClasses(registeredResourceClass, transcodeClass);
+
+   for (Class<Transcode> registeredTranscodeClass : registeredTranscodeClasses) {
+     // 3
+     List<ResourceDecoder<Data, TResource>> decoders =
+         decoderRegistry.getDecoders(dataClass, registeredResourceClass);
+     ResourceTranscoder<TResource, Transcode> transcoder =
+         transcoderRegistry.get(registeredResourceClass, registeredTranscodeClass);
+     // 4
+     @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+     DecodePath<Data, TResource, Transcode> path =
+         new DecodePath<>(dataClass, registeredResourceClass, registeredTranscodeClass,
+             decoders, transcoder, throwableListPool);
+     decodePaths.add(path);
+   }
+ }
+ return decodePaths;
+}
+```
+
+首先就是`decoderRegistry.getResourceClasses(dataClass, resourceClass)`方法，该方法我们上面分析过，作用就是根据传入的dataClass以及resourceClass在Registry中找映射关系，如果可以找到就返回这条映射关系的resourceClass（该方法中dataClass为传入的fetcher.dataClass，resourceClass值为Object.class）。
+
+然后对于每个获取到的registeredResourceClass，调用`transcoderRegistry.getTranscodeClasses`方法，此方法之前也解析过，其作用是根据resourceClass和transcodeClass，从自身或者注册表的“map”中找出transcodeClass（参数transcodeClass为`Drawable.class`）。
+
+最后，对于每个registeredResourceClass和registeredTranscodeClass，都会获取其`ResourceDecoder`和`ResourceTranscoder`，并将这些参数组成一个`DecodePath`保存到list，最后返回。我们先看一下这些方法的实现，最后在给出每一步的操作结果。
+
+所以我们直接看`decoderRegistry.getDecoders`方法：
+
+```java
+@NonNull
+@SuppressWarnings("unchecked")
+public synchronized <T, R> List<ResourceDecoder<T, R>> getDecoders(@NonNull Class<T> dataClass,
+   @NonNull Class<R> resourceClass) {
+ List<ResourceDecoder<T, R>> result = new ArrayList<>();
+ for (String bucket : bucketPriorityList) {
+   List<Entry<?, ?>> entries = decoders.get(bucket);
+   if (entries == null) {
+     continue;
+   }
+   for (Entry<?, ?> entry : entries) {
+     if (entry.handles(dataClass, resourceClass)) {
+       result.add((ResourceDecoder<T, R>) entry.decoder);
+     }
+   }
+ }
+ // TODO: cache result list.
+
+ return result;
+}
+```
+
+该方法也非常简单，那就是遍历所有的bucket中的所有entry，找出所有能处理dataClass、resourceClass的entry，保存其decoder。
+
+最后看一下`transcoderRegistry.get`方法：
+
+```java
+@NonNull
+@SuppressWarnings("unchecked")
+public synchronized <Z, R> ResourceTranscoder<Z, R> get(
+   @NonNull Class<Z> resourceClass, @NonNull Class<R> transcodedClass) {
+ // For example, there may be a transcoder that can convert a GifDrawable to a Drawable, which
+ // will be caught above. However, if there is no registered transcoder, we can still just use
+ // the UnitTranscoder to return the Drawable because the transcode class (Drawable) is
+ // assignable from the resource class (GifDrawable).
+ if (transcodedClass.isAssignableFrom(resourceClass)) {
+   return (ResourceTranscoder<Z, R>) UnitTranscoder.get();
+ }
+ for (Entry<?, ?> entry : transcoders) {
+   if (entry.handles(resourceClass, transcodedClass)) {
+     return (ResourceTranscoder<Z, R>) entry.transcoder;
+   }
+ }
+
+ throw new IllegalArgumentException(
+     "No transcoder registered to transcode from " + resourceClass + " to " + transcodedClass);
+}
+```
+
+该方法逻辑和我们之前谈到过的`transcoderRegistry.getTranscodeClasses`方法类似，只不过返回的是对应的`transcoder`对象。
+
+了解到上面这些方法的作用后，我们列出`Registry.getDecodePaths`方法执行的步骤以及结果（dataClass为下面的fetcher.dataClass，resourceClass为Object.class，transcodeClass为Drawable.class）：
+
+- `ByteBufferFileLoader`  
+  fetcher = `ByteBufferFetcher(file)`  
+  fetcher.dataClass = `ByteBuffer.class`  
+  1 registeredResourceClasses = `[GifDrawable.class, Bitmap.class, BitmapDrawable.class]`  
+  2 registeredTranscodeClasses = `[[Drawable.class], [Drawable.class], [Drawable.class]]`  
+  3 decoders = `[[ByteBufferGifDecoder], [ByteBufferBitmapDecoder], [BitmapDrawableDecoder]]`  
+  4 transcoder = `[UnitTranscoder, BitmapDrawableTranscoder, UnitTranscoder]`  
+  5 decodePaths = `[DecodePath(ByteBuffer.class, GifDrawable.class, Drawable.class, [ByteBufferGifDecoder], UnitTranscoder), DecodePath(ByteBuffer.class, Bitmap.class, Drawable.class, [ByteBufferBitmapDecoder], BitmapDrawableTranscoder), DecodePath(ByteBuffer.class, BitmapDrawable.class, Drawable.class, [BitmapDrawableDecoder], UnitTranscoder)]`  
+  6 loadPath = `LoadPath(ByteBuffer.class, Object.class, Drawable.class, decodePaths)`  
+
+在`ByteBufferFileLoader`中，我们已经找到一个一条可以加载的路径，那么就调用此`fetcher.loadData`方法进行加载。同时，该方法`ResourceCacheGenerator.startNext`返回true，这就意味着`DecodeJob`无需在尝试另外的`DataFetcherGenerator`进行加载，整个`into`过程已经大致完成，剩下的就是等待资源加载完毕后触发回调即可。
+
+下面我们接着看看`loadData.fetcher.loadData(helper.getPriority(), this)`这条语句干了什么，在上面的分析中我们知道，这里的fetcher是`ByteBufferFetcher`对象，其loadData方法如下：
+
+```java
+@Override
+public void loadData(@NonNull Priority priority,
+   @NonNull DataCallback<? super ByteBuffer> callback) {
+ ByteBuffer result;
+ try {
+   // 这里的file就是缓存下来的source file
+   // 路径在demo中为 /data/data/yorek.demoandtest/cache/image_manager_disk_cache/65a6e0855da59221f073aba07dc6c69206834ef83f60c58062bee458fcac7dde.0
+   result = ByteBufferUtil.fromFile(file);
+ } catch (IOException e) {
+   if (Log.isLoggable(TAG, Log.DEBUG)) {
+     Log.d(TAG, "Failed to obtain ByteBuffer for file", e);
+   }
+   callback.onLoadFailed(e);
+   return;
+ }
+
+ callback.onDataReady(result);
+}
+```
+
+`ByteBufferUtil.fromFile`使用了`RandomAccessFile`和`FileChannel`进行文件操作。如果操作失败，调用`callback.onLoadFailed(e)`通知`ResourceCacheGenerator`类，该类会将操作转发给`DecodeJob`；`callback.onDataReady`操作类似。这样程序就回到了`DecodeJob`回调方法中了。
+
+我们暂时不继续分析`DecodeJob`的回调方法，因为在本节中缓存文件本来是没有的，所以会交给下一个`DataFetcherGenerator`进行尝试处理，所以后面肯定也会遇到`DecodeJob`的回调方法。  
+
+### 3.7 DataCacheGenerator
+
+由于`Glide-with-load-into`三步没有在`ResourceCacheGenerator`中被fetch，所以回到`DecodeJob.runGenerators`方法中，继续执行while循环：
+
+```java
+private void runGenerators() {
+  currentThread = Thread.currentThread();
+  startFetchTime = LogTime.getLogTime();
+  boolean isStarted = false;
+  while (!isCancelled && currentGenerator != null
+      && !(isStarted = currentGenerator.startNext())) {
+    stage = getNextStage(stage);
+    currentGenerator = getNextGenerator();
+
+    if (stage == Stage.SOURCE) {
+      reschedule();
+      return;
     }
-    // ⚡⚡️⚡️ 差别2，这里会检查loaders的数量，并做相应的处理
-    if (loaders.size() > 1) {
-      return factory.build(loaders, throwableListPool);
-    } else if (loaders.size() == 1) {
-      return loaders.get(0);
-    } else {
-      // Avoid crashing if recursion results in no loaders available. The assertion is supposed to
-      // catch completely unhandled types, recursion may mean a subtype isn't handled somewhere
-      // down the stack, which is often ok.
-      if (ignoredAnyEntries) {
-        return emptyModelLoader();
-      } else {
-        throw new NoModelLoaderAvailableException(modelClass, dataClass);
-      }
+  }
+  // We've run out of stages and generators, give up.
+  if ((stage == Stage.FINISHED || isCancelled) && !isStarted) {
+    notifyFailed();
+  }
+
+  // Otherwise a generator started a new load and we expect to be called back in
+  // onDataFetcherReady.
+}
+```
+
+由于`diskCacheStrategy`默认为`DiskCacheStrategy.AUTOMATIC`，其`decodeCachedData()`返回true，所以`getNextStage(stage)`是`Stage.DATA_CACHE`。因此`getNextGenerator()`方法返回了`DataCacheGenerator(decodeHelper, this)`。然后在while循环中会执行其`startNext()`方法。
+
+有了在`ResourceCacheGenerator`中缓存好的大量变量，`DataCacheGenerator`和`SourceGenerator`代码就非常简单了。
+{: .notice--success }
+
+`ResourceCacheGenerator`在构造的时候就将`helper.getCacheKeys()`保存了起来，我们前面在谈`ResourceCacheGenerator`的时候提到过，`helper.getCacheKeys()`采取了防止重复加载的策略。
+
+构造器相关代码如下：
+
+```java
+private final List<Key> cacheKeys;
+private final DecodeHelper<?> helper;
+private final FetcherReadyCallback cb;
+
+DataCacheGenerator(DecodeHelper<?> helper, FetcherReadyCallback cb) {
+  this(helper.getCacheKeys(), helper, cb);
+}
+
+DataCacheGenerator(List<Key> cacheKeys, DecodeHelper<?> helper, FetcherReadyCallback cb) {
+  this.cacheKeys = cacheKeys;
+  this.helper = helper;
+  this.cb = cb;
+}
+```
+
+然后看一下它的`startNext()`方法，该方法和`ResourceCacheGenerator.startNext`方法非常相似，由于获取的是原始的源数据，所以这里的key的组成非常简单。
+
+```java
+@Override
+public boolean startNext() {
+  while (modelLoaders == null || !hasNextModelLoader()) {
+    sourceIdIndex++;
+    if (sourceIdIndex >= cacheKeys.size()) {
+      return false;
     }
-  } catch (Throwable t) {
-    alreadyUsedEntries.clear();
-    throw t;
+
+    Key sourceId = cacheKeys.get(sourceIdIndex);
+    // PMD.AvoidInstantiatingObjectsInLoops The loop iterates a limited number of times
+    // and the actions it performs are much more expensive than a single allocation.
+    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+    Key originalKey = new DataCacheKey(sourceId, helper.getSignature());
+    cacheFile = helper.getDiskCache().get(originalKey);
+    if (cacheFile != null) {
+      this.sourceKey = sourceId;
+      modelLoaders = helper.getModelLoaders(cacheFile);
+      modelLoaderIndex = 0;
+    }
+  }
+
+  loadData = null;
+  boolean started = false;
+  while (!started && hasNextModelLoader()) {
+    ModelLoader<File, ?> modelLoader = modelLoaders.get(modelLoaderIndex++);
+    loadData =
+        modelLoader.buildLoadData(cacheFile, helper.getWidth(), helper.getHeight(),
+            helper.getOptions());
+    if (loadData != null && helper.hasLoadPath(loadData.fetcher.getDataClass())) {
+      started = true;
+      loadData.fetcher.loadData(helper.getPriority(), this);
+    }
+  }
+  return started;
+}
+
+private boolean hasNextModelLoader() {
+  return modelLoaderIndex < modelLoaders.size();
+}
+```
+
+由于我们第一次加载，本地缓存文件肯定是没有的。我们接着看最后一个`SourceGenerator`，看看它是如何获取数据的。
+
+### 3.8 SourceGenerator
+
+在这之前我们需要注意，如果Glide在加载时指定了`.onlyRetrieveFromCache(true)`，那么在`DecodeJob.getNextStage(Stage)`方法中就会跳过`Stage.SOURCE`直接到达`Stage.FINISHED`。  
+且当为`Stage.SOURCE`时，`DecodeJob.runGenerators()`方法会调用`reschedule()`方法，这将会导致`DecodeJob`重新被提交到`sourceExecutor`这个线程池中，同时runReason被赋值为`RunReason.SWITCH_TO_SOURCE_SERVICE`。该线程池默认实现为`GlideExecutor.newSourceExecutor()`:
+
+```java
+private static final int MAXIMUM_AUTOMATIC_THREAD_COUNT = 4;
+private static final String DEFAULT_SOURCE_EXECUTOR_NAME = "source";
+
+public static GlideExecutor newSourceExecutor() {
+  return newSourceExecutor(
+      calculateBestThreadCount(),
+      DEFAULT_SOURCE_EXECUTOR_NAME,
+      UncaughtThrowableStrategy.DEFAULT);
+}
+
+public static int calculateBestThreadCount() {
+  if (bestThreadCount == 0) {
+    bestThreadCount =
+        Math.min(MAXIMUM_AUTOMATIC_THREAD_COUNT, RuntimeCompat.availableProcessors());
+  }
+  return bestThreadCount;
+}
+```
+
+由于`DecodeJob`实现了`Runnable`接口，那么直接看`run()`方法里面的真正实现`runWrapped()`方法：
+
+```java
+private void runWrapped() {
+  switch (runReason) {
+    ...
+    case SWITCH_TO_SOURCE_SERVICE:
+      runGenerators();
+      break;
   }
 }
 ```
 
-⚡⚡️⚡️ 我们看一下这里面所有的递归过程：
+这里还是执行了`runGenerators()`方法。该方法我们已经很熟悉了，在这里会执行`SourceGenerator.startNext()`方法。  
 
-`append(String.class, InputStream.class, new DataUrlLoader.StreamFactory<String>())` 
-- build -> `DataUrlLoader` -> return
+```java
+private int loadDataListIndex;
 
-`append(String.class, InputStream.class, new StringLoader.StreamFactory())`  
-- build -> `StringLoader` 参数urlLoader = `multiFactory.build(Uri.class, InputStream.class)`
-   - `append(Uri.class, InputStream.class, new DataUrlLoader.StreamFactory<Uri>())`  
-      - build -> `DataUrlLoader` -> return 
-   - `append(Uri.class, InputStream.class, new HttpUriLoader.Factory())`  
-      - build -> `HttpUriLoader` 参数urlLoader = `multiFactory.build(GlideUrl.class, InputStream.class)`
-         - `.append(GlideUrl.class, InputStream.class, new HttpGlideUrlLoader.Factory())`  
-            - build -> `HttpGlideUrlLoader` -> return 
-   - `append(Uri.class, InputStream.class, new AssetUriLoader.StreamFactory(context.getAssets()))`  
-      - build -> `AssetUriLoader` -> return
-   - `append(Uri.class, InputStream.class, new MediaStoreImageThumbLoader.Factory(context))`  
-      - build -> `MediaStoreImageThumbLoader` -> return
-   - `append(Uri.class, InputStream.class, new MediaStoreVideoThumbLoader.Factory(context))`  
-      - build -> `MediaStoreVideoThumbLoader` -> return
-   - `append(Uri.class, InputStream.class, new UriLoader.StreamFactory(contentResolver))`  
-      - build -> `UriLoader` -> return
-   - `append(Uri.class, InputStream.class, new UrlUriLoader.StreamFactory())`  
-      - build -> `UrlUriLoader` 参数urlLoader = `multiFactory.build(GlideUrl.class, InputStream.class)`
-         - `.append(GlideUrl.class, InputStream.class, new HttpGlideUrlLoader.Factory())`  
-            - build -> `HttpGlideUrlLoader` -> return 
-   - `MultiModelLoader` -> return
+@Override
+public boolean startNext() {
+  // 首次运行dataToCache为null
+  if (dataToCache != null) {
+    Object data = dataToCache;
+    dataToCache = null;
+    cacheData(data);
+  }
 
-`append(String.class, ParcelFileDescriptor.class, new StringLoader.FileDescriptorFactory())`  
-- build -> `StringLoader` 参数urlLoader = `multiFactory.build(Uri.class, ParcelFileDescriptor.class)`
-   - `append(Uri.class, ParcelFileDescriptor.class, new AssetUriLoader.FileDescriptorFactory(context.getAssets()))`  
-      - build -> `AssetUriLoader` -> return
-   - `append(Uri.class, ParcelFileDescriptor.class, new UriLoader.FileDescriptorFactory(contentResolver))`   
-      - build -> `UriLoader` -> return
-   - `MultiModelLoader` -> return
+  // 首次运行sourceCacheGenerator为null
+  if (sourceCacheGenerator != null && sourceCacheGenerator.startNext()) {
+    return true;
+  }
+  sourceCacheGenerator = null;
 
-`append(String.class, AssetFileDescriptor.class, new StringLoader.AssetFileDescriptorFactory())`  
-- build -> `StringLoader` 参数urlLoader = `multiFactory.build(Uri.class, AssetFileDescriptor.class)`  
-   - `append(Uri.class, AssetFileDescriptor.class, new UriLoader.AssetFileDescriptorFactory(contentResolver))`  
-      - build -> `UriLoader` -> return
-   - `UriLoader` -> return
+  // 准备加载数据
+  loadData = null;
+  boolean started = false;
+  // 这里直接调用了DecodeHelper.getLoadData()方法
+  // 该方法在前面在ResourceCacheGenerator中被调用过，且被缓存了下来
+  while (!started && hasNextModelLoader()) {
+    loadData = helper.getLoadData().get(loadDataListIndex++);
+    if (loadData != null
+        && (helper.getDiskCacheStrategy().isDataCacheable(loadData.fetcher.getDataSource())
+        || helper.hasLoadPath(loadData.fetcher.getDataClass()))) {
+      started = true;
+      loadData.fetcher.loadData(helper.getPriority(), this);
+    }
+  }
+  return started;
+}
 
-上面就是`multiModelLoaderFactory.build(modelClass)`获得到的4个loader，然后在`modelLoaderRegistry.getModelLoaders(model)`方法中被过滤掉一个，现在就返回3.5节刚开始的`DecodeHelper.getLoadData`方法里面了。
+private boolean hasNextModelLoader() {
+  return loadDataListIndex < helper.getLoadData().size();
+}
+```
+
+`helper.getLoadData()`的值在`ResourceCacheGenerator`中就已经被获取并缓存下来了，这是一个`MultiModelLoader`对象生成的`LoadData`对象，`LoadData`对象里面有两个fetcher。详见[第3.6.1节的末尾部分](/android/glide2/#361-helpergetcachekeys)
+
+在上面的方法中，我们会遍历LoadData list，找出符合条件的LoadData，然后调用`loadData.fetcher.loadData`加载数据。  
+在loadData不为空的前提下，会判断Glide的缓存策略是否可以缓存此数据源，或者是否有加载路径。  
+
+我们知道，默认情况下Glide的缓存策略是`DiskCacheStrategy.AUTOMATIC`，其`isDataCacheable`实现如下：
+
+```java
+@Override
+public boolean isDataCacheable(DataSource dataSource) {
+  return dataSource == DataSource.REMOTE;
+}
+```
+
+所以，我们看一下`loadData.fetcher.getDataSource()`返回了什么：
+
+```java
+static class MultiFetcher<Data> implements DataFetcher<Data>, DataCallback<Data> {
+  @NonNull
+  @Override
+  public DataSource getDataSource() {
+    return fetchers.get(0).getDataSource();
+  }
+}
+
+// MultiFetcher中fetchers数组保存的两个DataFetcher都是HttpUrlFetcher
+public class HttpUrlFetcher implements DataFetcher<InputStream> {
+  @NonNull
+  @Override
+  public DataSource getDataSource() {
+  return DataSource.REMOTE;
+  }
+}
+```
+
+显然，Glide的缓存策略是可以缓存此数据源的。所以会进行数据的加载。接着看看`MultiFetcher.loadData`方法。  
+这里首先会调用内部的第0个DataFetcher进行加载，同时设置回调为自己。当这一个DataFetcher加载失败时，会尝试调用下一个DataFetcher进行加载，如果没有所有的DataFetcher都加载失败了，就把错误抛给上一层；当有DataFetcher加载成功时，也会把获取到的数据转交给上一层。
+
+```java
+static class MultiFetcher<Data> implements DataFetcher<Data>, DataCallback<Data> {
+
+  private final List<DataFetcher<Data>> fetchers;
+  private int currentIndex;
+  private Priority priority;
+  private DataCallback<? super Data> callback;
+
+  @Override
+  public void loadData(
+      @NonNull Priority priority, @NonNull DataCallback<? super Data> callback) {
+    this.priority = priority;
+    this.callback = callback;
+    exceptions = throwableListPool.acquire();
+    fetchers.get(currentIndex).loadData(priority, this);
+
+    // If a race occurred where we cancelled the fetcher in cancel() and then called loadData here
+    // immediately after, make sure that we cancel the newly started fetcher. We don't bother
+    // checking cancelled before loadData because it's not required for correctness and would
+    // require an unlikely race to be useful.
+    if (isCancelled) {
+      cancel();
+    }
+  }
+
+  @Override
+  public void onDataReady(@Nullable Data data) {
+    if (data != null) {
+      callback.onDataReady(data);
+    } else {
+      startNextOrFail();
+    }
+  }
+
+  @Override
+  public void onLoadFailed(@NonNull Exception e) {
+    Preconditions.checkNotNull(exceptions).add(e);
+    startNextOrFail();
+  }
+
+  private void startNextOrFail() {
+    if (isCancelled) {
+      return;
+    }
+
+    if (currentIndex < fetchers.size() - 1) {
+      currentIndex++;
+      loadData(priority, callback);
+    } else {
+      Preconditions.checkNotNull(exceptions);
+      callback.onLoadFailed(new GlideException("Fetch failed", new ArrayList<>(exceptions)));
+    }
+  }
+}
+```
+
+这里面两个DataFetcher都是参数相同的`HttpUrlFetcher`实例，我们直接看里面如何从网络加载图片的。
+
+```java
+@Override
+public void loadData(@NonNull Priority priority,
+    @NonNull DataCallback<? super InputStream> callback) {
+  long startTime = LogTime.getLogTime();
+  try {
+    InputStream result = loadDataWithRedirects(glideUrl.toURL(), 0, null, glideUrl.getHeaders());
+    callback.onDataReady(result);
+  } catch (IOException e) {
+    if (Log.isLoggable(TAG, Log.DEBUG)) {
+      Log.d(TAG, "Failed to load data for url", e);
+    }
+    callback.onLoadFailed(e);
+  } finally {
+    if (Log.isLoggable(TAG, Log.VERBOSE)) {
+      Log.v(TAG, "Finished http url fetcher fetch in " + LogTime.getElapsedMillis(startTime));
+    }
+  }
+}
+```
+
+很显然，这里将请求操作放到了`loadDataWithRedirects`方法中，然后将请求结果通过回调返回上一层也就是`MultiFetcher`中。  
+
+`loadDataWithRedirects`第二个参数表示重定向的次数，在方法内部限制了重定向发生的次数不能超过`MAXIMUM_REDIRECTS=5`次。  
+第三个参数是发生重定向前的原始url，用来与当前url判断，是不是重定向到自身了。而且可以看出，Glide加载网络图片使用的是`HttpUrlConnection`。  
+第四个参数headers默认为`Headers.DEFAULT`，就是一个User-Agent的key-value对。
+
+代码如下：
+
+```java
+private InputStream loadDataWithRedirects(URL url, int redirects, URL lastUrl,
+    Map<String, String> headers) throws IOException {
+  // 检查重定向次数
+  if (redirects >= MAXIMUM_REDIRECTS) {
+    throw new HttpException("Too many (> " + MAXIMUM_REDIRECTS + ") redirects!");
+  } else {
+    // Comparing the URLs using .equals performs additional network I/O and is generally broken.
+    // See http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.html.
+    try {
+      // 检查是不是重定向到自身了
+      if (lastUrl != null && url.toURI().equals(lastUrl.toURI())) {
+        throw new HttpException("In re-direct loop");
+
+      }
+    } catch (URISyntaxException e) {
+      // Do nothing, this is best effort.
+    }
+  }
+
+  // connectionFactory默认是DefaultHttpUrlConnectionFactory
+  // 其build方法就是调用了url.openConnection()
+  urlConnection = connectionFactory.build(url);
+  for (Map.Entry<String, String> headerEntry : headers.entrySet()) {
+    urlConnection.addRequestProperty(headerEntry.getKey(), headerEntry.getValue());
+  }
+  urlConnection.setConnectTimeout(timeout);
+  urlConnection.setReadTimeout(timeout);
+  urlConnection.setUseCaches(false);
+  urlConnection.setDoInput(true);
+
+  // Stop the urlConnection instance of HttpUrlConnection from following redirects so that
+  // redirects will be handled by recursive calls to this method, loadDataWithRedirects.
+  // 禁止HttpUrlConnection自动重定向，重定向功能由本方法自己实现
+  urlConnection.setInstanceFollowRedirects(false);
+
+  // Connect explicitly to avoid errors in decoders if connection fails.
+  urlConnection.connect();
+  // Set the stream so that it's closed in cleanup to avoid resource leaks. See #2352.
+  stream = urlConnection.getInputStream();
+  if (isCancelled) {
+    return null;
+  }
+  final int statusCode = urlConnection.getResponseCode();
+  if (isHttpOk(statusCode)) {
+    // statusCode=2xx，请求成功
+    return getStreamForSuccessfulRequest(urlConnection);
+  } else if (isHttpRedirect(statusCode)) {
+    // statusCode=3xx，需要重定向
+    String redirectUrlString = urlConnection.getHeaderField("Location");
+    if (TextUtils.isEmpty(redirectUrlString)) {
+      throw new HttpException("Received empty or null redirect url");
+    }
+    URL redirectUrl = new URL(url, redirectUrlString);
+    // Closing the stream specifically is required to avoid leaking ResponseBodys in addition
+    // to disconnecting the url connection below. See #2352.
+    cleanup();
+    return loadDataWithRedirects(redirectUrl, redirects + 1, url, headers);
+  } else if (statusCode == INVALID_STATUS_CODE) {
+    // -1 表示不是HTTP响应
+    throw new HttpException(statusCode);
+  } else {
+    // 其他HTTP错误
+    throw new HttpException(urlConnection.getResponseMessage(), statusCode);
+  }
+}
+
+// Referencing constants is less clear than a simple static method.
+private static boolean isHttpOk(int statusCode) {
+  return statusCode / 100 == 2;
+}
+
+// Referencing constants is less clear than a simple static method.
+private static boolean isHttpRedirect(int statusCode) {
+  return statusCode / 100 == 3;
+}
+```
+
+现在我们已经获得网络图片的InputStream了，该资源会通过回调经过`MultiFetcher`到达`SourceGenerator`中。  
+
+下面是`DataCallback`回调在`SourceGenerator`中的实现。
+
+```java
+@Override
+public void onDataReady(Object data) {
+  DiskCacheStrategy diskCacheStrategy = helper.getDiskCacheStrategy();
+  if (data != null && diskCacheStrategy.isDataCacheable(loadData.fetcher.getDataSource())) {
+    dataToCache = data;
+    // We might be being called back on someone else's thread. Before doing anything, we should
+    // reschedule to get back onto Glide's thread.
+    cb.reschedule();
+  } else {
+    cb.onDataFetcherReady(loadData.sourceKey, data, loadData.fetcher,
+        loadData.fetcher.getDataSource(), originalKey);
+  }
+}
+
+@Override
+public void onLoadFailed(@NonNull Exception e) {
+  cb.onDataFetcherFailed(originalKey, e, loadData.fetcher, loadData.fetcher.getDataSource());
+}
+```
+
+`onLoadFailed`很简单，直接调用`DecodeJob.onDataFetcherFailed`方法。`onDataReady`方法会首先判data能不能缓存，若能缓存则缓存起来，然后调用`DataCacheGenerator`进行加载缓存；若不能缓存，则直接调用`DecodeJob.onDataFetcherReady`方法通知外界data已经准备好了。
+
+我们解读一下`onDataReady`里面的代码。首先，获取`DiskCacheStrategy`判断能不能被缓存，这里的判断代码在`SourceGenerator.startNext()`中出现过，显然是可以的。然后将data保存到`dataToCache`，并调用`cb.reschedule()`。  
+`cb.reschedule()`我们在前面分析过，该方法的作用就是将`DecodeJob`提交到Glide的source线程池中。然后执行`DecodeJob.run()`方法，经过`runWrapped()`、 `runGenerators()`方法后，又回到了`SourceGenerator.startNext()`方法。
+
+在方法的开头，会判断`dataToCache`是否为空，此时显然不为空，所以会调用`cacheData(Object)`方法进行data的缓存处理。缓存完毕后，会为该缓存文件生成一个`SourceCacheGenerator`。然后在`startNext()`方法中会直接调用该变量进行加载。
+
+```java
+@Override
+public boolean startNext() {
+  if (dataToCache != null) {
+    Object data = dataToCache;
+    dataToCache = null;
+    cacheData(data);
+  }
+
+  if (sourceCacheGenerator != null && sourceCacheGenerator.startNext()) {
+    return true;
+  }
+  sourceCacheGenerator = null;
+}
+
+private void cacheData(Object dataToCache) {
+  long startTime = LogTime.getLogTime();
+  try {
+    Encoder<Object> encoder = helper.getSourceEncoder(dataToCache);
+    DataCacheWriter<Object> writer =
+        new DataCacheWriter<>(encoder, dataToCache, helper.getOptions());
+    originalKey = new DataCacheKey(loadData.sourceKey, helper.getSignature());
+    // 缓存data
+    helper.getDiskCache().put(originalKey, writer);
+    if (Log.isLoggable(TAG, Log.VERBOSE)) {
+      Log.v(TAG, "Finished encoding source to cache"
+          + ", key: " + originalKey
+          + ", data: " + dataToCache
+          + ", encoder: " + encoder
+          + ", duration: " + LogTime.getElapsedMillis(startTime));
+    }
+  } finally {
+    loadData.fetcher.cleanup();
+  }
+
+  sourceCacheGenerator =
+      new DataCacheGenerator(Collections.singletonList(loadData.sourceKey), helper, this);
+}
+```
+
+由于在构造`DataCacheGenerator`时，指定了`FetcherReadyCallback`为自己，所以`DataCacheGenerator`加载成功时会由`FetcherReadyCallback`转发给`DecodeJob`。
+
+我们先看一下fetch失败时干了什么，然后在看成功的时候。
+
+`onDataFetcherFailed`代码如下：
+
+```java
+@Override
+public void onDataFetcherFailed(Key attemptedKey, Exception e, DataFetcher<?> fetcher,
+    DataSource dataSource) {
+  fetcher.cleanup();
+  GlideException exception = new GlideException("Fetching data failed", e);
+  exception.setLoggingDetails(attemptedKey, dataSource, fetcher.getDataClass());
+  throwables.add(exception);
+  if (Thread.currentThread() != currentThread) {
+    runReason = RunReason.SWITCH_TO_SOURCE_SERVICE;
+    callback.reschedule(this);
+  } else {
+    runGenerators();
+  }
+}
+```
+
+显然，如果fetch失败了，如果不在source线程池中就会切换到source线程，然后重新调用`runGenerators()`方法尝试使用下一个`DataFetcherGenerator`进行加载，一直到没有一个可以加载，这时会调用`notifyFailed()`方法，正式宣告加载失败。
+
+`onDataFetcherReady`方法会保存传入的参数，然后确认执行线程后调用`decodeFromRetrievedData()`方法进行解码。
+
+```java
+@Override
+public void onDataFetcherReady(Key sourceKey, Object data, DataFetcher<?> fetcher,
+    DataSource dataSource, Key attemptedKey) {
+  this.currentSourceKey = sourceKey;
+  this.currentData = data;
+  this.currentFetcher = fetcher;
+  this.currentDataSource = dataSource;
+  this.currentAttemptingKey = attemptedKey;
+  if (Thread.currentThread() != currentThread) {
+    runReason = RunReason.DECODE_DATA;
+    callback.reschedule(this);
+  } else {
+    GlideTrace.beginSection("DecodeJob.decodeFromRetrievedData");
+    try {
+      decodeFromRetrievedData();
+    } finally {
+      GlideTrace.endSection();
+    }
+  }
+}
+```
+
+`decodeFromRetrievedData()`方法会先调用`decodeFromData`方法进行解码，然后调用`notifyEncodeAndRelease`方法进行缓存，同时也会通知`EngineJob`资源已经准备好了。
+
+```java
+private void decodeFromRetrievedData() {
+  if (Log.isLoggable(TAG, Log.VERBOSE)) {
+    logWithTimeAndKey("Retrieved data", startFetchTime,
+        "data: " + currentData
+            + ", cache key: " + currentSourceKey
+            + ", fetcher: " + currentFetcher);
+  }
+  Resource<R> resource = null;
+  try {
+    resource = decodeFromData(currentFetcher, currentData, currentDataSource);
+  } catch (GlideException e) {
+    e.setLoggingDetails(currentAttemptingKey, currentDataSource);
+    throwables.add(e);
+  }
+  if (resource != null) {
+    notifyEncodeAndRelease(resource, currentDataSource);
+  } else {
+    runGenerators();
+  }
+}
+```
+
+`decodeFromData`相关的代码有一些，我们直接列出这些代码。`decodeFromData`方法内部又会调用`decodeFromFetcher`方法干活。  
+在`decodeFromFetcher`方法中首先会获取LoadPath。然后调用`runLoadPath`方法解析成资源。在我们的示例中，返回的是一个`LazyBitmapDrawableResource`对象。  
+注意这里使用到了`DataRewinder`，这是一个将数据流里面的指针重新指向开头的类，在调用`ResourceDecoder`对data进行编码时会尝试很多个编码器，所以每一次尝试后都需要重置索引。  
+在Glide初始化的时候默认注入了`ByteBufferRewinder`和`InputStreamRewinder`这两个类的工厂。这样就为`ByteBuffer`和`InputStream`的重定向提供了实现。
+
+```java
+private <Data> Resource<R> decodeFromData(DataFetcher<?> fetcher, Data data,
+    DataSource dataSource) throws GlideException {
+  try {
+    if (data == null) {
+      return null;
+    }
+    long startTime = LogTime.getLogTime();
+    Resource<R> result = decodeFromFetcher(data, dataSource);
+    if (Log.isLoggable(TAG, Log.VERBOSE)) {
+      logWithTimeAndKey("Decoded result " + result, startTime);
+    }
+    return result;
+  } finally {
+    fetcher.cleanup();
+  }
+}
+
+@SuppressWarnings("unchecked")
+private <Data> Resource<R> decodeFromFetcher(Data data, DataSource dataSource)
+    throws GlideException {
+  LoadPath<Data, ?, R> path = decodeHelper.getLoadPath((Class<Data>) data.getClass());
+  return runLoadPath(data, dataSource, path);
+}
+
+private <Data, ResourceType> Resource<R> runLoadPath(Data data, DataSource dataSource,
+    LoadPath<Data, ResourceType, R> path) throws GlideException {
+  Options options = getOptionsWithHardwareConfig(dataSource);
+  DataRewinder<Data> rewinder = glideContext.getRegistry().getRewinder(data);
+  try {
+    // ResourceType in DecodeCallback below is required for compilation to work with gradle.
+    return path.load(
+        rewinder, options, width, height, new DecodeCallback<ResourceType>(dataSource));
+  } finally {
+    rewinder.cleanup();
+  }
+}
+```
