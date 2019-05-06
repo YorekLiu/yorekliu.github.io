@@ -748,6 +748,8 @@ private BinaryTreeNode deserializeInner(String[] chars) {
 我们可以考虑把这个复杂问题分解成小的问题。比如，我们把第一个字符串看成由两部分组成：第一部分是它的第一个字符；第二部分是后面的所有字符。  
 我们求整个字符串的排列，可以看成两步。第一步求所有可能出现在第一个位置的字符，即把第一个字符和后面所有的字符交换。第二步固定第一个字符，求后面所有字符的排列。这时候我们仍然把后面的所有字符分为两部分：后面字符的第一个字符，以及这个字符之后的所有字符。然后把第一个字符逐一和它后面的字符交换。这就是典型的递归思路。  
 
+此题同[LeetCode-46-Permutations](/algorithm/leetcode41-50/#46-permutations)
+
 ```java
 private void permutation(String str) {
     if (str == null) {
@@ -762,12 +764,14 @@ private void permutationInner(char[] str, int begin) {
         System.out.println(str);
     } else {
         for (int i = begin; i < str.length; i++) {
+            // TODO swap method
             char temp = str[begin];
             str[begin] = str[i];
             str[i] = temp;
 
             permutationInner(str, begin + 1);
 
+            // TODO swap method
             temp = str[begin];
             str[begin] = str[i];
             str[i] = temp;
