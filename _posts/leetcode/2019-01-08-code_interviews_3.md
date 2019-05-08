@@ -42,7 +42,7 @@ last_modified_at: 2019-01-08T18:24:26+08:00
 实现函数double Power(double base, int exponent)，求base的exponent次方。不得使用库函数，同时不需要考虑大数问题。
 {: .notice }
 
-与[LeetCode-50-Pow(x, n)](https://leetcode.com/problems/powx-n/)类似。 不过LeetCode上需要注意n的溢出问题。
+与[LeetCode-50-Pow(x, n)](/algorithm/leetcode41-50/#50-powx-n)类似。 不过LeetCode上需要注意n的溢出问题。
 
 此题看起来简单，但却有一些情况需要考虑到。  
 首先需要考虑到指数为0或负数的情况。当指数为负数时，可以先对指数求绝对值，算出结果之后再取倒数。在求倒数的时候，如果底数是0怎么办，如何告诉函数的调用者出现了这种错误。  
@@ -106,7 +106,7 @@ private double powerInner(double base, long exponent) {
 }
 ```
 
-这里用友谊运算符代替了除以2，用位于运算代替了求余运算符来判断一个数是不是奇数。
+这里用右移运算符代替了除以2，用位于运算代替了求余运算符来判断一个数是不是奇数。
 
 ### 1.2 (17)打印1到最大的n位数
 
@@ -315,7 +315,7 @@ private ListNode deleteDuplication(ListNode head) {
 
 ### 1.4 (19)正则表达式匹配
 
-请实现一个函数用来匹配包含'.'和'\*'的正则表达式。模式中的字符'.'表示任意一个字符，而'\*'表示它前面的字符可以出现任意次（含0次）。在本题中，匹配是指字符串的所有字符匹配整个模式。例如，字符串"aaa"与模式"a.a"和"ab*\ac\*a"匹配，但与"aa.a"及"ab\*a"均不匹配。
+请实现一个函数用来匹配包含‘.’和‘\*’的正则表达式。模式中的字符‘.’表示任意一个字符，而‘\*’表示它前面的字符可以出现任意次（含0次）。在本题中，匹配是指字符串的所有字符匹配整个模式。例如，字符串“aaa”与模式“a.a”和“ab*\ac\*a”匹配，但与“aa.a”及“ab\*a”均不匹配。
 {: .notice }
 
 代码同[LeetCode-10-Regular Expression Matching](/algorithm/leetcode1-10/#10-regular-expression-matching)。
@@ -430,12 +430,12 @@ void reorderOddEven_1(int[] pData, int length) {
     int lo = 0, hi = length - 1;
 
     while (lo < hi) {
-        // 向后移动pBegin，直到它指向偶数
+        // 向后移动lo，直到它指向偶数
         while (lo < hi && (pData[lo] & 0x1) != 0) {
             lo++;
         }
 
-        // 向前移动pEnd，直到它指向奇数
+        // 向前移动hi，直到它指向奇数
         while (lo < hi && (pData[hi] & 0x1) == 0) {
             hi--;
         }
@@ -562,8 +562,9 @@ private ListNode findKthToTail(ListNode pListHead, int k) {
     <figcaption>节点3是链表中环的入口节点</figcaption>
 </figure>
 
-解决这个问题的第一步是如何确定一个链表中包含环。  
-第二步是如何找到环的入口：
+解决这个问题的第一步是如何确定一个链表中包含环。第二步是如何找到环的入口。
+
+解法步骤如下：
 
 1. 找出环中任意一个节点；
 2. 得到环中节点的数目；
