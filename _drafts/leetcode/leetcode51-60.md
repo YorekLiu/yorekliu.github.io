@@ -15,6 +15,136 @@ toc_label: "目录"
   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
 
+## 51. N-Queens
+
+[Backtracking](/tags/#backtracking){: .btn .btn--inverse }  
+
+The *n*-queens puzzle is the problem of placing *n* queens on an *n*×*n* chessboard such that no two queens attack each other.  
+
+<figure style="width: 33%" class="align-center">
+    <img src="/assets/images/leetcode/question_51_8-queens.png">
+</figure>
+
+Given an integer *n*, return all distinct solutions to the *n*-queens puzzle.  
+
+Each solution contains a distinct board configuration of the *n*-queens' placement, where `'Q'` and `'.'` both indicate a queen and an empty space respectively. 
+
+**Example:**
+
+**Input**: 4  
+**Output**: [  
+&emsp;[".&emsp;Q&emsp;.&emsp;.",  // Solution 1  
+&emsp;&emsp;".&emsp;.&emsp;.&emsp;Q",  
+&emsp;&emsp;"Q&emsp;.&emsp;.&emsp;.",  
+&emsp;&emsp;".&emsp;.&emsp;Q&emsp;."],  
+&emsp;[".&emsp;.&emsp;Q&emsp;.",  // Solution 2  
+&emsp;&emsp;"Q&emsp;.&emsp;.&emsp;.",  
+&emsp;&emsp;".&emsp;.&emsp;.&emsp;Q",  
+&emsp;".&emsp;Q&emsp;.&emsp;."]  
+]  
+**Explanation**: There exist two distinct solutions to the 4-queens puzzle as shown above.
+{: .notice }
+
+**Solution**  
+
+根据规则，任意两个皇后不能在同一行、同一列、同一对角线上。  
+所以，可以定义行、两条对角线上的标志位，表示对应的线上是否存在皇后。然后我们每次在一行上的所有位置尝试放置皇后，放置成功则设置标志位，然后进行回溯算法，回溯完成后复位标志位。  
+当放置完最后一个皇后时，这就是问题的一个解。
+
+```java
+class Solution {
+    public List<List<String>> solveNQueens(int n) {
+        List<List<String>> result = new ArrayList<>();
+        if (n <= 0) return result;
+        char[] solution = new char[n * n];
+        Arrays.fill(solution, '.');
+        solveNQueensInner(0, n, new boolean[n], new boolean[2 * n - 1], new boolean[2 * n - 1], solution, result);
+        return result;
+    }
+    
+    private void solveNQueensInner(int row, int n, boolean[] flags, boolean[] flags45, boolean[] flags135, char[] solution, List<List<String>> result) {
+        if (row == n) {
+            List<String> soluList = new ArrayList<String>(n);
+            for (int i = 0; i < n; i++) {
+                soluList.add(new String(solution, i * n, n));
+            }
+            result.add(soluList);
+            return;
+        }
+        
+        for (int i = 0; i < n; i++) {
+            if (flags[i] || flags135[n - 1 + i - row] || flags45[row + i]) continue;
+            flags[i] = flags135[n - 1 + i - row] = flags45[row + i] = true;
+            solution[row * n + i] = 'Q';
+            solveNQueensInner(row + 1, n, flags, flags45, flags135, solution, result);
+            solution[row * n + i] = '.';
+            flags[i] = flags135[n - 1 + i - row] = flags45[row + i] = false;
+        }
+    }
+}
+```
+
+## 52. N-Queens II
+
+[Backtracking](/tags/#backtracking){: .btn .btn--inverse }  
+
+The *n*-queens puzzle is the problem of placing *n* queens on an *n*×*n* chessboard such that no two queens attack each other.  
+
+<figure style="width: 33%" class="align-center">
+    <img src="/assets/images/leetcode/question_51_8-queens.png">
+</figure>
+
+Given an integer *n*, return all distinct solutions to the *n*-queens puzzle.  
+
+Each solution contains a distinct board configuration of the *n*-queens' placement, where `'Q'` and `'.'` both indicate a queen and an empty space respectively. 
+
+**Example:**
+
+**Input**: 4  
+**Output**: 2  
+**Explanation**: There are two distinct solutions to the 4-queens puzzle as shown below.  
+[  
+&emsp;[".&emsp;Q&emsp;.&emsp;.",  // Solution 1  
+&emsp;&emsp;".&emsp;.&emsp;.&emsp;Q",  
+&emsp;&emsp;"Q&emsp;.&emsp;.&emsp;.",  
+&emsp;&emsp;".&emsp;.&emsp;Q&emsp;."],  
+&emsp;[".&emsp;.&emsp;Q&emsp;.",  // Solution 2  
+&emsp;&emsp;"Q&emsp;.&emsp;.&emsp;.",  
+&emsp;&emsp;".&emsp;.&emsp;.&emsp;Q",  
+&emsp;".&emsp;Q&emsp;.&emsp;."]  
+]
+{: .notice }
+
+**Solution**  
+
+解法流程和上面N-Queens类似，唯一不同的是，此时我们不需要保存的解，所以只需要只用标志位即可。
+
+```java
+class Solution {
+    private int mCount;
+    
+    public int totalNQueens(int n) {
+        if (n <= 0) return 0;
+        totalNQueensInner(0, n, new boolean[n], new boolean[2 * n - 1], new boolean[2 * n - 1]);
+        return mCount;
+    }
+    
+    private void totalNQueensInner(int row, int n, boolean[] flags, boolean[] flags45, boolean[] flags135) {
+        if (row == n) {
+            mCount++;
+            return;
+        }
+        
+        for (int i = 0; i < n; i++) {
+            if (flags[i] || flags135[n - 1 + i - row] || flags45[row + i]) continue;
+            flags[i] = flags135[n - 1 + i - row] = flags45[row + i] = true;
+            totalNQueensInner(row + 1, n, flags, flags45, flags135);
+            flags[i] = flags135[n - 1 + i - row] = flags45[row + i] = false;
+        }
+    }
+}
+```
+
 ## 55. Jump Game
 
 [Greedy](/tags/#greedy){: .btn .btn--inverse }  

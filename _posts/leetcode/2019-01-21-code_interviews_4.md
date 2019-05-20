@@ -624,6 +624,43 @@ private ComplexListNode reconnectNodes(ComplexListNode head) {
 }
 ```
 
+ComplexListNode辅助代码如下：
+
+```java
+private static class ComplexListNode {
+    int                 value;
+    ComplexListNode     next;
+    ComplexListNode     sibling;
+
+    ComplexListNode(int value) {
+        this.value = value;
+    }
+
+    static void buildNodes(ComplexListNode node, ComplexListNode next, ComplexListNode sibling) {
+        if (node != null) {
+            node.next = next;
+            node.sibling = sibling;
+        }
+    }
+
+    static void printList(ComplexListNode head) {
+        ComplexListNode node = head;
+        while(node != null) {
+            System.out.printf("The value of this node is: %d.\n", node.value);
+
+            if(node.sibling != null)
+                System.out.printf("The value of its sibling is: %d.\n", node.sibling.value);
+            else
+                System.out.print("This node does not have a sibling.\n");
+
+            System.out.println();
+
+            node = node.next;
+        }
+    }
+}
+```
+
 ### 3.2 (36)二叉搜索树与双向链表  
 
 输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的双向链表。要求不能创建任何新的结点，只能调整树中结点指针的指向。

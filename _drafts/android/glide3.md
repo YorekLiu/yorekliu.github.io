@@ -32,7 +32,7 @@ toc_label: "目录"
 1. active状态资源  
   > `Engine.load`方法上的注释写到：  
   > Active resources are those that have been provided to at least one request and have not yet been released. Once all consumers of a resource have released that resource, the resource then goes to cache. If the resource is ever returned to a new consumer from cache, it is re-added to the active resources. If the resource is evicted from the cache, its resources are recycled and re-used if possible and the resource is discarded. There is no strict requirement that consumers release their resources so active resources are held weakly.  
-  > 
+  >
   > 提供给一个或以上请求且没有被释放的资源被称为active资源。一旦所有的消费者都释放了该资源，该资源就会被放入memory cache中。如果有请求将资源从memory cache中取出，它会被重新添加到active资源中。如果一个资源从memory cache中移除，其本身会被discard，其内部拥有的资源将会回收或者在可能的情况下重用。并没有严格要求消费者一定要释放它们的资源，所以active资源会以弱引用的方式保持。
 
 2. 内存缓存
@@ -437,4 +437,156 @@ private static class LazyDiskCacheProvider implements DecodeJob.DiskCacheProvide
 
 ## 3. ActiveResources
 
-在正式开始讨论缓存流程时，还是要先介绍一下`ActiveResources`的一些源码。
+在正式开始讨论缓存流程时，还是要先介绍一下`ActiveResources`的一些源码。  
+`ActiveResources`在`Engine`的构造器中被创建。`ActiveResources`构建完成后，会启动一个后台优先级级别的线程，在该线程中会执行`cleanReferenceQueue()`方法，在方法中会一直循环清除ReferenceQueue中的已经被GC的Resource。
+
+**ActiveResources.java**  
+
+```java
+final class ActiveResources {
+  private final boolean isActiveResourceRetentionAllowed;
+  private final Executor monitorClearedResourcesExecutor;
+  @VisibleForTesting
+  final Map<Key, ResourceWeakReference> activeEngineResources = new HashMap<>();
+  private final ReferenceQueue<EngineResource<?>> resourceReferenceQueue = new ReferenceQueue<>();
+
+  private volatile boolean isShutdown;
+
+  ActiveResources(boolean isActiveResourceRetentionAllowed) {
+    this(
+        isActiveResourceRetentionAllowed,
+        java.util.concurrent.Executors.newSingleThreadExecutor(
+            new ThreadFactory() {
+              @Override
+              public Thread newThread(@NonNull final Runnable r) {
+                return new Thread(
+                    new Runnable() {
+                      @Override
+                      public void run() {
+                        Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+                        r.run();
+                      }
+                    },
+                    "glide-active-resources");
+              }
+            }));
+  }
+
+  @VisibleForTesting
+  ActiveResources(
+      boolean isActiveResourceRetentionAllowed, Executor monitorClearedResourcesExecutor) {
+    this.isActiveResourceRetentionAllowed = isActiveResourceRetentionAllowed;
+    this.monitorClearedResourcesExecutor = monitorClearedResourcesExecutor;
+
+    monitorClearedResourcesExecutor.execute(
+        new Runnable() {
+          @Override
+          public void run() {
+            cleanReferenceQueue();
+          }
+        });
+  }
+
+  @SuppressWarnings("WeakerAccess")
+  @Synthetic void cleanReferenceQueue() {
+    while (!isShutdown) {
+      try {
+        ResourceWeakReference ref = (ResourceWeakReference) resourceReferenceQueue.remove();
+        cleanupActiveReference(ref);
+
+        // This section for testing only.
+        DequeuedResourceCallback current = cb;
+        if (current != null) {
+          current.onResourceDequeued();
+        }
+        // End for testing only.
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      }
+    }
+  }
+}
+```
+
+`cleanupActiveReference`方法马上会说。现在先来看看`ActiveResources`的保存、删除的方法，这两个方法分别是`activate`、`deactivate`。可以看到，这两个方法实现都很简单。`activate`方法会将参数封装成为一个`ResourceWeakReference`，然后放入map中，如果对应的key之前有值，那么调用之前值的`reset`方法进行清除。`deactivate`方法先在map中移除，然后调用resource的`reset`方法进行清除。
+
+```java
+synchronized void activate(Key key, EngineResource<?> resource) {
+  ResourceWeakReference toPut =
+      new ResourceWeakReference(
+          key, resource, resourceReferenceQueue, isActiveResourceRetentionAllowed);
+
+  ResourceWeakReference removed = activeEngineResources.put(key, toPut);
+  if (removed != null) {
+    removed.reset();
+  }
+}
+
+synchronized void deactivate(Key key) {
+  ResourceWeakReference removed = activeEngineResources.remove(key);
+  if (removed != null) {
+    removed.reset();
+  }
+}
+```
+
+`ResourceWeakReference`继承至`WeakReference`，只是保存了Resource的一些属性，此外添加了一个`reset`方法用来清理资源：
+
+```java
+@VisibleForTesting
+static final class ResourceWeakReference extends WeakReference<EngineResource<?>> {
+  @SuppressWarnings("WeakerAccess") @Synthetic final Key key;
+  @SuppressWarnings("WeakerAccess") @Synthetic final boolean isCacheable;
+
+  @Nullable @SuppressWarnings("WeakerAccess") @Synthetic Resource<?> resource;
+
+  @Synthetic
+  @SuppressWarnings("WeakerAccess")
+  ResourceWeakReference(
+      @NonNull Key key,
+      @NonNull EngineResource<?> referent,
+      @NonNull ReferenceQueue<? super EngineResource<?>> queue,
+      boolean isActiveResourceRetentionAllowed) {
+    super(referent, queue);
+    this.key = Preconditions.checkNotNull(key);
+    this.resource =
+        referent.isCacheable() && isActiveResourceRetentionAllowed
+            ? Preconditions.checkNotNull(referent.getResource()) : null;
+    isCacheable = referent.isCacheable();
+  }
+
+  void reset() {
+    resource = null;
+    clear();
+  }
+}
+```
+
+值得注意的是，这里的构造方法中调用了`super(referent, queue)`。这样如果referent被GC了，就会被放入queue中。而`ActiveResources.cleanReferenceQueue()`方法会一直尝试从queue中获取被GC的resource，然后调用其`cleanupActiveReference`方法。  
+此方法在Resource被GC后会调用，同时在`ActiveResources.get(key)`方法中也会调用：
+
+```java
+@Synthetic
+void cleanupActiveReference(@NonNull ResourceWeakReference ref) {
+  // Fixes a deadlock where we normally acquire the Engine lock and then the ActiveResources lock
+  // but reverse that order in this one particular test. This is definitely a bit of a hack...
+  synchronized (listener) {
+    synchronized (this) {
+      activeEngineResources.remove(ref.key);
+      // 如果是GC后调用，此时ref.resource肯定为null
+      if (!ref.isCacheable || ref.resource == null) {
+        return;
+      }
+      // 走到这，表示是在get方法中被调用，此时会恢复原来的resource
+      EngineResource<?> newResource =
+          new EngineResource<>(ref.resource, /*isCacheable=*/ true, /*isRecyclable=*/ false);
+      newResource.setResourceListener(ref.key, listener);
+      // 回调Engine的onResourceReleased方法
+      // 这会导致此资源从active变成memory cache状态
+      listener.onResourceReleased(ref.key, newResource);
+    }
+  }
+}
+```
+
+## 4. 缓存加载、存放过程
