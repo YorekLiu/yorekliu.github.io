@@ -438,7 +438,7 @@ private static class LazyDiskCacheProvider implements DecodeJob.DiskCacheProvide
 ## 3. ActiveResources
 
 在正式开始讨论缓存流程时，还是要先介绍一下`ActiveResources`的一些源码。  
-`ActiveResources`在`Engine`的构造器中被创建。`ActiveResources`构建完成后，会启动一个后台优先级级别的线程，在该线程中会执行`cleanReferenceQueue()`方法，在方法中会一直循环清除ReferenceQueue中的已经被GC的Resource。
+`ActiveResources`在`Engine`的构造器中被创建。`ActiveResources`构建完成后，会启动一个后台优先级级别（`THREAD_PRIORITY_BACKGROUND`）的线程，在该线程中会调用`cleanReferenceQueue()`方法一直循环清除ReferenceQueue中的已经被GC的Resource。
 
 **ActiveResources.java**  
 
@@ -563,7 +563,7 @@ static final class ResourceWeakReference extends WeakReference<EngineResource<?>
 ```
 
 值得注意的是，这里的构造方法中调用了`super(referent, queue)`。这样如果referent被GC了，就会被放入queue中。而`ActiveResources.cleanReferenceQueue()`方法会一直尝试从queue中获取被GC的resource，然后调用其`cleanupActiveReference`方法。  
-此方法在Resource被GC后会调用，同时在`ActiveResources.get(key)`方法中也会调用：
+该方法除了在此时被调用外，还在`ActiveResources.get(key)`方法中也可能会因为获取到的resource为null而被调用。`cleanupActiveReference`方法如下：
 
 ```java
 @Synthetic
@@ -590,3 +590,259 @@ void cleanupActiveReference(@NonNull ResourceWeakReference ref) {
 ```
 
 ## 4. 缓存加载、存放过程
+
+在了解完上面三种缓存状态资源对应的类后，我们现在看一下缓存加载、存放的过程。由于缓存策略默认为`DiskCacheStrategy.AUTOMATIC`，所以加载某一种格式的图片不足以覆盖所有的情况，下面会以网络图片URL以及本地图片File这两种常用的方式来讲解缓存的加载、存放过程。
+
+首先，整个加载的过程体现在`Engine.load`方法中，该方法注释和代码片段如下：
+
+```java
+/**
+  * Starts a load for the given arguments.
+  *
+  * <p>Must be called on the main thread.
+  *
+  * <p>The flow for any request is as follows:
+  *
+  * <ul>
+  *   <li>Check the current set of actively used resources, return the active resource if present,
+  *       and move any newly inactive resources into the memory cache.
+  *   <li>Check the memory cache and provide the cached resource if present.
+  *   <li>Check the current set of in progress loads and add the cb to the in progress load if one
+  *       is present.
+  *   <li>Start a new load.
+  * </ul>
+  *
+  * <p>Active resources are those that have been provided to at least one request and have not yet
+  * been released. Once all consumers of a resource have released that resource, the resource then
+  * goes to cache. If the resource is ever returned to a new consumer from cache, it is re-added to
+  * the active resources. If the resource is evicted from the cache, its resources are recycled and
+  * re-used if possible and the resource is discarded. There is no strict requirement that
+  * consumers release their resources so active resources are held weakly.
+  *
+  * @param width The target width in pixels of the desired resource.
+  * @param height The target height in pixels of the desired resource.
+  * @param cb The callback that will be called when the load completes.
+  */
+public synchronized <R> LoadStatus load(...) {
+  EngineKey key = keyFactory.buildKey(model, signature, width, height, transformations,
+      resourceClass, transcodeClass, options);
+
+  EngineResource<?> active = loadFromActiveResources(key, isMemoryCacheable);
+  if (active != null) {
+    cb.onResourceReady(active, DataSource.MEMORY_CACHE);
+    return null;
+  }
+
+  EngineResource<?> cached = loadFromCache(key, isMemoryCacheable);
+  if (cached != null) {
+    cb.onResourceReady(cached, DataSource.MEMORY_CACHE);
+    return null;
+  }
+
+  EngineJob<?> current = jobs.get(key, onlyRetrieveFromCache);
+  if (current != null) {
+    current.addCallback(cb, callbackExecutor);
+    return new LoadStatus(cb, current);
+  }
+
+  EngineJob<R> engineJob =
+      engineJobFactory.build(...);
+
+  DecodeJob<R> decodeJob =
+      decodeJobFactory.build(...);
+
+  jobs.put(key, engineJob);
+
+  engineJob.addCallback(cb, callbackExecutor);
+  engineJob.start(decodeJob);
+
+  return new LoadStatus(cb, engineJob);
+}
+```
+
+上面这个方法我们在前一篇文章讲解整体流程时谈到过，链接如下[Glide2-3.3-Engine.load](/android/glide2/#33-engineload)。  
+从注释和代码中我们知道了缓存首先会判断active状态的resource，然后是memory cache，最后就交给了job。那么毫无疑问，job中会进行disk cache的读操作。  
+
+我们需要关注一下，active状态的resource和memory cache状态的资源其实都是`DataSource.MEMORY_CACHE`状态，从缓存加载成功后的回调中可以看到。而且，加载出来的资源都是`EngineResource`对象，该对象的管理策略采用了[引用计数算法](/jvm/java-gc/#321-%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%E7%AE%97%E6%B3%95)。该算法的特点是实现简单，判定效率也很高。
+
+`EngineResource`类的关键代码如下：
+
+```java
+class EngineResource<Z> implements Resource<Z> {
+  private final boolean isCacheable;
+  private final boolean isRecyclable;
+  private final Resource<Z> resource;
+
+  private ResourceListener listener;
+  private Key key;
+  private int acquired;
+  private boolean isRecycled;
+
+  interface ResourceListener {
+    void onResourceReleased(Key key, EngineResource<?> resource);
+  }
+
+  synchronized void setResourceListener(Key key, ResourceListener listener) {
+    this.key = key;
+    this.listener = listener;
+  }
+  ...
+  synchronized void acquire() {
+    if (isRecycled) {
+      throw new IllegalStateException("Cannot acquire a recycled resource");
+    }
+    ++acquired;
+  }
+
+  @SuppressWarnings("SynchronizeOnNonFinalField")
+  void release() {
+    synchronized (listener) {
+      synchronized (this) {
+        if (acquired <= 0) {
+          throw new IllegalStateException("Cannot release a recycled or not yet acquired resource");
+        }
+        if (--acquired == 0) {
+          listener.onResourceReleased(key, this);
+        }
+      }
+    }
+  }
+  ...
+}
+```
+
+在`release`后，如果引用计数为0，那么会调用`listener.onResourceReleased(key, this)`方法通知外界此资源已经释放了。实际上，所有的listener都是`Engine`对象，在`Engine.onResourceReleased`方法中会将此资源放入memory cache中，如果可以被缓存的话：
+
+```java
+@Override
+public synchronized void onResourceReleased(Key cacheKey, EngineResource<?> resource) {
+  activeResources.deactivate(cacheKey);
+  if (resource.isCacheable()) {
+    cache.put(cacheKey, resource);
+  } else {
+    resourceRecycler.recycle(resource);
+  }
+}
+```
+
+了解了`EngineResource`之后，在回到`Engine.load`方法中开始分析。首先是从active resource和memory cache中进行加载的方法：
+
+```java
+@Nullable
+private EngineResource<?> loadFromActiveResources(Key key, boolean isMemoryCacheable) {
+  if (!isMemoryCacheable) {  // ⚠️
+    return null;
+  }
+  EngineResource<?> active = activeResources.get(key);
+  if (active != null) {
+    active.acquire();
+  }
+
+  return active;
+}
+
+private EngineResource<?> loadFromCache(Key key, boolean isMemoryCacheable) {
+  if (!isMemoryCacheable) {  // ⚠️
+    return null;
+  }
+
+  EngineResource<?> cached = getEngineResourceFromCache(key);
+  if (cached != null) {
+    cached.acquire();
+    activeResources.activate(key, cached);
+  }
+  return cached;
+}
+```
+
+这里会首先判断`skipMemoryCache(true)`是否进行过设置。如果设置过，那么上面的`isMemoryCacheable`对应就会为false，进而这两个方法直接会返回null。否则，会从缓存中尝试进行加载。  
+显然，第一次运行的时候是没有任何内存缓存的，现在来到了`DecodeJob`和`EngineJob`这里。还是在前一篇文章中提到过，`DecoceJob`实现了`Runnable`接口，然后会被`EngineJob.start`方法提交到对应的线程池中去执行。  
+
+所以，直接看`DecodeJob.run`方法咯，该方法真正实现是`runWrapped`方法。在此方法中，由于`runReason`此时初始化了为了`RunReason.INITIALIZE`，又diskCacheStrategy为默认为`DiskCacheStrategy.AUTOMATIC`，且没有设置过`onlyRetrieveFromCache(true)`。所以，decode data的状态依次为`INITIALIZE` -> `RESOURCE_CACHE` -> `DATA_CACHE` -> `SOURCE` -> `FINISHED`。对应的`DataFectcherGenerator`的list依次为`ResourceCacheGenerator` -> `DataCacheGenerator` -> `SourceGenerator`。
+
+**DecodeJob**
+
+```java
+private Stage getNextStage(Stage current) {
+  switch (current) {
+    case INITIALIZE:
+      return diskCacheStrategy.decodeCachedResource()
+          ? Stage.RESOURCE_CACHE : getNextStage(Stage.RESOURCE_CACHE);
+    case RESOURCE_CACHE:
+      return diskCacheStrategy.decodeCachedData()
+          ? Stage.DATA_CACHE : getNextStage(Stage.DATA_CACHE);
+    case DATA_CACHE:
+      // Skip loading from source if the user opted to only retrieve the resource from cache.
+      return onlyRetrieveFromCache ? Stage.FINISHED : Stage.SOURCE;
+    case SOURCE:
+    case FINISHED:
+      return Stage.FINISHED;
+    default:
+      throw new IllegalArgumentException("Unrecognized stage: " + current);
+  }
+}
+
+private DataFetcherGenerator getNextGenerator() {
+  switch (stage) {
+    case RESOURCE_CACHE:
+      return new ResourceCacheGenerator(decodeHelper, this);
+    case DATA_CACHE:
+      return new DataCacheGenerator(decodeHelper, this);
+    case SOURCE:
+      return new SourceGenerator(decodeHelper, this);
+    case FINISHED:
+      return null;
+    default:
+      throw new IllegalStateException("Unrecognized stage: " + stage);
+  }
+}
+
+private void runGenerators() {
+  currentThread = Thread.currentThread();
+  startFetchTime = LogTime.getLogTime();
+  boolean isStarted = false;
+  while (!isCancelled && currentGenerator != null
+      && !(isStarted = currentGenerator.startNext())) {
+    stage = getNextStage(stage);
+    currentGenerator = getNextGenerator();
+
+    if (stage == Stage.SOURCE) {
+      reschedule();
+      return;
+    }
+  }
+  // We've run out of stages and generators, give up.
+  if ((stage == Stage.FINISHED || isCancelled) && !isStarted) {
+    notifyFailed();
+  }
+
+  // Otherwise a generator started a new load and we expect to be called back in
+  // onDataFetcherReady.
+}
+```
+
+先看看`ResourceCacheGenerator`中查找缓存时key的组成部分：
+
+**ResourceCacheGenerator.java**  
+
+```java
+currentKey =
+    new ResourceCacheKey(
+        helper.getArrayPool(),
+        sourceId,
+        helper.getSignature(),
+        helper.getWidth(),
+        helper.getHeight(),
+        transformation,
+        resourceClass,
+        helper.getOptions());
+```
+
+| 组成 | 注释 |
+| helper.getArrayPool() | `GlideBuilder.build`时初始化，默认为`LruArrayPool` |
+| sourceId | 如果请求的是URL，那么此处会是一个`GlideUrl` |
+| helper.getSignature() | `BaseRequestOptions`的成员变量，默认会是`EmptySignature.obtain()`<br />在加载本地resource资源时会变成`ApplicationVersionSignature.obtain(context)` |
+| helper.getWidth()<br />helper.getHeight() | 如果没有指定`override(int size)`，那么将得到view的size |
+| transformation | 默认会根据`ImageView`的scaleType设置对应的`BitmapTransformation`；如果指定了`transform`，那么就会是指定的值 |
+| resourceClass |  |
+| helper.getOptions()) |  |

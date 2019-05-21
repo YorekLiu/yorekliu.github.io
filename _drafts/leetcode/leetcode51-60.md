@@ -145,6 +145,135 @@ class Solution {
 }
 ```
 
+## 53. Maximum Subarray
+
+[Array](/tags/#array){: .btn .btn--inverse }  [Dynamic Programming](/tags/#dynamic-programming){: .btn .btn--inverse }  
+
+Given an integer array `nums`, find the contiguous subarray (containing at least one number) which has the largest sum and return its sum.
+
+**Example:**
+
+**Input:** [-2,1,-3,4,-1,2,1,-5,4],  
+**Output:** 6  
+**Explanation:** [4,-1,2,1] has the largest sum = 6.
+{: .notice }
+
+**Follow up:**  
+If you have figured out the $$O(n)$$ solution, try coding another solution using the divide and conquer approach, which is more subtle.
+
+此题同[CI-42-连续子数组的最大和](/algorithm/code_interviews_5/#14-42%E8%BF%9E%E7%BB%AD%E5%AD%90%E6%95%B0%E7%BB%84%E7%9A%84%E6%9C%80%E5%A4%A7%E5%92%8C)
+
+**Solution** 
+
+如果某步累加的结果不是正数，那么这些累加是可以抛弃的；否则可正常进行累加。在每步累加结束后存下这步最大的值。
+
+```java
+class Solution {
+    public int maxSubArray(int[] nums) {
+        int max = Integer.MIN_VALUE;
+        int sum = 0;
+        
+        for (int num : nums) {
+            if (sum < 0)
+                sum = num;
+            else
+                sum += num;
+            
+            if (sum > max) {
+                max = sum;
+            }
+        }
+        
+        return max;
+    }
+}
+```
+
+## 54. Spiral Matrix
+
+[Array](/tags/#array){: .btn .btn--inverse }  
+
+Given a matrix of `m` x `n` elements (`m` rows, `n` columns), return all elements of the matrix in spiral order.
+
+**Example 1:**
+
+**Input:**  
+[  
+&emsp;&emsp;[ 1, 2, 3 ],  
+&emsp;&emsp;[ 4, 5, 6 ],  
+&emsp;&emsp;[ 7, 8, 9 ]  
+]  
+**Output:** [1,2,3,6,9,8,7,4,5]  
+{: .notice }
+
+
+**Example 2:**
+
+**Input:**  
+[  
+&emsp;&emsp;[1, 2, 3, 4],  
+&emsp;&emsp;[5, 6, 7, 8],  
+&emsp;&emsp;[9,10,11,12]  
+]  
+**Output:** [1,2,3,4,8,12,11,10,9,5,6,7]
+{: .notice }
+
+此题同[CI-29-顺时针打印矩阵](/algorithm/code_interviews_4/#13-29%E9%A1%BA%E6%97%B6%E9%92%88%E6%89%93%E5%8D%B0%E7%9F%A9%E9%98%B5)  
+
+**Solution**  
+
+此题需要注意矩阵的行列数不相等时的边界条件。  
+如果按照打印每条边时最大限度地进行打印的策略，矮胖矩阵(col>row)需要注意下边的边的判定，瘦高矩阵(col<row)需要注意左边的边的判定。
+
+下方代码简直awesome、wow man般收放自如，每打印一条边都会缩小范围，判定更简单：
+
+```java
+class Solution {
+    public List<Integer> spiralOrder(int[][] matrix) {
+        List<Integer> result = new ArrayList<>();
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) 
+            return result;
+        
+        int colBegin = 0;
+        int colEnd = matrix[0].length - 1;
+        int rowBegin = 0;
+        int rowEnd = matrix.length - 1;
+        
+        while (colBegin <= colEnd && rowBegin <= rowEnd) {
+            // top side
+            for (int i = colBegin; i <= colEnd; i++) {
+                result.add(matrix[rowBegin][i]);
+            }
+            rowBegin++;
+            
+            // right side
+            for (int i = rowBegin; i <= rowEnd; i++) {
+                result.add(matrix[i][colEnd]);
+            }
+            colEnd--;
+            
+            // bottom side
+            if (rowBegin <= rowEnd) {
+                for (int i = colEnd; i >= colBegin; i--) {
+                    result.add(matrix[rowEnd][i]);
+                }
+            }
+            rowEnd--;
+            
+            // left side
+            if (colBegin <= colEnd) {
+                for (int i = rowEnd; i >= rowBegin; i--) {
+                    result.add(matrix[i][colBegin]);
+                }
+            }
+            colBegin++;
+        }
+        
+        return result;
+    }
+}
+```
+
 ## 55. Jump Game
 
 [Greedy](/tags/#greedy){: .btn .btn--inverse }  

@@ -139,6 +139,8 @@ private boolean isSymmetrical(BinaryTreeNode root1, BinaryTreeNode root2) {
     <img src="/assets/images/leetcode/ci_29.png" />
 </figure>
 
+此题同[LeetCode-54-Spiral Matrix](/algorithm/leetcode51-60/#54-spiral-matrix)
+
 这道题完全没有涉及复杂的数据结构或者高级的算法，看起来是一个很简单的问题。但实际上解决这个问题时会在代码中包含多个循环，而且需要判断多个边界条件。
 
 总体上来说，我们可以每次循环打印一圈。循环可以开始的条件是`columns > start * 2 && rows > start * 2`。  
