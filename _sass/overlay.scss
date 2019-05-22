@@ -37,6 +37,17 @@ a {
   }
 }
 
+/* lists */
+ul li,
+ol li {
+  margin-bottom: 0em;
+}
+
+li ul,
+li ol {
+  margin-top: 0em;
+}
+
 // whole header
 .masthead {
   border-bottom: 0px;
