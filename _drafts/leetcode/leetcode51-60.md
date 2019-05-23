@@ -323,3 +323,102 @@ class Solution {
     }
 }
 ```
+
+## 56. Merge Intervals
+
+[Array](/tags/#array){: .btn .btn--inverse }  [Sort](/tags/#sort){: .btn .btn--inverse }  
+
+Given a collection of intervals, merge all overlapping intervals.
+
+**Example 1:**
+
+**Input:** [[1,3],[2,6],[8,10],[15,18]]  
+**Output:** [[1,6],[8,10],[15,18]]  
+**Explanation:** Since intervals [1,3] and [2,6] overlaps, merge them into [1,6].
+{: .notice }
+
+**Example 2:**
+
+**Input:** [[1,4],[4,5]]  
+**Output:** [[1,5]]  
+**Explanation:** Intervals [1,4] and [4,5] are considered overlapping.
+{: .notice }
+
+**Solution**
+
+**Approach 1: Sorting**
+
+先排序，排完序后可以两两之间进行比较：如果可以merge，那么更新较后者的值；若是最后一个，或者不可以merge，前者就是结果之一。
+
+时间主要在排序上，所以时间复杂度为$$O(nlogn)$$。  
+Runtime 36ms，beats 41.79%
+
+```java
+class Solution {
+    public int[][] merge(int[][] intervals) {
+        Arrays.sort(intervals, (o1, o2) -> o1[0] - o2[0]);
+        
+        List<int[]> result = new ArrayList<>();
+        for (int i = 0; i < intervals.length; i++) {
+            if (i == intervals.length - 1 ||
+                intervals[i][1] < intervals[i + 1][0]) {
+                result.add(new int[] {
+                    intervals[i][0],
+                    intervals[i][1]
+                });
+            } else if (intervals[i][1] >= intervals[i + 1][0]) {
+                intervals[i + 1][0] = intervals[i][0];
+                intervals[i + 1][1] = Math.max(intervals[i][1], intervals[i + 1][1]);
+            }
+        }
+        
+        return result.toArray(new int[result.size()][2]);
+    }
+}
+```
+
+**Approach 2**
+
+经典的两层for-loop，每次尝试处理最前面一个还未处理的数据；处理后break，继续处理下一个未处理的数据。  
+由于数据事先没有经过排序，所以判断任意两个区间是否可以merge时，注意交换一下前后循序。  
+Runtime 1ms，beats 100%，真是amazing！！
+
+<figure style="width: 50%" class="align-center">
+    <img src="/assets/images/leetcode/question_56.png">
+    <figcaption>判断任意两个区间可不可以merge</figcaption>
+</figure>
+
+判断区间可不可以merge时，先固定住一条线条，然后看另外一条线条在什么位置满足条件。我们发现，有些情况是一样的，比如上图中的1与6，3与4一样，所以实际上只需要判断1、2、4、5即可。
+
+```java
+class Solution {
+    public int[][] merge(int[][] intervals) {
+        final int n = intervals.length;
+        boolean[] invalid = new boolean[n];
+        int validCount = n;
+        
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if ((intervals[i][1] >= intervals[j][1] && intervals[i][0] <= intervals[j][1]) ||
+                   (intervals[j][1] >= intervals[i][1] && intervals[j][0] <= intervals[i][1])) {
+                    invalid[i] = true;
+                    intervals[j][0] = Math.min(intervals[i][0], intervals[j][0]);
+                    intervals[j][1] = Math.max(intervals[i][1], intervals[j][1]);
+                    break;
+                }
+            }
+            if (invalid[i]) validCount--;
+        }
+        
+        int[][] result = new int[validCount][2];
+        int index = 0;
+        for (int i = 0; i < n; i++) {
+            if (!invalid[i]) {
+                result[index++] = intervals[i];
+            }
+        }
+        
+        return result;
+    }
+}
+```
