@@ -54,7 +54,7 @@ li ol {
   position: fixed;
   width: 100%;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, .1);
-  background: mix(rgba(255, 255, 255, 0.0), $header-background-color, 15%);
+  background: $header-background-color;
 
   &__inner-wrap {
     padding: 0;
@@ -72,7 +72,7 @@ li ol {
 
 // website title & navigation
 .greedy-nav {
-  background: mix(rgba(255, 255, 255, 0.0), $header-background-color, 15%);
+  background: $header-background-color;
   min-height: inherit;
 
   a {
