@@ -27,13 +27,13 @@ RecyclerView高级特性系列：
     <figcaption>有点细节的时间轴</figcaption>
 </figure>
 
-具体需求如上所示，首先可以上肯定是一个RecyclerView，然后看看item如何实现。Item可以分为左右两边，右边的好实现，关键是左边的轴有点麻烦。  
-从图中可以注意到，正在进行的item的icon比较大，刚好和title上下对齐；其他的item的icon都相对于title居中显示。那么对于这种状态下的item，线要怎么画呢？  
+具体需求如上所示，首先整体上可以肯定是一个RecyclerView，然后看看item如何实现。Item可以分为左右两边，右边的好实现，关键是左边的时间轴有点麻烦。  
+从图中可以注意到，正在进行的item icon比较大，刚好和title上下对齐；其他状态的item icon都相对于title居中显示。那么对于这种状态下的item，时间轴要怎么画呢？  
 
 思路：
 
-1. 以icon为划分，上面一个短线条、下面一个长线条。上面一个短线条的怎么显示取决于上一个item，下面一个长线条则取决于当前item。这就是说，绘制当前item时还需要知道上一个item的信息。  
-   这就麻烦了，而且实现也不优雅。
+1. 以icon为划分，上面一个短线条、下面一个长线条。这样的画，上面一个短线条的怎么显示取决于上一个item，下面一个长线条则取决于当前item。这就是说，绘制当前item时还需要知道上一个item的信息。  
+   实现有点麻烦了，而且也不优雅。
 
 2. 左边的轴交给`RecyclerView.ItemDecoration`实现，`RecyclerView`只需要按照常规的写法显示右边的一些信息即可。这样的实现很优雅。
 
@@ -136,7 +136,8 @@ public abstract static class ItemDecoration {
 }
 ```
 
-上面这段代码就是`ItemDecoration`类的声明，可以看到只有三个方法需要override——`onDraw`、`onDrawOver`、`getItemOffsets`。在注释中仍然有一些非常实用的解释：
+上面这段代码就是`ItemDecoration`类的声明，可以看到只有三个方法需要override——`onDraw`、`onDrawOver`、`getItemOffsets`。  
+在注释中仍然有一些非常实用的解释：
 
 1. 所有的`ItemDecoration`按照被添加的顺序进行绘制
 2. `ItemDecoration.onDraw`可以通过Canvas绘制任意装饰到RecyclerView上  
@@ -149,7 +150,7 @@ public abstract static class ItemDecoration {
 
 ### 2 实现UI效果
 
-整个时间轴的代码如下：
+在了解了`ItemDecoration`相关的知识后，我们看一下最开始的时间轴的写法：
 
 ```kotlin
 class CertProgressItemDecoration : RecyclerView.ItemDecoration() {
