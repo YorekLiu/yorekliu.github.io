@@ -15,6 +15,13 @@ last_modified_at: 2018-04-08T22:31:19+08:00
 
 {% include base_path %}
 
+RecyclerView高级特性系列：
+
+- [RecyclerView高级特性——拖拽排序以及滑动删除](/android/RecyclerView-Sort&Delete/)
+- [RecyclerView高级特性——ItemDecoration](/android/recyclerview-item-docoration/)
+
+---
+
 RecyclerView支持拖拽排序以及滑动删除，实现过程也比较简单。
 
 下面先上一段demo效果视频：
@@ -89,12 +96,12 @@ public class TodoTaskAdapter extends BaseQuickAdapter<TodoTask, BaseViewHolder> 
 - 交换时使用`Collections.swap`将对应位置的数据进行交换，然后通知数据有更改(`notifyItemMoved`以及`notifyItemRemoved`)会有默认的动画效果。
 - 删除以及标记完成都是简单的移除了数据，然后通知更新。这里可以按照自己的业务来，这里只是demo
 
-## 3. 自定义`android.support.v7.widget.helper.ItemTouchHelper.Callback`类，调用Adapter的交换、删除等操作方法
+## 3. 自定义Callback类，调用Adapter的交换、删除等操作方法
 
 这步是重要的过程，我们先上全部的代码。
 
 ```java
-public class DragSwipeCallback extends ItemTouchHelper.Callback {
+public class DragSwipeCallback extends android.support.v7.widget.helper.ItemTouchHelper.Callback {
 
     /** 通过此变量通知外界发生了排序、删除等操作 */
     private IDragSwipe mAdapter;
