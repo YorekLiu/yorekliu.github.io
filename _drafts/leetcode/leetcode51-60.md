@@ -422,3 +422,77 @@ class Solution {
     }
 }
 ```
+
+## 57. Insert Interval
+
+[Array](/tags/#array){: .btn .btn--inverse }  [Sort](/tags/#sort){: .btn .btn--inverse }  
+
+Given a set of *non-overlapping* intervals, insert a new interval into the intervals (merge if necessary).
+
+You may assume that the intervals were initially sorted according to their start times.
+
+**Example 1:**
+
+**Input:** intervals = [[1,3],[6,9]], newInterval = [2,5]  
+**Output:** [[1,5],[6,9]]
+{: .notice }
+
+**Example 2:**
+
+**Input:** intervals = [[1,2],[3,5],[6,7],[8,10],[12,16]], newInterval = [4,8]  
+**Output:** [[1,2],[3,10],[12,16]]  
+**Explanation:** Because the new interval [4,8] overlaps with [3,5],[6,7],[8,10].  
+{: .notice }
+
+**Solution**
+
+该题的需要我们插入一个区间，然后合并可以合并的区间。所以我们先将原来的区间和需要插入的区间合并成为一个新的区间，然后问题就转化为上一题了。  
+需要注意的是，输入的区间是有序的，所以我们在合并成为新区间时，采用插入排序的思路，在$$O(n)$$的时间内完成新区间的合并和生成，且完成也是有序的。  
+既然目前数组是有序的，所以我们采用上一题的解法1的思路：对有序的数组可以两两之间进行比较：如果可以merge，那么更新较后者的值；若是最后一个，或者不可以merge，前者就是结果之一。
+
+Runtime 2ms，beats 75.79%
+
+```java
+class Solution {
+    public int[][] insert(int[][] intervals, int[] newInterval) {
+        final int n = intervals.length;
+        int[][] inserted = new int[n + 1][];
+        int index = 0;
+        boolean used = false;
+        
+        for (int i = 0; i < n; i++) {
+            if (!used && intervals[i][0] >= newInterval[0]) {
+                inserted[index++] = newInterval;
+                inserted[index++] = intervals[i];
+                used = true;
+            } else {
+                inserted[index++] = intervals[i];
+            }
+        }
+        
+        if (!used) {
+            inserted[index++] = newInterval;
+        }
+        
+        return merge(inserted);
+    }
+    
+    private int[][] merge(int[][] intervals) {
+        List<int[]> result = new ArrayList<>();
+        for (int i = 0; i < intervals.length; i++) {
+            if (i == intervals.length - 1 ||
+                intervals[i][1] < intervals[i + 1][0]) {
+                result.add(new int[] {
+                    intervals[i][0],
+                    intervals[i][1]
+                });
+            } else if (intervals[i][1] >= intervals[i + 1][0]) {
+                intervals[i + 1][0] = intervals[i][0];
+                intervals[i + 1][1] = Math.max(intervals[i][1], intervals[i + 1][1]);
+            }
+        }
+        
+        return result.toArray(new int[result.size()][2]);
+    }
+}
+```
