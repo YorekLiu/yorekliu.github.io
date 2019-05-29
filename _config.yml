@@ -64,7 +64,7 @@ google:
   search_engine_id       : # YOUR_SEARCH_ENGINE_ID
   instant_search         : # false (default), true
 # SEO Related
-google_site_verification :
+google_site_verification : google-site-verification=_uXtclZfKZtuWGXdpam0tVpD3On3ksx6eTJXUsanuc4
 bing_site_verification   :
 yandex_site_verification :
 naver_site_verification  :
@@ -96,7 +96,7 @@ analytics:
 author:
   name             : "刘扬窑Yorek"
   avatar           : "/assets/images/bio-photo2.png" # "/assets/images/bio-photo.jpg"
-  bio              : "An Android Developer."
+  bio              : "🤔⛱"
   location         : "Shanghai, China."
   links:
     - label: "Email"
@@ -104,7 +104,7 @@ author:
       url: mailto:lyytogether@gmail.com
     - label: "Website"
       icon: "fas fa-fw fa-link"
-      url: "http://blog.yorek.xyz"
+      url: "https://blog.yorek.xyz/"
     - label: "Twitter"
       icon: "fab fa-fw fa-twitter-square"
       # url: "https://twitter.com/"
