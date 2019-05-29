@@ -496,3 +496,53 @@ class Solution {
     }
 }
 ```
+
+## 58. Length of Last Word
+
+[String](/tags/#string){: .btn .btn--inverse }
+
+Given a string *s* consists of upper/lower-case alphabets and empty space characters `' '`, return the length of last word in the string.
+
+If the last word does not exist, return 0.
+
+**Note:** A word is defined as a character sequence consists of non-space characters only.
+
+**Example:**
+
+**Input:** "Hello World"  
+**Output:** 5  
+{: .notice }
+
+**Solution**
+
+解法很简单，从后往前开始统计。注意处理以`' '`结尾的情况。
+
+Runtime 0ms，beats 100%
+
+```java
+class Solution {
+    public int lengthOfLastWord(String s) {
+        if (s == null || s.length() == 0) return 0;
+        
+        final int n = s.length();
+        boolean counting = false;
+        int length = 0;
+        
+        for (int i = n - 1; i >= 0; i--) {
+            boolean space = s.charAt(i) == ' ';
+            if (space && !counting) {
+                continue;
+            } else if (!space && counting) {
+                length++;
+            } else if (space && counting) {
+                break;
+            } else {
+                counting = true;
+                length++;
+            }
+        }
+        
+        return length;
+    }
+}
+```
