@@ -28,7 +28,7 @@ last_modified_at: 2019-01-02T17:49:55+08:00
 
 ## 1. 数组
 
-[Array](/tags/#array){: .btn .btn--inverse }  
+[Array](/tags/#array){: .tag } 
 
 ### 1.1 (3)数组中重复的数字
 
@@ -215,7 +215,7 @@ while (col < columns && row >= 0) {
 ```
 
 ## 2. 字符串
-[String](/tags/#string){: .btn .btn--inverse }  
+[String](/tags/#string){: .tag } 
 
 ### 2.1 (5)替换空格
 
@@ -300,7 +300,7 @@ String replaceBlank(String str) {
 {: .notice--info }
 
 ## 3. 链表
-[Linked list](/tags/#linked-list){: .btn .btn--inverse }  
+[Linked list](/tags/#linked-list){: .tag } 
 
 ### 3.1 (6)从尾到头打印链表
 
@@ -346,7 +346,7 @@ private void printListReversingly2(ListNode pHead) {
 上面的代码看起来很简洁，但**当链表非常长的时候，就会导致函数调用的层级很深，从而导致函数调用栈溢出**。显然用栈基于循环实现的代码鲁棒性要好一点。  
 
 ## 4. 树
-[Tree](/tags/#tree){: .btn .btn--inverse }  [Red Black Tree](/tags/#red-black-tree){: .btn .btn--inverse }  
+[Tree](/tags/#tree){: .tag } [Red Black Tree](/tags/#red-black-tree){: .tag } 
 
 树的逻辑结构很简单：除根节点之外的每个节点只有一个父节点，根节点没有父节点；除叶节点之外所有节点都有一个或多个子节点，叶节点没有子节点。父节点与子节点之间用指针链接。  
 
@@ -702,7 +702,7 @@ private ParentBinaryTreeNode getNext(ParentBinaryTreeNode node){
 ```
 
 ## 5. 栈和队列
-[Stack](/tags/#stack){: .btn .btn--inverse }  [Queue](/tags/#queue){: .btn .btn--inverse }  
+[Stack](/tags/#stack){: .tag } [Queue](/tags/#queue){: .tag } 
 
 栈的特点是后进先出，通常栈是一个不考虑排序的数据结构，我们需要O(n)时间才能找到栈中最大或者最小的元素。如果想要在O(1)时间内得到栈的最大值或最小值，则需要对栈做特殊的设计，详见(30)题“包含min函数的栈”。
 
@@ -1332,7 +1332,7 @@ private boolean isMatched(int threshold, int x, int y) {
 
 ### 6.4 动态规划与贪婪算法  
 
-[Dynamic Programming](/tags/#dynamic-programming){: .btn .btn--inverse } [Greedy](/tags/#greedy){: .btn .btn--inverse }
+[Dynamic Programming](/tags/#dynamic-programming){: .tag }[Greedy](/tags/#greedy){: .btn .btn--inverse }
 
 如果题目是求一个问题的最优解（通常是求最大值或者最小值），而且该问题能够分解成若干个子问题，而且子问题之间还有重叠的更小的子问题，就可以考虑使用动态规划来解决这个问题。  
 我们在应用动态规划之前要分析能够把大问题分解为小问题，分解后的每个小问题也存在最优解。如果把小问题的最优解组合起来能够得到整个问题的最优解，那么我们可以应用动态规划来解决这个问题。  
