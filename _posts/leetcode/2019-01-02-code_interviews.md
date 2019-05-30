@@ -825,7 +825,7 @@ class JStack<T> extends Stack<T>{
 
 ### 6.1 递归和循环
 
-[Recursion](/tags/#recursion){: .btn .btn--inverse }
+[Recursion](/tags/#recursion){: .tag }
 
 如果我们需要重复地多次计算相同的问题，则通常可以选择用递归或者循环两种不同的方法。通常递归的代码会比较简洁。  
 
@@ -970,7 +970,7 @@ $$f(8)=f(7)+f(6)$$
 
 ### 6.2 查找和排序
 
-[Sort](/tags/#sort){: .btn .btn--inverse }
+[Sort](/tags/#sort){: .tag }
 
 查找和排序都是在程序设计中经常用到的算法。查找相对而言较为简单，不外乎顺序查找、二分查找、哈希表查找和二叉排序树查找。
 
@@ -1206,7 +1206,7 @@ private int minInOrder(int[] numbers, int start, int end) {
 
 ### 6.3 回溯法
 
-[Backtracking](/tags/#backtracking){: .btn .btn--inverse }
+[Backtracking](/tags/#backtracking){: .tag }
 
 回溯法可以看成蛮力法的升级版，它从解决问题每一步的所有可能选项里系统地选择出一个可行的解决方案。回溯法非常适合由多个步骤组成的问题，并且每个步骤都有很多选项。当我们在某一步选择了其中一个选项时，就进入下一步，然后又面临新的选项。我们就这样重复选择，直至到达最终的状态。  
 用回溯法解决的问题的所有选项可以形象地用树状结构表示。在某一步有n个可能的选项，那么该步骤可以看成是树状结构中的一个节点，每个选项看成树中节点连接线，经过这些连接线到达该节点的n个子节点。树的叶节点对应着终结状态。如果在叶节点的状态满足题目的约束条件，那么我们找到了一个可行的解决方案。  
@@ -1332,7 +1332,7 @@ private boolean isMatched(int threshold, int x, int y) {
 
 ### 6.4 动态规划与贪婪算法  
 
-[Dynamic Programming](/tags/#dynamic-programming){: .tag }[Greedy](/tags/#greedy){: .btn .btn--inverse }
+[Dynamic Programming](/tags/#dynamic-programming){: .tag }[Greedy](/tags/#greedy){: .tag }
 
 如果题目是求一个问题的最优解（通常是求最大值或者最小值），而且该问题能够分解成若干个子问题，而且子问题之间还有重叠的更小的子问题，就可以考虑使用动态规划来解决这个问题。  
 我们在应用动态规划之前要分析能够把大问题分解为小问题，分解后的每个小问题也存在最优解。如果把小问题的最优解组合起来能够得到整个问题的最优解，那么我们可以应用动态规划来解决这个问题。  
@@ -1417,7 +1417,7 @@ private int maxProductAfterCutting_solution2(int length) {
 
 ### 6.5 位运算  
 
-[Bit Manipulation](/tags/#bit-manipulation){: .btn .btn--inverse }
+[Bit Manipulation](/tags/#bit-manipulation){: .tag }
 
 位运算只有5种运算：与、或、异或、左移、右移。  
 与、或、异或运算的规律可以用下表总结：
