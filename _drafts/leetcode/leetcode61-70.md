@@ -392,3 +392,135 @@ class Solution {
     }
 }
 ```
+
+## 66. Plus One
+
+[Array](/tags/#array){: .tag }
+
+Given a **non-empty** array of digits representing a non-negative integer, plus one to the integer.
+
+The digits are stored such that the most significant digit is at the head of the list, and each element in the array contain a single digit.
+
+You may assume the integer does not contain any leading zero, except the number 0 itself.
+
+**Example 1:**
+
+**Input:** [1,2,3]  
+**Output:** [1,2,4]  
+**Explanation:** The array represents the integer 123.
+{: .notice }
+
+**Example 2:**
+
+**Input:** [4,3,2,1]  
+**Output:** [4,3,2,2]  
+**Explanation:** The array represents the integer 4321.
+{: .notice }
+
+**Solution**
+
+从后往前遍历，每一位与进位相加即可。最后检查一下是否需要创建新的数组来容纳最后的一个进位。
+
+Runtime 0ms
+
+```java
+class Solution {
+    public int[] plusOne(int[] digits) {
+        if (digits == null || digits.length == 0)
+            return digits;
+        
+        final int n = digits.length;
+        int carry = 1;
+        
+        for (int i = n - 1; i >= 0; i--) {
+            int sum = digits[i] + carry;
+            digits[i] = sum % 10;
+            carry = sum / 10;
+        }
+        
+        if (carry > 0) {
+            int[] temp = new int[n + 1];
+            System.arraycopy(digits, 0, temp, 1, n);
+            temp[0] = carry;
+            digits = temp;
+        }
+        
+        return digits;
+    }
+}
+```
+
+## 67. Add Binary
+
+[Math](/tags/#math){: .tag }
+
+Given two binary strings, return their sum (also a binary string).
+
+The input strings are both **non-empty** and contains only characters `1` or `0`.
+
+**Example 1:**
+
+**Input:** a = "11", b = "1"  
+**Output:** "100"
+{: .notice }
+
+**Example 2:**
+
+**Input:** a = "1010", b = "1011"   
+**Output:** "10101"
+{: .notice }
+
+**Solution**
+
+本题相当于上一次的进阶版，也是两个数都从后往前开始按位累加，最后考虑一下最后的一次进位。  
+
+Runtime 1ms
+
+**Tips:** char转int不需要强转，int转char是需要的。  
+char转int： `'9' - '0'`  
+int转char: `(char) (9 + '0')`
+{: .notice--primary }
+
+```java
+class Solution {
+    public String addBinary(String a, String b) {
+        // make a becomes the larger one
+        if (a.length() < b.length()) {
+            String temp = a;
+            a = b;
+            b = temp;
+        }
+        
+        return addBinary(a.toCharArray(), b.toCharArray());
+    }
+    
+    private String addBinary(char[] a, char[] b) {
+        final int m = a.length;
+        final int n = b.length;
+        int i = m - 1, j = n - 1, carry = 0, sum = 0;
+        
+        while (i >= 0) {
+            if (j >= 0) {
+                sum = a[i] + b[j] - '0' - '0' + carry;
+            } else {
+                sum = a[i] - '0' + carry;
+            }
+            
+            a[i] = (char) ((sum % 2) + '0');
+            carry = sum / 2;
+            
+            i--;
+            j--;
+        }
+        
+        if (carry > 0) {
+            char[] result = new char[m + 1];
+            System.arraycopy(a, 0, result, 1, m);
+            result[0] = (char) (carry + '0');
+            return new String(result);
+        } else {
+            return new String(a);
+        }
+    }
+}
+```
