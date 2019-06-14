@@ -174,6 +174,8 @@ private int countRange(int[] numbers, int start, int end) {
 6&nbsp;&nbsp;8&nbsp;&nbsp;11&nbsp;15  
 {% endraw %}
 
+此题同[LeetCode-74-Search a 2D Matrix](/algorithm/leetcode71-80/#74-search-a-2d-matrix)
+
 我们利用每行每列都是递增的规律，可以整行、整列地缩减查找范围。  
 首选选取数组右上角的数字。如果数字等于要查找的数字，则查找过程结束；如果该数字大于要查找的数字，说明要查找的数字位于该列左边，所以剔除这个数字所在的列；如果该数字小于要查找的数字，说明要查找的数字位于改行下方，所以剔除这个数字所在的行。这样每一步都可以缩小查找的方位，直到找到数字或查找结束。  
 
@@ -1219,6 +1221,8 @@ private int minInOrder(int[] numbers, int start, int end) {
 {: .notice }
 
 $$A \underline{B} T G \\ C \underline{F} \underline{C} S \\ J D \underline{E} H$$
+
+此题同[LeetCode-79-Word Search](/algorithm/leetcode71-80/#79-word-search)
 
 这是一个可以用回溯法解决的典型题。首先，在矩阵中任选一个格子ch作为路径的起点。如果路径上第i个字符刚好是ch，那么到相邻的格子寻找路径上的第i+1个字符。除矩阵边界上的格子之外，其他格子都有4个相邻的格子。重复这个过程，直到路径上的所有字符都在矩阵中找到相应的位置。  
 由于回溯法的递归特性，路径可以看成一个栈。当在矩阵中定位了路径中前n个字符的位置之后，在与第n个字符对应的格子的周围都没有找到第n+1个字符，这时候只好在路径上回到第n-1的字符，重新定位第n个字符。  
