@@ -1154,7 +1154,7 @@ public class MergeBU extends AbsSort{
 把一个数组最开始的若干个元素搬到数组的末尾，我们称之为数组的旋转。输入一个递增排序的数组的一个旋转，输出旋转数组的最小元素。例如数组{3, 4, 5, 1, 2}为{1, 2, 3, 4, 5}的一个旋转，该数组的最小值为1。  
 {: .notice }
 
-本题与[Leetcode-33-Search in Rotated Sorted Array](/algorithm/leetcode31-40/#33-search-in-rotated-sorted-array)比较类似，虽然前者有个重要的限制条件：You may assume no duplicate exists in the array；且前者要找具体的值，本题找最小值。但是具体思维可以借鉴，这样处理可以一般情况。
+本题与[Leetcode-81-Search in Rotated Sorted Array II](/algorithm/leetcode81-90/#81-search-in-rotated-sorted-array-ii)比较类似；且前者要找具体的值，本题找最小值。但是具体思维可以借鉴，这样处理可以一般情况。
 
 考虑到以下特殊情况：当下标为lo和hi的两个数字相同的情况，当lo，mid，hi对应的数字都相等时，上面的算法认为此时最小的数字位于中间数字的前面。这可不一定。比如数组{1, 0, 1, 1, 1}和数组{1, 1, 1, 0, 1}都是增序数列{0, 1, 1, 1, 1}的一个旋转数组。在这两个数组中最小数字为别位于左右半区。所以上面的算法一定会失败一种情况。因此，当lo，mid，hi对应的数字都相等时，我们必须采用顺序查找。
 
