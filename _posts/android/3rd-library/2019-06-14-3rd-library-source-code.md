@@ -26,6 +26,7 @@ last_modified_at: 2019-06-14T16:52:51+08:00
    - [Glide3——深入探究Glide缓存机制](/android/glide3/)
    - [Glide4——RequestBuilder中高级点的API以及Target](/android/glide4/)
    - [Glide5——Glide内置的transform以及自定义BitmapTransformation](/android/glide5/)
+   - [Glide6——Glide利用AppGlideModule、LibraryGlideModule更改默认配置、扩展Glide功能；GlideApp与Glide的区别在哪？](/android/glide6/)
 
 **TODO**
 
