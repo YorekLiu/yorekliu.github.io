@@ -101,3 +101,56 @@ class Solution {
     }
 }
 ```
+
+## 83. Remove Duplicates from Sorted List
+
+[Linked List](/tags/#linked-list){: .tag } 
+
+Given a sorted linked list, delete all duplicates such that each element appear only *once*.
+
+**Example 1:**
+
+**Input:** 1->1->2  
+**Output:** 1->2
+{: .notice }
+
+**Example 2:**
+
+**Input:** 1->1->2->3->3  
+**Output:** 1->2->3
+{: .notice }
+
+**Solution**  
+
+Runtime 0 ms
+
+```java
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public ListNode deleteDuplicates(ListNode head) {
+        if (head == null || head.next == null) return head;
+        
+        ListNode q = head, p = q.next;
+        
+        while (p != null) {
+            if (q.val == p.val) {
+                q.next = p.next;
+                p.next = null;
+                p = q.next;
+            } else {
+                q = q.next;
+                p = p.next;
+            }
+        }
+        
+        return head;
+    }
+}
+```
