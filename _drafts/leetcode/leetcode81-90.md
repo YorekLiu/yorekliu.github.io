@@ -102,6 +102,74 @@ class Solution {
 }
 ```
 
+## 82. Remove Duplicates from Sorted List II
+
+[Linked List](/tags/#linked-list){: .tag } 
+
+Given a sorted linked list, delete all nodes that have duplicate numbers, leaving only *distinct* numbers from the original list.
+
+**Example 1:**
+
+**Input:** 1->2->3->3->4->4->5  
+**Output:** 1->2->5
+{: .notice }
+
+**Example 2:**
+
+**Input:** 1->1->1->2->3  
+**Output:** 2->3
+{: .notice }
+
+**Solution**  
+
+此题同[CI-18-2-删除链表中重复的结点](/algorithm/code_interviews_3/#132-%E5%88%A0%E9%99%A4%E9%93%BE%E8%A1%A8%E4%B8%AD%E9%87%8D%E5%A4%8D%E7%9A%84%E7%BB%93%E7%82%B9)
+
+Runtime 1 ms
+
+```java
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public ListNode deleteDuplicates(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        
+        // create a head node
+        ListNode h = new ListNode(0);
+        h.next = head;
+        
+        ListNode t = h, p = t.next, q = p.next;
+        
+        while (q != null) {
+            if (p.val == q.val) {
+                while (q != null && p.val == q.val) {
+                    p = p.next;
+                    q = q.next;
+                }
+                t.next = q;
+                if (q != null) {
+                    q = q.next;
+                    p = p.next;
+                }
+            } else {
+                q = q.next;
+                p = p.next;
+                t = t.next;
+            }
+        }
+        
+        return h.next;
+    }
+}
+```
+
 ## 83. Remove Duplicates from Sorted List
 
 [Linked List](/tags/#linked-list){: .tag } 
