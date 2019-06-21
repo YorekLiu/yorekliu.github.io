@@ -92,6 +92,19 @@ tags:
     <figcaption>自定义通知样式</figcaption>
 </figure>
 
+<figure class="half">
+    <img src="/assets/images/android/android_alias_res_dir_baseline.png">
+    <img src="/assets/images/android/android_alias_res_dir_flavor.png">
+    <figcaption>基线与马甲res资源目录对比</figcaption>
+</figure>
+
+<figure class="third">
+    <img src="/assets/images/android/android_alias_res_dir_baseline.png">
+    <img src="/assets/images/android/android_alias_res_dir_flavor.png">
+    <img src="/assets/images/android/android_alias_res_dir_flavor.png">
+    <figcaption>基线与马甲res资源目录对比</figcaption>
+</figure>
+
 分段函数  
 
 $$f(n,m)=\begin{cases} 0 & n=1 \\ [f(n-1,m)+m]\%n & n>1 \end{cases}$$
