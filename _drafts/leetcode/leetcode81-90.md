@@ -252,7 +252,7 @@ Given *n* non-negative integers representing the histogram's bar height where th
     <figcaption>(lessFromRight[i] - lessFromLeft[i] - 1)的意义</figcaption>
 </figure>
 
-这样就容易理解为什么lessFromLeft[i]的默认值为-1，lessFromRight[i]的默认值为n+1了。
+这样就容易理解为什么lessFromLeft[i]的默认值为-1，lessFromRight[i]的默认值为n了。
 
 Runtime 2 ms
 
