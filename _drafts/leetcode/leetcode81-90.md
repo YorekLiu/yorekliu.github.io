@@ -294,3 +294,87 @@ class Solution {
     }
 }
 ```
+
+## 85. Maximal Rectangle
+
+[Dynamic Programming](/tags/#dynamic-programming){: .tag }
+
+Given a 2D binary matrix filled with 0's and 1's, find the largest rectangle containing only 1's and return its area.
+
+**Example:**
+
+**Input:**  
+[  
+&emsp;&emsp;&emsp;["1","0","1","0","0"],  
+&emsp;&emsp;&emsp;["1","0","1","1","1"],  
+&emsp;&emsp;&emsp;["1","1","1","1","1"],  
+&emsp;&emsp;&emsp;["1","0","0","1","0"]  
+]  
+**Output:** 6
+{: .notice }
+
+**Solution: [Dynamic Programming](https://leetcode.com/problems/maximal-rectangle/discuss/29054/Share-my-DP-solution)**  
+
+Solution比较难理解。总体来说可以采用DP解法，一行一行遍历。对某一个具体的坐标，有如下解：  
+
+$$f(i, j)=[right(i,j) - left(i,j)] * height(i,j)$$
+
+其中：
+
+- $$height(i,j)$$表示上方连续的1的个数
+- $$left(i, j)$$表示对任意k∈[j, i]，使得height[k] >= height[i]成立的最左边的索引j
+- $$right(i, j)$$表示对任意k∈[i, j]，使得height[k] >= height[i]成立的最右边的索引j
+
+这样一来，$$left$$和$$right$$就能表示包含当前点的、且高为$$height$$的矩形的边界。
+
+[Solution解题过程](/assets/images/leetcode/question_85_solution.png)
+
+Runtime 7 ms
+
+```java
+class Solution {
+    public int maximalRectangle(char[][] matrix) {
+        if (matrix == null || matrix.length == 0) return 0;
+        
+        final int M = matrix.length;
+        final int N = matrix[0].length;
+        int[] left = new int[N];
+        int[] right = new int[N];
+        int[] height = new int[N];
+        int max = Integer.MIN_VALUE;
+        Arrays.fill(right, N);
+        
+        for (int i = 0; i < M; i++) {
+            int curL = 0, curR = N;
+            // right
+            for (int j = N - 1; j >= 0; j--) {
+                if (matrix[i][j] == '1') {
+                    right[j] = Math.min(right[j], curR);
+                } else {
+                    right[j] = N;
+                    curR = j;
+                }
+            }
+            
+            for (int j = 0; j < N; j++) {
+                if (matrix[i][j] == '1') {
+                    // height
+                    height[j]++;
+                    // left
+                    left[j] = Math.max(left[j], curL);
+                } else {
+                    // height
+                    height[j] = 0;
+                    // left
+                    left[j] = 0;
+                    curL = j + 1;
+                }
+                
+                max = Math.max(max, (right[j] - left[j]) * height[j]);
+            }
+        }
+        
+        return max;
+    }
+}
+```
