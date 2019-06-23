@@ -6,6 +6,9 @@ categories:
 tags:
   - LeetCode
   - Binary Search
+  - Dynamic Programming
+  - Linked List
+  - Array
 toc: true
 toc_label: "目录"
 # last_modified_at: 2019-06-18T10:19:55+08:00
@@ -375,6 +378,76 @@ class Solution {
         }
         
         return max;
+    }
+}
+```
+
+## 86. Partition List
+
+[Linked List](/tags/#linked-list){: .tag }
+
+Given a linked list and a value *x*, partition it such that all nodes less than *x* come before nodes greater than or equal to *x*.
+
+You should preserve the original relative order of the nodes in each of the two partitions.
+
+**Example:**
+
+**Input:** head = 1->4->3->2->5->2, x = 3  
+**Output:** 1->2->2->4->3->5
+{: .notice }
+
+**Solution**  
+
+本题要求将值小于x的节点放置到值大于等于x的节点之前，同时要保持相对位置不变。实际上就是一个链表的插入问题。
+
+我们可以使用指针p表示可以插入的位置，使用指针q来表示待插入的节点。q遍历时判断是否需要插入，以及往后找到第一个可以待插入的节点，插入到p.next上。注意插入完成后，重置指针时考虑`[3,1,2], x=3`的情况。
+
+[解题过程](/assets/images/leetcode/question_86_solution.png)
+
+Runtime 0 ms
+
+```java
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public ListNode partition(ListNode h, int x) {
+        if (h == null || h.next == null) {
+            return h;
+        }
+        
+        ListNode head = new ListNode(0);
+        head.next = h;
+        
+        ListNode p = head, q = head.next;
+        
+        while (q != null) {
+            if(q.val < x) {
+                p = p.next;
+                q = q.next;
+            } else {
+                ListNode t = q;
+                while (q != null && q.val >= x) {
+                    t = q;
+                    q = q.next;
+                }
+                if (q != null) {
+                    ListNode t1 = p.next, t2 = q.next;
+                    p.next = q;
+                    q.next = t1;
+                    t.next = t2;
+                    p = p.next;
+                    q = t;
+                }
+            }
+        }
+        
+        return head.next;
     }
 }
 ```
