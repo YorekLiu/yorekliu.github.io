@@ -92,13 +92,13 @@ tags:
     <figcaption>自定义通知样式</figcaption>
 </figure>
 
-<figure class="half">
+<figure style="width: 80%" class="half align-center">
     <img src="/assets/images/android/android_alias_res_dir_baseline.png">
     <img src="/assets/images/android/android_alias_res_dir_flavor.png">
     <figcaption>基线与马甲res资源目录对比</figcaption>
 </figure>
 
-<figure class="third">
+<figure style="width: 80%" class="third align-center">
     <img src="/assets/images/android/android_alias_res_dir_baseline.png">
     <img src="/assets/images/android/android_alias_res_dir_flavor.png">
     <img src="/assets/images/android/android_alias_res_dir_flavor.png">
@@ -110,3 +110,46 @@ tags:
 $$f(n,m)=\begin{cases} 0 & n=1 \\ [f(n-1,m)+m]\%n & n>1 \end{cases}$$
 
 HTTPS原理简述: https://blog.csdn.net/iispring/article/details/51615631
+
+
+{% raw %}
+<figcaption>ScaleType与默认的transform之间关系</figcaption>
+<table>
+  <thead>
+    <tr>
+      <th>ScaleType</th>
+      <th>transform</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>CENTER_CROP</td>
+      <td>optionalCenterCrop()</td>
+    </tr>
+    <tr>
+      <td>CENTER_INSIDE</td>
+      <td rowspan="2">optionalCenterInside()</td>
+    </tr>
+    <tr>
+      <td>FIT_XY</td>
+    </tr>
+    <tr>
+      <td>FIT_CENTER</td>
+      <td rowspan="3">optionalFitCenter()</td>
+    </tr>
+    <tr>
+      <td>FIT_START</td>
+    </tr>
+    <tr>
+      <td>FIT_END</td>
+    </tr>
+    <tr>
+      <td>CENTER</td>
+      <td rowspan="2">&nbsp;</td>
+    </tr>
+    <tr>
+      <td>MATRIX</td>
+    </tr>
+  </tbody>
+</table>
+{% endraw %}
