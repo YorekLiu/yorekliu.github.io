@@ -9,6 +9,7 @@ tags:
   - Dynamic Programming
   - Linked List
   - Array
+  - String
 toc: true
 toc_label: "目录"
 # last_modified_at: 2019-06-18T10:19:55+08:00
@@ -448,6 +449,90 @@ class Solution {
         }
         
         return head.next;
+    }
+}
+```
+
+## 87. Scramble String
+
+[String](/tags/#string){: .tag } [Dynamic Programming](/tags/#dynamic-programming){: .tag }
+
+Given a string *s1*, we may represent it as a binary tree by partitioning it to two non-empty substrings recursively.
+
+Below is one possible representation of *s1* = `"great"`:
+
+&nbsp;&nbsp;&nbsp;&nbsp;great  
+&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;\  
+&nbsp;&nbsp;gr&nbsp;&nbsp;&nbsp;eat  
+&nbsp;/&nbsp;\&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;\  
+g&nbsp;&nbsp;r&nbsp;&nbsp;e&nbsp;&nbsp;&nbsp;at  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;\  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;&nbsp;&nbsp;t  
+{: .notice }
+
+To scramble the string, we may choose any non-leaf node and swap its two children.
+
+For example, if we choose the node `"gr"` and swap its two children, it produces a scrambled string `"rgeat"`.
+
+&nbsp;&nbsp;&nbsp;&nbsp;rgeat  
+&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;\  
+&nbsp;&nbsp;rg&nbsp;&nbsp;&nbsp;eat  
+&nbsp;/&nbsp;\&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;\  
+r&nbsp;&nbsp;g&nbsp;&nbsp;e&nbsp;&nbsp;&nbsp;at  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;\  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;&nbsp;&nbsp;t  
+{: .notice }
+
+We say that `"rgtae"` is a scrambled string of `"great"`.
+
+Given two strings *s1* and *s2* of the same length, determine if *s2* is a scrambled string of *s1*.
+
+**Example 1:**
+
+**Input:** s1 = "great", s2 = "rgeat"  
+**Output:** true  
+{: .notice }
+
+**Example 2:**
+
+**Input:** s1 = "abcde", s2 = "caebd"  
+**Output:** false  
+{: .notice }
+
+**Solution**  
+
+不要被题目所迷惑，不需要建立二叉树，可以直接字符串层面进行比较。两边各取[1, N-1]的长度的字符串进行比较，同时拿剩下的字符串进行比较即可。
+
+[解题过程](/assets/images/leetcode/question_87_solution.png)
+
+Runtime 2 ms
+
+```java
+class Solution {
+    public boolean isScramble(String s1, String s2) {
+        if (s1.equals(s2)) return true;
+        if (s1.length() != s2.length()) return false;
+        
+        final int N = s1.length();
+        int[] map = new int[26];
+        for (int i = 0; i < N; i++) {
+            map[s1.charAt(i) - 'a']++;
+            map[s2.charAt(i) - 'a']--;
+        }
+        for (int i = 0; i < 26; i++) {
+            if (map[i] != 0) return false;
+        }
+        
+        for (int i = 1; i < N; i++) {
+            if (isScramble(s1.substring(0, i), s2.substring(0, i)) && isScramble(s1.substring(i), s2.substring(i))) {
+                return true;
+            }
+            if (isScramble(s1.substring(0, i), s2.substring(N - i)) && isScramble(s1.substring(i), s2.substring(0, N - i))) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }
 ```
