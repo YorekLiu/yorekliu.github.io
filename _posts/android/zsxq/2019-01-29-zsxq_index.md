@@ -34,3 +34,4 @@ last_modified_at: 2019-01-29T17:26:50+08:00
 - [Week22-Android Studio build过程](/android/week22-android-studio-build/)
 - [Week23-大尺寸图片加载问题](/android/week23-load-large-bitmap/)
 - [Week24-设计模式的原则、模式](/design%20patterns/design-pattern/)
+- [Week25-动态权限](/android/%E7%90%90%E7%A2%8E%E7%9F%A5%E8%AF%86%E7%82%B9/#dynamic-permission)
