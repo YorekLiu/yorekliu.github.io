@@ -61,7 +61,7 @@ PorterDuff.Mode有12+6个枚举值，如下表所示：
 
 <figure style="width: 80%" class="align-center">
     <img src="/assets/images/android/porterduff-difference.png">
-    <figcaption>Porter-Duff效果重现图</figcaption>
+    <figcaption>Porter-Duff效果重现图（依次对应最后表格的1、2、3、4）</figcaption>
 </figure>
 
 如上图，最左边的一张图是符合官网效果的，右边三张是不同API在默认`layerType`下的表现。  
