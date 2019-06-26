@@ -11,6 +11,7 @@ tags:
   - Array
   - String
   - Two Pointers
+  - Backtracking
 toc: true
 toc_label: "目录"
 # last_modified_at: 2019-06-18T10:19:55+08:00
@@ -580,6 +581,67 @@ class Solution {
                 nums1[i--] = nums2[n--];
             }
         }
+    }
+}
+```
+
+## 89. Gray Code
+
+[Backtracking](/tags/#backtracking){: .tag } 
+
+The gray code is a binary numeral system where two successive values differ in only one bit.
+
+Given a non-negative integer n representing the total number of bits in the code, print the sequence of gray code. A gray code sequence must begin with 0.
+
+**Example 1:**
+
+**Input:** 2  
+**Output:** [0,1,3,2]  
+**Explanation:**  
+00 - 0  
+01 - 1  
+11 - 3  
+10 - 2  
+For a given n, a gray code sequence may not be uniquely defined. For example, [0,2,3,1] is also a valid gray code sequence.  
+00 - 0  
+10 - 2  
+11 - 3  
+01 - 1  
+{: .notice }
+
+**Example 2:**  
+
+**Input:** 0  
+**Output:** [0]  
+**Explanation:** We define the gray code sequence to begin with 0.  
+             A gray code sequence of n has size = 2n, which for n = 0 the size is 20 = 1.  
+             Therefore, for n = 0 the gray code sequence is [0].  
+{: .notice }
+
+**Solution**  
+
+从下面的解题过程中可以看出，$$f(n)$$与$$f(n-1)$$之间有很大的关系，只需要在原来$$f(n-1)$$的基础上加上一份最高位置为1的**顺序相反**的$$f(n-1)$$就得到了$$f(n)$$。
+
+[解题过程](/assets/images/leetcode/question_89_solution.png)
+
+Runtime 1 ms
+
+```java
+class Solution {
+    public List<Integer> grayCode(int n) {
+        List<Integer> result = new ArrayList<>();
+        result.add(0);
+        
+        if (n == 0) return result;
+        
+        for (int i = 0; i < n; i++) {
+            for (int j = result.size() - 1; j >= 0; j--) {
+                int tmp = result.get(j) | (int) Math.pow(2, i);
+                result.add(tmp);
+            }
+        }
+        
+        return result;
     }
 }
 ```
