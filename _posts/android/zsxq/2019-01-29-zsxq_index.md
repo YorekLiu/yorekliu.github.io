@@ -36,4 +36,4 @@ last_modified_at: 2019-01-29T17:26:50+08:00
 - [Week24-设计模式的原则、模式](/design%20patterns/design-pattern/)
 - [Week25-动态权限](/android/%E7%90%90%E7%A2%8E%E7%9F%A5%E8%AF%86%E7%82%B9/#dynamic-permission)
 - [Week26-ThreadLocal作用和实现原理](/android/Android%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/#21-threadlocal%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86)
-- Week27-[RecyclerView源码解读]() & [ConstraintLayout使用]()
+- Week27-[ListView、RecyclerView缓存策略解析](/android/recyclerview-cache/) & [ConstraintLayout使用]()

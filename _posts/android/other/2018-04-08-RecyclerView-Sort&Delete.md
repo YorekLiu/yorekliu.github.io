@@ -17,6 +17,7 @@ last_modified_at: 2018-04-08T22:31:19+08:00
 
 RecyclerView高级特性系列：
 
+- [ListView、RecyclerView缓存策略解析](/android/recyclerview-cache/)
 - [RecyclerView高级特性——拖拽排序以及滑动删除](/android/RecyclerView-Sort&Delete/)
 - [RecyclerView高级特性——ItemDecoration](/android/recyclerview-item-docoration/)
 
