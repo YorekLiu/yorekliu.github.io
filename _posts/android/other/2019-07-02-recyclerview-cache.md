@@ -10,9 +10,14 @@ tags:
   - RecycleBin
   - ActiveViews
   - ScrapViews
+  - Recycler
+  - ViewHolder
+  - RecycledViewPool
+  - ViewCacheExtension
+  - dispatchLayoutStep
 toc: true
 toc_label: "目录"
-# last_modified_at: 2019-06-20T22:15:50+08:00
+last_modified_at: 2019-07-02T03:23:18+08:00
 ---
 
 RecyclerView高级特性系列：
@@ -29,7 +34,7 @@ RecyclerView高级特性系列：
 
 所以，先从简单一点的ListView开始。
 
-## 1. ListView的缓存策略
+## 1. ListView缓存策略
 
 > ListView和GridView一样，都继承自`AbsListView`。而缓存策略的实现是在`AbsListView`类中，所以两者的缓存策略也是一致的。
 
@@ -129,7 +134,7 @@ private LongSparseArray<View> mTransientStateViewsById;
 
 - `mFirstActivePosition`、`mActiveViews`  
   mFirstActivePosition是指mActiveViews中第一个View在ListView中的position  
-  mActiveViews是指屏幕上显示的View
+  mActiveViews是指正在屏幕上显示的View；在layout发生前保存，供layout中进行复用，在layout后会将剩余没有复用的View降级到scrap中
 
 - `mScrapViews`、`mViewTypeCount`与`mCurrentScrap`  
   可以被Adapter作为convert view使用的View  
@@ -1655,3 +1660,605 @@ View obtainView(int position, boolean[] outMetadata) {
 当然，如果复用View时，控件没有处理好，也是会出现复用引起的bug的，值得注意。一个典型的问题就是，如果某数据值为true就设置ImageView显示某个图片，但是值为false时又没有做任何处理，快速滑动时就会出现ImageView的显示与实际数据对不上的情况。
 
 那么，以上就是ListView缓存机制的全部内容。
+
+## 2. RecyclerView缓存策略
+
+RecyclerView源码解析可以参考[RecyclerView 源码分析](https://www.jianshu.com/p/61fe3f3bb7ec)系列
+{: .notice--info }
+
+首先，我们还是看一下RecycerView典型的`Adapter`的实现：
+
+```java
+
+public class MyRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerviewAdapter.MyViewHolder> {
+ 
+    private Context context;
+    private List<String> data;
+ 
+    public MyRecyclerViewAdapter(Context context,List<String> data){
+        this.context = context;
+        this.data = data;
+    }
+ 
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.recycler_item_my, parent, false);
+        return new MyViewHolder(view);
+    }
+ 
+    @Override
+    public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
+        holder.name.setText(data.get(position));
+ 
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e("这里是点击每一行item的响应事件",""+position+item);
+            }
+        });
+ 
+    }
+ 
+    @Override
+    public int getItemCount() {
+        return data.size();
+    }
+ 
+    public class MyViewHolder extends RecyclerView.ViewHolder{
+        TextView name;
+ 
+        public MyViewHolder(View itemView) {
+            super(itemView);
+            name = itemView.findViewById(R.id.name);
+        }
+    }
+}
+```
+
+可以看到`Adapter`主要是两个方法在缓存中起作用：用来创建新的ViewHolder的`onCreateViewHolder`，以及用来显示数据的`onBindViewHolder`方法。
+
+### 2.1 Recycler
+
+同`ListView`中的`RecycleBin`一样，`RecyclerView`中的缓存也由一个内部类`Recycler`进行管理。`Recycler`里面有四个不同层次的缓存，比`ListView`层次要丰富一点，当然，这与`RecyclerView`拓展性更好有一定的关系。
+
+`Recycler`里面字段如下：
+
+```java
+final ArrayList<ViewHolder> mAttachedScrap = new ArrayList<>();
+ArrayList<ViewHolder> mChangedScrap = null;
+
+final ArrayList<ViewHolder> mCachedViews = new ArrayList<ViewHolder>();
+
+private final List<ViewHolder>
+        mUnmodifiableAttachedScrap = Collections.unmodifiableList(mAttachedScrap);
+
+private int mRequestedCacheMax = DEFAULT_CACHE_SIZE;
+int mViewCacheMax = DEFAULT_CACHE_SIZE;
+
+RecycledViewPool mRecyclerPool;
+
+private ViewCacheExtension mViewCacheExtension;
+
+static final int DEFAULT_CACHE_SIZE = 2;
+```
+
+解释如下：
+
+- `mAttachedScrap`、`mChangedScrap`  
+   一级缓存，同`ListView`中`ActionViews`，在layout发生前将屏幕上面的ViewHolder保存起来，供layout中进行复用
+- `mCachedViews`  
+   一级缓存，默认大小保持在`DEFAULT_CACHE_SIZE = 2`，可以通过`RecyclerView.setItemViewCacheSize(int)`方法进行设置
+   `mCachedViews`数量如果超出限制，会根据索引将里面旧的移动到`RecyclerViewPool`中
+- `ViewCacheExtension`  
+   二级缓存，开发者可以自定义的缓存
+- `RecyclerViewPool`  
+   三级缓存，可以在多个RecyclerView中共享View  
+   根据ViewType来缓存ViewHolder，每个ViewType的数组大小默认为`DEFAULT_MAX_SCRAP = 5`，超过部分会丢弃
+
+`Recycler`的方法本质上就是对上面数据结构的一些操作。主要的方法有：
+
+- `recycleView(View)`  
+   将view对应的ViewHolder移动到`mCachedViews`中；如果View是scrapped状态，会先unscrap
+- `recycleViewHolderInternal(ViewHolder)`  
+   将ViewHolder保存到`mCachedViews`中
+- `addViewHolderToRecycledViewPool(ViewHolder, boolean)`  
+   将ViewHolder保存到`RecycledViewPool`中
+- `scrapView(View)`  
+   将一个attached状态的View保存到`mAttachedScrap`或`mChangedScrap`中
+- `getChangedScrapViewForPosition(int)`  
+   从`mChangedScrap`中寻找匹配的ViewHolder
+- `getScrapOrHiddenOrCachedHolderForPosition(int, boolean)`  
+   依次从`mAttachedScrap`、`mHiddenViews`、`mCachedViews`中寻找匹配的ViewHolder
+- `getScrapOrCachedViewForId(long, int, boolean)`  
+   依次从`mAttachedScrap`、`mCachedViews`中寻找匹配的ViewHolder
+- `tryGetViewHolderForPositionByDeadline(int, boolean, long)`  
+   从`mChangedScrap`、`mAttachedScrap`、`mHiddenViews`、`mCachedViews`、`ViewCacheExtension`、`RecycledViewPool`中进行匹配；若匹配不了，最后会直接调用`Adapter.createViewHolder`方法进行创建
+- `tryBindViewHolderByDeadline(ViewHolder, int, int, long)`  
+   调用`Adapter.bindViewHolder`方法绑定View
+
+### 2.2 缓存流程
+
+`RecyclerView`的缓存流程同ListView一样，也是体现在了layout过程中。由于`RecyclerView` layout过程中步骤比较多，而这些内容不是本章的重点，所以这里只给出大致流程，重点放到缓存流程中。
+
+`RecyclerView`的layout流程分为三个方法，对应layout step的三个步骤。这部分表格如下：
+
+| layout step | layout过程 | 方法作用 |
+| --------- | ------------ | --- |
+| State.STEP_START | dispatchLayoutStep1 | `State.STEP_START`状态可以执行，执行完毕后状态变成`State.STEP_LAYOUT`<br />1. 处理Adapter的更新，更新一些相关的值<br />2. 决定应该执行哪个动画<br />3. 保存当前View的动画信息<br />4. 如果有必要，执行预测性的layout并保存View动画信息  |
+| State.STEP_LAYOUT | dispatchLayoutStep2 | `State.STEP_LAYOUT | State.STEP_ANIMATIONS`状态可以执行，执行完毕后状态变成`State.STEP_ANIMATIONS`<br />真正执行views的layout；如有必要，该步骤可能执行多次 |
+| State.STEP_ANIMATIONS | dispatchLayoutStep3 | `State.STEP_ANIMATIONS | State.STEP_ANIMATIONS`状态可以执行，执行开始前状态变成`State.STEP_START`<br />执行第一步保存的View的动画信息 |
+
+本章中我们关注的重点显然是在`dispatchLayoutStep2`方法中：
+
+```java
+/**
+  * The second layout step where we do the actual layout of the views for the final state.
+  * This step might be run multiple times if necessary (e.g. measure).
+  */
+private void dispatchLayoutStep2() {
+    eatRequestLayout();
+    onEnterLayoutOrScroll();
+    mState.assertLayoutStep(State.STEP_LAYOUT | State.STEP_ANIMATIONS);
+    mAdapterHelper.consumeUpdatesInOnePass();
+    mState.mItemCount = mAdapter.getItemCount();
+    mState.mDeletedInvisibleItemCountSincePreviousLayout = 0;
+
+    // Step 2: Run layout
+    mState.mInPreLayout = false;
+    mLayout.onLayoutChildren(mRecycler, mState);
+
+    mState.mStructureChanged = false;
+    mPendingSavedState = null;
+
+    // onLayoutChildren may have caused client code to disable item animations; re-check
+    mState.mRunSimpleAnimations = mState.mRunSimpleAnimations && mItemAnimator != null;
+    mState.mLayoutStep = State.STEP_ANIMATIONS;
+    onExitLayoutOrScroll();
+    resumeRequestLayout(false);
+}
+```
+
+该方法比较简单，重点在第15行的`mLayout.onLayoutChildren(mRecycler, mState)`方法中。这里mLayout我们选择最常用的`LinearLayoutManager`进行分析。`LinearLayoutManager.onLayoutChildren`方法如下：
+
+```java
+/**
+  * {@inheritDoc}
+  */
+@Override
+public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+    // layout algorithm:
+    // 1) by checking children and other variables, find an anchor coordinate and an anchor
+    //  item position.
+    // 2) fill towards start, stacking from bottom
+    // 3) fill towards end, stacking from top
+    // 4) scroll to fulfill requirements like stack from bottom.
+    // create layout state
+    if (DEBUG) {
+        Log.d(TAG, "is pre layout:" + state.isPreLayout());
+    }
+    if (mPendingSavedState != null || mPendingScrollPosition != NO_POSITION) {
+        if (state.getItemCount() == 0) {
+            removeAndRecycleAllViews(recycler);
+            return;
+        }
+    }
+    if (mPendingSavedState != null && mPendingSavedState.hasValidAnchor()) {
+        mPendingScrollPosition = mPendingSavedState.mAnchorPosition;
+    }
+
+    ensureLayoutState();
+    mLayoutState.mRecycle = false;
+    // resolve layout direction
+    resolveShouldLayoutReverse();
+
+    final View focused = getFocusedChild();
+    if (!mAnchorInfo.mValid || mPendingScrollPosition != NO_POSITION
+            || mPendingSavedState != null) {
+        mAnchorInfo.reset();
+        mAnchorInfo.mLayoutFromEnd = mShouldReverseLayout ^ mStackFromEnd;
+        // calculate anchor position and coordinate
+        updateAnchorInfoForLayout(recycler, state, mAnchorInfo);
+        mAnchorInfo.mValid = true;
+    } else if (focused != null && (mOrientationHelper.getDecoratedStart(focused)
+                    >= mOrientationHelper.getEndAfterPadding()
+            || mOrientationHelper.getDecoratedEnd(focused)
+            <= mOrientationHelper.getStartAfterPadding())) {
+        // This case relates to when the anchor child is the focused view and due to layout
+        // shrinking the focused view fell outside the viewport, e.g. when soft keyboard shows
+        // up after tapping an EditText which shrinks RV causing the focused view (The tapped
+        // EditText which is the anchor child) to get kicked out of the screen. Will update the
+        // anchor coordinate in order to make sure that the focused view is laid out. Otherwise,
+        // the available space in layoutState will be calculated as negative preventing the
+        // focused view from being laid out in fill.
+        // Note that we won't update the anchor position between layout passes (refer to
+        // TestResizingRelayoutWithAutoMeasure), which happens if we were to call
+        // updateAnchorInfoForLayout for an anchor that's not the focused view (e.g. a reference
+        // child which can change between layout passes).
+        mAnchorInfo.assignFromViewAndKeepVisibleRect(focused);
+    }
+    if (DEBUG) {
+        Log.d(TAG, "Anchor info:" + mAnchorInfo);
+    }
+
+    // LLM may decide to layout items for "extra" pixels to account for scrolling target,
+    // caching or predictive animations.
+    int extraForStart;
+    int extraForEnd;
+    final int extra = getExtraLayoutSpace(state);
+    // If the previous scroll delta was less than zero, the extra space should be laid out
+    // at the start. Otherwise, it should be at the end.
+    if (mLayoutState.mLastScrollDelta >= 0) {
+        extraForEnd = extra;
+        extraForStart = 0;
+    } else {
+        extraForStart = extra;
+        extraForEnd = 0;
+    }
+    extraForStart += mOrientationHelper.getStartAfterPadding();
+    extraForEnd += mOrientationHelper.getEndPadding();
+    if (state.isPreLayout() && mPendingScrollPosition != NO_POSITION
+            && mPendingScrollPositionOffset != INVALID_OFFSET) {
+        // if the child is visible and we are going to move it around, we should layout
+        // extra items in the opposite direction to make sure new items animate nicely
+        // instead of just fading in
+        final View existing = findViewByPosition(mPendingScrollPosition);
+        if (existing != null) {
+            final int current;
+            final int upcomingOffset;
+            if (mShouldReverseLayout) {
+                current = mOrientationHelper.getEndAfterPadding()
+                        - mOrientationHelper.getDecoratedEnd(existing);
+                upcomingOffset = current - mPendingScrollPositionOffset;
+            } else {
+                current = mOrientationHelper.getDecoratedStart(existing)
+                        - mOrientationHelper.getStartAfterPadding();
+                upcomingOffset = mPendingScrollPositionOffset - current;
+            }
+            if (upcomingOffset > 0) {
+                extraForStart += upcomingOffset;
+            } else {
+                extraForEnd -= upcomingOffset;
+            }
+        }
+    }
+    int startOffset;
+    int endOffset;
+    final int firstLayoutDirection;
+    if (mAnchorInfo.mLayoutFromEnd) {
+        firstLayoutDirection = mShouldReverseLayout ? LayoutState.ITEM_DIRECTION_TAIL
+                : LayoutState.ITEM_DIRECTION_HEAD;
+    } else {
+        firstLayoutDirection = mShouldReverseLayout ? LayoutState.ITEM_DIRECTION_HEAD
+                : LayoutState.ITEM_DIRECTION_TAIL;
+    }
+
+    onAnchorReady(recycler, state, mAnchorInfo, firstLayoutDirection);
+    detachAndScrapAttachedViews(recycler);
+    mLayoutState.mInfinite = resolveIsInfinite();
+    mLayoutState.mIsPreLayout = state.isPreLayout();
+    if (mAnchorInfo.mLayoutFromEnd) {
+        // fill towards start
+        updateLayoutStateToFillStart(mAnchorInfo);
+        mLayoutState.mExtra = extraForStart;
+        fill(recycler, mLayoutState, state, false);
+        startOffset = mLayoutState.mOffset;
+        final int firstElement = mLayoutState.mCurrentPosition;
+        if (mLayoutState.mAvailable > 0) {
+            extraForEnd += mLayoutState.mAvailable;
+        }
+        // fill towards end
+        updateLayoutStateToFillEnd(mAnchorInfo);
+        mLayoutState.mExtra = extraForEnd;
+        mLayoutState.mCurrentPosition += mLayoutState.mItemDirection;
+        fill(recycler, mLayoutState, state, false);
+        endOffset = mLayoutState.mOffset;
+
+        if (mLayoutState.mAvailable > 0) {
+            // end could not consume all. add more items towards start
+            extraForStart = mLayoutState.mAvailable;
+            updateLayoutStateToFillStart(firstElement, startOffset);
+            mLayoutState.mExtra = extraForStart;
+            fill(recycler, mLayoutState, state, false);
+            startOffset = mLayoutState.mOffset;
+        }
+    } else {
+        // fill towards end
+        updateLayoutStateToFillEnd(mAnchorInfo);
+        mLayoutState.mExtra = extraForEnd;
+        fill(recycler, mLayoutState, state, false);
+        endOffset = mLayoutState.mOffset;
+        final int lastElement = mLayoutState.mCurrentPosition;
+        if (mLayoutState.mAvailable > 0) {
+            extraForStart += mLayoutState.mAvailable;
+        }
+        // fill towards start
+        updateLayoutStateToFillStart(mAnchorInfo);
+        mLayoutState.mExtra = extraForStart;
+        mLayoutState.mCurrentPosition += mLayoutState.mItemDirection;
+        fill(recycler, mLayoutState, state, false);
+        startOffset = mLayoutState.mOffset;
+
+        if (mLayoutState.mAvailable > 0) {
+            extraForEnd = mLayoutState.mAvailable;
+            // start could not consume all it should. add more items towards end
+            updateLayoutStateToFillEnd(lastElement, endOffset);
+            mLayoutState.mExtra = extraForEnd;
+            fill(recycler, mLayoutState, state, false);
+            endOffset = mLayoutState.mOffset;
+        }
+    }
+
+    // changes may cause gaps on the UI, try to fix them.
+    // TODO we can probably avoid this if neither stackFromEnd/reverseLayout/RTL values have
+    // changed
+    if (getChildCount() > 0) {
+        // because layout from end may be changed by scroll to position
+        // we re-calculate it.
+        // find which side we should check for gaps.
+        if (mShouldReverseLayout ^ mStackFromEnd) {
+            int fixOffset = fixLayoutEndGap(endOffset, recycler, state, true);
+            startOffset += fixOffset;
+            endOffset += fixOffset;
+            fixOffset = fixLayoutStartGap(startOffset, recycler, state, false);
+            startOffset += fixOffset;
+            endOffset += fixOffset;
+        } else {
+            int fixOffset = fixLayoutStartGap(startOffset, recycler, state, true);
+            startOffset += fixOffset;
+            endOffset += fixOffset;
+            fixOffset = fixLayoutEndGap(endOffset, recycler, state, false);
+            startOffset += fixOffset;
+            endOffset += fixOffset;
+        }
+    }
+    layoutForPredictiveAnimations(recycler, state, startOffset, endOffset);
+    if (!state.isPreLayout()) {
+        mOrientationHelper.onLayoutComplete();
+    } else {
+        mAnchorInfo.reset();
+    }
+    mLastStackFromEnd = mStackFromEnd;
+    if (DEBUG) {
+        validateChildOrder();
+    }
+}
+```
+
+方法很长，但还好有一些注释。  
+
+1. 首先，从开头到第112行都是第一步的内容：计算锚点坐标以及锚点item的position。谁让112行是`onAnchorReady`方法呢，太明显了。
+2. 注意第113行的`detachAndScrapAttachedViews`方法，该方法会对所有的子View调用`scrapOrRecycleView`方法。这样所有的子View都会暂时detach掉，并保存到`mAttachedScrap`或`mChangedScrap`或`mCachedViews`中，等待后续复用。  
+   ```java
+        /**
+        * Temporarily detach and scrap all currently attached child views. Views will be scrapped
+        * into the given Recycler. The Recycler may prefer to reuse scrap views before
+        * other views that were previously recycled.
+        *
+        * @param recycler Recycler to scrap views into
+        */
+    public void detachAndScrapAttachedViews(Recycler recycler) {
+        final int childCount = getChildCount();
+        for (int i = childCount - 1; i >= 0; i--) {
+            final View v = getChildAt(i);
+            scrapOrRecycleView(recycler, i, v);
+        }
+    }
+
+    private void scrapOrRecycleView(Recycler recycler, int index, View view) {
+        final ViewHolder viewHolder = getChildViewHolderInt(view);
+        if (viewHolder.shouldIgnore()) {
+            if (DEBUG) {
+                Log.d(TAG, "ignoring view " + viewHolder);
+            }
+            return;
+        }
+        if (viewHolder.isInvalid() && !viewHolder.isRemoved()
+                && !mRecyclerView.mAdapter.hasStableIds()) {
+            removeViewAt(index);
+            recycler.recycleViewHolderInternal(viewHolder);
+        } else {
+            detachViewAt(index);
+            recycler.scrapView(view);
+            mRecyclerView.mViewInfoStore.onViewDetached(viewHolder);
+        }
+    }
+   ```
+
+   前面提到过`mCachedViews`如果空间不足，会根据索引将里面旧的移动到`RecyclerViewPool`中，这样此方法的就将除了`ViewCacheExtension`之外的缓存全部囊括了。
+   {: .notice--info }
+
+3. 根据计算的值，多次调用`fill`方法填充子View。
+
+显然，`fill`方法是新重点。该方法和ListView中的`fillDown`等类似，也是循环计算-填充-计算，我们直接看填充部分。填充部分调用了`layoutChunk`方法：该方法会首先调用`LayoutState.next`方法获取一个view；然后会`addView`，add过程中如果是detach过的，将会view重新attach到RecyclerView上，否则会addView；最后调用`measureChildWithMargins`、`layoutDecoratedWithMargins`方法对子View进行测量、布局。`layoutChunk`方法代码如下：
+
+```java
+void layoutChunk(RecyclerView.Recycler recycler, RecyclerView.State state,
+        LayoutState layoutState, LayoutChunkResult result) {
+    View view = layoutState.next(recycler);
+    if (view == null) {
+        if (DEBUG && layoutState.mScrapList == null) {
+            throw new RuntimeException("received null view when unexpected");
+        }
+        // if we are laying out views in scrap, this may return null which means there is
+        // no more items to layout.
+        result.mFinished = true;
+        return;
+    }
+    LayoutParams params = (LayoutParams) view.getLayoutParams();
+    if (layoutState.mScrapList == null) {
+        if (mShouldReverseLayout == (layoutState.mLayoutDirection
+                == LayoutState.LAYOUT_START)) {
+            addView(view);
+        } else {
+            addView(view, 0);
+        }
+    } else {
+        if (mShouldReverseLayout == (layoutState.mLayoutDirection
+                == LayoutState.LAYOUT_START)) {
+            addDisappearingView(view);
+        } else {
+            addDisappearingView(view, 0);
+        }
+    }
+    measureChildWithMargins(view, 0, 0);
+    result.mConsumed = mOrientationHelper.getDecoratedMeasurement(view);
+    int left, top, right, bottom;
+    if (mOrientation == VERTICAL) {
+        if (isLayoutRTL()) {
+            right = getWidth() - getPaddingRight();
+            left = right - mOrientationHelper.getDecoratedMeasurementInOther(view);
+        } else {
+            left = getPaddingLeft();
+            right = left + mOrientationHelper.getDecoratedMeasurementInOther(view);
+        }
+        if (layoutState.mLayoutDirection == LayoutState.LAYOUT_START) {
+            bottom = layoutState.mOffset;
+            top = layoutState.mOffset - result.mConsumed;
+        } else {
+            top = layoutState.mOffset;
+            bottom = layoutState.mOffset + result.mConsumed;
+        }
+    } else {
+        top = getPaddingTop();
+        bottom = top + mOrientationHelper.getDecoratedMeasurementInOther(view);
+
+        if (layoutState.mLayoutDirection == LayoutState.LAYOUT_START) {
+            right = layoutState.mOffset;
+            left = layoutState.mOffset - result.mConsumed;
+        } else {
+            left = layoutState.mOffset;
+            right = layoutState.mOffset + result.mConsumed;
+        }
+    }
+    // We calculate everything with View's bounding box (which includes decor and margins)
+    // To calculate correct layout position, we subtract margins.
+    layoutDecoratedWithMargins(view, left, top, right, bottom);
+    if (DEBUG) {
+        Log.d(TAG, "laid out child at position " + getPosition(view) + ", with l:"
+                + (left + params.leftMargin) + ", t:" + (top + params.topMargin) + ", r:"
+                + (right - params.rightMargin) + ", b:" + (bottom - params.bottomMargin));
+    }
+    // Consume the available space if the view is not removed OR changed
+    if (params.isItemRemoved() || params.isItemChanged()) {
+        result.mIgnoreConsumed = true;
+    }
+    result.mFocusable = view.hasFocusable();
+}
+```
+
+很显然，缓存部分的关键就是`LayoutState.next`方法了：
+
+```java
+/**
+  * Gets the view for the next element that we should layout.
+  * Also updates current item index to the next item, based on {@link #mItemDirection}
+  *
+  * @return The next element that we should layout.
+  */
+View next(RecyclerView.Recycler recycler) {
+    if (mScrapList != null) {
+        return nextViewFromScrapList();
+    }
+    final View view = recycler.getViewForPosition(mCurrentPosition);
+    mCurrentPosition += mItemDirection;
+    return view;
+}
+```
+
+我们先略过`mScrapList`，暂时认为其为null，后面遇到再分析。所以这里调用了`RecyclerView.getViewForPosition`方法：
+
+```java
+public View getViewForPosition(int position) {
+    return getViewForPosition(position, false);
+}
+
+View getViewForPosition(int position, boolean dryRun) {
+    return tryGetViewHolderForPositionByDeadline(position, dryRun, FOREVER_NS).itemView;
+}
+```
+
+离真相又近了一步，`tryGetViewHolderForPositionByDeadline`方法里面会对各级缓存进行匹配，这里分段进行解释。
+
+0. 如果有changed scrap，尝试进行匹配  
+   ```java
+    // 0) If there is a changed scrap, try to find from there
+    if (mState.isPreLayout()) {
+        holder = getChangedScrapViewForPosition(position);
+        fromScrapOrHiddenOrCache = holder != null;
+    }
+   ```
+
+   这里的`isPreLayout()`与`mState.mRunPredictiveAnimations`有直接关系，可以看成前者的值取决与后者，该值在`dispatchLayoutStep1`过程中被更新；当Item发生了更新时，`scrapView`方法会将ViewHolder保存到`mChangedScrap`中去。
+
+2. 尝试从`mAttachedScrap`、`mHiddenViews`、`mCachedViews`中寻找匹配的ViewHolder。找到之后会对ViewHolder做一些检查，如果不满足条件，且`dryRun`为false（实际上就是false），会将ViewHolder清除掉并保存到`mCachedViews`中
+   ```java
+    // 1) Find by position from scrap/hidden list/cache
+    if (holder == null) {
+        holder = getScrapOrHiddenOrCachedHolderForPosition(position, dryRun);
+        if (holder != null) {
+            if (!validateViewHolderForOffsetPosition(holder)) {
+                // recycle holder (and unscrap if relevant) since it can't be used
+                if (!dryRun) {
+                    // we would like to recycle this but need to make sure it is not used by
+                    // animation logic etc.
+                    holder.addFlags(ViewHolder.FLAG_INVALID);
+                    if (holder.isScrap()) {
+                        removeDetachedView(holder.itemView, false);
+                        holder.unScrap();
+                    } else if (holder.wasReturnedFromScrap()) {
+                        holder.clearReturnedFromScrapFlag();
+                    }
+                    recycleViewHolderInternal(holder);
+                }
+                holder = null;
+            } else {
+                fromScrapOrHiddenOrCache = true;
+            }
+        }
+    }
+   ```
+
+3. 如果`Adapter.hasStableIds()`为true，会根据ItemId和ViewType在`mAttachedScrap`、`mCachedViews`中寻找ViewHolder
+   ```java
+    // 2) Find from scrap/cache via stable ids, if exists
+    if (mAdapter.hasStableIds()) {
+        holder = getScrapOrCachedViewForId(mAdapter.getItemId(offsetPosition),
+                type, dryRun);
+        if (holder != null) {
+            // update position
+            holder.mPosition = offsetPosition;
+            fromScrapOrHiddenOrCache = true;
+        }
+    }
+   ```
+
+4. 如果存在`ViewCacheExtension`，调用`ViewCacheExtension.getViewForPositionAndType`寻找ViewHolder
+5. fallback到`RecycledViewPool`，看是否有可用的ViewHolder
+6. 以上都不满足，最后调用`Adapter.createViewHolder`创建ViewHolder
+
+在获取到ViewHolder之后，如果需要bind，会调用`tryBindViewHolderByDeadline`方法，该方法中接着调用`Adapter.bindViewHolder`方法交给开发者完成绑定工作。
+
+```java
+boolean bound = false;
+if (mState.isPreLayout() && holder.isBound()) {
+    // do not update unless we absolutely have to.
+    holder.mPreLayoutPosition = position;
+} else if (!holder.isBound() || holder.needsUpdate() || holder.isInvalid()) {
+    if (DEBUG && holder.isRemoved()) {
+        throw new IllegalStateException("Removed holder should be bound and it should"
+                + " come here only in pre-layout. Holder: " + holder
+                + exceptionLabel());
+    }
+    final int offsetPosition = mAdapterHelper.findPositionOffset(position);
+    bound = tryBindViewHolderByDeadline(holder, offsetPosition, position, deadlineNs);
+}
+```
+
+`tryGetViewHolderForPositionByDeadline`方法完成之后会一直返回到`LinearLayoutManager.layoutChunk`方法中，接着会根据ViewHolder的来源，该attach的attach，该addView的addView，最后measure并layout，一个子View的layout过程就完成了。
+
+最后以一张流程图结束本节：
+
+<figure style="width: 50%" class="align-center">
+    <img src="/assets/images/android/recyclerview-cache.webp">
+    <figcaption>RecyclerView缓存流程 // TODO 重置一下</figcaption>
+</figure>
