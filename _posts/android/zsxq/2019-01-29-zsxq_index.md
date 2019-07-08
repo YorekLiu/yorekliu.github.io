@@ -37,3 +37,6 @@ last_modified_at: 2019-01-29T17:26:50+08:00
 - [Week25-动态权限](/android/%E7%90%90%E7%A2%8E%E7%9F%A5%E8%AF%86%E7%82%B9/#dynamic-permission)
 - [Week26-ThreadLocal作用和实现原理](/android/Android%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/#21-threadlocal%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86)
 - Week27-[ListView、RecyclerView缓存策略解析](/android/recyclerview-cache/) & [ConstraintLayout使用大全](/android/constraintlayout/)
+- [Week28-RemoteViews的作用和工作原理](/android/RemoteViews/)
+- [Week29-Handler的工作原理](/android/Android%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/)
+- [Week30-AsyncTask的使用方式和版本演进](/android/Android%E7%BA%BF%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B%E6%B1%A0/#2-android%E4%B8%AD%E7%BA%BF%E7%A8%8B%E5%AD%98%E5%9C%A8%E5%BD%A2%E6%80%81)
