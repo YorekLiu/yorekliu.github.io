@@ -7,6 +7,9 @@ tags:
   - LeetCode
   - Dynamic Programming
   - Linked List
+  - Backtracking
+  - Tree
+  - Stack
 toc: true
 toc_label: "目录"
 # last_modified_at: 2019-06-28T02:05:15+08:00
@@ -137,6 +140,206 @@ class Solution {
         }
         
         return h.next;
+    }
+}
+```
+
+## 93. Restore IP Addresses
+
+[String](/tags/#string){: .tag } [Backtracking](/tags/#backtracking){: .tag }
+
+Given a string containing only digits, restore it by returning all possible valid IP address combinations.
+
+**Example:**
+
+**Input:** "25525511135"  
+**Output:** ["255.255.11.135", "255.255.111.35"]  
+{: .notice }
+
+**Solution**  
+
+回溯法求解耗时 4 ms：
+
+```java
+class Solution {
+    public List<String> restoreIpAddresses(String s) {
+        List<String> result = new ArrayList<>();
+        if (s == null || s.length() < 4 || s.length() > 12) {
+            return result;
+        }
+        
+        restoreIpAddressesInner(s, 0, new ArrayList<>(), result);
+        
+        return result;
+    }
+    
+    private void restoreIpAddressesInner(String s, int index, List<String> solu, List<String> result) {
+        if (index == 4 && s.length() == 0) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < 4; i++) {
+                sb.append(solu.get(i));
+                if (i != 3) {
+                    sb.append(".");
+                }
+            }
+            result.add(sb.toString());
+            return;
+        }
+        
+        for (int i = 1; i <= Math.min(3, s.length()); i++) {
+            String temp = s.substring(0, i);
+            Integer value = Integer.parseInt(temp);
+            if (value >= 0 && value <= 255 && temp.length() == String.valueOf(value).length()) {
+                solu.add(temp);
+                restoreIpAddressesInner(s.substring(i), index + 1, solu, result);
+                solu.remove(solu.size() - 1);
+            }
+        }
+    }
+}
+```
+
+下面的推荐解法耗时 2 ms：
+
+```java
+class Solution {
+    public List<String> restoreIpAddresses(String s) {
+        List<String> result = new ArrayList<>();
+        if (s == null || s.length() < 4 || s.length() > 12) {
+            return result;
+        }
+
+        final int n = s.length();
+
+        for (int a = 1; a <= 3; a++) {
+            for (int b = a + 1; b <= a + 3; b++) {
+                for (int c = b + 1; c <= b + 3; c++) {
+                    for (int d = c + 1; d <= c + 3; d++) {
+                        if (d != n) continue;
+                        int A = Integer.parseInt(s.substring(0, a));
+                        int B = Integer.parseInt(s.substring(a, b));
+                        int C = Integer.parseInt(s.substring(b, c));
+                        int D = Integer.parseInt(s.substring(c, d));
+                        String candidate = A + "." + B + "." + C + "." + D;
+                        if (A <= 255 && B <= 255 && C <= 255 && D <= 255 && candidate.length() == n + 3) {
+                            result.add(candidate);
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+}
+```
+
+## 94. Binary Tree Inorder Traversal
+
+[Stack](/tags/#stack){: .tag } [Tree](/tags/#tree){: .tag }
+
+Given a binary tree, return the inorder traversal of its nodes' values.
+
+**Example:**
+
+**Input:**   
+&nbsp;&nbsp;1  
+&nbsp;&nbsp;&nbsp;&nbsp;\  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2  
+&nbsp;&nbsp;&nbsp;&nbsp;/  
+&nbsp;&nbsp;&nbsp;3  
+**Output:** [1,3,2] 
+{: .notice }
+
+**Follow up:** Recursive solution is trivial, could you do it iteratively?
+
+**Solution**  
+
+树的前、中、后序遍历算法以及层序遍历算法在[剑指offer第二版——树](/algorithm/code_interviews/#4-%E6%A0%91)中都有解释以及算法实现，本题就是考察中序遍历。
+
+下面分别是递归以及循环实现：
+
+**递归实现**
+
+递归实现 Runtime 0 ms
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public List<Integer> inorderTraversal(TreeNode root) {
+        List<Integer> result = new ArrayList<>();
+        
+        if (root == null) 
+            return result;
+        
+        inorderInner(root, result);
+        
+        return result;
+    }
+    
+    private void inorderInner(TreeNode root, List<Integer> result) {
+        if (root.left != null)
+            inorderInner(root.left, result);
+        
+        result.add(root.val);
+        
+        if (root.right != null)
+            inorderInner(root.right, result);
+    }
+}
+```
+
+**循环实现**
+
+循环实现 Runtime 1 ms，注意一下左子树回溯的情况，避免死循环。
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public List<Integer> inorderTraversal(TreeNode root) {
+        List<Integer> result = new ArrayList<>();
+        
+        if (root == null) 
+            return result;
+        
+        Stack<TreeNode> stack = new Stack<>();
+        stack.push(root);
+        
+        while (!stack.isEmpty()) {
+            TreeNode node = stack.peek();
+            
+            while (node != null) {
+                stack.push(node.left);
+                node = stack.peek();
+            }
+            
+            stack.pop();
+            
+            if (!stack.isEmpty()) {
+                node = stack.pop();
+                result.add(node.val);
+
+                stack.push(node.right);
+            }
+        }
+        
+        return result;
     }
 }
 ```
