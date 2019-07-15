@@ -343,3 +343,118 @@ class Solution {
     }
 }
 ```
+
+## 95. Unique Binary Search Trees II
+
+[Tree](/tags/#tree){: .tag } [Dynamic Programming](/tags/#dynamic-programming){: .tag }
+
+Given an integer *n*, generate all structurally unique **BST**'s (binary search trees) that store values 1 ... *n*.
+
+**Example:**
+
+**Input:** 3  
+**Output:**  
+[  
+&nbsp;&nbsp;[1,null,3,2],  
+&nbsp;&nbsp;[3,2,null,1],  
+&nbsp;&nbsp;[3,1,null,null,2],  
+&nbsp;&nbsp;[2,1,3],  
+&nbsp;&nbsp;[1,null,2,null,3]  
+]  
+**Explanation:**  
+The above output corresponds to the 5 unique BST's shown below:  
+<img src="/assets/images/leetcode/question_95_example_tree.png" style="border: none">
+{: .notice }
+
+**Solution**  
+
+在下一题的指引下，我们知道可以用中序遍历的思想在 1..*n* 中以任意一个值为二叉搜索树的根节点，对左右两边剩余的数字进行递归，最后将所有得到的左右子树进行组合即可。
+
+Runtime 2 ms.
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public List<TreeNode> generateTrees(int n) {
+        if (n == 0) return new ArrayList<>();
+        return generateTreesInner(1, n);
+    }
+    
+    private List<TreeNode> generateTreesInner(int from, int to) {
+        List<TreeNode> trees = new ArrayList<>();
+        
+        if (from > to) {
+            trees.add(null);
+        }
+        
+        for (int i = from; i <= to; i++) {
+            List<TreeNode> leftTrees = generateTreesInner(from, i - 1);
+            List<TreeNode> rightTrees = generateTreesInner(i + 1, to);
+            
+            for (TreeNode left : leftTrees) {
+                for (TreeNode right : rightTrees) {
+                    TreeNode node = new TreeNode(i);
+                    node.left = left;
+                    node.right = right;
+                    trees.add(node);
+                }
+            }
+        }
+        
+        return trees;
+    }
+}
+```
+
+## 96. Unique Binary Search Trees
+
+[Tree](/tags/#tree){: .tag } [Dynamic Programming](/tags/#dynamic-programming){: .tag }
+
+Given *n*,  how many structurally unique **BST**'s (binary search trees) that store values 1 ... *n*.
+
+**Example:**
+
+**Input:** 3  
+**Output:**  5  
+**Explanation:**  
+Given n = 3, there are a total of 5 unique BST's:  
+<img src="/assets/images/leetcode/question_95_example_tree.png" style="border: none">
+{: .notice }
+
+**Solution**  
+
+在数组[1, n]中任选一个数字m，以m为根结点，此时左边有m - 1个节点，右边有n - m个节点，显然此刻解为
+
+$$F(m, n) = G(m-1) * G(n-m)$$
+
+想要求出$$G(n)$$，就要使m从1开始依次累加到n，累加每一步之和，即  
+
+$$G(n) = \sum_{m=1}^n F(m, n)$$
+
+Runtime 0 ms.
+
+```java
+class Solution {
+    public int numTrees(int n) {
+        int[] f = new int[n + 1];
+        f[0] = 1;
+        f[1] = 1;
+        
+        for (int i = 2; i <= n; i++) {
+            for (int j = 1; j <= i; j++) {
+                f[i] += f[j - 1] * f[i - j];
+            }
+        }
+        
+        return f[n];
+    }
+}
+```

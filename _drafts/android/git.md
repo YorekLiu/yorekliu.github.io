@@ -88,7 +88,7 @@ tags:
 {: .notice--danger }
 
 <figure style="width: 50%" class="align-center">
-    <img src="/assets/images/android/remoteviews-custom-notification.png">
+    <img src="/assets/images/android/remoteviews-custom-notification.png" style="border: none">
     <figcaption>自定义通知样式</figcaption>
 </figure>
 
