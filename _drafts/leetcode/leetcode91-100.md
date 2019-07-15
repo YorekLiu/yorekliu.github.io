@@ -458,3 +458,62 @@ class Solution {
     }
 }
 ```
+
+## 97. Interleaving String
+
+[Dynamic Programming](/tags/#dynamic-programming){: .tag }
+
+Given *s1*, *s2*, *s3*, find whether *s3* is formed by the interleaving of *s1* and *s2*.
+
+**Example 1:**
+
+**Input:** s1 = "aabcc", s2 = "dbbca", s3 = "aadbbcbcac"  
+**Output:** true
+{: .notice }
+
+**Example 2:**
+
+**Input:** s1 = "aabcc", s2 = "dbbca", s3 = "aadbbbaccc"  
+**Output:** false
+{: .notice }
+
+**Solution**  
+
+使用二维数组的动态规划算法可解：
+
+<figure style="width: 30%" class="align-center">
+    <img src="/assets/images/leetcode/question_97_solution.png">
+    <figcaption>例1解题过程</figcaption>
+</figure>
+
+Runtime 2 ms.
+
+```java
+class Solution {
+    public boolean isInterleave(String s1, String s2, String s3) {
+        final int n1 = s1.length();
+        final int n2 = s2.length();
+        final int n3 = s3.length();
+        
+        if (n3 != n1 + n2) return false;
+        
+        boolean[][] dp = new boolean[n1 + 1][n2 + 1];
+        
+        for (int i = 0; i <= n1; i++) {
+            for (int j = 0; j <= n2; j++) {
+                if (i == 0 && j == 0)
+                    dp[i][j] = true;
+                else if (i == 0) 
+                    dp[i][j] = dp[i][j - 1] && s2.charAt(j - 1) == s3.charAt(i + j - 1);
+                else if (j == 0)
+                    dp[i][j] = dp[i - 1][j] && s1.charAt(i - 1) == s3.charAt(i + j - 1);
+                else 
+                    dp[i][j] = (dp[i][j - 1] && s2.charAt(j - 1) == s3.charAt(i + j - 1)) ||
+                                (dp[i - 1][j] && s1.charAt(i - 1) == s3.charAt(i + j - 1));
+            }
+        }
+        
+        return dp[n1][n2];
+    }
+}
+```
