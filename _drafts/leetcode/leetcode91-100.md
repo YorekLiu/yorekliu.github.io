@@ -10,6 +10,7 @@ tags:
   - Backtracking
   - Tree
   - Stack
+  - Depth-first Search
 toc: true
 toc_label: "目录"
 # last_modified_at: 2019-06-28T02:05:15+08:00
@@ -514,6 +515,76 @@ class Solution {
         }
         
         return dp[n1][n2];
+    }
+}
+```
+
+## 98. Validate Binary Search Tree
+
+[Tree](/tags/#tree){: .tag } [Depth-first Search](/tags/#depth-first-search){: .tag }
+
+Assume a BST is defined as follows:
+
+- The left subtree of a node contains only nodes with keys **less than** the node's key.
+- The right subtree of a node contains only nodes with keys **greater than** the node's key.
+- Both the left and right subtrees must also be binary search trees.
+
+**Example 1:**
+
+&nbsp;&nbsp;&nbsp;&nbsp;2  
+&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;\  
+&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;3  
+**Input:** [2,1,3]  
+**Output:** true
+{: .notice }
+
+**Example 2:**
+
+&nbsp;&nbsp;&nbsp;&nbsp;5  
+&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;\  
+&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;4  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;\  
+&nbsp;&nbsp;&nbsp;&nbsp;3&nbsp;&nbsp;&nbsp;6  
+**Input:** [5,1,4,null,null,3,6]  
+**Output:** false
+{: .notice }
+
+**Solution**  
+
+解题思路为比较中序遍历中相邻的两个节点，如果前面的节点大于或等于后面节点的值，则BST不合法。  
+以树的中序遍历算法为模版，就可以写出下面的答案。Runtime 2 ms.  
+
+神奇的是，如果先递归求BST的中序序列，然后判断序列是否是升序，这种解法竟然只要1 ms，比上面算法还要快。
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public boolean isValidBST(TreeNode root) {
+        Stack<TreeNode> stack = new Stack<>();
+        
+        TreeNode pre = null;
+        
+        while (root != null || !stack.isEmpty()) {
+            while (root != null) {
+                stack.push(root);
+                root = root.left;
+            }
+            
+            root = stack.pop();
+            if (pre != null && pre.val >= root.val) return false;
+            pre = root;
+            root = root.right;
+        }
+        
+        return true;
     }
 }
 ```
