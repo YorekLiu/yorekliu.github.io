@@ -213,6 +213,8 @@ private BinaryTreeNode kthNodeCore(BinaryTreeNode root, int k) {
 输入一棵二叉树的根结点，求该树的深度。从根结点到叶结点依次经过的结点（含根、叶结点）形成树的一条路径，最长路径的长度为树的深度。
 {: .notice }
 
+此题同[LeetCode-104-Maximum Depth of Binary Tree](/algorithm/leetcode101-110/#104--maximum-depth-of-binary-tree)
+
 我们还可以从另外一个角度来理解树的深度。如果一棵树只有一个节
 点，那么它的深度为1。如果根节点只有左子树而没有右子树，那么树的深
 度应该是其左子树的深度加1；同样，如果根节点只有右子树而没有左子
@@ -236,6 +238,8 @@ private int treeDepth(BinaryTreeNode root) {
 
 输入一棵二叉树的根结点，判断该树是不是平衡二叉树。如果某二叉树中任意结点的左右子树的深度相差不超过1，那么它就是一棵平衡二叉树。
 {: .notice }
+
+此题同[LeetCode-110-Balanced Binary Tree](/algorithm/leetcode101-110/#110-balanced-binary-tree)
 
 **简单解法**  
 有了求二叉树的深度的经验之后再解决这个问题，我们很容易就能想到一种思路:在遍历树的每个节点的时候，调用函数`treeDepth`得到它的左、右子树的深度。如果每个节点的左、右子树的深度相差都不超过1，那么按照定义它就是一棵平衡二叉树。这种思路对应的代码如下:

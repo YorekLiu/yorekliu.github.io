@@ -595,6 +595,8 @@ Java中`TreeMap`底层通过红黑树来实现，这样插入删除都只有$$O(
 例如输入前序遍历序列{1,2, 4, 7, 3, 5, 6, 8}和中序遍历序列{4, 7, 2, 1, 5, 3, 8, 6}，则重建下图所示的二叉树并输出它的头结点。
 {: .notice }
 
+此题同[LeetCode-105-Construct Binary Tree from Preorder and Inorder Traversal](/algorithm/leetcode101-110/#105-construct-binary-tree-from-preorder-and-inorder-traversal)
+
 前序+中序、后序+中序、层序+中序都可以重建二叉树，但是前序+后序不行。
 {: .notice--primary }
 

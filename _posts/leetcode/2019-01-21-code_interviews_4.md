@@ -96,6 +96,8 @@ public BinaryTreeNode mirrorIteratively(BinaryTreeNode root) {
 请实现一个函数，用来判断一棵二叉树是不是对称的。如果一棵二叉树和它的镜像一样，那么它是对称的。
 {: .notice }
 
+此题同[LeetCode-101-Symmetric Tree](/algorithm/leetcode101-110/#101-symmetric-tree)
+
 在下图所示的3棵树中，第一棵二叉树是对称的，另外两棵不是。  
 
 <figure style="width: 50%" class="align-center">
@@ -330,6 +332,8 @@ private void printFromTopToBottom(BinaryTreeNode root) {
 从上到下按层打印二叉树，同一层的结点按从左到右的顺序打印，每一层打印到一行。
 {: .notice }
 
+此题同[LeetCode-102-Binary Tree Level Order Traversal](/algorithm/leetcode101-110/#102-binary-tree-level-order-traversal)
+
 在前面代码的基础上额外加两个变量：一个表示在当前层中还没有打印的节点数；另一个变量表示下一层节点的数目
 
 ```java
@@ -371,6 +375,8 @@ private void print(BinaryTreeNode root) {
 
 请实现一个函数按照之字形顺序打印二叉树，即第一行按照从左到右的顺序打印，第二层按照从右到左的顺序打印，第三行再按照从左到右的顺序打印，其他行以此类推。
 {: .notice }
+
+此题同[LeetCode-103-Binary Tree Zigzag Level Order Traversal](/algorithm/leetcode101-110/#103-binary-tree-zigzag-level-order-traversal)
 
 按之字形顺序打印二叉树需要两个栈。我们在打印某一层节点时，把下一层的子节点保存在对应的栈中。如果当前打印的是奇数层，则先保存左子节点再保存右子节点到第一个栈里；如果当前打印的是偶数层，则先保存右子节点再保存左子节点到第二个栈里。
 
