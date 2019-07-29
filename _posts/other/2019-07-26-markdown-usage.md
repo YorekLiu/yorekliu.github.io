@@ -95,6 +95,16 @@ last_modified_at: 2019-07-26T10:38:19+08:00
 
 ### 3. Images
 
+**不带描述、居中、实际宽度**
+
+<img src="/assets/images/android/content-provider-overview.png" class="align-center">
+
+```markdown
+<img src="/assets/images/android/content-provider-overview.png" class="align-center">
+```
+
+<p>&nbsp;</p>
+
 **普通带描边效果**:  
 
 <figure style="width: 50%" class="align-center">
