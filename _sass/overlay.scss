@@ -702,6 +702,10 @@ NOTICE TEXT BLOCKS
 
 .notice--success {
   @include notice($accent-color, #e1f5fe);
+  &:before {
+    content: "\2714";
+    font-weight: bold;
+  }
 }
 
 /* Danger notice */
