@@ -38,6 +38,9 @@ last_modified_at: 2018-06-19T17:13:00+08:00
 2. 工厂方法模式：**一个具体的工厂类负责创建一个具体对象类型**
 3. 抽象工厂模式：**一个具体的工厂类负责创建一系列相关的对象**
 
+简单工厂模式的最大优点在于工厂类中包含了必要的判断逻辑，根据客户端的选择条件动态实例化相关的类，对于客户端来说，去除了与具体产品的依赖。  
+工厂方法模式实现时，客户端需要决定实例化哪一个工厂来实现运算类，选择判断的问题还是存在的，也就是说，工厂方法把简单工厂的内部逻辑判断移到了客户端代码来进行。你想要加功能，本来时工厂类的，而现在是修改客户端。
+
 下面是这三种模式的UML图
 
 <figure style="width: 66%" class="align-center">
@@ -71,17 +74,17 @@ last_modified_at: 2018-06-19T17:13:00+08:00
 三种模式的UML图如下：
 
 <figure>
-  <img src="{{ site.url }}{{ site.baseurl }}/assets/images/design-pattern/proxy.png" alt="">
+  <img src="/assets/images/design-pattern/proxy.png" alt="">
   <figcaption>代理模式UML图</figcaption>
 </figure>
 
 <figure>
-  <img src="{{ site.url }}{{ site.baseurl }}/assets/images/design-pattern/decorator.png" alt="">
+  <img src="/assets/images/design-pattern/decorator.png" alt="">
   <figcaption>装饰模式UML图</figcaption>
 </figure>
 
 <figure>
-  <img src="{{ site.url }}{{ site.baseurl }}/assets/images/design-pattern/bridge.png" alt="">
+  <img src="/assets/images/design-pattern/bridge.png" alt="">
   <figcaption>桥接模式UML图</figcaption>
 </figure>
 
@@ -106,12 +109,12 @@ last_modified_at: 2018-06-19T17:13:00+08:00
 两者的UML图如下
 
 <figure>
-  <img src="{{ site.url }}{{ site.baseurl }}/assets/images/design-pattern/facade.png" alt="">
+  <img src="/assets/images/design-pattern/facade.png" alt="">
   <figcaption>外观模式UML图</figcaption>
 </figure>
 
 <figure>
-  <img src="{{ site.url }}{{ site.baseurl }}/assets/images/design-pattern/mediator.png" alt="">
+  <img src="/assets/images/design-pattern/mediator.png" alt="">
   <figcaption>中介模式UML图</figcaption>
 </figure>
 
@@ -128,17 +131,17 @@ last_modified_at: 2018-06-19T17:13:00+08:00
 其UML图如下所示
 
 <figure>
-  <img src="{{ site.url }}{{ site.baseurl }}/assets/images/design-pattern/strategy.png" alt="">
+  <img src="/assets/images/design-pattern/strategy.png" alt="">
   <figcaption>策略模式UML图</figcaption>
 </figure>
 
 <figure>
-  <img src="{{ site.url }}{{ site.baseurl }}/assets/images/design-pattern/state.png" alt="">
+  <img src="/assets/images/design-pattern/state.png" alt="">
   <figcaption>状态模式UML图</figcaption>
 </figure>
 
 <figure>
-  <img src="{{ site.url }}{{ site.baseurl }}/assets/images/design-pattern/command.png" alt="">
+  <img src="/assets/images/design-pattern/command.png" alt="">
   <figcaption>命令模式UML图</figcaption>
 </figure>
 

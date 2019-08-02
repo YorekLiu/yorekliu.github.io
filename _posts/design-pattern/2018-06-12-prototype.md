@@ -11,7 +11,9 @@ last_modified_at: 2018-06-12T14:49:19+08:00
 ---
 
 ## 1. 定义及使用场景
-用原型实例指定创建对象的种类，并通过拷贝这些原型创建新的对象。
+
+**用原型实例指定创建对象的种类，并通过拷贝这些原型创建新的对象。**  
+原型模式其实就是从一个对象再创建另外一个可定制的对象，而不需知道任何创建的细节。
 
 使用场景：
 1. 类初始化需要消耗非常多的资源，这个资源包括数据、硬件资源等，通过原型拷贝避免这些消耗
@@ -26,7 +28,7 @@ last_modified_at: 2018-06-12T14:49:19+08:00
 
 ## 2. UML图
 
-<figure style="width: 50%" class="align-center">
+<figure style="width: 66%" class="align-center">
     <img src="/assets/images/design-pattern/prototype.png">
     <figcaption>原型模式UML图</figcaption>
 </figure>
