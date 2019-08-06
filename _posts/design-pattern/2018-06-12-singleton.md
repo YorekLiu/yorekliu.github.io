@@ -23,7 +23,7 @@ last_modified_at: 2018-06-12T13:49:19+08:00
 
 ## 2. UML图
 
-<figure style="width: 50%" class="align-center">
+<figure style="width: 66%" class="align-center">
     <img src="/assets/images/design-pattern/singleton.png">
     <figcaption>单例模式UML图</figcaption>
 </figure>

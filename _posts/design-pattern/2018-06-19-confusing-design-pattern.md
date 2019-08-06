@@ -43,19 +43,11 @@ last_modified_at: 2018-06-19T17:13:00+08:00
 
 下面是这三种模式的UML图
 
-<figure style="width: 66%" class="align-center">
-  <img src="/assets/images/design-pattern/simple-factory.png">
-  <figcaption>简单工厂模式UML图</figcaption>
-</figure>
-
-<figure style="width: 66%" class="align-center">
-  <img src="/assets/images/design-pattern/factory-method.png">
-  <figcaption>工厂方法模式UML图</figcaption>
-</figure>
-
-<figure style="width: 66%" class="align-center">
-  <img src="/assets/images/design-pattern/abstract-factory.png">
-  <figcaption>抽象工厂模式UML图</figcaption>
+<figure class="third align-center">
+    <img src="/assets/images/design-pattern/simple-factory.png">
+    <img src="/assets/images/design-pattern/factory-method.png">
+    <img src="/assets/images/design-pattern/abstract-factory.png">
+    <figcaption>简单工厂模式、工厂方法模式、抽象工厂模式UML图</figcaption>
 </figure>
 
 ## 2.  代理、装饰、桥接模式
@@ -73,19 +65,11 @@ last_modified_at: 2018-06-19T17:13:00+08:00
 
 三种模式的UML图如下：
 
-<figure>
-  <img src="/assets/images/design-pattern/proxy.png" alt="">
-  <figcaption>代理模式UML图</figcaption>
-</figure>
-
-<figure>
-  <img src="/assets/images/design-pattern/decorator.png" alt="">
-  <figcaption>装饰模式UML图</figcaption>
-</figure>
-
-<figure>
-  <img src="/assets/images/design-pattern/bridge.png" alt="">
-  <figcaption>桥接模式UML图</figcaption>
+<figure class="third align-center">
+    <img src="/assets/images/design-pattern/proxy.png">
+    <img src="/assets/images/design-pattern/decorator.png">
+    <img src="/assets/images/design-pattern/bridge.png">
+    <figcaption>代理模式、装饰模式、桥接模式UML图</figcaption>
 </figure>
 
 > **代理模式**侧重于修改、控制对象的执行过程，也就是隐藏了对被代理对象的一些逻辑控制。  
@@ -108,14 +92,10 @@ last_modified_at: 2018-06-19T17:13:00+08:00
 
 两者的UML图如下
 
-<figure>
-  <img src="/assets/images/design-pattern/facade.png" alt="">
-  <figcaption>外观模式UML图</figcaption>
-</figure>
-
-<figure>
-  <img src="/assets/images/design-pattern/mediator.png" alt="">
-  <figcaption>中介模式UML图</figcaption>
+<figure class="half align-center">
+    <img src="/assets/images/design-pattern/facade.png">
+    <img src="/assets/images/design-pattern/mediator.png">
+    <figcaption>外观模式、中介模式UML图</figcaption>
 </figure>
 
 其实从上述的模式定义中我们就能够很清晰地发现它们的区别，外观模式重点是对外封装统一的高层接口，便于用户使用。  
@@ -130,19 +110,11 @@ last_modified_at: 2018-06-19T17:13:00+08:00
 
 其UML图如下所示
 
-<figure>
-  <img src="/assets/images/design-pattern/strategy.png" alt="">
-  <figcaption>策略模式UML图</figcaption>
-</figure>
-
-<figure>
-  <img src="/assets/images/design-pattern/state.png" alt="">
-  <figcaption>状态模式UML图</figcaption>
-</figure>
-
-<figure>
-  <img src="/assets/images/design-pattern/command.png" alt="">
-  <figcaption>命令模式UML图</figcaption>
+<figure class="third align-center">
+    <img src="/assets/images/design-pattern/strategy.png">
+    <img src="/assets/images/design-pattern/state.png">
+    <img src="/assets/images/design-pattern/command.png">
+    <figcaption>策略模式、状态模式、命令模式UML图</figcaption>
 </figure>
 
 我们先看看策略与状态模式，它们的类图居然是一样的。虽然它们类型接口一样，但是它们的本质不一样。  
