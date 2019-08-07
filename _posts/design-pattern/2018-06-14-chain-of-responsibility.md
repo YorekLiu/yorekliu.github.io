@@ -11,7 +11,8 @@ last_modified_at: 2018-06-14T13:49:19+08:00
 ---
 
 ## 1. 定义及使用场景
-使多个对象都有机会处理请求，从而避免了请求的发送者和接受者之间的耦合关系，将这些对象连成一条链，并沿着这条链传递该请求，一直到有对象处理它为止
+
+**使多个对象都有机会处理请求，从而避免了请求的发送者和接受者之间的耦合关系，将这些对象连成一条链，并沿着这条链传递该请求，一直到有对象处理它为止**
 
 使用场景  
 - 多个对象可以处理同一请求，但具体由哪个对象处理则在运行时动态决定。
@@ -23,7 +24,11 @@ last_modified_at: 2018-06-14T13:49:19+08:00
 {: .notice }
 
 ## 2. UML图
-![chain-of-responsibility]({{ basepath }}/assets/images/design-pattern/chain-of-responsibility.png)
+
+<figure style="width: 66%" class="align-center">
+    <img src="/assets/images/design-pattern/chain-of-responsibility.png">
+    <figcaption>责任链模式UML图</figcaption>
+</figure>
 
 - Handler  
   抽象处理者角色，声明一个请求处理的方法，并在其中保持一个对下一个处理节点Handler对象的引用
@@ -106,3 +111,8 @@ Director转交Manager处理
 Manager转交Boss处理
 老板批复报销20000元
 ```
+
+## 4. 源码中的例子
+
+责任链模式在Android源码中比较类似的实现莫过于对事件的分发处理，每当用户接触屏幕时，Android都会将对应的事件包装成一个事件对象从ViewTree的顶部至上而下地分发传递。  
+ViewGroup事件投递的递归调用就类似于一条责任链，一旦其寻找到责任者，那么将由责任者持有并消费掉该次事件，具体地体现在View的onTouchEvent方法中返回值的设置，如果onTouchEvent返回false，那么意味着当前View不会是该次事件的责任人，将不会对其持有；如果为true则相反，此时View会持有该事件并不再向外传递。
