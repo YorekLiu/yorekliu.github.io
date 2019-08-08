@@ -33,7 +33,9 @@ MVC模式是最经典开发模式之一，它分为三个部分Model，View，Co
 - view以特定格式呈现model。
 - controller响应用户输入并对数据model对象执行交互。controller接收输入，可选地验证它，然后将输入传递给model。
 
-MVC简单来说就是通过Controller来操作Model层的数据，并且返回给View层展示，如下图所示。
+MVC简单来说就是通过Controller来操作Model层的数据，并且返回给View层展示，如下图所示（MVC发展到现在有很多分支了，这里选择一种常见的）。
+
+> 大多数情况下，View和Model都不会直接交互，而是通过Controller来间接交互。
 
 <figure style="width: 50%" class="align-center">
     <img src="/assets/images/android/mvc.png">
