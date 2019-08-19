@@ -1747,13 +1747,13 @@ static final int DEFAULT_CACHE_SIZE = 2;
 - `mAttachedScrap`、`mChangedScrap`  
    一级缓存，同`ListView`中`ActionViews`，在layout发生前将屏幕上面的ViewHolder保存起来，供layout中进行复用
 - `mCachedViews`  
-   一级缓存，默认大小保持在`DEFAULT_CACHE_SIZE = 2`，可以通过`RecyclerView.setItemViewCacheSize(int)`方法进行设置
+   二级缓存，默认大小保持在`DEFAULT_CACHE_SIZE = 2`，可以通过`RecyclerView.setItemViewCacheSize(int)`方法进行设置
    `mCachedViews`数量如果超出限制，会根据索引将里面旧的移动到`RecyclerViewPool`中
 - `ViewCacheExtension`  
-   二级缓存，开发者可以自定义的缓存
+   三级缓存，开发者可以自定义的缓存
 - `RecyclerViewPool`  
-   三级缓存，可以在多个RecyclerView中共享View  
-   根据ViewType来缓存ViewHolder，每个ViewType的数组大小默认为`DEFAULT_MAX_SCRAP = 5`，超过部分会丢弃
+   四级缓存，可以在多个RecyclerView中共享View  
+   根据ViewType来缓存ViewHolder，每个ViewType的数组大小默认为`DEFAULT_MAX_SCRAP = 5`，超过部分会丢弃，可以通过其`setMaxRecycledViews(int viewType, int max)`方法来控制对应type的缓存池大小。
 
 `Recycler`的方法本质上就是对上面数据结构的一些操作。主要的方法有：
 
@@ -1768,11 +1768,11 @@ static final int DEFAULT_CACHE_SIZE = 2;
 - `getChangedScrapViewForPosition(int)`  
    从`mChangedScrap`中寻找匹配的ViewHolder
 - `getScrapOrHiddenOrCachedHolderForPosition(int, boolean)`  
-   依次从`mAttachedScrap`、`mHiddenViews`、`mCachedViews`中寻找匹配的ViewHolder
+   依次从`mAttachedScrap`、`mCachedViews`中寻找匹配的ViewHolder
 - `getScrapOrCachedViewForId(long, int, boolean)`  
    依次从`mAttachedScrap`、`mCachedViews`中寻找匹配的ViewHolder
 - `tryGetViewHolderForPositionByDeadline(int, boolean, long)`  
-   从`mChangedScrap`、`mAttachedScrap`、`mHiddenViews`、`mCachedViews`、`ViewCacheExtension`、`RecycledViewPool`中进行匹配；若匹配不了，最后会直接调用`Adapter.createViewHolder`方法进行创建
+   从`mChangedScrap`、`mAttachedScrap`、`mCachedViews`、`ViewCacheExtension`、`RecycledViewPool`中进行匹配；若匹配不了，最后会直接调用`Adapter.createViewHolder`方法进行创建
 - `tryBindViewHolderByDeadline(ViewHolder, int, int, long)`  
    调用`Adapter.bindViewHolder`方法绑定View
 
@@ -2069,7 +2069,7 @@ public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State 
 
 3. 根据计算的值，多次调用`fill`方法填充子View。
 
-显然，`fill`方法是新重点。该方法和ListView中的`fillDown`等类似，也是循环计算-填充-计算，我们直接看填充部分。填充部分调用了`layoutChunk`方法：该方法会首先调用`LayoutState.next`方法获取一个view；然后会`addView`，add过程中如果是detach过的，将会view重新attach到RecyclerView上，否则会addView；最后调用`measureChildWithMargins`、`layoutDecoratedWithMargins`方法对子View进行测量、布局。`layoutChunk`方法代码如下：
+显然，`fill`方法是新重点。该方法和ListView中的`fillDown`等类似，也是循环计算-填充-计算，我们直接看填充部分。填充部分调用了`layoutChunk`方法：该方法会首先调用`LayoutState.next`方法获取一个view；然后会`addView`，add过程中如果是detach过的，将会view重新attach到RecyclerView上，否则就是remove过了的，直接addView；最后调用`measureChildWithMargins`、`layoutDecoratedWithMargins`方法对子View进行测量、布局。`layoutChunk`方法代码如下：
 
 ```java
 void layoutChunk(RecyclerView.Recycler recycler, RecyclerView.State state,
@@ -2179,7 +2179,7 @@ View getViewForPosition(int position, boolean dryRun) {
 
 离真相又近了一步，`tryGetViewHolderForPositionByDeadline`方法里面会对各级缓存进行匹配，这里分段进行解释。
 
-0. 如果有changed scrap，尝试进行匹配  
+0. 如果有`mChangedScrap`，尝试进行匹配  
    ```java
     // 0) If there is a changed scrap, try to find from there
     if (mState.isPreLayout()) {
@@ -2190,7 +2190,7 @@ View getViewForPosition(int position, boolean dryRun) {
 
    这里的`isPreLayout()`与`mState.mRunPredictiveAnimations`有直接关系，可以看成前者的值取决与后者，该值在`dispatchLayoutStep1`过程中被更新；当Item发生了更新时，`scrapView`方法会将ViewHolder保存到`mChangedScrap`中去。
 
-2. 尝试从`mAttachedScrap`、`mHiddenViews`、`mCachedViews`中寻找匹配的ViewHolder。找到之后会对ViewHolder做一些检查，如果不满足条件，且`dryRun`为false（实际上就是false），会将ViewHolder清除掉并保存到`mCachedViews`中
+2. 尝试从`mAttachedScrap`、`mCachedViews`中寻找匹配的ViewHolder。找到之后会对ViewHolder做一些检查，如果不满足条件，且`dryRun`为false（实际上就是false），会将ViewHolder清除掉并保存到`mCachedViews`中。在向`mCachedViews`中添加缓存时，如果超过了允许的上限(即`mViewCacheMax`)，将会把旧的缓存移动到`RecycledViewPool`中。
    ```java
     // 1) Find by position from scrap/hidden list/cache
     if (holder == null) {
@@ -2218,7 +2218,7 @@ View getViewForPosition(int position, boolean dryRun) {
     }
    ```
 
-3. 如果`Adapter.hasStableIds()`为true，会根据ItemId和ViewType在`mAttachedScrap`、`mCachedViews`中寻找ViewHolder
+3. 如果`Adapter.hasStableIds()`为true，会根据ItemId和ViewType在`mAttachedScrap`、`mCachedViews`中寻找ViewHolder。`Adapter`中该属性默认为false。
    ```java
     // 2) Find from scrap/cache via stable ids, if exists
     if (mAdapter.hasStableIds()) {
@@ -2232,9 +2232,68 @@ View getViewForPosition(int position, boolean dryRun) {
     }
    ```
 
-4. 如果存在`ViewCacheExtension`，调用`ViewCacheExtension.getViewForPositionAndType`寻找ViewHolder
-5. fallback到`RecycledViewPool`，看是否有可用的ViewHolder
+4. 如果存在`ViewCacheExtension`，调用`ViewCacheExtension.getViewForPositionAndType`寻找ViewHolder  
+   ```java
+    if (holder == null && mViewCacheExtension != null) {
+        // We are NOT sending the offsetPosition because LayoutManager does not
+        // know it.
+        final View view = mViewCacheExtension
+                .getViewForPositionAndType(this, position, type);
+        if (view != null) {
+            holder = getChildViewHolder(view);
+            if (holder == null) {
+                throw new IllegalArgumentException("getViewForPositionAndType returned"
+                        + " a view which does not have a ViewHolder"
+                        + exceptionLabel());
+            } else if (holder.shouldIgnore()) {
+                throw new IllegalArgumentException("getViewForPositionAndType returned"
+                        + " a view that is ignored. You must call stopIgnoring before"
+                        + " returning this view." + exceptionLabel());
+            }
+        }
+    }
+   ```
+5. fallback到`RecycledViewPool`，看是否有可用的ViewHolder  
+   ```java
+    if (holder == null) { // fallback to pool
+        if (DEBUG) {
+            Log.d(TAG, "tryGetViewHolderForPositionByDeadline("
+                    + position + ") fetching from shared pool");
+        }
+        holder = getRecycledViewPool().getRecycledView(type);
+        if (holder != null) {
+            holder.resetInternal();
+            if (FORCE_INVALIDATE_DISPLAY_LIST) {
+                invalidateDisplayListInt(holder);
+            }
+        }
+    }
+   ```
 6. 以上都不满足，最后调用`Adapter.createViewHolder`创建ViewHolder
+   ```java
+    if (holder == null) {
+        long start = getNanoTime();
+        if (deadlineNs != FOREVER_NS
+                && !mRecyclerPool.willCreateInTime(type, start, deadlineNs)) {
+            // abort - we have a deadline we can't meet
+            return null;
+        }
+        holder = mAdapter.createViewHolder(RecyclerView.this, type);
+        if (ALLOW_THREAD_GAP_WORK) {
+            // only bother finding nested RV if prefetching
+            RecyclerView innerView = findNestedRecyclerView(holder.itemView);
+            if (innerView != null) {
+                holder.mNestedRecyclerView = new WeakReference<>(innerView);
+            }
+        }
+
+        long end = getNanoTime();
+        mRecyclerPool.factorInCreateTime(type, end - start);
+        if (DEBUG) {
+            Log.d(TAG, "tryGetViewHolderForPositionByDeadline created new ViewHolder");
+        }
+    }
+   ```
 
 在获取到ViewHolder之后，如果需要bind，会调用`tryBindViewHolderByDeadline`方法，该方法中接着调用`Adapter.bindViewHolder`方法交给开发者完成绑定工作。
 
@@ -2258,7 +2317,7 @@ if (mState.isPreLayout() && holder.isBound()) {
 
 最后以一张流程图结束本节：
 
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/android/recyclerview-cache.webp">
-    <figcaption>RecyclerView缓存流程 // TODO 重置一下</figcaption>
+<figure style="width: 60%" class="align-center">
+    <img src="/assets/images/android/recyclerview-cache.png">
+    <figcaption>RecyclerView缓存流程</figcaption>
 </figure>
