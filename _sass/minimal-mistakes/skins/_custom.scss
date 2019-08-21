@@ -12,7 +12,7 @@ $primary-color-text:   #212121;
 $accent-color:         #039be5;
 $primary-text-color:   #202124;
 $secondary-text-color: #5f6368;
-$divider-color:        #dadce0;
+$divider-color:        #dfe1e5;
 
 /* Colors */
 $text-color: $primary-text-color !default;
@@ -34,6 +34,7 @@ $link-color-hover: $link-color !default;
 $link-color-visited: $link-color !default;
 
 $nav-height: 4em !default;
+$border-radius: 8px;
 
 /* syntax highlighting (base16) */
 /* from https://github.com/purpleKarrot/base16-one-light-scheme/blob/master/one-light.yaml */

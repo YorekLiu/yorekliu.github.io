@@ -129,9 +129,10 @@ li ol {
 .feature__item--left,
 .feature__item--center,
 .feature__item--right {
-  box-shadow: 0 3px 1px -2px rgba(0,0,0,.14), 0 2px 2px 0 rgba(0,0,0,.098), 0 1px 5px 0 rgba(0,0,0,.084);
+  // box-shadow: 0 3px 1px -2px rgba(0,0,0,.14), 0 2px 2px 0 rgba(0,0,0,.098), 0 1px 5px 0 rgba(0,0,0,.084);
   background: $header-background-color;
-  border-radius: 4px;
+  border-radius: $border-radius;
+  border: 1px solid $divider-color;
 
   .archive__item {
     &-teaser {
@@ -161,9 +162,10 @@ li ol {
 // feature__item normal
 .feature__item {
   .archive__item {
-    box-shadow: 0 3px 1px -2px rgba(0,0,0,.14), 0 2px 2px 0 rgba(0,0,0,.098), 0 1px 5px 0 rgba(0,0,0,.084);
+    // box-shadow: 0 3px 1px -2px rgba(0,0,0,.14), 0 2px 2px 0 rgba(0,0,0,.098), 0 1px 5px 0 rgba(0,0,0,.084);
     background: $header-background-color;
-    border-radius: 4px;
+    border-radius: $border-radius;
+    border: 1px solid $divider-color;
 
     &-body {
       padding: 16px;
@@ -185,6 +187,12 @@ li ol {
   }
 }
 
+.archive__item-teaser {
+  img {
+    border: none;
+  }
+}
+
 // list archive item
 // list archive subtitle (e.g 2018-08)
 .archive__subtitle {
@@ -202,10 +210,11 @@ li ol {
 // list archive item
 .list__item {
   background: $header-background-color;
-  box-shadow: 0 3px 1px -2px rgba(0,0,0,.14), 0 2px 2px 0 rgba(0,0,0,.098), 0 1px 5px 0 rgba(0,0,0,.084);
-  border-radius: 4px;
+  // box-shadow: 0 3px 1px -2px rgba(0,0,0,.14), 0 2px 2px 0 rgba(0,0,0,.098), 0 1px 5px 0 rgba(0,0,0,.084);
+  border-radius: $border-radius;
   padding: 16px;
   margin-bottom: 16px;
+  border: 1px solid $divider-color;
 
   .archive__item {
     &-title {
@@ -280,8 +289,9 @@ li ol {
 
 .page__inner-wrap {
   background: $header-background-color;
-  box-shadow: 0 3px 1px -2px rgba(0,0,0,.14), 0 2px 2px 0 rgba(0,0,0,.098), 0 1px 5px 0 rgba(0,0,0,.084);
-  border-radius: 4px;
+  // box-shadow: 0 3px 1px -2px rgba(0,0,0,.14), 0 2px 2px 0 rgba(0,0,0,.098), 0 1px 5px 0 rgba(0,0,0,.084);
+  border-radius: $border-radius;
+  border: 1px solid $divider-color;
   padding: 16px;
 
   .page__meta {
@@ -342,9 +352,10 @@ li ol {
 // toc
 .toc {
   background: $header-background-color;
-  box-shadow: 0 3px 1px -2px rgba(0,0,0,.14), 0 2px 2px 0 rgba(0,0,0,.098), 0 1px 5px 0 rgba(0,0,0,.084);
-  border-radius: 4px;
+  // box-shadow: 0 3px 1px -2px rgba(0,0,0,.14), 0 2px 2px 0 rgba(0,0,0,.098), 0 1px 5px 0 rgba(0,0,0,.084);
+  border-radius: $border-radius;
   padding: 16px;
+  border: 1px solid $divider-color;
 
   &__menu {
     font-size: $type-size-5;
@@ -411,7 +422,8 @@ div.highlighter-rouge,
 figure.highlight {
   > pre,
   pre.highlight {
-    border: 1px solid #ebebeb;
+    border: 1px solid $divider-color;
+    border-radius: $border-radius;
   }
 }
 
@@ -447,6 +459,7 @@ td > code {
 
 img {
   border: 1px solid $divider-color;
+  border-radius: $border-radius;
 }
 
 blockquote {
@@ -454,7 +467,12 @@ blockquote {
   padding: 1px 24px 1px 24px;
   font-style: normal;
   background: $code-background-color;
-  border-left: 0.25em solid #77d5ff;
+  border-left: 4px solid #77d5ff;
+  border-right: 1px solid $divider-color;
+  border-top: 1px solid $divider-color;
+  border-bottom: 1px solid $divider-color;
+  border-bottom-right-radius: $border-radius;
+  border-top-right-radius: $border-radius;
 }
 
 /* next/previous buttons */
@@ -466,6 +484,7 @@ blockquote {
   color: $primary-text-color;
   background-color: $header-background-color;
   border-color: transparent;
+  border-radius: $border-radius;
 
   &:hover {
     color: $primary-text-color;
@@ -474,6 +493,32 @@ blockquote {
 
   &:visited {
     color: $primary-text-color;
+  }
+
+  &:first-child {
+    border-top-right-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
+  }
+
+  &:last-child {
+    border-top-left-radius: $border-radius;
+    border-bottom-left-radius: $border-radius;
+  }
+}
+
+// page tags
+.page__taxonomy-item {
+  display: inline-block;
+  margin-right: 5px;
+  margin-bottom: 8px;
+  padding: 5px 10px;
+  text-decoration: none;
+  border: 1px solid $divider-color;
+  border-radius: $border-radius;
+
+  &:hover {
+    text-decoration: none;
+    background: $divider-color;
   }
 }
 
@@ -486,10 +531,11 @@ blockquote {
 }
 
 .grid__item {
-  border-radius: 4px;
+  border-radius: $border-radius;
   background: $footer-background-color;
-  box-shadow: 0 3px 1px -2px rgba(0,0,0,.14), 0 2px 2px 0 rgba(0,0,0,.098), 0 1px 5px 0 rgba(0,0,0,.084);
+  // box-shadow: 0 3px 1px -2px rgba(0,0,0,.14), 0 2px 2px 0 rgba(0,0,0,.098), 0 1px 5px 0 rgba(0,0,0,.084);
   padding: 16px;
+  border: 1px solid $divider-color;
 
   .archive__item {
     &-title {
@@ -528,14 +574,16 @@ blockquote {
 .btn {
   /* default */
   border-width: 0;
-  border-radius: 4px;
+  border-radius: $border-radius;
   height: 36px;
   min-width: 64px;
   font-size: 0.875rem;
   font-weight: 500;
   letter-spacing: .0892857143em;
   box-sizing: border-box;
-  box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
+  // box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
+  box-shadow: none;
+  border: 1px solid $divider-color;
   color: $accent-color;
 
   /* button colors */
@@ -562,13 +610,13 @@ blockquote {
 
       &:visited {
         background-color: inherit;
-        color: $accent-color;
+        color: inherit;
       }
 
       &:hover {
-        box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);;
-        background-color: inherit;
-        color: $accent-color;
+        // box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+        background-color: $divider-color;
+        color: inherit;
       }
     }
   }
@@ -578,8 +626,9 @@ blockquote {
 .tag {
   border-radius: 40px;
   background-color: #f5f5f5;
-  border: 1px solid #eee;
+  border: 1px solid $divider-color;
   padding: 4px 8px;
+  display: inline-block;
   color: $primary-text-color;
 }
 
@@ -602,7 +651,7 @@ NOTICE TEXT BLOCKS
   font-family: "Roboto", "Helvetica", "Arial", sans-serif;
   font-size: 14px !important;
   text-indent: initial; /* override*/
-  border-radius: 0px;
+  border-radius: $border-radius;
   box-shadow: none;
   background: $notice-background-color;
   color: $notice-color;
