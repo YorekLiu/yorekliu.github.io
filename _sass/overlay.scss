@@ -248,15 +248,18 @@ li ol {
   ol {
     width: 100%;
     font-size: 14px;
-    padding-left: 36px;
+    padding: 12px 0px 12px 40px;
+    background: $header-background-color;
+    border-radius: $border-radius;
+    border: 1px solid $border-color;
 
     &:before {
       color: $link-color-visited;
-      content: "\27A0";
+      content: "\27A4";
       float: left;
       text-rendering: optimizeLegibility;
       word-wrap: normal;
-      margin-left: -36px;
+      margin-left: -24px;
     }
   }
 
