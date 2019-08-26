@@ -56,3 +56,8 @@ last_modified_at: 2018-06-12T11:49:19+08:00
 
 > 这是作者从《Android源码设计模式解析与实战(第二版)》中提取出来的思维导图[下载]({{ basepath }}/assets/file/android-design-pattern.xmind){: .btn .btn--success}  
 > 以及作者提供的23种UML图的[百度云盘](https://pan.baidu.com/s/1qXDPXy0)
+
+<figure style="width: 100%" class="align-center">
+    <img src="/assets/images/design-pattern/uml-example.png">
+    <figcaption>UML图图示样例</figcaption>
+</figure>

@@ -418,6 +418,7 @@ figcaption {
   text-align: center;
   font-size: 12px;
   width: 100%;
+  font-family: inherit;
 }
 
 // code
@@ -633,6 +634,18 @@ blockquote {
   padding: 4px 8px;
   display: inline-block;
   color: $primary-text-color;
+}
+
+// mfp
+.mfp-image-holder,
+.mfp-iframe-holder {
+  .mfp-close {
+    right: 0px;
+  }
+}
+
+.mfp-counter {
+  position: initial;
 }
 
 /* ==========================================================================

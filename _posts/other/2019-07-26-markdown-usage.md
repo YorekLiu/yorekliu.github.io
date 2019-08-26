@@ -1,5 +1,5 @@
 ---
-title: "本博客特殊用法备忘"
+title: "博客特殊语法备忘"
 toc: true
 toc_label: "目录"
 last_modified_at: 2019-07-26T10:38:19+08:00

@@ -31,6 +31,11 @@ public static <T> void printMiddle(T... a) {
     System.out.println("printMiddle = " + a[a.length / 2]);
 }
 
+// 泛型类型限定
+public static <T extends Comparable<T>> int compare(T t1, T t2) {
+    return t1.compareTo(t2);
+}
+
 // 泛型类型多个限定
 public static <T extends Comparable & Serializable> void printArray(T[] input) {
     Arrays.sort(input);
@@ -66,6 +71,11 @@ fun <T> getMiddle(vararg a : T) : T {
 // 泛型方法
 fun <T> printMiddle(vararg a : T) {
     println("printMiddle = ${a[a.size / 2]}")
+}
+
+// 泛型类型限定
+fun <T : Comparable<T>> compare(t1: T, t2: T): Int {
+    return t1.compareTo(t2)
 }
 
 // 泛型类型多个限定，注意多限定时需要使用where关键词

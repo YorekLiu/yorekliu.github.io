@@ -122,6 +122,8 @@ public class Singleton {
 >由于Java编译器允许处理器乱序执行，以及JDK1.5之前的JMM(Java Memory Model)中Cache、寄存器到主内存回写循序的规定，上面第二条、第三条的顺序时无法保证的。也就是说，执行顺序可能是1-2-3，也可能是1-3-2。如果是后者，而且在3执行完毕、2未执行之前，被切换到线程B上，这时`sInstance`已经在线程A上执行过第三点了，`sInstance`已经非空，所以B直接取走了`sInstance`，再使用时就会出错。这就是**DCL失效问题**。  
 >在JDK1.5以后，可以增加`volatile`关键词，可以保证`sInstance`对象每次都从主内存中读取。
 
+更多`volatile`，可以查阅[Java常见概念—线程——第10点volatile](/java/java-foundation/#6-%E7%BA%BF%E7%A8%8B)
+
 ### 3.4 静态内部类模式
 
 ```java

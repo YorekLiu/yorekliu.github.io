@@ -18,7 +18,7 @@ last_modified_at: 2019-01-29T17:26:50+08:00
 - [Week5-关于View的知识](/android/week5-view/)
 - [Week6-关于Gradle的知识](/android/week6-gradle/)
 - [Week7-关于序列化的知识](/android/week7-serialization/)
-- [Week8-Java基础知识学习](/android/week8-reference&singleton/)
+- Week8-Java基础知识学习——[Java中4种引用类型](/java/java-foundation/#java%E4%B8%AD4%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B) & [线程安全且高效的单例模式](/design%20patterns/singleton/)
 - [Week10-Android中的ClassLoader](/android/week10-classloader/)
 - [Week11-Binder](/android/week11-binder/)
 - [Week12-OkHttp和Retrofit](/android/week12-retrofit-okhttp/)
