@@ -215,6 +215,10 @@ figure {
   flex-wrap: wrap;
   margin: 2em 0;
 
+  @include breakpoint($small) {
+    width: 100%;
+  }
+
   img,
   iframe,
   .fluid-width-video-wrapper {
