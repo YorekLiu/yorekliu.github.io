@@ -41,18 +41,18 @@ RecyclerView高级特性系列：
 我们体验ListView的缓存最多的地方就是`BaseAdapter.getView(int, View, ViewGroup)`方法中了，一个典型的`BaseAdapter`的实现如下：
 
 ```java
-public class LocationHotCityAdapter extends BaseAdapter {
+public class DemoAdapter extends BaseAdapter {
     private Context mContext;
-    private List<LocationCitiesRes.CitiesBean> mCitiesBeanList;
+    private List<Data> mDataList;
 
-    public LocationHotCityAdapter(Context context, List<LocationCitiesRes.CitiesBean> list) {
+    public DemoAdapter(Context context, List<Data> dataList) {
         mContext = context;
-        mCitiesBeanList = list;
+        mDataList = dataList;
     }
 
     @Override
     public int getCount() {
-        return mCitiesBeanList.size();
+        return mDataList.size();
     }
 
     @Override
@@ -76,16 +76,19 @@ public class LocationHotCityAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.tvHeader.setText(mCitiesBeanList.get(position).getName());
+        final Data data = mDataList.get(position);
+        viewHolder.tvTitle.setText(data.getName());
 
         return convertView;
     }
 
     private static class ViewHolder {
-        TextView tvHeader;
+        View itemView;
+        TextView tvTitle;
 
         public ViewHolder(View view) {
-            tvHeader = (TextView) view;
+            itemView = view;
+            tvTitle = (TextView) view.findViewById(R.id.tv_title);
         }
     }
 }
@@ -97,7 +100,10 @@ public class LocationHotCityAdapter extends BaseAdapter {
 
 ### 1.1 RecycleBin
 
-在讲`AbsListView`和`ListView`代码之前，先说一下`AbsListView.RecycleBin`，该类负责管理view的复用。`RecycleBin`有两个等级的缓存：`ActiveViews`和`ScrapViews`。ActiveViews是指显示在屏幕上的view，ScrapViews是可能被adapter重新使用的老view，这样可以避免不必要的view创建。
+在讲`AbsListView`和`ListView`代码之前，先说一下`AbsListView.RecycleBin`，该类负责管理view的复用。`RecycleBin`**有两个等级的缓存：**`ActiveViews`**和**`ScrapViews`。
+
+- ActiveViews是指显示在屏幕上的view
+- ScrapViews是可能被adapter重新使用的老view，这样可以避免不必要的view创建。
 
 `RecycleBin`里面的字段如下：
 
@@ -1745,14 +1751,14 @@ static final int DEFAULT_CACHE_SIZE = 2;
 解释如下：
 
 - `mAttachedScrap`、`mChangedScrap`  
-   一级缓存，同`ListView`中`ActionViews`，在layout发生前将屏幕上面的ViewHolder保存起来，供layout中进行复用
+   **一级缓存**，同`ListView`中`ActionViews`，在layout发生前将屏幕上面的ViewHolder保存起来，供layout中进行复用
 - `mCachedViews`  
-   二级缓存，默认大小保持在`DEFAULT_CACHE_SIZE = 2`，可以通过`RecyclerView.setItemViewCacheSize(int)`方法进行设置
+   **二级缓存**，默认大小保持在`DEFAULT_CACHE_SIZE = 2`，可以通过`RecyclerView.setItemViewCacheSize(int)`方法进行设置
    `mCachedViews`数量如果超出限制，会根据索引将里面旧的移动到`RecyclerViewPool`中
 - `ViewCacheExtension`  
-   三级缓存，开发者可以自定义的缓存
+   **三级缓存**，开发者可以自定义的缓存
 - `RecyclerViewPool`  
-   四级缓存，可以在多个RecyclerView中共享View  
+   **四级缓存**，可以在多个RecyclerView中共享缓存  
    根据ViewType来缓存ViewHolder，每个ViewType的数组大小默认为`DEFAULT_MAX_SCRAP = 5`，超过部分会丢弃，可以通过其`setMaxRecycledViews(int viewType, int max)`方法来控制对应type的缓存池大小。
 
 `Recycler`的方法本质上就是对上面数据结构的一些操作。主要的方法有：
@@ -2321,3 +2327,56 @@ if (mState.isPreLayout() && holder.isBound()) {
     <img src="/assets/images/android/recyclerview-cache.png">
     <figcaption>RecyclerView缓存流程</figcaption>
 </figure>
+
+## 3. 两者在缓存方面的对比
+
+上面两节分析了ListView与RecyclerView缓存机制的相关源码，这里总结一下。毕竟，前面的分析就是为了最后的结论。
+
+> 本节来源于[Android ListView与RecyclerView对比浅析--缓存机制](https://www.cnblogs.com/bugly/p/6015391.html)
+
+ListView与RecyclerView缓存机制原理大致相似：滑动过程中，离屏的ItemView即被回收至缓存，入屏的ItemView则会优先从缓存中获取，只是ListView与RecyclerView的实现细节有差异.（这只是缓存使用的其中一个场景，还有如刷新等）。原理图如下所示：
+
+<figure style="width: 80%" class="align-center">
+    <img src="/assets/images/android/listview-cache.png">
+    <figcaption>RecyclerView缓存流程</figcaption>
+</figure>
+
+两者缓存机制的对比有以下几点不同：
+
+1. 层级不同   
+   RecyclerView比ListView多两级缓存，支持多个离屏ItemView缓存，支持开发者自定义缓存处理逻辑，支持所有RecyclerView共用同一个RecyclerViewPool(缓存池)。  
+   <figcaption>ListView缓存层级</figcaption>
+
+   | 缓存层级 | 是否需要创建 | 是否需要绑定 | 生命周期 | 备注 |
+   | ------- | ---------- | ---------- | ------ | ---- |
+   | mActionViews | 否 | 否 | `onLayout`函数周期内 | 用于屏幕内itemView快速复用 |
+   | mScrapViews | 否 | 是 | 与mAdapter一致，当mAdapter被更换时，mScrapViews即被清空 |  |
+
+   <figcaption>RecyclerView缓存层级</figcaption>
+
+   | 缓存层级 | 是否需要创建 | 是否需要绑定 | 生命周期 | 备注 |
+   | ------- | ---------- | ---------- | ------ | ---- |
+   | mAttachedScrap | 否 | 否 | `onLayout`函数周期内 | 用于屏幕内ViewHolder快速复用 |
+   | mCacheViews | 否 | 否 | 与mAdapter一致，当mAdapter被更换时，mCacheViews被降级至RecyclerViewPool；且容量超限时，老的会被降级到RecyclerViewPool | 默认上限为2，即缓存屏幕外2个ViewHolder |
+   | mViewCacheExtension |  |  |  | 不直接使用，需要用户定制，默认不实现 |
+   | mRecyclerPool | 否 | 是 | 与自身生命周期一致，不再被引用时即被释放 | 默认上限为5，可以用来实现所有RecyclerView同一个Pool |
+
+   ListView和RecyclerView缓存机制基本一致：
+   1. mActiveViews和mAttachedScrap功能相似，用来快速重用屏幕上可见的列表项，而不需要重新创建和绑定
+   2. mScrapViews和mCacheViews + mRecyclerPool功能相似，用来缓存离开屏幕的itemView，让即将进入屏幕的itemView复用
+   3. RecyclerView的优势在于:
+      - mCacheViews的使用，可以做到屏幕外的列表项在进入屏幕时也无须bindView快速重用
+      - mRecyclerPool可以供多个RecyclerView共同使用，在特定场景下（如ViewPager+多个列表页，或者竖向列表的item中嵌套有横向列表等）有优势。  
+
+      客观来说，RecyclerView在特定场景下对ListView的缓存机制做了补强和完善。
+
+2. 缓存不同  
+  - RecyclerView缓存RecyclerView.ViewHolder，抽象可理解为：View + ViewHolder  
+  - ListView缓存View，实际使用的时候需要手动将自定义的ViewHolder添加到View的tag中  
+
+   缓存不同，二者在缓存的使用上也略有差异，具体来说：
+   1. RecyclerView中mCacheViews获取时，是通过匹配pos获取目标位置的换缓存的，这样做的好处是，当数据源不变的情况下，无须重新bindView；而同样是离屏缓存，ListView从mScrapViews根据pos获取相应的缓存，但是并没有直接使用，而是重新调用了Adapter的getView方法，这就必定会导致我们的bind代码执行。
+   2. ListView中通过pos获取的是View；RecyclerView通过pos获取的是ViewHolder。
+
+另外，RecyclerView更大的亮点在于提供了局部刷新的接口，这样可以避免调用许  
+ListView和RecyclerView最大的区别在于数据源改变时的缓存的处理逻辑，ListView是"一锅端"，将所有的mActiveViews都移入了二级缓存mScrapViews，而RecyclerView则是更加灵活地对每个View修改标志位，区分是否重新bindView。
