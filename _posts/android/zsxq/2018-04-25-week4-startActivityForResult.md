@@ -1,5 +1,5 @@
 ---
-title: "Week4-关于startActivityForResult"
+title: "关于startActivityForResult"
 categories:
   - Android
 tags:
@@ -18,18 +18,24 @@ last_modified_at: 2018-04-25T16:38:40+08:00
 2、Activity A启动B的时候，在B中何时该执行setResult ？setResult可以位于Activity的finish方法之后吗？  
 
 ## Answer
-### startActivityForResult的使用场景是什么？onActivityResult回调里面的resultCode和requestCode含义是什么？  
-#### 使用场景
-`startActivityForResult`就是一种两个`Activity`间进行信息交流的手段。
-#### resultCode、requestCode含义
+
+### 1. startActivityForResult的使用场景是什么？onActivityResult回调里面的resultCode和requestCode含义是什么？  
+
+#### 1.1 使用场景
+
+`startActivityForResult`就是两个`Activity`间进行信息交流的一种手段。
+
+#### 1.2 resultCode、requestCode含义
+
 requestCode是为了解决多个请求的区分问题。  
 resultCode是请求结果码，告诉调用者成功/失败等消息。该信息被调用Activity写入，并经过AMS传递给源`Activity`
 
-### Activity A启动B的时候，在B中何时该执行setResult ？setResult可以位于Activity的finish方法之后吗？  
+### 2. Activity A启动B的时候，在B中何时该执行setResult？setResult可以位于Activity的finish方法之后吗？  
+
 `setResult`在`finish`之前执行，该方法只是将数据记录在`Activity`的`mResultCode`和`mResultData`中。  
 如果`setResult`在`finish`之后执行，那么消息无法传递给源`Activity`
 
-`Activity#finish`时序图如下所示
+`Activity#finish`时序图如下所示，
 ![Activity#finish时序图]({{ basepath }}/assets/images/android/activity_finish.png)
 
 关键节点:  

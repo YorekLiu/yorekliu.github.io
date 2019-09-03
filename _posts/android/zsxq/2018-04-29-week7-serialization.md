@@ -1,5 +1,5 @@
 ---
-title: "Week7-关于序列化的知识"
+title: "关于序列化的知识"
 categories:
   - Android
 tags:

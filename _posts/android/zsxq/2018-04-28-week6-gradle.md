@@ -1,5 +1,5 @@
 ---
-title: "Week6-关于Gradle的知识"
+title: "关于Gradle的知识"
 categories:
   - Android
 tags:
@@ -34,7 +34,11 @@ last_modified_at: 2018-04-28T11:38:50+08:00
 PS：禁止使用manifestPlaceholders
 
 ## Answer
-> 核心思想：在project afterEvaluate以后，找到处理manifest的那个task，然后再它的doLast后面通过Groovy xml API来直接修改构建生成的xml文件即可，至于用不用Gradle插件，其实原理都一样，我直接写在build.gradle里面了。
+
+[assembleRelease时的编译子任务](/android/week22-android-studio-build/#gradlew%E5%91%BD%E4%BB%A4)
+{: .notice--info }
+
+> 核心思想：在project afterEvaluate以后，找到处理manifest的那个task，然后再它的doLast后面通过Groovy xml API来直接修改构建生成的xml文件即可，至于用不用Gradle插件，其实原理都一样，这里直接写在build.gradle里面了。
 
 ```groovy
 // app build.gradle
@@ -74,29 +78,3 @@ def addChannel(File manifest) {
 [Gradle从入门到实战 - Groovy基础](https://blog.csdn.net/singwhatiwanna/article/details/76084580)  
 [全面理解Gradle - 执行时序](https://blog.csdn.net/singwhatiwanna/article/details/78797506)  
 [全面理解Gradle - 定义Task](https://blog.csdn.net/singwhatiwanna/article/details/78898113)  
-
-## e.g. 在lib中重命名output并copy到主工程libs文件夹下面
-
-```groovy
-android.libraryVariants.all {
-    it.outputs.all {
-        outputFileName = "hruilib-${version}-${it.name}.aar"
-    }
-}
-
-project.afterEvaluate {
-    android.libraryVariants.each {
-        String variantName = it.name.capitalize()
-        if (variantName == 'Release') {
-            def assembleTask = project.tasks.getByName("assemble${variantName}")
-            assembleTask.doLast {
-                copy {
-                    from('build/outputs/aar/')
-                    into('../app/libs/')
-                    include("*-release.aar")
-                }
-            }
-        }
-    }
-}
-```

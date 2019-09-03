@@ -1,5 +1,5 @@
 ---
-title: "Week3-理解Activity的启动模式"
+title: "理解Activity的启动模式"
 excerpt: "理解Activity的启动模式"
 categories:
   - Android
@@ -12,14 +12,16 @@ last_modified_at: 2018-04-25T16:38:30+08:00
 ---
 
 ## Question
-话题：理解Activity的启动模式。
-1、Activity的启动模式有哪几种，分别用于什么场景？
+话题：理解Activity的启动模式。  
+
+1、Activity的启动模式有哪几种，分别用于什么场景？  
 2、清晰地描述下onNewIntent和onConfigurationChanged这两个生命周期方法的场景？
 
 ## Answer
 关于Activity，可以看这篇全面的文章：[Android四大组件(1)——Activity]({{ basepath }}/android/Android四大组件(1)/)
 
-### Activity的启动模式有哪几种，分别用于什么场景？
+### 1. Activity的启动模式
+
 目前有四种启动模式：standard、singleTop、singleTask、singleInstance
 - standard  
   标准模式  
@@ -37,7 +39,7 @@ last_modified_at: 2018-04-25T16:38:30+08:00
   加强版的singleTask，它具有singleTask的一些特点，此外，还强调了一点：具有该模式的Activity只能单独的位于一个任务栈中。  
   闹钟的响铃界面。从外部打开时，只需要显示一次。
 
-### 清晰地描述下onNewIntent和onConfigurationChanged这两个生命周期方法的场景？
+### 2. onNewIntent、onConfigurationChanged
 - onNewIntent  
   在`singleTop` 、`singleTask`、`singleInstance`再次启动相同的Activity，如果期望只有一个实例存在，再次启动就会调用`onNewIntent`。在`onNewIntent`可以通过`setIntent`更新intent数据。
 - onConfigurationChanged  

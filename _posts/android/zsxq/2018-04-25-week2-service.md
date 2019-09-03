@@ -1,5 +1,5 @@
 ---
-title: "Week2-理解Service"
+title: "理解Service"
 excerpt: "清晰地理解Service"
 categories:
   - Android
@@ -21,19 +21,19 @@ last_modified_at: 2018-04-25T16:38:20+08:00
 ## Answer
 关于Service，可以看这篇全面的文章：[Android四大组件(2)——Service]({{ basepath }}/android/Android四大组件(2)/)
 
-### Service的start和bind状态有什么区别？
+### 1. start和bind状态的区别
 当一个应用组件调用了`startService`时，Service会处于启动状态。当Service启动后，它能够无期限的运行在后台，甚至开启该Service的组件已经销毁了。可以在Service内部调用`stopSelf()`或者其他组件调用`stopService()`来终止Service。`IntentService`会自动调用`stopSelf`方法。
 
 当一个应用组件调用了`bindService`时，Service会处于绑定状态。只要其他应用组件绑定了他，它就会开始运行。多个组件能绑定到一个Service实例上，当它们都解绑时，此Service实例就会销毁。
 
 对于已经处于active状态的Service，再次通过`startService`或`bindService`来启动同一个Service，其`onCreate`不会再次调用，而是直接调用对应的`onStartCommand()`或者`onBind()`方法。
 
-### 同一个Service，先startService，然后再bindService，如何把它停止掉？
+### 2. 如何停止多次启动的Service
 无论`startService`几次，只需要`stopService`或者`stopSelf`一次
 
 调用多次`bindService`，必须调用多次`unbindService`。**同一组件bind多次，只需要unbind一次**。因此，只需要调用一次`stopService`或`stopSelf`方法和多次`unbindService`方法，对执行顺序没有要求。最后一个操作会导致`Service#onDestroy`方法执行。
 
-### 你有注意到Service的onStartCommand方法的返回值吗？不同返回值有什么区别？
+### 3. onStartCommand方法的返回值
 ```java
 /**
  * Constant to return from {@link #onStartCommand}: compatibility
@@ -99,5 +99,5 @@ public static final int START_NOT_STICKY = 2;
 public static final int START_REDELIVER_INTENT = 3;
 ```
 
-### Service的生命周期方法onCreate、onStart、onBind等运行在哪个线程？
+### 4. Service的生命周期方法运行在哪个线程
 Service运行在宿主进程的主线程中，其生命周期方法也是运行在主线程，Service并不会创建自己的线程。如果想要在`Service`中执行耗时操作，必须另起线程(或者使用`IntentService`)，否则可能会产生ANR。

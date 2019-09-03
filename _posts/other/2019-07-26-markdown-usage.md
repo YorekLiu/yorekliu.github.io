@@ -81,6 +81,18 @@ last_modified_at: 2019-07-26T10:38:19+08:00
 {: .notice--danger }
 ```
 
+<p>&nbsp;</p>
+
+**notice--question**:  
+
+由于题目限制不能使用x、/、%操作符。所以高票答案采取了位运算的思路。
+{: .notice--question }
+
+```markdown
+由于题目限制不能使用x、/、%操作符。所以高票答案采取了位运算的思路。
+{: .notice--question }
+```
+
 ### 2. Buttons
 
 [Default Button Text](#link){: .btn}

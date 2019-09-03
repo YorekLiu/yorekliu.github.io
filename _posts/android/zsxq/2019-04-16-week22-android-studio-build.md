@@ -1,5 +1,5 @@
 ---
-title: "Week22-Android Studio build过程"
+title: "Android Studio build过程"
 excerpt: "Android Studio点击build按钮后，Android Studio就会编译整个项目并将apk安装到手机上，这个过程的背后到底发生了什么？"
 categories:
   - Android
@@ -24,17 +24,14 @@ toc_label: "目录"
 last_modified_at: 2019-04-16T16:25:10+08:00
 ---
 
-## Question
-
 Android Studio点击build按钮后，Android Studio就会编译整个项目并将apk安装到手机上，请详细描述下这个过程的背后到底发生了什么？
-
-## Answer
+{: .notice--question }
 
 点击build按钮后，AS会根据Build Variants中Module的Build Variant的类型对对应的Module执行`gradlew :${Module}:assemble${variant}`  
 以一个典型的单Module的工程为例，此处就是`gradlew :app:assembleDebug`
-{: .notice--info }
+{: .notice }
 
-### [The build process](https://developer.android.com/studio/build#build-process)  
+## [The build process](https://developer.android.com/studio/build#build-process)  
 
 下面是典型Android应用的构建过程：  
 
@@ -79,7 +76,7 @@ Android Studio点击build按钮后，Android Studio就会编译整个项目并�
 
 点击查看[更详细的构建流程](/assets/images/android_build_process_detail.png)
 
-### ProGuard & R8
+## ProGuard & R8
 
 在App构建的过程中，生成`.dex`文件之前，还会经过ProGuard或者R8的处理。这一步可以将App和Library中没有使用的代码、资源文件进行移除（又称Tree Shaking）；同时对于需要使用的代码，会使用短名称混淆这些类、字段和方法。
 
@@ -184,21 +181,21 @@ android {
 
 要缩小应用程序的代码，R8首先根据组合的配置文件集确定应用程序代码中的所有入口点（*entry point*）。这些入口点包括Android平台可用于打开应用程序的 Activity 或 Service 的所有类。从每个入口点开始，R8检查应用程序的代码，以构建应用程序可能在运行时访问的所有方法，成员变量和其他类的图。未连接到该图的代码被视为不能到达的（*unreachable*），可能会从应用中删除。
 
-下图显示了一个具有运行时依赖库的应用程序。在检查应用程序代码时，R8确定可以从`MainActivity.class`入口点抵达方法`foo()`、`faz()`和`bar()`。但是，您的应用程序在运行时从不使用类`OkayApi.class`或其方法`baz()`，因此R8在压缩应用程序时会删除该代码。
+下图显示了一个具有运行时依赖库的应用程序。在检查应用程序代码时，R8确定可以从`MainActivity.class`入口点抵达方法`foo()`、`faz()`和`bar()`。但是，我们的应用程序在运行时从不使用类`OkayApi.class`或其方法`baz()`，因此R8在压缩应用程序时会删除该代码。
 
 <figure style="width: 80%" class="align-center">
     <img src="/assets/images/android/tree-shaking.png">
     <figcaption>At compile-time, R8 builds a graph based on your project's combined keep rules to determine unreachable code.</figcaption>
 </figure>
 
-R8通过项目的R8配置文件中的`-keep`规则确定入口点。也就是说，keep 规则指定R8在压缩应用程序时不应丢弃的类，R8将这些类视为应用程序的可能入口点。Android Gradle插件和AAPT2会自动生成大多数应用项目所需的保留规则，例如activities、views和services。但是，如果您需要用其他keep规则来自定义此默认行为，这也是支持的。
+R8通过项目的R8配置文件中的`-keep`规则确定入口点。也就是说，keep 规则指定R8在压缩应用程序时不应丢弃的类，R8将这些类视为应用程序的可能入口点。Android Gradle插件和AAPT2会自动生成大多数应用项目所需的保留规则，例如activities、views和services。但是，如果我们需要用其他keep规则来自定义此默认行为，这也是支持的。
 
 <p>&nbsp;</p><font size="2"><b>自定义需要keep的代码</b></font>  
 
-对于大多数情况，默认的ProGuard规则文件（`proguard-android-optimize.txt`）足以让R8删除未使用的代码。但是，某些情况很难让R8正确分析，并且可能会删除您的应用实际需要的代码。可能错误删除代码的一些示例包括： 
+对于大多数情况，默认的ProGuard规则文件（`proguard-android-optimize.txt`）足以让R8删除未使用的代码。但是，某些情况很难让R8正确分析，并且可能会删除我们的应用实际需要的代码。可能错误删除代码的一些示例包括： 
 
-- 当您的应用程序从Java本地接口（JNI）调用方法时 
-- 当您的应用在运行时查找代码时（例如使用反射）
+- 当应用调用的方法来自 Java 原生接口 (JNI) 时
+- 当应用在运行时（例如使用反射）操作代码时
 
 要修复错误并强制R8保留某些代码，请在ProGuard规则文件中添加`-keep`行。例如： 
 
@@ -206,13 +203,13 @@ R8通过项目的R8配置文件中的`-keep`规则确定入口点。也就是说
 -keep public class MyClass
 ```
 
-或者，您可以将`@Keep`注释添加到要保留的代码中。在类上添加`@Keep`会使整个类保持原样。在方法或字段上添加它将保持方法/字段（及其名称）以及类名完整。请注意，此注释仅在使用AndroidX注释库时以及包含随Android Gradle插件打包的ProGuard规则文件时才可用。
+或者，我们可以将`@Keep`注释添加到要保留的代码中。在类上添加`@Keep`会使整个类保持原样。在方法或字段上添加它将保持方法/字段（及其名称）以及类名完整。请注意，此注释仅在使用AndroidX注释库时以及包含随Android Gradle插件打包的ProGuard规则文件时才可用。
 
 在使用`-keep`选项时，有很多注意事项需要我们注意，更多关于这方面的内容可以阅读[ProGuard Manual](https://www.guardsquare.com/en/products/proguard/manual/usage)。[TroubleShooting](https://www.guardsquare.com/en/products/proguard/manual/troubleshooting)这一小节列出了我们可能遇到的常见问题。
 
 <p>&nbsp;</p><font size="3"><b>压缩资源</b></font>  
 
-资源压缩只与代码压缩协同工作。在代码压缩器删除所有未使用的代码之后，资源压缩器可以识别应用仍在使用的资源。这在您添加包含资源的代码库时体现得尤为明显 ------ 您必须移除未使用的库代码，使库资源变为未引用资源，才能通过资源压缩器将它们移除。
+资源压缩只与代码压缩协同工作。在代码压缩器删除所有未使用的代码之后，资源压缩器可以识别应用仍在使用的资源。这在我们添加包含资源的代码库时体现得尤为明显 ------ 我们必须移除未使用的库代码，使库资源变为未引用资源，才能通过资源压缩器将它们移除。
 
 在`build.gradle`文件中（在用于代码压缩的 `minifyEnabled` 旁边），将`shrinkResources`属性设置为`true`，就可以开启资源压缩了。
 
@@ -243,11 +240,11 @@ android {
     tools:discard="@layout/unused2" />
 ```
 
-指定要舍弃的资源可能看似愚蠢，因为您本可将它们删除，但在使用构建变体时，这样做可能很有用。例如，如果您明知给定资源表面上会在代码中使用（并因此不会被压缩器移除），但实际不会用于给定构建变体，就可以将所有资源放入公用项目目录，然后为每个构建变体创建一个不同的 keep.xml 文件。构建工具也可能无法根据需要正确识别资源，这是因为编译器会添加内联资源 ID，而资源分析器可能不知道真正引用的资源和恰巧具有相同值的代码中的整数值之间的差别。
+指定要舍弃的资源可能看似愚蠢，因为我们本可将它们删除，但在使用构建变体时，这样做可能很有用。例如，如果我们明知给定资源表面上会在代码中使用（并因此不会被压缩器移除），但实际不会用于给定构建变体，就可以将所有资源放入公用项目目录，然后为每个构建变体创建一个不同的 keep.xml 文件。构建工具也可能无法根据需要正确识别资源，这是因为编译器会添加内联资源 ID，而资源分析器可能不知道真正引用的资源和恰巧具有相同值的代码中的整数值之间的差别。
 
 <p>&nbsp;</p><font size="2"><b>启用严格引用检查</b></font>  
 
-通常，资源压缩器可以准确地确定是否使用了资源。但是，如果您的代码调用`Resources.getIdentifier()`（或者如果您的任何库执行此操作 ------ AppCompat库执行此操作），则表示您的代码将根据动态生成的字符串查找资源名称。当您执行这一调用时，默认情况下资源压缩器会采取防御性行为，将所有具有匹配名称格式的资源标记为可能已使用，无法移除。
+通常，资源压缩器可以准确地确定是否使用了资源。但是，如果我们的代码调用`Resources.getIdentifier()`（或者如果我们的任何库执行此操作 ------ AppCompat库执行此操作），则表示我们的代码将根据动态生成的字符串查找资源名称。当我们执行这一调用时，默认情况下资源压缩器会采取防御性行为，将所有具有匹配名称格式的资源标记为可能已使用，无法移除。
 
 举个例子，下面的代码会导致所有`img_`前缀的资源被标记为已使用。
 
@@ -258,7 +255,7 @@ val res = resources.getIdentifier(name, "drawable", packageName)
 
 资源压缩器还会浏览代码以及各种 `res/raw/` 资源中的所有字符串常量，寻找格式类似于 `file:///android_res/drawable//ic_plus_anim_016.png` 的资源网址。如果它找到与其类似的字符串，或找到其他看似可用来构建与其类似的网址的字符串，则不会将它们移除。
 
-这些是默认启用的安全压缩模式的示例。但是，您可以关闭这种“有备无患”处理，并指定资源压缩器只保留其确定已使用的资源。为此，请在`keep.xml`文件中将`shrinkMode`设置为`strict`，如下所示：
+这些是默认启用的安全压缩模式的示例。但是，我们可以关闭这种“有备无患”处理，并指定资源压缩器只保留其确定已使用的资源。为此，请在`keep.xml`文件中将`shrinkMode`设置为`strict`，如下所示：
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -266,7 +263,7 @@ val res = resources.getIdentifier(name, "drawable", packageName)
     tools:shrinkMode="strict" />
 ```
 
-如果您确实启用了严格压缩模式，并且代码也引用了包含动态生成字符串的资源，如上所示，那么您必须使用通过`tools:keep`属性手动keep这些资源。
+如果我们确实启用了严格压缩模式，并且代码也引用了包含动态生成字符串的资源，如上所示，那么我们必须使用通过`tools:keep`属性手动keep这些资源。
 
 <p>&nbsp;</p><font size="2"><b>移除无用的<a href="https://developer.android.com/guide/topics/resources/providing-resources.html#AlternativeResources">替代资源</a></b></font>  
 
@@ -281,7 +278,7 @@ android {
 }
 ```
 
-同理，您也可以利用 APK 拆分为不同设备构建不同的 APK，自定义在 APK 中包括的屏幕密度或 ABI 资源。
+同理，我们也可以利用 APK 拆分为不同设备构建不同的 APK，自定义在 APK 中包括的屏幕密度或 ABI 资源。
 
 <p>&nbsp;</p><font size="2"><b>合并重复资源</b></font>  
 
@@ -301,37 +298,37 @@ Gradle 会按以下级联优先顺序合并重复资源：
 
 例如，如果某个重复资源同时出现在主资源和构建flavor中，Gradle 会选择构建flavor中的重复资源。
 
-如果完全相同的资源出现在同一源集中，Gradle 无法合并它们，并且会发出资源合并错误。如果您在 `build.gradle` 文件的 `sourceSet` 属性中定义了多个源集，则可能会发生这种情况，例如，如果 `src/main/res/` 和 `src/main/res2/` 包含完全相同的资源，就可能会发生这种情况。
+如果完全相同的资源出现在同一源集中，Gradle 无法合并它们，并且会发出资源合并错误。如果我们在 `build.gradle` 文件的 `sourceSet` 属性中定义了多个源集，则可能会发生这种情况，例如，如果 `src/main/res/` 和 `src/main/res2/` 包含完全相同的资源，就可能会发生这种情况。
 
 <p>&nbsp;</p><font size="3"><b>代码混淆</b></font>  
 
 混淆的目的是通过缩短应用程序的类，方法和字段的名称来减少应用程序的大小。  
-虽然混淆不会从您的应用程序中删除代码，但在具有索引许多类、方法和字段的DEX文件的应用程序中可以看到显著的减小。
+虽然混淆不会从我们的应用程序中删除代码，但在具有索引许多类、方法和字段的DEX文件的应用程序中可以看到显著的减小。
 
-此外，如果您的代码依赖于应用程序的方法和类的可预测命名 ------ 例如，在使用反射时，您应该将这些签名视为入口点并为它们指定保留规则。那些保留规则告诉R8不仅要将该代码保留在应用程序的最终DEX中，还要保留其原始命名。
+此外，如果我们的代码依赖于应用程序的方法和类的可预测命名 ------ 例如，在使用反射时，我们应该将这些签名视为入口点并为它们指定保留规则。那些保留规则告诉R8不仅要将该代码保留在应用程序的最终DEX中，还要保留其原始命名。
 
 <p>&nbsp;</p><font size="3"><b>代码优化</b></font>  
 
-为了进一步缩小您的应用程序，R8会在更深层次上检查您的代码，以删除更多未使用的代码，或者在可能的情况下重写代码以使其更简洁。下面是几个优化的例子：
+为了进一步缩小我们的应用程序，R8会在更深层次上检查我们的代码，以删除更多未使用的代码，或者在可能的情况下重写代码以使其更简洁。下面是几个优化的例子：
 
 - 如果R8检测到从不使用给定if-else语句的 else 分支，则R8将删除 else 分支的代码
-- 如果您的代码仅在一个地方调用方法，R8可能会删除该方法并在单个调用位置内联它。
+- 如果我们的代码仅在一个地方调用方法，R8可能会删除该方法并在单个调用位置内联它。
 - 如果R8确定一个类只有一个唯一的子类，并且该类本身未实例化（例如，一个抽象基类仅由一个具体的实现类使用），那么R8可以组合这两个类并从app中删除一个类。
 - 要了解更多信息，请阅读Jake Wharton撰写的[R8优化博客文章](https://jakewharton.com/blog/)。
 
-R8不允许您禁用或启用零碎的优化，或修改优化的行为。实际上，R8忽略了任何试图修改默认优化的ProGuard规则，例如`-optimizations`和`-optimizepasses`。此限制很重要，因为随着R8的不断改进，维护标准的优化行为有助于Android Studio团队轻松排除故障并解决您可能遇到的任何问题。
+R8不允许我们禁用或启用零碎的优化，或修改优化的行为。实际上，R8忽略了任何试图修改默认优化的ProGuard规则，例如`-optimizations`和`-optimizepasses`。此限制很重要，因为随着R8的不断改进，维护标准的优化行为有助于Android Studio团队轻松排除故障并解决我们可能遇到的任何问题。
 
 <p>&nbsp;</p><font size="2"><b>启用更激进的优化</b></font>  
 
-R8包含一组默认情况下未启用的其他优化。您可以通过在项目的`gradle.properties`文件中包含以下内容来启用这些其他优化：
+R8包含一组默认情况下未启用的其他优化。我们可以通过在项目的`gradle.properties`文件中包含以下内容来启用这些其他优化：
 
 ```
 android.enableR8.fullMode=true
 ```
 
-由于额外的优化使R8的行为与ProGuard不同，因此它们可能要求您包含其他ProGuard规则以避免运行时问题。例如，假设您的代码通过Java Reflection API引用了一个类。默认情况下，R8假定您打算在运行时检查和操作该类的对象 ------ 即使您的代码实际上没有 ------ 因此它会自动保留该类及其静态初始化程序。但是，当使用“完整模式”时，R8不会做出这种假设，如果R8断言你的代码在运行时从不使用该类，它会从你应用程序的最终DEX中删除该类。也就是说，如果要保留类及其静态初始化程序，则需要在规则文件中包含保留规则才能执行此操作。
+由于额外的优化使R8的行为与ProGuard不同，因此它们可能要求我们包含其他ProGuard规则以避免运行时问题。例如，假设我们的代码通过Java Reflection API引用了一个类。默认情况下，R8假定我们打算在运行时检查和操作该类的对象 ------ 即使我们的代码实际上没有 ------ 因此它会自动保留该类及其静态初始化程序。但是，当使用“完整模式”时，R8不会做出这种假设，如果R8断言你的代码在运行时从不使用该类，它会从你应用程序的最终DEX中删除该类。也就是说，如果要保留类及其静态初始化程序，则需要在规则文件中包含keep规则才能执行此操作。
 
-### gradlew命令
+## gradlew命令
 
 可以通过如下命令获取编译log：
 

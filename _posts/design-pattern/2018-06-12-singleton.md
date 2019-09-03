@@ -130,7 +130,7 @@ public class Singleton {
 public class Singleton {
     private Singleton() {}
 
-    public Singleton getInstance() {
+    public static Singleton getInstance() {
         return SingletonHolder.SINGLETON;
     }
 
@@ -144,7 +144,7 @@ public class Singleton {
 
 ### 3.5 枚举单例
 ```java
-public enum  Singleton {
+public enum Singleton {
     INSTANCE;
 
     public void doSomething() {
@@ -160,7 +160,7 @@ public enum  Singleton {
 public final class Singleton implements Serializable {
     private Singleton() {}
 
-    public Singleton getInstance() {
+    public static Singleton getInstance() {
         return SingletonHolder.SINGLETON;
     }
 

@@ -96,7 +96,7 @@ public @interface GET {
 
 **运行时注解由于注解信息在运行时也会保留，所以一般会采用反射机制进行处理。**  
 
-还是拿开头Retrofit的`@GET`注解来进行说明，Retrofit整个工作流程的讲解可以查看[OkHttp和Retrofit](/android/week12-retrofit-okhttp/#retrofit)中的Retrofit部分。
+还是拿开头Retrofit的`@GET`注解来进行说明，Retrofit整个工作流程的讲解可以查看[Retrofit2源码解析](http://localhost:4000/android/retrofit/)。
 
 `@GET`注解的处理过程在Refrofit的`ServiceMethod.java`中，每一个`ServiceMethod`都对应一个网络请求的接口，在我们首次调用网络请求的时候会创建该对象。我们看看其建造者中相关代码：
 
