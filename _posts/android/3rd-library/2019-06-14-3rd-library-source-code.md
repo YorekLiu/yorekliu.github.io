@@ -19,7 +19,7 @@ last_modified_at: 2019-06-14T16:52:51+08:00
 
 - [OkHttp-3.8.0](/android/okhttp/)
 - [Retrofit-2.3.0](/android/retrofit/)
-- [RxJava-2.1.13 & RxAndroid-2.0.2](/android/week15-rxjava&rxandroid/#rtfsc)
+- [RxJava-2.1.13 & RxAndroid-2.0.2](/android/rxjava&rxandroid/)
 - Glide-4.9.0
    - [Glide1——Glide v4 的基本使用](/android/glide1/)
    - [Glide2——从源码的角度理解Glide三步的执行流程](/android/glide2/)

@@ -1,5 +1,5 @@
 ---
-title: "Week16-进程保活"
+title: "进程保活"
 excerpt: "进程保活的方案"
 categories:
   - Android
@@ -20,12 +20,6 @@ toc_label: "目录"
 last_modified_at: 2019-04-01T11:31:50+08:00
 ---
 
-## Question
-
-进程保活
-
-## Answer
-
 进程保活方案就固定的几个，网上的资料基本都讲到了。
 
 总的来说，思路分为两个方面：
@@ -35,9 +29,9 @@ last_modified_at: 2019-04-01T11:31:50+08:00
 
 下面分别对这两方面进行论述。在正式开始第一方面之前，需要先了解一下进程优先级的划分。
 
-### 前言
+## 1. 前言
 
-#### 进程优先级
+### 1.1 进程优先级
 
 [Processes and Application Lifecycle](https://developer.android.com/guide/components/activities/process-lifecycle)
 {: .notice--info }
@@ -73,7 +67,7 @@ last_modified_at: 2019-04-01T11:31:50+08:00
 疑是中文版本没有及时更新：[进程生命周期](https://developer.android.com/guide/components/processes-and-threads.html#Lifecycle)，注意查看时在最下面把语言调整为中文，英文语言时这段内容是不可见的。
 {: .notice--info }
 
-#### 进程回收策略
+### 1.2 进程回收策略
 
 上文谈到，进程有几种优先级，优先级越高越不容易被回收；越低越容易被回收。  
 这里的回收策略是Low Memory Killer机制，它是根据OOM_ADJ阈值级别触发相应力度的内存回收的机制。  
@@ -203,7 +197,7 @@ m3note:/ # cat proc/6320/oom_adj
 
 下面正式分析一些保活方案，还是从两个方面来说。
 
-### 提高进程优先级
+## 2. 提高进程优先级
 
 该方面可以从`Activity`和`Service`两个点出发：
 
@@ -214,7 +208,7 @@ m3note:/ # cat proc/6320/oom_adj
 
 下面依次给出实现代码。
 
-#### 利用Activity提升权限
+### 2.1 利用Activity提升权限
 
 此方式主要解决息屏后被系统杀死的情况。我们可以监听息屏和解锁的广播，在息屏时启动一个只有一个像素的透明Activity，此时应用就位于前台了，优先级为0。在解锁时将此Activity销毁。这样不会让用户感觉到流氓。  
 
@@ -335,7 +329,7 @@ generic_x86:/ # cat proc/5201/oom_adj  # 锁屏时
 0
 ```
 
-#### 带通知的前台Service
+### 2. 带通知的前台Service
 
 将Service设置通过`startForeground`为前台，可以使整个进程变为前台进程。可以通过一些手段将通知栏通知取消掉，但在7.1及以后失效了。  
 另外在[前面](/android/week16-keep-app-alive/#%E8%BF%9B%E7%A8%8B%E5%9B%9E%E6%94%B6%E7%AD%96%E7%95%A5)提到，由于7.0源码的更新，进程优先级的值有了些许差别，但是整个优先级序列是没有改变的。
@@ -427,7 +421,7 @@ class KeepLiveService : Service() {
 此方法tinker也有在用：[TinkerPatchService#increasingPriority](https://github.com/Tencent/tinker/blob/master/tinker-android/tinker-android-lib/src/main/java/com/tencent/tinker/lib/service/TinkerPatchService.java#L159)
 {: .notice--success }
 
-### 进程拉活
+## 3. 进程拉活
 
 1. 利用系统广播  
    - 思想：在发生特定系统事件时，系统会发出响应的广播，通过“静态”注册对应的广播监听器，即可在发生响应事件时拉活。
@@ -469,7 +463,7 @@ class KeepLiveService : Service() {
    - 思想：Android系统的账号同步机制会定期同步账号进行，该方案目的在于利用同步机制进行进程的拉活。
    - 适用范围：该方案适用于所有的Android版本，包括被force stop掉的进程也可以进行拉活。最新Android版本（Android N）中系统好像对账户同步这里做了变动，该方法不再有效。
 
-### 其他策略
+## 4. 其他策略
 
 经研究发现还有其他一些系统拉活措施可以使用，但在使用时需要用户授权，用户感知比较强烈。这些方案包括：
 
@@ -483,7 +477,7 @@ class KeepLiveService : Service() {
 - 国外版应用：接入Google的GCM/FCM。
 - 国内版应用：根据终端不同，在小米手机（包括 MIUI）接入小米推送、华为手机接入华为推送；其他手机可以考虑接入极光、个推等。
 
-## 参考资料
+## 5. 参考资料
 
 - [进程保活方案 - 简书](https://www.jianshu.com/p/845373586ac1)
 - [【腾讯Bugly干货分享】Android 进程保活招式大全](https://segmentfault.com/a/1190000006251859)

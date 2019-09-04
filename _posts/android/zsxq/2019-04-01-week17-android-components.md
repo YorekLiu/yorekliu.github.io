@@ -1,5 +1,5 @@
 ---
-title: "Week17-四大组件的作用以及多进程"
+title: "四大组件的作用以及多进程"
 excerpt: "Android四大组件中每个组件的作用是什么？它们都可以开启多进程吗？"
 categories:
   - Android
@@ -10,16 +10,12 @@ tags:
   - BroadcastReceiver
   - ContentProvider
   - Process
-toc: true
-toc_label: "目录"
+classes: wide
 last_modified_at: 2019-04-01T14:25:08+08:00
 ---
 
-## Question
-
 Android四大组件中每个组件的作用是什么？它们都可以开启多进程吗？
-
-## Answer
+{: .notice--question }
 
 Android四大组件分别是Activity、Service、BroadcastReceiver以及ContentProvider。除了BroadcastReceiver之外，其他三个组件都必须在AndroidManifest中进行注册。对于BroadcastReceiver来说，它既可以在AndroidManifest中进行注册，也可以在代码中进行注册。在调用方式上，Activity、Service和BroadcastReceiver需要借助Intent，而ContentProvider不需要借助Intent。
 

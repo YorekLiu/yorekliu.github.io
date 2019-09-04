@@ -1,10 +1,9 @@
 ---
-title: "Week15-RxJava & RxAndroid"
-excerpt: "用过RxJava和RxAndroid吗？RxAndroid切换线程是怎么实现的呢？"
+title: "RxJava2 & RxAndroid源码解析"
+excerpt: "RxJava2、RxAndroid源码解析"
 categories:
   - Android
 tags:
-  - 知识星球
   - RxJava
   - RxAndroid
   - Observable
@@ -28,15 +27,13 @@ toc_label: "目录"
 last_modified_at: 2019-03-20T17:51:34+08:00
 ---
 
-## Question
-
 用过RxJava和RxAndroid吗？RxAndroid切换线程是怎么实现的呢？
-
-## Answer
+{: .notice--question }
 
 RxAndroid的线程切换是通过`Handler`实现的，RxJava则是通过将`Runnable`提交到线程池来实现的。
+{: .notice }
 
-## RTFSC
+---
 
 参考资料
 
@@ -48,13 +45,13 @@ RxAndroid的线程切换是通过`Handler`实现的，RxJava则是通过将`Runn
 - [友好 RxJava2.x 源码解析系列](https://juejin.im/post/5a209c876fb9a0452577e830)
 
 
-本文rxjava源码版本为2.1.13，rxandroid版本为2.0.2。
+本文RxJava源码版本为2.1.13，RxAndroid版本为2.0.2。RxAndroid这个库只提供了一个调度器，所以没有单独拎出来说。
 
-### 基本订阅流程
+## 1. 基本订阅流程
 
 在正文开始前，我们以`Observable.create`操作符为例，先看一下下面几个基本类之间的关系：
 
-<figure style="width:80%" class="align-center">
+<figure style="width:90%" class="align-center">
     <img src="/assets/images/android/rxjava/rxjava_uml.png">
     <figcaption>以create为例，相关类的UML图</figcaption>
 </figure>
@@ -348,7 +345,7 @@ source.subscribe(parent)
     <figcaption>本节例子的流程图</figcaption>
 </figure>
 
-### 线程切换
+## 2. 线程切换
 
 本节以下面的示例为例：
 
@@ -397,9 +394,9 @@ E/TAG: onNext(): main
 E/TAG: onComplete(): main
 ```
 
-我们发现，`onSubscribe`发生在当前线程，与`subscribeOn`和`observeOn`无关，事件的订阅发生在io线程，观察者其他方法都执行在main线程。接下来，跟着源码走一遍。
+我们发现，`onSubscribe`发生在当前线程，与`subscribeOn`和`observeOn`无关；事件的订阅发生在io线程，观察者其他方法都执行在main线程。接下来，跟着源码走一遍。
 
-#### observeOn
+### 2.1 observeOn
 
 `observeOn`用来指定观察者回调的线程，该方法执行后会返回一个`ObservableObserveOn`对象。  
 
@@ -611,7 +608,7 @@ void drainNormal() {
 
 至此，`observeOn`工作原理已经解释完毕，下面看看`subscribeOn`。
 
-#### subscribeOn
+### 2.2 subscribeOn
 
 `subscribeOn`切换原理和`observeOn`非常相似。有了前面的铺垫，本小节会进行的非常快。  
 {: .notice--info }
@@ -712,7 +709,7 @@ public ScheduledRunnable scheduleActual(final Runnable run, long delayTime, @Non
 因为RxJava最终能影响`ObservableOnSubscribe`这个匿名实现接口的运行环境的只能是最后一次`subscribe`操作，又因为RxJava订阅的时候是从下往上订阅，所以从上往下第一个`subscribeOn()`就是最后运行的。
 {: .notice--info }
 
-#### 线程切换小结
+### 2.3 线程切换小结
 
 最后，线程切换特点可以从下图例子中体现出来：
 

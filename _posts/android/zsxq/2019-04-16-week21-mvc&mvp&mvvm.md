@@ -1,5 +1,5 @@
 ---
-title: "Week21-MVC、MVP和MVVM"
+title: "MVC、MVP和MVVM"
 excerpt: "三种开发模式的设计图以及它们的适用场景和优缺点"
 categories:
   - Android
@@ -13,13 +13,7 @@ toc_label: "目录"
 last_modified_at: 2019-04-16T00:52:39+08:00
 ---
 
-## Question
-
-画出这三种开发模式的设计图，并给出它们的适用场景和优缺点。
-
-## Answer
-
-### MVC
+## 1. MVC
 
 MVC模式是最经典开发模式之一，它分为三个部分Model，View，Controller。
 
@@ -49,7 +43,7 @@ MVC简单来说就是通过Controller来操作Model层的数据，并且返回�
 - Activity并不是一个标准的MVC模式中的Controller，它的首要职责是加载应用的布局和初始化用户界面，接受并处理来自用户的操作请求，进而做出响应。随着界面及其逻辑的复杂度不断提升，Activity类的职责不断增加，以致变得庞大臃肿。
 - View层和Model层直接进行交互，就必然会导致Model和View之间的耦合，不易开发和维护。
 
-### MVP
+## 2. MVP
 
 MVP（Model-View-Presenter）是MVC的演化版本，MVP的角色定义如下
 
@@ -77,7 +71,7 @@ MVP（Model-View-Presenter）是MVC的演化版本，MVP的角色定义如下
 
 - Presenter作为桥梁协调View和Model，会导致Presenter变得很臃肿，维护比较困难
 
-### MVVM
+## 3. MVVM
 
 MVVM（Model-View-ViewModel）将Presenter改为ViewModel，其和MVP类似，不同的是ViewModel跟Model和View进行双向绑定：当View发生改变时，ViewModel通知Model进行更新数据；同理Model数据更新后，ViewModel通知View更新。MVVM的结构图如下所示。
 

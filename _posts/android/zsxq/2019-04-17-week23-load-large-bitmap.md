@@ -1,5 +1,5 @@
 ---
-title: "Week23-大尺寸图片加载问题"
+title: "大尺寸图片加载问题"
 excerpt: "给定一个1000 x 20000（宽1000px，高20000px）的大图，如何正常加载显示且不发生OOM？"
 categories:
   - Android
@@ -13,20 +13,16 @@ toc_label: "目录"
 last_modified_at: 2019-04-17T15:38:36+08:00
 ---
 
-## Question
-
-给定一个1000 x 20000（宽1000px，高20000px）的大图，如何正常加载显示且不发生OOM？
-
+给定一个1000 x 20000（宽1000px，高20000px）的大图，如何正常加载显示且不发生OOM？  
 测试例子：[485ad.jpg (670x12287)](http://renyugang.io/wp-content/uploads/2018/06/485ad.jpg)
-
-## Answer
+{: .notice--question }
 
 解决此问题的思路有两种：
 
 1. 使用`BitmapFactory.Options`进行采样加载
 2. 使用`BitmapRegionDecoder`按区域加载
 
-### 采样加载
+## 1. 采样加载
 
 此方法代码参考[Bitmap的加载](/android/Bitmap%E7%9A%84%E7%BC%93%E5%AD%98%E4%B8%8E%E5%8A%A0%E8%BD%BD/#1-bitmap%E7%9A%84%E5%8A%A0%E8%BD%BD)。
 
@@ -43,7 +39,7 @@ last_modified_at: 2019-04-17T15:38:36+08:00
 不使用`inSampleSize`时，Bitmap占用Java堆内存为：37.4-5=32.4M  
 当`inSampleSize=4`时，占用内存理论上会变为原来的1/(4*4)=1/16，也就是32.4/16=2.025M，从图中差不多一致。
 
-### 按区域加载
+## 2. 按区域加载
 
 此方式的原理比较简单：
 
