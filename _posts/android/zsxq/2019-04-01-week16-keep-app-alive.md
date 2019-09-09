@@ -329,7 +329,7 @@ generic_x86:/ # cat proc/5201/oom_adj  # 锁屏时
 0
 ```
 
-### 2. 带通知的前台Service
+### 2.2 带通知的前台Service
 
 将Service设置通过`startForeground`为前台，可以使整个进程变为前台进程。可以通过一些手段将通知栏通知取消掉，但在7.1及以后失效了。  
 另外在[前面](/android/week16-keep-app-alive/#%E8%BF%9B%E7%A8%8B%E5%9B%9E%E6%94%B6%E7%AD%96%E7%95%A5)提到，由于7.0源码的更新，进程优先级的值有了些许差别，但是整个优先级序列是没有改变的。

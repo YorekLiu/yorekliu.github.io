@@ -17,6 +17,8 @@ tags:
   - 阻塞队列
   - LinkedBlockingQueue
   - SynchronousQueue
+  - CountDownLatch
+  - CountDownTimer
 toc: true
 toc_label: "目录"
 last_modified_at: 2019-08-26T17:19:57+08:00
@@ -211,6 +213,41 @@ Java中的IO和NIO的区别
 - `atomic`原理：对于值的操作，是基于底层硬件处理器提供的原子指令，保证并发时线程的安全
 
 最常见的`volatile`使用就是[单例模式——DCL模式](/design%20patterns/singleton/#33-double-check-lockdcl%E6%A8%A1%E5%BC%8F)
+
+---
+
+**11、**`CountDownLatch`**与**`CountDownTimer`  
+
+`CountDownLatch`是用来实现线程同步的一个工具。其主要有一下三个方法  
+1. `public CountDownLatch(int count)`  
+  初始化计数器
+2.  `public void await() throws InterruptedException`  
+  堵塞线程，直到计数器为0
+3.  `public void countDown()`  
+  计数，表示执行完成。没调用一次，计数器会减1
+
+`CountDownTimer`是一种用来实现倒计时的手段，其用法如下:  
+
+```java
+timer = new CountDownTimer(count * 1000, 1000) {
+    @Override
+    public void onTick(long millisUntilFinished) {
+        tvGetcode.setText(((millisUntilFinished / 1000) + "秒后重发"));
+    }
+
+    @Override
+    public void onFinish() {
+        tvGetcode.setEnabled(true);
+        tvGetcode.setText("获取验证码");
+    }
+};
+timer.start();
+```
+
+如上，创建之后调用`start`方法开始计数，每隔一段(第二个参数)就会调用`onTick`方法，在这里更新倒计时，最后会调用`onFinish`方法，这里进行倒计时完成的操作。  
+当然`CountDownTimer`也是有`cancel`来取消倒计时的。
+
+不过，在实践中发现这种倒计时方式`onTick`报时不太准，因为这依赖于底层的`Handler`来执行操作。
 
 ## 7. 锁
 
