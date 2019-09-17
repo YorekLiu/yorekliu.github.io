@@ -9,7 +9,7 @@ tags:
   - String
   - Max Heap
   - Min Heap
-  - PriorityHeap
+  - PriorityQueue
 toc: true
 toc_label: "目录"
 last_modified_at: 2019-01-25T13:18:17+08:00
