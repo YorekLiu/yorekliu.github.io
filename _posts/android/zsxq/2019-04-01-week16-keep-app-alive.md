@@ -456,10 +456,14 @@ class KeepLiveService : Service() {
         从可扩展性和进程唯一等多方面考虑，将Native进程设计成C/S结构模式，主进程与Native进程通过`Localsocket`进行通信。在Native进程中利用Localsocket保证Native进程的唯一性，不至于出现创建多个Native进程以及Native进程变成僵尸进程等问题。
 5. 双进程守护
    - 思想：Service被系统杀死时会回调`ServiceConnection.onServiceDisconnected`方法。利用此原理，可以在两个进程中开启两个Service互绑。
+   - 适用范围：主要适用于Android 5.0以下版本手机。高版本中，双Service方案也改成了应用被杀，任何后台Service无法正常状态运行。
 6. 利用JobScheduler机制
    - 思想：5.0以后系统对native进程等加强了管理，native拉活方式失效。系统在Android 5.0以上版本提供了`JobScheduler`接口，系统会定时调用该进程以使应用进行一些逻辑操作。可以搭配前台Service技术提高进程优先级。
-   - 适用范围：主要适用于Android 5.0以上版本手机。该方案在Android 5.0以上版本中不受force stop影响，被强制停止的应用依然可以被拉活，在Android 5.0以上版本拉活效果非常好。仅在小米手机可能会出现有时无法拉活的问题。
-7. 利用账号同步机制
+   - 适用范围：主要适用于Android 5.0以上版本手机，7.0时候有一定影响（可以在电源管理中给APP授权）。该方案在Android 5.0以上版本中不受force stop影响，被强制停止的应用依然可以被拉活，在Android 5.0以上版本拉活效果非常好。仅在小米手机可能会出现有时无法拉活的问题。
+7. 后台播放无声音频
+   - 思想：启动一个第3点的`START_STICKY` Service，且在`onDestory`方法中重启自身，然后在Service利用`MediaPlayer.setLooping(true)`循环播放音频。
+   - 使用范围：适用于7.0下手机。
+8. 利用账号同步机制
    - 思想：Android系统的账号同步机制会定期同步账号进行，该方案目的在于利用同步机制进行进程的拉活。
    - 适用范围：该方案适用于所有的Android版本，包括被force stop掉的进程也可以进行拉活。最新Android版本（Android N）中系统好像对账户同步这里做了变动，该方法不再有效。
 
@@ -482,3 +486,4 @@ class KeepLiveService : Service() {
 - [进程保活方案 - 简书](https://www.jianshu.com/p/845373586ac1)
 - [【腾讯Bugly干货分享】Android 进程保活招式大全](https://segmentfault.com/a/1190000006251859)
 - [Android进程保活招数概览](https://www.jianshu.com/p/c1a9e3e86666)
+- [2018年Android的保活方案效果统计](https://www.jianshu.com/p/b5371df6d7cb)
