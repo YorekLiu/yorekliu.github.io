@@ -32,4 +32,5 @@ last_modified_at: 2019-06-14T16:52:51+08:00
 
 **TODO**
 - LeakCanary
+- EventBus
 - Gson

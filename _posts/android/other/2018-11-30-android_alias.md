@@ -27,6 +27,9 @@ last_modified_at: 2018-11-30T16:33:24+08:00
 
 如下面代码所示，我们在`build.gradle`中使用productFlavors机制可以创建两个flavor——hdd以及jinyouzi，这样在Build Variant中就可以通过hddDebug、hddRelease、jinyouziDebug、jinyouziRelease来编译对应马甲的debug、release包。
 
+注意，在此文章中hdd是基线包，jinyouzi是马甲包。
+{: .notice--danger }
+
 ```gradle
 android {
     defaultConfig {
@@ -47,9 +50,21 @@ android {
 }
 ```
 
-配置了flavor之后，我们在app/src下面可以创建与main目录同级的hdd、jinyouzi目录。这两个目录中的资源文件、代码在编译对应的flavor时可以加入编译。也就是说hdd=['src/main', 'src/hdd']，jinyouzi=['src/main', 'src/jinyouzi']  
-对于资源文件来说，flavor下的资源会“覆盖”main下面的资源——不知道官方怎么称呼，我借用framework中的名称，称之为`overlay`机制  
-对于代码文件来说，如果flavor和main下有代码文件名称一样，编译时会报错。所以需要把各个flavor有差异的文件放到各个flavor下，而不是main下。  
+配置了flavor之后，我们在app/src下面可以创建与main目录同级的hdd、jinyouzi目录。这两个目录中的资源文件、代码在编译对应的flavor时可以加入编译。也就是说hdd = ['src/main', 'src/hdd']，jinyouzi = ['src/main', 'src/jinyouzi']。
+
+- 对于资源文件来说，flavor下的资源会“覆盖”main下面的资源，也就是flavor的优先级高——不知道官方怎么称呼，我借用Android系统开发中的名词，称之为`overlay`机制。  
+
+   其实这点与apk的编译流程有关，在[Shrink, obfuscate, and optimize your app - Merge duplicate resources](https://developer.android.com/studio/build/shrink-code#merge-resources)中有提到：  
+   Gradle merges duplicate resources in the following cascading priority order:  
+   Gradle 会按以下级联优先顺序合并重复资源：  
+   Dependencies → Main → Build flavor → Build type  
+   依赖项 → 主资源 → 构建flavor → 构建类型  
+   For example, if a duplicate resource appears in both your main resources and a build flavor, Gradle selects the one in the build flavor.  
+   例如，如果某个重复资源同时出现在主资源和构建flavor中，Gradle 会选择构建flavor中的重复资源。  
+   该文章的中文翻译在[Android Studio build过程 - ProGuard & R8](/android/week22-android-studio-build/#proguard--r8)一文中有翻译。
+   {: .notice--info }
+
+- 对于代码文件来说，如果flavor和main下有代码文件名称一样，编译时会报错。所以需要把各个flavor有差异的文件放到各个flavor下，而不是main下。  
 
 **这就是马甲包的资源、代码管理的关键点。** 这段关键点一头雾水没关系，后面具体配置的时候就会体会到。
 
@@ -59,7 +74,7 @@ android {
 </figure>
 
 
-此外，**各个flavor原本就能配置不同的applicationId、版本号、友盟统计分享等key以及签名文件等**，具体代码请看第二节。
+此外，**各个flavor原本就能配置不同的applicationId、版本号、友盟统计分享等key以及签名文件等**，具体代码在后面会谈到。
 
 
 ## 2. 具体需求
@@ -98,14 +113,14 @@ android {
 }
 ```
 
-applicationId在AndroidManifest.xml中也需要使用到，这个在第3小节中一起介绍。
+applicationId在AndroidManifest.xml中也需要使用到，这个在第2.3小节中一起介绍。
 
 ### 2.2 资源文件
 
 利用productFlavors机制，可以为每个flavor创建不同的文件目录。  
 各个flavor的logo、启动页、app_name等可以放到对应flavor的文件目录中。这样就达到了马甲包的UI效果——换个皮肤。  
 
-在文本中，由于hdd是基线，jinyouzi是基于hdd的马甲，因此只需要在jinyouzi中放置与hdd对应文件就可以起到覆盖基线资源的效果。
+在文本中，由于hdd是基线，jinyouzi是基于hdd的马甲，因此只需要在jinyouzi中放置需要更改的hdd中对应文件就可以起到覆盖基线资源的效果。
 
 <figure class="half">
     <img src="/assets/images/android/android_alias_res_dir_baseline.png">
@@ -116,7 +131,7 @@ applicationId在AndroidManifest.xml中也需要使用到，这个在第3小节�
 对于drawable、mipmap资源而言，文件会替换基线的文件。  
 对于values里面的资源而言，资源不是简单粗暴的文件覆盖，而是每一项具体资源的覆盖。我们只需要在jinyouzi中新增对应的strings、color就可以了。
 
-比如**colors.xml**
+比如jinyouzi中的**colors.xml**
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
@@ -131,7 +146,7 @@ applicationId在AndroidManifest.xml中也需要使用到，这个在第3小节�
 </resources>
 ```
 
-**strings.xml**  
+jinyouzi中的**strings.xml**  
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
@@ -281,7 +296,8 @@ public final class BuildConfig {
 }
 ```
 
-在代码中就可以直接使用了:  
+在代码中就可以这样直接使用了:  
+
 **HddApplication.kt**
 ```kotlin
 package com.hdd.android.app
@@ -428,7 +444,7 @@ jinyouzi马甲下配置，则需要在`com.xxx.flavor.app.wxapi`下创建。
 ### 2.4 代码文件
 代码文件处理方式就多样了，可以通过2.2小节类似的原理，还可以使用静态工厂方法根据包名构造出不同的类。我们还是说前者吧。
 
-由于基线的域名是配置在代码中的常量，为了尽可能不修改代码，同时满足马甲包不同域名的要求，所以也是配置在代码中的。
+这里拿域名来距离，由于基线的域名是配置在代码中的常量。为了尽可能不修改代码，同时满足马甲包不同域名的要求，所以马甲包也是配置在代码中的，且配置文件所在的包、配置文件的类名以及其包含的public字段名、方法名都必须保持一致。
 
 基线域名配置:  
 app/src/**hdd**/java/com/xxx/xxxxxxx/app/http/HttpConfig.kt
@@ -436,7 +452,6 @@ app/src/**hdd**/java/com/xxx/xxxxxxx/app/http/HttpConfig.kt
 package com.xxx.xxxxxxx.app.http
 
 import com.xxx.xxxxxxx.app.BuildConfig
-
 
 object HttpConfig {
     const val DOMAIN_SIT = "https://xxxxxx.xxxxx.com/"
@@ -450,19 +465,20 @@ object HttpConfig {
 ```
 
 马甲包域名配置:  
-app/src/**jinyouzi**/java/com/xxx/flavor/app/http/HttpConfig.kt
+app/src/**jinyouzi**/java/com/xxx/xxxxxxx/app/http/HttpConfig.kt
+
 ```kotlin
 package com.xxx.xxxxxxx.app.http
 
 import com.xxx.xxxxxxx.app.BuildConfig
 
 object HttpConfig {
-  const val DOMAIN_SIT = "https://xxxxxx.xxxxx.com/"
-  const val DOMAIN_UAT = "http://xxxxxx.test.xxxxx.com/"
+  const val DOMAIN_SIT = "https://yyyyyy.yyyyy.com/"
+  const val DOMAIN_UAT = "http://yyyyyy.test.yyyyy.com/"
   val DOMAIN = if (BuildConfig.DEBUG) DOMAIN_UAT else DOMAIN_SIT
 
-  const val DOMAIN_H5_SIT = "https://xxxxxx.xxxxxx.com/"
-  const val DOMAIN_H5_UAT = "http://xxxxxx.test.xxxxxx.com/"
+  const val DOMAIN_H5_SIT = "https://yyyyyy.yyyyyy.com/"
+  const val DOMAIN_H5_UAT = "http://yyyyyy.test.yyyyyy.com/"
   val DOMAIN_H5 = if (BuildConfig.DEBUG) DOMAIN_H5_UAT else DOMAIN_H5_SIT
 }
 ```

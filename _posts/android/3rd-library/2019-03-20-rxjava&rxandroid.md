@@ -30,7 +30,7 @@ last_modified_at: 2019-03-20T17:51:34+08:00
 用过RxJava和RxAndroid吗？RxAndroid切换线程是怎么实现的呢？
 {: .notice--question }
 
-RxAndroid的线程切换是通过`Handler`实现的，RxJava则是通过将`Runnable`提交到线程池来实现的。
+RxAndroid的线程切换是通过`Handler`实现的，RxJava则是通过将`Runnable`提交到**线程池**来实现的。
 {: .notice }
 
 ---
@@ -110,7 +110,7 @@ onComplete
 在开始之前先把上面的链式代码展开一下，方便下面继续逐个展开：
 
 ```java
-// 结果观察者
+// 订阅者
 val resultObserver = object : Observer<Int> {
     override fun onComplete() {
         System.out.print("onComplete\n")
@@ -129,7 +129,7 @@ val resultObserver = object : Observer<Int> {
     }
 }
 
-// 数据源
+// 观察者
 val source = object : ObservableOnSubscribe<String> {
     override fun subscribe(emitter: ObservableEmitter<String>) {
         emitter.onNext("1")
@@ -182,10 +182,7 @@ public static <T> Observable<T> onAssembly(@NonNull Observable<T> source) {
 因此，开头的例子中最后的链式调用部分就等价于：
 
 ```java
-// 1. 将create展开成为一个ObservableCreate
-val observableCreate = ObservableCreate<String>(source)
-// 链式调用
-observableCreate.map(function).subscribe(resultObserver)
+ObservableCreate<String>(source).map(function).subscribe(resultObserver)
 ```
 
 下面看一下`map`操作符：
@@ -204,15 +201,15 @@ public final <R> Observable<R> map(Function<? super T, ? extends R> mapper) {
 所以，开头的例子中最后的链式调用部分再次展开为：
 
 ```java
-// 1. 将create展开成为一个ObservableCreate
-val observableCreate = ObservableCreate<String>(source)
-// 2. 将map展开为ObservableMap
-val observableMap = ObservableMap<String, Int>(observableCreate, function)
-// 链式调用
-observableMap.subscribe(resultObserver)
+ObservableMap<String, Int>(
+    ObservableCreate<String>(source),
+    function
+).subscribe(resultObserver)
 ```
 
-在上面，我们已经创建好了两个`Observable`，一个原始的创建数据的`ObservableCreate`以及一个用于转换的`ObservableMap`。所有的操作符都将上一个`Observable`作为一个参数传入构造函数，这就是RxJava中数据会依次经过这些`Observable`的原因。  
+在上面，我们已经创建好了两个`Observable`，一个原始的创建数据的`ObservableCreate`以及一个用于转换的`ObservableMap`。  
+
+**所有的操作符都将上一个**`Observable`**作为一个参数传入构造函数，这就是RxJava中数据会依次经过这些**`Observable`**的原因。**  
 同时，值得注意的是，rxjava中每个操作符都会在内部创建一个`Observable`对象。
 
 接下来，我们回到示例程序的`subscribe`操作中，我们知道`subscribe`是`ObservableSource`接口的方法，该方法在抽象类`Observable`中进行了重写，在重写方法中交给了抽象方法`subscribeActual`来实现，我们看看这部分代码：
@@ -245,6 +242,7 @@ public final void subscribe(Observer<? super T> observer) {
 }
 ```
 
+现在，我们正式开始看看例子是怎么执行的。  
 由于先执行的是最近的Observable也就是`ObservableMap`，我们先看看其`subscribeActual`方法：
 
 ```java
@@ -270,15 +268,10 @@ public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T,
 我们先不看具体的实现，先尝试把所有的代码全部展开，然后在研究例子的结果。目前可以展开如下：
 
 ```java
-// 1. 将create展开成为一个ObservableCreate
-val observableCreate = ObservableCreate<String>(source)
-// 2. 将map展开为ObservableMap、链式调用
-// 对照源码部分可以知道，source参数为上面的observableCreate，t参数为resultObserver，function参数为function
-// 所以其subscribe方法等价于下面的代码
-observableCreate.subscribe(MapObserver<String, Int>(resultObserver, function))
+ObservableCreate<String>(source).subscribe(MapObserver<String, Int>(resultObserver, function))
 ```
 
-现在轮到展开`ObservableCreate`了，我们先看一下其相关代码：
+现在轮到展开`ObservableCreate`了：
 
 ```java
 public final class ObservableCreate<T> extends Observable<T> {
@@ -313,13 +306,14 @@ public final class ObservableCreate<T> extends Observable<T> {
 然后展开这最后一部分代码：
 
 ```java
-// 将create展开成为一个ObservableCreate、将map展开为ObservableMap、链式调用
-// 入参source对应source，observer对应mapObserver
-val mapObserver = MapObserver<String, Int>(resultObserver, function)
+// 代码中observer参数就是例子中的MapObserver<String, Int>(resultObserver, function)
+// source参数就是例子中的source
+val observer = MapObserver<String, Int>(resultObserver, function)
+
 // 所以实例代码的subscribe方法就等于下面这一段
-val parent = CreateEmitter<String>(mapObserver)
+val parent = CreateEmitter<String>(observer)
 // 2️⃣
-mapObserver.onSubscribe(parent)
+observer.onSubscribe(parent)
 // 3️⃣
 source.subscribe(parent)
 ```
@@ -330,13 +324,87 @@ source.subscribe(parent)
 
 `MapObserver`简单来说就是在`onNext`方法中会将原始值t用转换方法`mappper`进行转换，然后调用构造器入参`actual`这个Observer的`onNext`方法
 
-2️⃣：调用`mapObserver.onSubscribe(parent)`，因为`mapObserver.actual`为`resultObserver`，所以通知客户端开始进行订阅了。
+2️⃣：调用`observer.onSubscribe(parent)`，因为`observer.actual`为`resultObserver`，所以通知我们写的消费者开始进行订阅了。
 
 3️⃣：调用`source.subscribe(parent)`，正式开始订阅。
 - 这里的`source`就是最原始的数据源，这里将`parent`作为参数`emitter`传入到`source`的`subscribe`方法中，然后在该方法中我们调用了其`onNext`、`onComplete`方法。实际上调用的就是`CreateEmitter`的对应的方法
-- 在`CreateEmitter.onNext`中会调用`observer.onNext`，这里的`observer`就是`mapObserver`
+- 在`CreateEmitter.onNext`中会调用`observer.onNext`，这里的`observer`就是`MapObserver`
 - 在`MapObserver.onNext`中会将原始值t用转换方法`mapper`进行转换，然后调用构造器入参`actual`这个Observer的`onNext`方法。最后的`actual`实际上就是`resultObserver`。
 - 这样，原始数据"1"经过`CreateEmitter`的发射后，在`MapObserver`中经过`mapper`转换最后到了`resultObserver`中
+
+### 1.1 基本订阅流程小结
+
+小结一下，下面是示例中的定义：
+
+```java
+// 订阅者
+val resultObserver = object : Observer<Int> {
+    override fun onComplete() { ... }
+    override fun onSubscribe(d: Disposable) { ... }
+    override fun onNext(t: Int) { ... }
+    override fun onError(e: Throwable) { ... }
+}
+// 观察者
+val source = object : ObservableOnSubscribe<String> {
+    override fun subscribe(emitter: ObservableEmitter<String>) {
+        emitter.onNext("1")
+        emitter.onNext("2")
+        emitter.onComplete()
+    }
+}
+// map转换方法
+val function = object : Function<String, Int> {
+    override fun apply(t: String): Int {
+        return t.toInt() * 10
+    }
+}
+// 链式调用
+Observable.create(source).map(function).subscribe(resultObserver)
+```
+
+将链式调用一步步从前往后展开，会发现前面的操作符都会作为参数传入后面的操作符中。这样当订阅开始时，会从最后面的操作符开始订阅。
+
+```java
+// 原始链式调用
+Observable.create(source).map(function).subscribe(resultObserver)
+
+// 将链式调用一步步从前往后展开
+// 展开create
+ObservableCreate<String>(source).map(function).subscribe(resultObserver)
+
+// 展开map
+ObservableMap<String, Int>(ObservableCreate<String>(source), function).subscribe(resultObserver)
+```
+
+下面开始订阅：
+
+```java
+// 原始链式调用
+ObservableMap<String, Int>(ObservableCreate<String>(source), function).subscribe(resultObserver)
+
+// 订阅ObservableMap
+ObservableCreate<String>(source).subscribe(MapObserver<String, Int>(resultObserver, function))
+
+// 订阅ObservableCreate
+// val observer = MapObserver<String, Int>(resultObserver, function)
+// val parent = CreateEmitter<String>(observer)
+observer.onSubscribe(parent)
+source.subscribe(parent)
+```
+
+事件流向为：
+
+```java
+// val observer = MapObserver<String, Int>(resultObserver, function)
+// val parent = CreateEmitter<String>(observer)
+observer.onSubscribe(parent) -> resultObserver.onSubscribe(observer)
+
+source.subscribe(parent) -> parent.onNext("1")/onNext("2")/onComplete() -> 
+CreateEmitter<String>(observer).onNext("1")/onNext("2")/onComplete() ->
+observer.onNext("1")/onNext("2")/onComplete() -> 
+resultObserver.onNext(function.apply("1"))/onNext(function.apply("2"))/onComplete() -> 
+resultObserver.onNext(10)/onNext(20)/onComplete()
+```
 
 最后，本节例子的流程图如下，左边部分表示Observable链的构建过程，右边表示订阅时的数据流图：
 
@@ -394,7 +462,8 @@ E/TAG: onNext(): main
 E/TAG: onComplete(): main
 ```
 
-我们发现，`onSubscribe`发生在当前线程，与`subscribeOn`和`observeOn`无关；事件的订阅发生在io线程，观察者其他方法都执行在main线程。接下来，跟着源码走一遍。
+我们发现，`onSubscribe`发生在当前线程，与`subscribeOn`和`observeOn`无关；  
+`subscribeOn`决定了最上游数据产生的线程；`observeOn`决定了下游的订阅发生的线程。
 
 ### 2.1 observeOn
 
@@ -444,7 +513,7 @@ protected void subscribeActual(Observer<? super T> observer) {
 }
 ```
 
-`scheduler.createWorker()`只是创建了一个`handle`为主线程handle的Worker，在后面的代码中会通过其`schedule(Runnable run, long delay, TimeUnit unit)`提交一个`Runnable`，这个`Runnable`就执行在主线程中了。后面遇见再说，这里先了解一下这个`w`到底是干什么用的。
+`scheduler.createWorker()`只是创建了一个`handler`为主线程handler的Worker，在后面的代码中会通过其`schedule(Runnable run, long delay, TimeUnit unit)`提交一个`Runnable`，这个`Runnable`就执行在主线程中了。后面遇见再说，这里先了解一下这个Worker到底是干什么用的。
 
 这样我们到了`ObserveOnObserver`中，首先看看其`onSubscribe`方法：
 
@@ -498,6 +567,8 @@ void schedule() {
 
 `Worker.schedule(Runnable run)`方法直接调用了重载方法`schedule(Runnable run, long delay, TimeUnit unit)`，后面的两个参数为`0L, TimeUnit.NANOSECONDS`，这就意味着立刻马上执行`run`。
 
+#### 2.1.1 RxAndroid
+
 由于这里的`worker`是`AndroidSchedulers.mainThread()`create出来的，所以这里就要解释RxAndroid这个库的代码了，该库总共就4个文件，其中两个文件比较重要：`HandlerScheduler`以及封装了该类的`AndroidSchedulers`。  
 `AndroidSchedulers`提供了两个公有静态方法来切换线程：`mainThread()`指定主线程;`from(Looper looper)`指定别的线程。这两者都是通过创建`HandlerScheduler`时指定`Handle`的`Looper`来实现的，`AndroidSchedulers`代码如下：
 
@@ -535,6 +606,8 @@ public final class AndroidSchedulers {
 ```
 
 再说说另外一个关键文件`HandlerScheduler`，该类的作用就是将`Runnable`使用指定的`Handler`来执行。该类的两个公共方法：`scheduleDirect`方法直接执行`Runnable`；或者通过`createWorker()`创建一个`HandlerWorker`对象，稍后通过该对象的`schedule`方法执行`Runnable`。该文件比较简单，不做过多描述。
+
+---
 
 现在回到`ObserveOnObserver.schedule`方法中，这里调用了`worker.schedule(this)`方法。这里已经通过`HandlerScheduler`回到主线程了。  
 
@@ -606,7 +679,9 @@ void drainNormal() {
 
 在上面代码中在一些关键点写了一些注释，需要注意的是，调用该方法的`run`方法已经被切换到主线程中执行了，这样此方法也是在主线程中执行的。  
 
-至此，`observeOn`工作原理已经解释完毕，下面看看`subscribeOn`。
+至此，`observeOn`工作原理已经解释完毕，我们已经知道了`observeOn`是如何决定了下游订阅发生的线程的：将Runnable抛给指定的线程池来执行，Runnable里面会调用下游observer的`onNext`方法。
+
+下面看看`subscribeOn`。
 
 ### 2.2 subscribeOn
 
@@ -628,7 +703,7 @@ public void subscribeActual(final Observer<? super T> s) {
 }
 ```
 
-和上面分析的`observeOn`类似，`scheduler.scheduleDirect`肯定起到一个线程切换的过程，线程切换之后就会执行`source.subscribe(parent)`。就这样`subscribe`会一直向上传递到数据发射的位置，发射数据的方法自然也会发生改变。
+和上面分析的`observeOn`类似，`scheduler.scheduleDirect`肯定起到一个线程切换的过程，线程切换之后就会执行`source.subscribe(parent)`。就这样`subscribe`会一直向上传递到数据发射的位置，发射数据的方法的线程自然也会发生改变。  
 
 回过头来看一下`scheduler.scheduleDirect`干了些什么，这里的`scheduler`是`IoScheduler`，该方法是其基类`Scheduler`的方法：
 
@@ -708,6 +783,33 @@ public ScheduledRunnable scheduleActual(final Runnable run, long delayTime, @Non
 **为什么`subscribeOn()`只有第一次切换有效？**  
 因为RxJava最终能影响`ObservableOnSubscribe`这个匿名实现接口的运行环境的只能是最后一次`subscribe`操作，又因为RxJava订阅的时候是从下往上订阅，所以从上往下第一个`subscribeOn()`就是最后运行的。
 {: .notice--info }
+
+举个例子：
+
+```java
+Observable.create(ObservableOnSubscribe<String> { emitter ->
+    emitter.onNext("1")
+    emitter.onNext("2")
+    emitter.onComplete()
+}).subscribeOn(Schedulers.io())
+    .map(...)
+    .subscribeOn(Schedulers.newThread())
+    .observeOn(AndroidSchedulers.mainThread())
+    .subscribe(...)
+```
+
+数据发射时所在的线程可以这样理解：
+
+```java
+// 伪代码
+Thread("newThread()") {
+    Thread("io()") {
+        emitter.onNext("1")
+        emitter.onNext("2")
+        emitter.onComplete()
+    }
+}
+```
 
 ### 2.3 线程切换小结
 
