@@ -8,12 +8,11 @@ toc_label: "目录"
 
 ## 个人信息
 
-- 刘扬窑/男/1994
-- 本科/武汉科技大学/计算机科学与技术 
+- 基本信息：刘扬窑/男/1994
 - 工作年限：3年
-- 技术博客：[https://blog.yorek.xyz](https://blog.yorek.xyz)
+- 技术博客：https://blog.yorek.xyz
 - 手机/微信：13564166326
-- Email：lyytogether@gmail.com
+- Email：lyytogether@foxmail.com
 
 ## 自我评价
 
@@ -25,12 +24,12 @@ toc_label: "目录"
 ## 求职意向
 
 - 意向岗位：Android开发工程师
-- 薪资期望：25k~30k
+- 期望薪资：25k ~ 30k
 - 期望城市：上海市
 
 ## 工作经历
 
-2017/09 ~ 至今&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;微额速达（集团）有限公司&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Android开发工程师  
+2017/09 ~ 至今&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;微额速达（集团）有限公司&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Android开发工程师  
 全面负责好信账单（原名好人好信）的开发迭代工作；独立完成好东东商城及相关马甲包的开发工作；此外还独立完成了同心卡贷的开发，主导了海外借贷产品Rupiah One第一个版本的开发等等。
 
 2016/03 ~ 2017/08&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;上海与德通讯技术有限公司&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Android开发工程师  
