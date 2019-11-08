@@ -379,3 +379,75 @@ git
 1、判断一个数组是不是回文数  
 2、判断一个数学表达式是否合法  
 3、判断一个json字符串是否合法  
+
+## xmly
+
+一面：Android  
+
+1. 自我介绍（每一面打头的问题）
+2. 自定义View需要实现哪几个方法？如果在一个match_parent的FrameLayout中放一个自定义View，那么onMeasure方法中measureSpec是什么值？
+3. 下面这个图，底部导航栏中间的按钮是怎么实现的（突出、且会旋转）？  
+   面试官：了解Drawable的子类吗，旋转通过RotateDrawable实现。  
+   我：Drawable我一般通过xml来写，实际上View动画中rotate动画就会被解析成为[RotateDrawable](http://androidxref.com/7.1.2_r36/xref/frameworks/base/graphics/java/android/graphics/drawable/DrawableInflater.java#136)
+   <figure style="width: 50%" class="align-center">
+     <img src="/assets/images/other/other1.jpeg">
+   </figure>  
+
+4. 事件分发：在一个FrameLayout中有一个普通的View，点击普通View，FrameLayout会收到DOWN之后的事件吗？假如给View设置了OnTouchListener，OnTouchListener优先级会比View的onTouchEvent方法高吗？
+5. 随口一问：msg.target是什么东西？异步任务执行完毕后如何回到主线程更新UI？  
+   Handler，实际上RxJava切换到Android主线程也是通过主线程的Handler来实现的  
+6. 四大组件：Activity被系统杀死，如何保存、恢复数据（onSaveInstanceState onRestoreInstanceState）？onRestoreInstanceState在什么时候调用？onSaveInstanceState在什么场景下会被调用？A启动B之后，A会调用吗？  
+  一个播放音频的Service，如何设计才能在锁屏后还能继续播放？我提到了前台Service（喜马拉雅打开App就会有一个前台Service），这是仅次于前台进程的优先级，一般情况下都是OK的，如果还是被杀了，那真的没有任何办法了。  
+7. 如果内存资源不足了，应用能知道吗？  
+  我提到，registerComponentCallbacks，然后说了一下Glide也会监听这个，LruCache会在收到onTrimMemory的时候释放缓存；随便说了一下LruCache的实现原理——LinkedHashMap
+8. 四种引用？而且面试官提到，SoftReference会在内存不足的时候自动释放，所以上面一问也可以这样。
+9. AIDL：AIDL是如何实现跨进程通信的？  
+   “基于Binder”  
+   Binder又是如何实现跨进程通信的？我们知道跨进程不能传输任何对象，那么BpBinder是如何传到Client的？
+10. 线程池的原理
+11. 三方库：  
+   Retrofit的原理：顺便说了一下注解以及注解处理器annotationProcessor/kapt  
+   OkHttp中Interceptor与NetworkInterceptor的区别  
+   RxJava背压  
+12. 性能优化，这个问的太广了，也比较欠缺，简历上不该写这个：  
+  性能优化的工具？  
+  遇到过性能优化的场景？
+  具体的性能优化方法（我提到了几个经常说的，比如布局优化：扁平化布局、include、merge、ViewStub，渲染优化等，他打断了我，问我有没有观测过具体优化了多少，有没有一个量化的指标。其实这些优化作用都很小。然后就过了此题）
+13. Jetpack用了多少？ViewModel起了一个什么作用，扮演一个什么角色？
+14. 最后随便让我选一个擅长的三方库或者领域，讲讲。  
+   “Glide吧”  
+   “我知道你很熟，换一个”  
+   “EventBus吧”  
+   然后我讲了几句，就说行了行了。最后让我说一下EventBus的缺点，他说缺点就是调试性差，遇到问题没法打印堆栈等等
+15. 最后问了下Shell排序
+16. 你有什么想问的
+
+二面：产品技术线Leader  
+
+主要就是聊了一下职业生涯、为什么离职等等乱七八糟的，技术题就两道：
+
+1. LeetCode-31-Next Permutation [https://leetcode.com/problems/next-permutation/](https://leetcode.com/problems/next-permutation/)
+2. 手写二分查找
+
+三面：Android职能线Leader，对着我的简历一行一行往下问
+
+1. 先看了一下好人好信，体验了一下，提出了一个ViewPager+RecyclerView中手势误触的问题：左右滑稍微不水平，就会拉出SwipeRefreshLayout，问我如何优化
+2. 还是好人好信的Tab3，那个Coordi
+3. Object中 == 与 equals方法的区别  
+4. hashCode与equals方法的联系
+5. Java中集合类有哪几类？  
+   Set、List、Map。  
+   Set、List有公共的基类吗？  
+   Set、List有什么区别（考定义）？  
+   List和Map常用的类？  
+   HashTable和ConcurrentHashMap的区别在哪？
+6. 跨进程的几种方式？为什么AIDL是最常用的？  
+7. 线程池有哪几种常用的？它们的区别是什么？线程池的原理是什么？线程池的执行机制（核心线程——队列——非核心线程这种）？核心线程会超时吗？非核心线程会超时吗？
+8. wait与sleep的区别？它们都会消耗CPU资源吗？
+9. EventBus有什么缺点？我答了一面面试官告诉我的，不好调试巴拉巴拉。面试官：怎么解决？我。。。。反问面试官，不用EventBus的话，有什么高级的技术吗？面试官：回调不行吗？我：行，从工程的角度来讲，确实是非常好的选择。面试官：对啊，你设计的时候就得考虑这种问题。
+10. 还是问了一下性能优化，我还是和一面一样说了，在说到Bitmap时，还向他科普了一下Glide的生命周期控制。这条技能挺薄弱的，不该写
+11. 注解分为哪些（应该是问的元注解）？我说到了@Retention的三种SOURCE、CLASS、RUNTIME以及对应的处理方式。  
+  那么CLASS注解一般和什么一起联用？Java字节码插桩技术：AspectJ、ASM、ReDex等
+12. 知道哪些热修复？Tinker热修复的原理？热修复如何修复资源文件？插件化的原理？插件化如何处理资源文件id冲突的问题？
+13. 你认为Kotlin好在哪里？
+14. Flutter好在哪里？
