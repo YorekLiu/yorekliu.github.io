@@ -7,8 +7,9 @@ toc: true
 toc_label: "目录"
 ---
 
-## Sublime Text
-减少缩进  ⌘ + ]
+## 大部分IDE
+减少缩进  ⌘ + [
+增加缩进  ⌘ + ]
 
 - - -
 
@@ -116,3 +117,30 @@ step 1: 点击界面左上角第二个按钮，进入分析界面
 
 step 2: 在左侧的操作页面选择感兴趣的控件，右边会出现其对应的信息
 ![step2]({{ basepath }}/assets/images/android/tools-uiautomator2.png){: .align-center}
+
+## 性能优化常用工具
+
+CPU占用分析：Systrace、TraceView  
+内存占用分析： dump heap (MAT)、Allocation Tracker
+
+Android Studio Profiler集成了：  
+Memory Profiler -> dump heap (MAT、AS)、Allocation Tracker  
+CPU Profiler -> Systrace、TraceView
+
+TODO: 补充具体案例
+{: .notice--warning }
+
+## bugreport
+
+使用bugreport命令手机日志后，可以使用chkbugreport.jar来生成便于查看的日志文件：
+
+```shell
+adb bugreport log    # 生成log.zip
+unzip log.zip -d log # 解压log.zip文件夹
+java -jar chkbugreport.jar log/bugreport-NMF26X-2019-12-30-10-36-35.txt # 解析日志文件
+```
+
+上面日志文件解析完毕后，会生成一个log/bugreport-NMF26X-2019-12-30-10-36-35_out的文件夹，打开里面的index.html文件即可。
+
+chkbugreport是Sony的一个开源项目，地址如下：[https://github.com/sonyxperiadev/ChkBugReport](https://github.com/sonyxperiadev/ChkBugReport)
+{: .notice--info }
