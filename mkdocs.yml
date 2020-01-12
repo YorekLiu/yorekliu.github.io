@@ -1,0 +1,75 @@
+site_name: Yorek's
+site_description: 'An Android Developer.'
+site_author: 'Yorek Liu'
+site_url: 'https://blog.yorek.xyz/about-me'
+
+# repo_name: 'YorekLiu/yorekliu.github.io'
+# repo_url: 'https://github.com/YorekLiu/yorekliu.github.io'
+edit_uri: ""
+
+copyright: '&copy; 2020 Yorek'
+
+theme:
+  name: 'material'
+  static_templates:
+    - 404.html
+  palette:
+    primary: 'teal'
+    accent: 'teal'
+  font:
+    text: Roboto
+    code: Roboto Mono
+  language: 'zh'
+  feature:
+    tabs: true
+  logo:
+    icon: 'code'
+  favicon: assets/images/favicon.ico
+
+plugins:
+  - search
+  - minify:
+      minify_html: true
+
+extra:
+  social:
+    - type: 'github'
+      link: 'https://github.com/YorekLiu'
+    - type: 'email'
+      link: 'lyytogether@gmail.com'
+  disqus: 'yorekliu'
+
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - def_list
+  - footnotes
+  - meta
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:pymdownx.emoji.twemoji
+      emoji_generator: !!python/name:pymdownx.emoji.to_svg
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: squidfunk
+      repo: mkdocs-material
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+google_analytics:
+  - 'UA-155096376-1'
+  - 'auto'
