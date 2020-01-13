@@ -1,29 +1,5 @@
 ---
 title: "OkHttp3源码解析"
-excerpt: "OkHttp3.8.0源码解析"
-categories:
-  - Android
-tags:
-  - OkHttp
-  - Call
-  - RealCall
-  - Dispatcher
-  - ExecutorService
-  - CachedThreadPool
-  - RetryAndFollowUpInterceptor
-  - BridgeInterceptor
-  - CacheInterceptor
-  - ConnectInterceptor
-  - CallServerInterceptor
-  - RealInterceptorChain
-  - 责任链
-header:
-  teaser: /assets/images/android/okhttp_interceptors.png
-  overlay_image: /assets/images/android/okhttp_interceptors.png
-  overlay_filter: 0.5
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-03-08T12:23:00+08:00
 ---
 
 OkHttp是一个默认有效的HTTP客户端：

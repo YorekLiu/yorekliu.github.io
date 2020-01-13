@@ -28,6 +28,7 @@ theme:
 
 plugins:
   - search
+  - git-revision-date-localized
   - minify:
       minify_html: true
 
@@ -73,3 +74,13 @@ markdown_extensions:
 google_analytics:
   - 'UA-155096376-1'
   - 'auto'
+
+# Page tree
+nav:
+  - Home: index.md
+  - Android:
+    - 3rd library: 
+      - android/3rd-library/3rd-library-source-code.md
+      - android/3rd-library/okhttp.md
+    - framework: 
+      - Android四大组件(1): android/framework/2017-07-10-Android四大组件(1).md
