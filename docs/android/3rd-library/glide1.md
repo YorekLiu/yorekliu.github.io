@@ -1,39 +1,22 @@
 ---
 title: "Glide v4 源码解析（一）"
-excerpt: "本章主要内容为 Glide v4 的基本使用"
-categories:
-  - Android
-tags:
-  - Glide
-  - RequestManager
-  - RequestBuilder
-  - DiskCacheStrategy
-  - skipMemoryCache
-  - diskCacheStrategy
-  - RequestOptions
-header:
-  overlay_image: /assets/images/android/glide_logo.png
-  overlay_filter: rgba(126, 202, 286, 0.6)
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-04-19T01:41:08+08:00
 ---
 
-本系列文章参考3.7.0版本的[guolin - Glide最全解析](https://blog.csdn.net/sinyu890807/column/info/15318)，并按此思路结合4.9.0版本源码以及使用文档进行更新。  
-➟ [Glide v4.9.0](https://github.com/bumptech/glide/tree/v4.9.0)  
-➟ [中文文档](https://muyangmin.github.io/glide-docs-cn/)  
-➟ [英文文档](http://bumptech.github.io/glide/)🚀🚀  
-{: .notice--info }
+!!! tip
+    本系列文章参考3.7.0版本的[guolin - Glide最全解析](https://blog.csdn.net/sinyu890807/column/info/15318)，并按此思路结合4.9.0版本源码以及使用文档进行更新。  
+    ➟ [Glide v4.9.0](https://github.com/bumptech/glide/tree/v4.9.0)  
+    ➟ [中文文档](https://muyangmin.github.io/glide-docs-cn/)  
+    ➟ [英文文档](https://bumptech.github.io/glide/)🚀🚀  
 
-Glide系列文章目录
 
-- [Glide1——Glide v4 的基本使用](/android/glide1/)
-- [Glide2——从源码的角度理解Glide三步的执行流程](/android/glide2/)
-- [Glide3——深入探究Glide缓存机制](/android/glide3/)
-- [Glide4——RequestBuilder中高级点的API以及Target](/android/glide4/)
-- [Glide5——Glide内置的transform以及自定义BitmapTransformation](/android/glide5/)
-- [Glide6——Glide利用AppGlideModule、LibraryGlideModule更改默认配置、扩展Glide功能；GlideApp与Glide的区别在哪？](/android/glide6/)
-- [Glide7——利用OkHttp、自定义Drawable、自定义ViewTarget实现带进度的图片加载功能](/android/glide7/)
+!!! note "Glide系列文章目录"
+    - [Glide1——Glide v4 的基本使用](/android/3rd-library/glide1/)
+    - [Glide2——从源码的角度理解Glide三步的执行流程](/android/3rd-library/glide2/)
+    - [Glide3——深入探究Glide缓存机制](/android/3rd-library/glide3/)
+    - [Glide4——RequestBuilder中高级点的API以及Target](/android/3rd-library/glide4/)
+    - [Glide5——Glide内置的transform以及自定义BitmapTransformation](/android/3rd-library/glide5/)
+    - [Glide6——Glide利用AppGlideModule、LibraryGlideModule更改默认配置、扩展Glide功能；GlideApp与Glide的区别在哪？](/android/3rd-library/glide6/)
+    - [Glide7——利用OkHttp、自定义Drawable、自定义ViewTarget实现带进度的图片加载功能](/android/3rd-library/glide7/)
 
 ---
 
@@ -159,7 +142,7 @@ Glide.with(this).clear(ivGlide)
 
 对url进行null检验并不是必须的，如果url为null，Glide会清空View的内容，或者显示`placeholder`或`fallback`的内容。  
 
-Glide唯一的要求是，对于任何可复用的View或Target，如果它们在之前的位置上，用Glide进行过加载操作，那么**在新的位置上要去执行一个新的加载操作，或调用**`clear()`**API停止Glide的工作**。  
+Glide唯一的要求是，对于任何可复用的View或Target，如果它们在之前的位置上，用Glide进行过加载操作，那么 **在新的位置上要去执行一个新的加载操作，或调用** `clear() `**API停止Glide的工作**。  
 
 对View调用`clear()`或`into(View)`，表明在此之前的加载操作会被取消，并且在方法调用完成后，Glide不会改变view的内容。如果你忘记调用`clear()`，而又没有开启新的加载操作，那么就会出现这种情况：你已经为一个view设置好了一个Drawable，但该View在之前的位置上使用Glide进行过加载图片的操作，Glide加载完毕后可能会将这个View改回成原来的内容。
 
@@ -234,7 +217,28 @@ Glide唯一的要求是，对于任何可复用的View或Target，如果它们�
     <figcaption>占位符显示逻辑</figcaption>
 </figure>
 
-> model为null时，显示逻辑代码见[Glide v4 源码解析（二）--- 3.2小节 setErrorPlaceholder方法](/android/glide2/#32-requestmanagertrack)
+> model为null时，显示逻辑代码如下，具体会在[Glide v4 源码解析（二）](/android/3rd-library/glide2/#32-requestmanagertrack)中讨论
+> ```java
+> private synchronized void setErrorPlaceholder() {
+>   if (!canNotifyStatusChanged()) {
+>     return;
+>   }
+> 
+>   Drawable error = null;
+>   if (model == null) {
+>     error = getFallbackDrawable();
+>   }
+>   // Either the model isn't null, or there was no fallback drawable set.
+>   if (error == null) {
+>     error = getErrorDrawable();
+>   }
+>   // The model isn't null, no fallback drawable was set or no error drawable was set.
+>   if (error == null) {
+>     error = getPlaceholderDrawable();
+>   }
+>   target.onLoadFailed(error);
+> }
+> ```
 
 我们准备使用这段代码演示一下。  
 注意，为了忽略缓存的影响，这里设置了忽略内存缓存`skipMemoryCache(true)`并将磁盘缓存策略设置为不缓存`diskCacheStrategy(DiskCacheStrategy.NONE)`。
@@ -277,15 +281,14 @@ Glide.with(this)
     <figcaption>Glide加载空串</figcaption>
 </figure>
 
-From: [Placeholders#FAQ](https://muyangmin.github.io/glide-docs-cn/doc/placeholders.html#faq)  
-**1. 占位符是异步加载的吗？**  
-No。占位符是在主线程从Android Resources加载的。我们通常希望占位符比较小且容易被系统资源缓存机制缓存起来。  
-**2. 变换是否会被应用到占位符上？**  
-No。Transformation仅被应用于被请求的资源，而不会对任何占位符使用。  
-在应用中包含必须在运行时做变换才能使用的图片资源是很不划算的。相反，在应用中包含一个确切符合尺寸和形状要求的资源版本几乎总是一个更好的办法。假如你正在加载圆形图片，你可能希望在你的应用中包含圆形的占位符。另外你也可以考虑自定义一个View来剪裁(clip)你的占位符，而达到你想要的变换效果。  
-**3. 在多个不同的View上使用相同的Drawable可行么？**  
-通常可以，但不是绝对的。任何无状态(non-stateful)的Drawable（例如 BitmapDrawable）通常都是ok的。但是有状态的Drawable不一样，在同一时间多个View上展示它们通常不是很安全，因为多个View会立刻修改(mutate) Drawable。对于有状态的Drawable，建议传入一个资源ID，或者使用`newDrawable()`来给每个请求传入一个新的拷贝。
-{: .notice--info }
+!!! tip "From: [Placeholders#FAQ](https://muyangmin.github.io/glide-docs-cn/doc/placeholders.html#faq)"  
+    **1. 占位符是异步加载的吗？**  
+    No。占位符是在主线程从Android Resources加载的。我们通常希望占位符比较小且容易被系统资源缓存机制缓存起来。  
+    **2. 变换是否会被应用到占位符上？**  
+    No。Transformation仅被应用于被请求的资源，而不会对任何占位符使用。  
+    在应用中包含必须在运行时做变换才能使用的图片资源是很不划算的。相反，在应用中包含一个确切符合尺寸和形状要求的资源版本几乎总是一个更好的办法。假如你正在加载圆形图片，你可能希望在你的应用中包含圆形的占位符。另外你也可以考虑自定义一个View来剪裁(clip)你的占位符，而达到你想要的变换效果。  
+    **3. 在多个不同的View上使用相同的Drawable可行么？**  
+    通常可以，但不是绝对的。任何无状态(non-stateful)的Drawable（例如 BitmapDrawable）通常都是ok的。但是有状态的Drawable不一样，在同一时间多个View上展示它们通常不是很安全，因为多个View会立刻修改(mutate) Drawable。对于有状态的Drawable，建议传入一个资源ID，或者使用`newDrawable()`来给每个请求传入一个新的拷贝。
 
 ### 2.2 指定图片格式
 

@@ -1,38 +1,22 @@
 ---
 title: "Glide v4 源码解析（七）"
-excerpt: "利用OkHttp、自定义Drawable、自定义ViewTarget实现带进度的图片加载功能"
-categories:
-  - Android
-tags:
-  - Glide
-  - OkHttp
-  - ViewTarget
-  - Drawable
-  - ResponseBody
-  - Interceptor
-header:
-  overlay_image: /assets/images/android/glide_logo.png
-  overlay_filter: rgba(126, 202, 286, 0.6)
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-06-20T22:15:50+08:00
 ---
 
-本系列文章参考3.7.0版本的[guolin - Glide最全解析](https://blog.csdn.net/sinyu890807/column/info/15318)，并按此思路结合4.9.0版本源码以及使用文档进行更新。  
-➟ [Glide v4.9.0](https://github.com/bumptech/glide/tree/v4.9.0)  
-➟ [中文文档](https://muyangmin.github.io/glide-docs-cn/)  
-➟ [英文文档](http://bumptech.github.io/glide/)🚀🚀  
-{: .notice--info }
+!!! tip
+    本系列文章参考3.7.0版本的[guolin - Glide最全解析](https://blog.csdn.net/sinyu890807/column/info/15318)，并按此思路结合4.9.0版本源码以及使用文档进行更新。  
+    ➟ [Glide v4.9.0](https://github.com/bumptech/glide/tree/v4.9.0)  
+    ➟ [中文文档](https://muyangmin.github.io/glide-docs-cn/)  
+    ➟ [英文文档](https://bumptech.github.io/glide/)🚀🚀  
 
-Glide系列文章目录
 
-- [Glide1——Glide v4 的基本使用](/android/glide1/)
-- [Glide2——从源码的角度理解Glide三步的执行流程](/android/glide2/)
-- [Glide3——深入探究Glide缓存机制](/android/glide3/)
-- [Glide4——RequestBuilder中高级点的API以及Target](/android/glide4/)
-- [Glide5——Glide内置的transform以及自定义BitmapTransformation](/android/glide5/)
-- [Glide6——Glide利用AppGlideModule、LibraryGlideModule更改默认配置、扩展Glide功能；GlideApp与Glide的区别在哪？](/android/glide6/)
-- [Glide7——利用OkHttp、自定义Drawable、自定义ViewTarget实现带进度的图片加载功能](/android/glide7/)
+!!! note "Glide系列文章目录"
+    - [Glide1——Glide v4 的基本使用](/android/3rd-library/glide1/)
+    - [Glide2——从源码的角度理解Glide三步的执行流程](/android/3rd-library/glide2/)
+    - [Glide3——深入探究Glide缓存机制](/android/3rd-library/glide3/)
+    - [Glide4——RequestBuilder中高级点的API以及Target](/android/3rd-library/glide4/)
+    - [Glide5——Glide内置的transform以及自定义BitmapTransformation](/android/3rd-library/glide5/)
+    - [Glide6——Glide利用AppGlideModule、LibraryGlideModule更改默认配置、扩展Glide功能；GlideApp与Glide的区别在哪？](/android/3rd-library/glide6/)
+    - [Glide7——利用OkHttp、自定义Drawable、自定义ViewTarget实现带进度的图片加载功能](/android/3rd-library/glide7/)
 
 ---
 

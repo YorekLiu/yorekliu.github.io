@@ -1,30 +1,8 @@
 ---
 title: "Retrofit2源码解析"
-excerpt: "Retrofit2.3.0源码解析"
-categories:
-  - Android
-tags:
-  - Retrofit
-  - CallAdapter
-  - Converter
-  - 反射
-  - ServiceMethod
-  - OkHttpCall
-  - RxJava2CallAdapterFactory
-  - RxJava2CallAdapter
-  - GsonConverterFactory
-  - GsonResponseBodyConverter
-  - ParameterHandler
-  - RxJava2
-  - Request
-  - 动态代理
-  - InvocationHandler
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-03-08T12:23:00+08:00
 ---
 
-本文**代码基于[retrofit-2.3.0](https://github.com/square/retrofit/tree/parent-2.3.0)**，源码包含三个库：
+本文代码基于[retrofit-2.3.0](https://github.com/square/retrofit/tree/parent-2.3.0)，源码包含三个库：
 
 - com.squareup.retrofit2:retrofit
 - com.squareup.retrofit2:adapter-rxjava2
@@ -69,26 +47,26 @@ RetrofitHelper.getApiService().checkUpdate(
 
 - `CallAdapter<R, T>`  
   将一个Call从响应类型R适配成T类型的适配器。
-  - `Type responseType()`  
-    适配器将HTTP响应体转换为Java对象时，该对象的类型  
-    比如`Call<Repo>`的返回值是`Repo`
-  - `T adapt(Call<R> call)`  
-    返回一个代理了call的T
+    - `Type responseType()`  
+      适配器将HTTP响应体转换为Java对象时，该对象的类型  
+      比如`Call<Repo>`的返回值是`Repo`
+    - `T adapt(Call<R> call)`  
+      返回一个代理了call的T
 - `CallAdapter.Factory`  
   用于创建CallAdapter实例的工厂
-  - `CallAdapter<?, ?> get(Type returnType, Annotation[] annotations, Retrofit retrofit)`  
-    返回一个可以返回`returnType`的接口方法的CallAdapter，如果不能处理，则返回null
+    - `CallAdapter<?, ?> get(Type returnType, Annotation[] annotations, Retrofit retrofit)`  
+      返回一个可以返回`returnType`的接口方法的CallAdapter，如果不能处理，则返回null
 - `Converter<F, T>`  
   将F转换为T类型的值的转换器。
-  - `T convert(F value) throws IOException`
+    - `T convert(F value) throws IOException`
 - `Converter.Factory`  
   基于一个类型和目标类型创建一个`Converter`实例的工厂  
-  - `Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations, Retrofit retrofit)`  
-    返回一个可以转换HTTP响应体到`type`的转换器
-  - `Converter<?, RequestBody> requestBodyConverter(Type type, Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit)`  
-    返回一个可以转换`type`到HTTP请求体的转换器
-  - `Converter<?, String> stringConverter(Type type, Annotation[] annotations, Retrofit retrofit)`  
-    返回一个可以转换`type`到String的转换器
+    - `Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations, Retrofit retrofit)`  
+      返回一个可以转换HTTP响应体到`type`的转换器
+    - `Converter<?, RequestBody> requestBodyConverter(Type type, Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit)`  
+      返回一个可以转换`type`到HTTP请求体的转换器
+    - `Converter<?, String> stringConverter(Type type, Annotation[] annotations, Retrofit retrofit)`  
+      返回一个可以转换`type`到String的转换器
 
 ## 2. Retrofit.Builder
 

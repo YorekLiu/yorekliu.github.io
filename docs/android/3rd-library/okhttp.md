@@ -378,8 +378,9 @@ public synchronized ExecutorService executorService() {
 这里我们可以看出来，这是一个典型的`CachedThreadPool`。  
 这是一个线程数量不定的线程池，他只有非核心线程，并且其最大线程数为`Integer.MAX_VALUE`。线程池中的空闲线程都有超时机制，这个超时时常为60s，超过这个时间的闲置线程就会被回收。`SynchronousQueue`可以简单的理解为一个无法存储元素的队列，因此这将导致任何任务都会立刻执行。  
 从其特性来看，这类线程池适合执行大量耗时较少的任务。当整个线程池处理闲置状态时，线程池中的线程都会因为超时而被停止，这个时候`CachedThreadPool`之中实际上是没有线程的，它几乎不占用任何系统资源。  
-关于线程池的更多知识，可以参考[Android中的线程池](/android/Android线程与线程池/#3--android中的线程池)
-{: .notice--info }
+
+!!! info
+    关于线程池的更多知识，可以参考[Android中的线程池](/android/framework/Android%E7%BA%BF%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B%E6%B1%A0/#3-android)
 
 提交到线程池后，`AsyncCall.run`方法就会被调用，又因为`AsyncCall`继承了`NamedRunnable`，所以最后执行的是`AsyncCall.execute`方法：
 
@@ -489,8 +490,8 @@ Response getResponseWithInterceptorChain() throws IOException {
 
 将所有的拦截器保存在`interceptors`后，创建一个拦截器责任链`RealInterceptorChain`，并调用其`proceed`开始处理网络请求。
 
-责任链模式的实例可以参考：[责任链模式(Chain of responsibility)](http://127.0.0.1:4000/design%20patterns/chain-of-responsibility/)
-{: .notice--info }
+!!! info
+    责任链模式的实例可以参考：[责任链模式(Chain of responsibility)](/design-pattern/chain-of-responsibility/)
 
 **下面解释一下责任链模式是如何表现出来的？**  
 
@@ -549,18 +550,16 @@ public final class RealInterceptorChain implements Interceptor.Chain {
 5. Response的返回与Request相反，会从最后一个开始依次往前经过这些`Intercetor`
 
 下图为OkHttp工作的大致流程，参考自[拆轮子系列：拆 OkHttp](https://blog.piasy.com/2016/07/11/Understand-OkHttp/index.html)
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/android/okhttp_overview.jpg">
-    <figcaption>OkHttp总体工作流程</figcaption>
-</figure>
+
+![OkHttp总体工作流程](/assets/images/android/okhttp_overview.jpg)
 
 接下来，我们看一下各个拦截器具体的代码。
 
 ## 6. RetryAndFollowUpInterceptor
 
-This interceptor recovers from failures and follows redirects as necessary.  
-How many redirects and auth challenges should we attempt? Chrome follows 21 redirects; Firefox, curl, and wget follow 20; Safari follows 16; and HTTP/1.0 recommends 5.
-{: .notice }
+!!! quote "Comments"
+    This interceptor recovers from failures and follows redirects as necessary.  
+    How many redirects and auth challenges should we attempt? Chrome follows 21 redirects; Firefox, curl, and wget follow 20; Safari follows 16; and HTTP/1.0 recommends 5.
 
 ```java
 @Override public Response intercept(Chain chain) throws IOException {
@@ -668,8 +667,8 @@ response = ((RealInterceptorChain) chain).proceed(request, streamAllocation, nul
 
 ## 7. BridgeInterceptor
 
-Bridges from application code to network code. First it builds a network request from a user request. Then it proceeds to call the network. Finally it builds a user response from the network response.
-{: .notice }
+!!! quote "Comments"
+    Bridges from application code to network code. First it builds a network request from a user request. Then it proceeds to call the network. Finally it builds a user response from the network response.
 
 直接上代码：
 
@@ -820,10 +819,10 @@ public static List<Cookie> parseAll(HttpUrl url, Headers headers) {
 
 ## 8. CacheInterceptor
 
-Serves requests from the cache and writes responses to the cache.
-{: .notice }
+!!! quote "Comments"
+    Serves requests from the cache and writes responses to the cache.
 
-首先需要注意的是，OkHttp中的Cache策略采用的是`DiskLruCache`，关于`DiskLruCache`可以参考[DiskLruCache](/android/Bitmap的缓存与加载/#22-disklrucache)。key的计算为：
+首先需要注意的是，OkHttp中的Cache策略采用的是`DiskLruCache`，关于`DiskLruCache`可以参考[DiskLruCache](/android/framework/Bitmap%E7%9A%84%E7%BC%93%E5%AD%98%E4%B8%8E%E5%8A%A0%E8%BD%BD/#22-disklrucache)。key的计算为：
 
 ```java
 ByteString.encodeUtf8(url.toString()).md5().hex()
@@ -1025,8 +1024,8 @@ private CacheStrategy getCandidate() {
 
 ## 9. ConnectInterceptor
 
-Opens a connection to the target server and proceeds to the next interceptor.
-{: .notice }
+!!! quote "Comments"
+    Opens a connection to the target server and proceeds to the next interceptor.
 
 ```java
 @Override public Response intercept(Chain chain) throws IOException {
@@ -1232,8 +1231,8 @@ public HttpCodec newCodec(
 
 ## 10. CallServerInterceptor
 
-This is the last interceptor in the chain. It makes a network call to the server.
-{: .notice }
+!!! quote "Comments"
+    This is the last interceptor in the chain. It makes a network call to the server.
 
 下面这些代码看起来也很清晰，就是利用`HttpCodec`进行请求数据、响应数据的读写。其中读写的不详细描述。
 
@@ -1337,8 +1336,8 @@ This is the last interceptor in the chain. It makes a network call to the server
 
 ## FAQ
 
-[Retrofit/FAQ](/android/retrofit/#faq)
+[Retrofit/FAQ](/android/3rd-library/retrofit/#faq)
 
-参考文献
+## 参考文献
 
 - [Retrofit和OkHttp使用网络缓存数据](https://www.jianshu.com/p/e0dd6791653d)

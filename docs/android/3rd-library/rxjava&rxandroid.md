@@ -1,41 +1,13 @@
 ---
 title: "RxJava2 & RxAndroid源码解析"
-excerpt: "RxJava2、RxAndroid源码解析"
-categories:
-  - Android
-tags:
-  - RxJava
-  - RxAndroid
-  - Observable
-  - ObservableSource
-  - Emitter
-  - Observer
-  - ObservableCreate
-  - ObservableMap
-  - MapObserver
-  - CreateEmitter
-  - ObservableObserveOn
-  - ObserveOnObserver
-  - AndroidSchedulers
-  - HandlerScheduler
-  - ObservableSubscribeOn
-  - IoScheduler
-  - Scheduler
-  - NewThreadWorker
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-03-20T17:51:34+08:00
 ---
 
-用过RxJava和RxAndroid吗？RxAndroid切换线程是怎么实现的呢？
-{: .notice--question }
-
-RxAndroid的线程切换是通过`Handler`实现的，RxJava则是通过将`Runnable`提交到**线程池**来实现的。
-{: .notice }
+???+ note "用过RxJava和RxAndroid吗？RxAndroid切换线程是怎么实现的呢？"
+    RxAndroid的线程切换是通过`Handler`实现的，RxJava则是通过将`Runnable`提交到 **线程池** 来实现的。
 
 ---
 
-参考资料
+## 参考资料
 
 - [RxJava/RxAndroid 使用实例实践 - 简书](https://www.jianshu.com/p/031745744bfa)  
   通俗易懂，通过一个查找Cheese的例子讲出了RxJava的特点
