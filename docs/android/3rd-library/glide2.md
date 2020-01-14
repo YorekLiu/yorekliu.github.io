@@ -1439,7 +1439,7 @@ public void setDrawable(Drawable drawable) {
 2. 否则，如果设置了error，那么显示error
 3. 否则，如果设置了placeholder，那么显示placeholder
 
-> 这也证明了[Glide v4 源码解析（一）--- 占位符](/android/glide1/#21-占位符)中，关于model为null部分的流程是正确的。
+> 这也证明了[Glide v4 源码解析（一）--- 占位符](/android/3rd-library/glide1/#21)中，关于model为null部分的流程是正确的。
 
 回到`SingleRequest.begin()`方法中。  
 判断完model是否为null后，下面会判断status是否为`Status.COMPLETE`。如果是，会调用`onResourceReady(resource, DataSource.MEMORY_CACHE)`并返回。该方法我们后面也会遇到，后面在说。
@@ -3541,8 +3541,9 @@ private void runGenerators() {
 
 由于`diskCacheStrategy`默认为`DiskCacheStrategy.AUTOMATIC`，其`decodeCachedData()`返回true，所以`getNextStage(stage)`是`Stage.DATA_CACHE`。因此`getNextGenerator()`方法返回了`DataCacheGenerator(decodeHelper, this)`。然后在while循环中会执行其`startNext()`方法。
 
-有了在`ResourceCacheGenerator`中缓存好的大量变量，`DataCacheGenerator`和`SourceGenerator`代码就非常简单了。
-{: .notice--success }
+!!! success
+    有了在`ResourceCacheGenerator`中缓存好的大量变量，`DataCacheGenerator`和`SourceGenerator`代码就非常简单了。
+
 
 `ResourceCacheGenerator`在构造的时候就将`helper.getCacheKeys()`保存了起来，我们前面在谈`ResourceCacheGenerator`的时候提到过，`helper.getCacheKeys()`采取了防止重复加载的策略。
 
@@ -3690,7 +3691,7 @@ private boolean hasNextModelLoader() {
 }
 ```
 
-`helper.getLoadData()`的值在`ResourceCacheGenerator`中就已经被获取并缓存下来了，这是一个`MultiModelLoader`对象生成的`LoadData`对象，`LoadData`对象里面有两个fetcher。详见[第3.6.1节的末尾部分](/android/glide2/#361-helpergetcachekeys)
+`helper.getLoadData()`的值在`ResourceCacheGenerator`中就已经被获取并缓存下来了，这是一个`MultiModelLoader`对象生成的`LoadData`对象，`LoadData`对象里面有两个fetcher。详见[第3.6.1节的末尾部分](/android/3rd-library/glide2/#361-helpergetcachekeys)
 
 在上面的方法中，我们会遍历LoadData list，找出符合条件的LoadData，然后调用`loadData.fetcher.loadData`加载数据。  
 在loadData不为空的前提下，会判断Glide的缓存策略是否可以缓存此数据源，或者是否有加载路径。  
@@ -4237,7 +4238,7 @@ public Resource<Bitmap> decode(@NonNull ByteBuffer source, int width, int height
 }
 ```
 
-这里面使用的技巧也主要是使用的[Bitmap的加载](/android/Bitmap%E7%9A%84%E7%BC%93%E5%AD%98%E4%B8%8E%E5%8A%A0%E8%BD%BD/#1-bitmap%E7%9A%84%E5%8A%A0%E8%BD%BD)中提到的技巧。  
+这里面使用的技巧也主要是使用的[Bitmap的加载](/android/framework/Bitmap%E7%9A%84%E7%BC%93%E5%AD%98%E4%B8%8E%E5%8A%A0%E8%BD%BD/#1-bitmap)中提到的技巧。  
 不过在Glide中，除了设置了`BitmapFactory.Options`的`inJustDecodeBounds`和`inSampleSize`属性外，还会设置`inTargetDensity`、`inDensity`、`inScale`、`inPreferredConfig`、`inBitmap`属性。
 
 > 在计算各种值的时候，用到了Math里面ceil、floor、round函数。  

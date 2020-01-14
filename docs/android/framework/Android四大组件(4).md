@@ -1,19 +1,5 @@
 ---
-title: "Android四大组件(4)——Content Providers以及非四大组件的Fragment"
-excerpt: "ContentProvider的自定义以及使用，Fragment的创建、管理、生命周期等"
-header:
-  teaser: /assets/images/android/fragment_lifecycle.png
-  overlay_image: /assets/images/android/fragment_lifecycle.png
-  overlay_filter: 0.5
-  cta_url: "https://developer.android.com/guide/components/fragments.html"
-categories:
-  - Android
-tags:
-  - Content Providers
-  - Fragment
-  - UriMatcher
-toc: true
-toc_label: "目录"
+title: "Content Providers与Fragment"
 ---
 
 本章的主要内容是[Content Providers](https://developer.android.com/guide/topics/providers/content-providers.html)以及[Fragment](https://developer.android.com/guide/components/fragments.html)
@@ -21,11 +7,6 @@ toc_label: "目录"
 ## 1 ContentProvider介绍
 
 ContentProvider可以帮助应用程序管理自身存储的数据，并提供了一种与其他应用程序共享数据的方式。它们封装数据，并提供数据安全的机制。ContentProvider是代码运行的进程与另一个进程连接数据的标准接口。实现ContentProvider有很多优点。更重要的是，你可以配置一个ContentProvider，以允许其他应用程序能够安全地访问和修改应用程序数据，如下图所示。
-
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/android/content-provider-overview.png">
-    <figcaption>ContentProvider示意图</figcaption>
-</figure>
 
 ![/assets/images/android/content-provider-overview.png](/assets/images/android/content-provider-overview.png)
 
@@ -68,23 +49,23 @@ ContentProvider在manifest中的配置项如下：
 - `android:name`  
   实现了ContentProvider的类名，指注册那个Provider。
 - Permissions  
-  有如下几种权限
-  - `android:grantUriPermssions`: 临时权限标记
-  - `android:permission`: 单个Provider范围读写权限
-  - `android:readPermission`: Provider范围读权限
-  - `android:writePermission`: Provider范围写权限
+     有如下几种权限
+     - `android:grantUriPermssions`: 临时权限标记
+     - `android:permission`: 单个Provider范围读写权限
+     - `android:readPermission`: Provider范围读权限
+     - `android:writePermission`: Provider范围写权限
 - 启动和控制属性  
-  这些属性决定了Android系统如何以及何时启动Provider，Provider的进程特性以及其他运行时设置：
-  - `android:enabled`: 是否允许系统启动provider
-  - `android:exported`: 是否允许其他应用启动provider
-  - `android:initOrder`: 相对于同一进程中的其他提供者，应该启动此provider的顺序。
-  - `android:multiProcess`: 允许系统在与调用客户端相同的进程中启动Provider。
-  - `android:process`: Provider应该运行的进程名。
-  - `android:syncable`: Provider的数据要与服务端数据同步。
+     这些属性决定了Android系统如何以及何时启动Provider，Provider的进程特性以及其他运行时设置：
+     - `android:enabled`: 是否允许系统启动provider
+     - `android:exported`: 是否允许其他应用启动provider
+     - `android:initOrder`: 相对于同一进程中的其他提供者，应该启动此provider的顺序。
+     - `android:multiProcess`: 允许系统在与调用客户端相同的进程中启动Provider。
+     - `android:process`: Provider应该运行的进程名。
+     - `android:syncable`: Provider的数据要与服务端数据同步。
 - 信息化属性  
-  可以选择设置provider的图标和名称  
-  - `android:icon`: provider的图标. 图标的显示紧挨着Provider的名称，可以在Settings > Apps > All中查看。
-  - `android:label`: 可显示Provider或者其数据或者两者的描述信息的文本，可以在Settings > Apps > All中查看。
+     可以选择设置provider的图标和名称  
+     - `android:icon`: provider的图标. 图标的显示紧挨着Provider的名称，可以在Settings > Apps > All中查看。
+     - `android:label`: 可显示Provider或者其数据或者两者的描述信息的文本，可以在Settings > Apps > All中查看。
 
 完整文档可以查看[provider-element](https://developer.android.com/guide/topics/manifest/provider-element.html)  
 
@@ -235,7 +216,8 @@ public class LocalProvider extends ContentProvider {
 
 上面已经提到过，除了onCreate之外的其他五个方法都是运行在Binder线程池中，**因此CRUD四大方法是存在多线程并发访问的。但是SQLiteDatabase内部对数据库的操作是有同步处理的，因此此时无需考虑线程同步问题。但是多个SQLiteDatabase同时操作数据库就无法保证线程同步了。如果ContentProvider底层的数据集是一块内存(比如List)，此时就要进行数据同步处理。**  
 
-`ContentProvider.onCreate`的执行要在`Application.onCreate`之前，详细可以查看[ContentProvider的工作过程](/android/%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/#5-contentprovider%E7%9A%84%E5%B7%A5%E4%BD%9C%E8%BF%87%E7%A8%8B)
+!!! tip
+    `ContentProvider.onCreate`的执行要在`Application.onCreate`之前，详细可以查看[ContentProvider的工作过程](/android/framework/%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/#5-contentprovider)
 
 ContentProvider除了支持对数据源的增删改查操作外，还支持自定义的Call方法，这个过程可以通过ContentProvider的Call方法和ContentResolver的Call方法来完成。
 
@@ -247,12 +229,10 @@ Fragment必须嵌入到Activity中，且其生命周期会直接被宿主Activit
 
 ### 3.1 Fragment的创建
 
-<figure style="width: 364px" class="align-center">
-    <img src="/assets/images/android/fragment_lifecycle.png">
-    <figcaption>Fragment生命周期</figcaption>
-</figure>
+![Fragment生命周期](/assets/images/android/fragment_lifecycle.png)
 
 通常我们至少需要实现以下生命周期方法：
+
 - `onCreate()`  
 创建Fragment时调用。我们应该初始化Fragment暂停或停止，然后恢复时要保留的必要组件。
 - `onCreateView()`  
@@ -438,9 +418,9 @@ Activity与Fragment之间最重要的不同在于两者在返回栈的保存方�
 
 > **注意**：如果我们需要一个`Context`对象，我们可以调用`getActivity()`方法。但是，仅仅当Fragment已经附加到Activity上时才可以。放Fragment还没有附上时，或者已经解除附加，`getActivity()`会返回null。
 
-#### 3.7.1 与Activity生命周期的联系
+Fragment所在的Activity的生命周期会直接影响到Fragment的生命周期，每一个Activity的生命周期回调都会导致Fragment的相似的回调。
 
-![activity_fragment_lifecycle.png](/assets/images/android/activity_fragment_lifecycle.png) Fragment所在的Activity的生命周期会直接影响到Fragment的生命周期，每一个Activity的生命周期回调都会导致Fragment的相似的回调。
+![activity_fragment_lifecycle.png](/assets/images/android/activity_fragment_lifecycle.png)
 
 Fragment还有少许额外的生命周期回调，它处理与Activity的独特交互，以执行诸如构建和销毁Fragment UI的动作。下面是这些回调:
 

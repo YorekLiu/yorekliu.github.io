@@ -212,4 +212,3 @@ sp<MediaPlayerBase> MediaPlayerFactory::createPlayer(
 ```
 
 举出来的例子更像是工厂方法模式的例子:(  
-{: .notice--danger }

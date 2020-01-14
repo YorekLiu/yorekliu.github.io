@@ -24,7 +24,6 @@ last_modified_at: 2018-12-05T16:55:20+08:00
 本文侧重讲解开发知识，不重要的准备工作直接略过。  
 因此，整个Flutter开发准备部分直接查看[Flutter-Get started](https://flutter.io/docs/get-started/install)，看完[第3小节-Test drive](https://flutter.io/docs/get-started/test-drive)就OK，此处就不做过多累述。  
 另外，作者采用的IDE是Android Studio，毕竟是个Android程序员。
-{: .notice--success }
 
 今天正好Flutter1.0正式发布，本文会基于此进行。  
 
@@ -35,7 +34,6 @@ last_modified_at: 2018-12-05T16:55:20+08:00
 本程序源码会发布在GitHub-[YorekLiu/YLFlutterReady](https://github.com/YorekLiu/YLFlutterReady)上，并可在[release](https://github.com/YorekLiu/YLFlutterReady/releases)中找到对应的apk文件，对照文章一起看还是挺愉快的。  
 
 由于作者没有苹果开发者账号，所以不能真机调试苹果设备。但是，Demo开发过程中都采用的iOS设备。跨平台还是稳稳的。
-{: .notice--warning }
 
 口说无凭，先上iPhone X上的演示图。
 
@@ -174,12 +172,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
 [Flutter’s approach to layout](https://flutter.io/docs/development/ui/layout#flutters-approach-to-layout)  （引经据典都会以此种形式呈现）
-{: .notice--info }
 
 ### 3.1 StatelessWidget与StatefulWidget的区别
 
 [Stateful and stateless widgets](https://flutter.io/docs/development/ui/interactive#stateful-and-stateless-widgets)
-{: .notice--info }
 
 下面是从官方文档摘抄的内容：  
 > A stateless widget has no internal state to manage. Icon, IconButton, and Text are examples of stateless widgets, which subclass StatelessWidget.
@@ -205,13 +201,12 @@ class _MyHomePageState extends State<MyHomePage> {
 ```
 
 效果如下：
-<iframe width="320" height="283" src="{{ base_path }}/assets/videos/flutter/flutter_live_template_stateful.mp4" frameborder="0" allowfullscreen></iframe>
+<iframe width="320" height="283" src="/assets/videos/flutter/flutter_live_template_stateful.mp4" frameborder="0" allowfullscreen></iframe>
 
 
 ### 3.2 Column、Row
 
 [Aligning widgets](https://flutter.io/docs/development/ui/layout#aligning-widgets)
-{: .notice--info }
 上面这个链接里面的内容展示了Flutter布局的思想。总的来说是通过Column、Row以及Stack等几种控件统筹全局。
 
 我们还是说下Column、Row布局的特点吧。从下面的图片中可以看出，Row相当于水平方向的线性布局，Column相当于竖直方向的线性布局。  

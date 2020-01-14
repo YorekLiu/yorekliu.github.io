@@ -1,31 +1,8 @@
 ---
 title: "JVM中垃圾回收策略"
-excerpt: "简单描述下JVM的垃圾回收策略，比如引用计数、标记清除等策略"
-categories:
-  - Android
-tags:
-  - 知识星球
-  - GC
-  - jvm
-  - 程序计数器
-  - Java虚拟机栈
-  - 本地方法栈
-  - Java堆
-  - 方法区
-  - 运行时常量池
-  - 引用计数法
-  - 可达性分析算法
-  - 标记-清除算法
-  - 复制算法
-  - 标记-整理算法
-  - 分代收集算法
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-03-15T15:00:51+08:00
 ---
 
-简单描述下JVM的垃圾回收策略，比如引用计数、标记清除等策略。
-{: .notice--question }
+???+ question "简单描述下JVM的垃圾回收策略，比如引用计数、标记清除等策略。"
 
 详情可以参考[深入理解Java虚拟机](/jvm/jvm-content/)中[Java内存区域与内存溢出异常](/jvm/java-memory-area-oom/)以及[垃圾收集器与内存分配策略](/jvm/java-gc/)两章，此处简单小结一下。
 
@@ -33,10 +10,7 @@ last_modified_at: 2019-03-15T15:00:51+08:00
 
 Java虚拟机所管理的内存将会包括以下几个运行时数据区域，其中方法区和堆是线程共享的，虚拟机栈、本地方法栈、程序计数器则是线程私有的，如图1所示。
 
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/jvm/JVM运行时数据区.png">
-    <figcaption>图1 JVM运行时数据区</figcaption>
-</figure>
+![JVM运行时数据区](/assets/images/jvm/JVM运行时数据区.png)
 
 - 程序计数器  
   程序计数器（Program Counter Register）是一块较小的内存空间，它可以看作是当前线程所执行的字节码的行号指示器。  
@@ -72,15 +46,14 @@ Java虚拟机所管理的内存将会包括以下几个运行时数据区域，�
     - 本地方法栈中JNI（即一般说的Native方法）引用的对象。  
     - 方法区中类静态属性引用的对象。
     - 方法区中常量引用的对象。
-  <figure style="width:66%" class="align-center">
-    <img src="/assets/images/jvm/jvm-reachability-analysis.png">
-    <figcaption>图2 可达性分析算法判定对象是否可回收</figcaption>
-  </figure>  
+
+    ![可达性分析算法判定对象是否可回收](/assets/images/jvm/jvm-reachability-analysis.png)
 
 **对方法区的回收**  
 
 永久代的垃圾收集主要回收两部分内容：废弃常量和无用的类。  
 判定一个常量是否是“废弃常量”比较简单，而要判定一个类是否是“无用的类”的条件则相对苛刻许多。类需要同时满足下面3个条件才能算是“无用的类”：
+
 - 该类所有的实例都已经被回收，也就是Java堆中不存在该类的任何实例。
 - 加载该类的ClassLoader已经被回收。
 - 该类对应的java.lang.Class对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法。
@@ -90,27 +63,18 @@ Java虚拟机所管理的内存将会包括以下几个运行时数据区域，�
 - 标记-清除算法  
   算法分为“标记”和“清除”两个阶段：首先标记出所有需要回收的对象，在标记完成后统一回收所有被标记的对象  
   缺点：  
-  - 效率问题：标记和清除两个过程的效率都不高
-  - 空间问题：标记清除之后会产生大量不连续的内存碎片，空间碎片太多可能会导致以后在程序运行过程中需要分配较大对象时，无法找到足够的连续内存而不得不提前触发另一次垃圾收集动作
-  <figure style="width:66%" class="align-center">
-    <img src="/assets/images/jvm/jvm-mark-sweep.png">
-    <figcaption>图3 “标记-清除”算法示意图</figcaption>
-  </figure>
+    - 效率问题：标记和清除两个过程的效率都不高
+    - 空间问题：标记清除之后会产生大量不连续的内存碎片，空间碎片太多可能会导致以后在程序运行过程中需要分配较大对象时，无法找到足够的连续内存而不得不提前触发另一次垃圾收集动作
+      ![“标记-清除”算法示意图](/assets/images/jvm/jvm-mark-sweep.png)
 
 - 复制算法  
   将可用内存按容量划分为大小相等的两块，每次只使用其中的一块。当这一块的内存用完了，就将还存活着的对象复制到另外一块上面，然后再把已使用过的内存空间一次清理掉。  
   现在的商业虚拟机都采用这种收集算法来回收新生代，IBM公司的专门研究表明，新生代中的对象98%是“朝生夕死”的，所以并不需要按照1:1的比例来划分内存空间，而是将内存分为一块较大的Eden空间和两块较小的Survivor空间，每次使用Eden和其中一块Survivor。当回收时，将Eden和Survivor中还存活着的对象一次性地复制到另外一块Survivor空间上，最后清理掉Eden和刚才用过的Survivor空间。HotSpot虚拟机默认Eden和Survivor的大小比例是8:1，也就是每次新生代中可用内存空间为整个新生代容量的90%（80%+10%），只有10%的内存会被“浪费”。当然，98%的对象可回收只是一般场景下的数据，我们没有办法保证每次回收都只有不多于10%的对象存活，当Survivor空间不够用时，需要依赖其他内存（这里指老年代）进行分配担保（Handle Promotion）。
-  <figure style="width:66%" class="align-center">
-    <img src="/assets/images/jvm/jvm-copying.png">
-    <figcaption>图4 复制算法示意图</figcaption>
-  </figure>
+  ![复制算法示意图](/assets/images/jvm/jvm-copying.png)
 
 - 标记-整理算法  
   标记过程仍然与“标记-清除”算法一样，但后续步骤不是直接对可回收对象进行清理，而是让所有存活的对象都向一端移动，然后直接清理掉端边界以外的内存  
-  <figure style="width:66%" class="align-center">
-    <img src="/assets/images/jvm/jvm-mark-compact.png">
-    <figcaption>图5 “标记-整理”算法示意图</figcaption>
-  </figure>
+  ![“标记-整理”算法示意图](/assets/images/jvm/jvm-mark-compact.png)
 
 - 分代收集算法  
   根据对象存活周期的不同将内存划分为几块。一般是把Java堆分为新生代和老年代，这样就可以根据各个年代的特点采用最适当的收集算法。在新生代中，每次垃圾收集时都发现有大批对象死去，只有少量存活，那就选用复制算法，只需要付出少量存活对象的复制成本就可以完成收集。而老年代中因为对象存活率高、没有额外空间对它进行分配担保，就必须使用“标记—清理”或者“标记—整理”算法来进行回收

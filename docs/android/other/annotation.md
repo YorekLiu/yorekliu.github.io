@@ -1,20 +1,5 @@
 ---
 title: "注解的定义及解析"
-excerpt: "注解的种类、定义以及解析"
-categories:
-  - Android
-tags:
-  - Annotation
-  - Retention
-  - RetentionPolicy
-  - ElementType
-  - AbstractProcessor
-  - AutoService
-  - JavaPoet
-  - KotlinPoet
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-08-12T11:04:10+08:00
 ---
 
 注解是代码里的特殊标记，这些标记可以在编译、类加载、运行时被读取，并执行相应的处理。本章的内容主要介绍注解的种类、如何自定义以及如何解析自定义注解。
@@ -96,7 +81,7 @@ public @interface GET {
 
 **运行时注解由于注解信息在运行时也会保留，所以一般会采用反射机制进行处理。**  
 
-还是拿开头Retrofit的`@GET`注解来进行说明，Retrofit整个工作流程的讲解可以查看[Retrofit2源码解析](http://localhost:4000/android/retrofit/)。
+还是拿开头Retrofit的`@GET`注解来进行说明，Retrofit整个工作流程的讲解可以查看[Retrofit2源码解析](/android/3rd-library/retrofit/)。
 
 `@GET`注解的处理过程在Refrofit的`ServiceMethod.java`中，每一个`ServiceMethod`都对应一个网络请求的接口，在我们首次调用网络请求的时候会创建该对象。我们看看其建造者中相关代码：
 
@@ -281,6 +266,7 @@ class PermissionProcessor : AbstractProcessor() {
   > 消息有不同的级别。其中`Diagnostic.Kind.Error`级别最严重，输出此级别的信息会导致编译报错。
 
 回到我们的示例注解处理器中，现在我们知道了自定义处理器是干什么的了。  
+
 1. 首先，该注解处理器会处理`RuntimePermissions`注解，支持最新的Java版本
 2. 在处理注解时（`process`方法），首先会获取所有`RuntimePermissions`注解修饰的Element，这里面可能是类、方法、变量等。所以我们需要过滤掉所有不符合的Element，只留下类的Element。
 3. 最后，调用`Messager`打印出注解修饰的类的类名以及注解的值。
@@ -290,7 +276,7 @@ class PermissionProcessor : AbstractProcessor() {
 - [JavaPoet](https://github.com/square/javapoet/)
 - [KotlinPoet](https://github.com/square/kotlinpoet/)
 
-此外，博主常用的动态权限请求库[PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher)中有对这两个库的使用，而且提供了同一个例子的Java和Kotlin版本，这对我们对比研究这两个库有极大的帮助，同时能顺便读读PermissionsDispatcher的源码。详情请移步[PermissionDispatcher源码解析——基于注解的动态权限请求框架PermissionDispatcher源码解析](/android/permissiondispatcher/)。
+此外，博主常用的动态权限请求库[PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher)中有对这两个库的使用，而且提供了同一个例子的Java和Kotlin版本，这对我们对比研究这两个库有极大的帮助，同时能顺便读读PermissionsDispatcher的源码。详情请移步[PermissionDispatcher源码解析——基于注解的动态权限请求框架PermissionDispatcher源码解析](/android/3rd-library/permissiondispatcher/)。
 
 #### 2.2.3 注册注解处理器
 
@@ -454,4 +440,4 @@ BUILD SUCCESSFUL in 8s
 
 以上就是一个最简单的编译时注解处理器的编写过程了。
 
-至此，注解的全方面介绍已经完毕，剩下的编译时生成辅助文件的相关代码我们会在[PermissionDispatcher源码解析——基于注解的动态权限请求框架PermissionDispatcher源码解析](/android/permissiondispatcher/)这篇文章中进行具体描述。
+至此，注解的全方面介绍已经完毕，剩下的编译时生成辅助文件的相关代码我们会在[PermissionDispatcher源码解析——基于注解的动态权限请求框架PermissionDispatcher源码解析](/android/3rd-library/permissiondispatcher/)这篇文章中进行具体描述。

@@ -52,9 +52,8 @@ last_modified_at: 2018-06-12T11:49:19+08:00
 23. [中介者模式(Mediator)](/design%20patterns/mediator/)
 
 **设计模式这么多，这里整理了相关的[易混淆的设计模式](/design%20patterns/confusing-design-pattern)**
-{: .notice--info }
 
-> 这是作者从《Android源码设计模式解析与实战(第二版)》中提取出来的思维导图[下载]({{ basepath }}/assets/file/android-design-pattern.xmind){: .btn .btn--success}  
+> 这是作者从《Android源码设计模式解析与实战(第二版)》中提取出来的思维导图[下载](/assets/file/android-design-pattern.xmind){: .btn .btn--success}  
 > 以及作者提供的23种UML图的[百度云盘](https://pan.baidu.com/s/1qXDPXy0)
 
 <figure style="width: 100%" class="align-center">

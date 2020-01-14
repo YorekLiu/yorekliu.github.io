@@ -1,20 +1,5 @@
 ---
 excerpt: "View的绘制原理以及自定义View"
-header:
-  teaser: /assets/images/android/View绘制基本流程.png
-  overlay_image: /assets/images/android/View绘制基本流程.png
-  overlay_filter: 0.5
-categories:
-  - Android
-tags:
-  - View绘制原理
-  - View
-  - ViewRootImpl
-  - DecorView
-  - MeasureSpec
-  - 自定义View
-toc: true
-toc_label: "目录"
 ---
 
 本文主要讲述View的绘制原理以及自定义View。
@@ -61,10 +46,7 @@ private void performTraversals() {
 `performTraversals`方法会由`doTraversal`调用，`doTraversal`又被封装在`TraversalRunnable`里面，`TraversalRunnable`会在`scheduleTraversals`方法注册到`Choreographer`中，在下一个VSync信号到达的时候进行触发。
 `invalidate`、`requestLayout`等等方法都会调用`scheduleTraversals`。如图：
 
-<figure style="width: 90%" class="align-center">
-    <img src="/assets/images/android/View绘制基本流程.png">
-    <figcaption>View绘制基本流程</figcaption>
-</figure>
+![View绘制基本流程](/assets/images/android/View绘制基本流程.png)
 
 measure过程决定了View的宽高，Measure完成后，可以通过getMeasuredWidth和getMeasuredHeight方法来获取View测量后的宽高。
 
@@ -85,12 +67,9 @@ draw调用过程与上面的两个过程有点不一样，顶层View的draw在`V
 
 DecorView是一个继承至FrameLayout的顶级View，一般情况下它内部会包含一个竖直方向的LinearLayout。这个LinearLayout有两个部分，上面部分是标题栏，下面部分是id为content的内容栏，所谓的setContentView就是指这个View。
 
-<figure style="width: 30%" class="align-center">
-    <img src="/assets/images/android/DecorView.png">
-    <figcaption>DecorView示意图</figcaption>
-</figure>
+![DecorView示意图](/assets/images/android/DecorView.png)
 
-> DecorView为何叫做Decor View，前面的Decor表明了这是一个[装饰者模式](/design%20patterns/decorator/)的View。更多关于DecorView的知识，参考[Window与WindowManager](/android/Window%E4%B8%8EWindowManager/)
+> DecorView为何叫做Decor View，前面的Decor表明了这是一个[装饰者模式](/design-pattern/decorator/)的View。更多关于DecorView的知识，参考[Window与WindowManager](/android/framework/Window%E4%B8%8EWindowManager/)
 
 ## 2 MeasureSpec
 MeasureSpec会在测量过程中将View的LayoutParams根据父容器的规则进行转换，通过这个MeasureSpec可以测量View的宽高。
@@ -179,19 +158,23 @@ public static class MeasureSpec {
     ...
 }
 ```
+
 MeasureSpec是一个32位int型值，高两位代表测量模式SpecMode，低30位代表测量规格SpecSize。MeasureSpec将SpecMode和SpecSize打包成一个int值来存储。上面就是其提供的打包、解包方法。
+
 SpecMode有三类：
+
 - **UNSPECIFIED**  
-**00**000000 00000000 00000000 00000000  
+**00** 000000 00000000 00000000 00000000  
 父容器对View没有任何限制，要多大给多大。这种情况一般用于系统内部。
 - **EXACTLY**  
-**01**000000 00000000 00000000 00000000  
+**01** 000000 00000000 00000000 00000000  
 父容器已经决定了View的精确尺寸，View的最终大小就是此时SpecSize所指定的大小。它对应于match_parent以及具体的数值。
 - **AT_MOST**  
-**10**000000 00000000 00000000 00000000  
+**10** 000000 00000000 00000000 00000000  
 View想要多大就有多大，但是不能超过SpecSize。它对应于wrap_content。
 
 ### 2.2 MeasureSpec和LayoutParams的对应关系
+
 系统内部是通过MeasureSpec来进行View的测量，但是我们可以使用LayoutParams来更改这个结果。在View测量时，系统会将View的LayoutParams在父容器的约束下转换成对应的MeasureSpec，然后在根据这个MeasureSpec来确定View的最后宽高。注意：MeasureSpec不仅仅由LayoutParams决定，它还有父容器一起决定。  
 另外，对于DecorView和普通View来说，MeasureSpec的转换过程略有不同。对于DecorView，因为其本身已经是顶级View了，没有父容器，所以其MeasureSpec由窗口尺寸和自身LayoutParams共同确定。  
 
@@ -224,6 +207,7 @@ private static int getRootMeasureSpec(int windowSize, int rootDimension) {
 }
 ```
 在上面代码中，DecorView的MeasureSpec的产生过程已经很明确了：
+
 - MATCH_PARENT：精确模式，大小为窗口尺寸
 - WRAP_CONTENT：最大模式，大小不能超过窗口
 - 固定大小：精确模式，大小为LayoutParams中指定的大小。
@@ -907,7 +891,9 @@ public void draw(Canvas canvas) {
     onDrawForeground(canvas);
 }
 ```
+
 上面的代码比较长，但是注释非常清楚，View的绘制过程遵循以下6步：
+
 1. 绘制背景 `drawBackground(canvas)` -> `background.draw(canvas);`
 2. 如果必要，为滚动的fading效果保存图层
 3. 绘制自己 `onDraw(canvas)`
@@ -917,12 +903,10 @@ public void draw(Canvas canvas) {
 
 其中，如果View本身是透明的，则不需要绘制背景以及自身，所以跳过了1、3两步；其次，如果View本身不处于滑动状态，则不需要绘制滑动状态的fading效果，所以跳过2、5两步。
 
-
-
 `onDraw`方法在View是一个空实现，供具体的View来实现draw效果；ViewGroup也更加不会实现该方法，但具体ViewGroup子类会根据自身需要进行重写该方法（比如LinearLayout）。  
 `dispatchDraw`方法在View内部也是一个空实现，因为其没有children，ViewGroup会重写该方法，ViewGroup子类不会重写该方法。
 
-**注意：View有一个特殊的方法**`setWillNotDraw`。**如果View不需要绘制任何内容，那么可以设置这个标记为true，系统会进行相应的优化。默认情况下，View没有开启这个标记位，而ViewGroup会默认开启。**所以，当我们的自定义控件继承至ViewGroup并且本身需要通过`onDraw`来绘制内容时，需要关闭WILL_NOT_DRAW标记位。
+**注意：View有一个特殊的方法**`setWillNotDraw`。**如果View不需要绘制任何内容，那么可以设置这个标记为true，系统会进行相应的优化。默认情况下，View没有开启这个标记位，而ViewGroup会默认开启。** 所以，当我们的自定义控件继承至ViewGroup并且本身需要通过`onDraw`来绘制内容时，需要关闭WILL_NOT_DRAW标记位。
 ```java
 /**
  * If this view doesn't do any drawing on its own, set this flag to
@@ -954,13 +938,13 @@ View重绘和更新可以使用`invalidate()`和`requestLayout()`方法，其主
 - `invalidate`方法用于UI线程中重新刷新View
 - `postInvalidate`方法用于非UI线程中重新刷新View，这里借助了`ViewRootHandler`来达成目的  
 
-   `ViewRootHandler`看着比较陌生，其实我们经常接触到。比如我们调用`View.post(Runnable)`方法，处理Runnable的就是这个`ViewRootHandler`了。详细可以参考[Android消息机制/#3-主线程的消息循环](/android/Android%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/#3-%E4%B8%BB%E7%BA%BF%E7%A8%8B%E7%9A%84%E6%B6%88%E6%81%AF%E5%BE%AA%E7%8E%AF)中的第二个问题。
-   {: .notice--info }
+   `ViewRootHandler`看着比较陌生，其实我们经常接触到。比如我们调用`View.post(Runnable)`方法，处理Runnable的就是这个`ViewRootHandler`了。详细可以参考[Android消息机制——主线程的消息循环](/android/framework/Android消息机制/#3)中的第二个问题。
 
 
 ## 5 自定义View
 ### 5.1 自定义View的分类
 自定义View大致可以分为四类：
+
 1. 继承View重写onDraw方法  
    此方法主要用于实现一些不方便通过组合控件的方式来实现的不规则的效果。很显然，这只能通过`onDraw`绘制实现。**采用这种方式需要支持wrap_content，且padding也需要处理。**
 2. 继承ViewGroup重写onMeasure、onLayout  

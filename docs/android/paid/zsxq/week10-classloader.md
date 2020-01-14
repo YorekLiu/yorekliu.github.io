@@ -1,19 +1,8 @@
 ---
 title: "Android中的ClassLoader"
-categories:
-  - Android
-tags:
-  - 知识星球
-  - ClassLoader
-  - 双亲委托
-  - 热修复
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-11-13T16:48:50+08:00
 ---
 
 本文若无特殊说明，其源码版本为6.0.0_r5
-{: .notice--info }
 
 ## Question
 话题：Android中的ClassLoader  
@@ -27,6 +16,7 @@ last_modified_at: 2018-11-13T16:48:50+08:00
 ### 1. Android中有哪几种ClassLoader？它们的作用和区别是什么？
 
 Android中有以下几种ClassLoader
+
 - BootClassLoader
 - URLClassLoader
 - BaseDexClassLoader
@@ -35,11 +25,11 @@ Android中有以下几种ClassLoader
 - InMemoryDexClassLoader
 
 它们之间的关系可用下图表示  
-![classloader](/assets/images/android/classloader.png){: .align-center }
+![classloader](/assets/images/android/classloader.png)
 
 #### 1.1 BootClassLoader  
 
-BootClassLoader是ClassLoader的内部类。该类继承至ClassLoader，且构造器调用了`super(null)`。这表明**BootClassLoader是双亲委托机制中最顶层的ClassLoader**了。  
+BootClassLoader是ClassLoader的内部类。该类继承至ClassLoader，且构造器调用了`super(null)`。这表明 **BootClassLoader是双亲委托机制中最顶层的ClassLoader** 了。  
 且注意到BootClassLoader访问修饰符是包级的，我们无法使用。
 
 **[ClassLoader.java](http://androidxref.com/6.0.0_r5/xref/libcore/libart/src/main/java/java/lang/ClassLoader.java)**
@@ -209,6 +199,7 @@ public class BaseDexClassLoader extends ClassLoader {
 ```
 
 BaseDexClassLoader的构造器有四个参数
+
 - dexPath  
   包含classes和资源的apk/jar/zip/dex路径集合，在Android上一般用":"分割。**可以从SD卡进行加载**  
 - optimizedDirectory  
@@ -236,9 +227,8 @@ public class DexClassLoader extends BaseDexClassLoader {
 
 DexClassLoader源码就是简单的继承了BaseDexClassLoader。在构造器中将optimizedDirectory的类型由String转变成了File。  
 
-在URLClassLoader中提到**dalvik不能直接识别jar**，而在BaseDexClassLoader支持jar文件的原因是BaseDexClassLoader里面DexPathList.dexElements维持着Element数组，Element有一个DexFile，DexFile支持对apk/jar/zip的处理。  
+在URLClassLoader中提到 **dalvik不能直接识别jar** ，而在BaseDexClassLoader支持jar文件的原因是BaseDexClassLoader里面DexPathList.dexElements维持着Element数组，Element有一个DexFile，DexFile支持对apk/jar/zip的处理。  
 **一般都是用DexClassLoader作为动态加载的加载器**。
-{: .notice--success }
 
 可以参考[DexFile.java](http://androidxref.com/6.0.0_r5/xref/libcore/dalvik/src/main/java/dalvik/system/DexFile.java)的部分注释
 ```java
@@ -371,7 +361,7 @@ public final class DexFile {
 
 #### 1.5 PathClassLoader
 
-PathClassLoader继承至BaseDexClassLoader，且optimizedDirectory=null。在BaseDexClassLoader中由于optimizedDirectory=null，在创建DexFile时会直接`new DexFile(file)`，从而导致会在`/data/dalvik-cache`中生成对应的优化文件，具体可以参考[DexClassLoader小节](/android/week10-classloader/#14-dexclassloader)的`DexFile`源码注释。
+PathClassLoader继承至BaseDexClassLoader，且optimizedDirectory=null。在BaseDexClassLoader中由于optimizedDirectory=null，在创建DexFile时会直接`new DexFile(file)`，从而导致会在`/data/dalvik-cache`中生成对应的优化文件，具体可以参考[DexClassLoader小节](#14-dexclassloader)的`DexFile`源码注释。
 
 **[PathClassLoader.java](http://androidxref.com/6.0.0_r5/xref/libcore/dalvik/src/main/java/dalvik/system/PathClassLoader.java)**
 ```java
@@ -426,13 +416,11 @@ public class PathClassLoader extends BaseDexClassLoader {
 }
 ```
 
-PathClassLoader在dalvik虚拟机上只能加载已安装apk的dex，而在art虚拟机上可以加载未安装的apk的dex。注意到类注释中的*Android uses this class for its system classloader and for its application class loader(s)*，因此不建议开发者使用。  
-{: .notice--success }
+PathClassLoader在dalvik虚拟机上只能加载已安装apk的dex，而在art虚拟机上可以加载未安装的apk的dex。注意到类注释中的 *Android uses this class for its system classloader and for its application class loader(s)* ，因此不建议开发者使用。  
 
 #### 1.6 InMemoryDexClassLoader  
 
 InMemoryDexClassLoader是Android 8.0, Level 26上新增的类加载器。其继承至BaseDexClassLoader，并将dexBuffers交给BaseDexClassLoader中的DexPathList处理。
-{: .notice--info }
 
 **[InMemoryDexClassLoader.java](http://androidxref.com/8.0.0_r4/xref/libcore/dalvik/src/main/java/dalvik/system/InMemoryDexClassLoader.java)**  
 ```java
@@ -468,6 +456,7 @@ public final class InMemoryDexClassLoader extends BaseDexClassLoader {
 ```
 
 ### 2. 简述ClassLoader的双亲委托模型
+
 ClassLoader的双亲委托模型具体体现在[ClassLoader#loadClass](http://androidxref.com/6.0.0_r5/xref/libcore/libart/src/main/java/java/lang/ClassLoader.java#498)方法中：
 
 ```java
@@ -523,14 +512,15 @@ protected Class<?> loadClass(String className, boolean resolve) throws ClassNotF
 ```
 
 具体过程在方法注释中很清楚：
+
 1. 调用`findLoadedClass(String)`看看该类是否已经加载过了
 2. 如果还没有加载，调用`parent.loadClass()`方法
 3. 如果该类仍然没有被加载，调用自身`findClass(String)`进行加载
 
-使用双亲委托模式的好处  
-1.可以避免重复加载  
-2.考虑安全因素，可以避免恶意程序使用自定义的String来动态替代java api中定义的类型。
-{: .notice--success }
+!!! success
+    使用双亲委托模式的好处  
+    1.可以避免重复加载  
+    2.考虑安全因素，可以避免恶意程序使用自定义的String来动态替代java api中定义的类型。
 
 ### 3. 简述双亲委托模型在热修复领域的应用
 

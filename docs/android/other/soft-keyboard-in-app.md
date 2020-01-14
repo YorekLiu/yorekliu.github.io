@@ -1,30 +1,12 @@
 ---
 title: "App内自定义软键盘"
-excerpt: "App内使用键盘API自定义软键盘，里面还有一些趟平的坑"
-categories:
-  - Android
-tags:
-  - Keyboard
-  - InputMethodManager
-  - InputMethod
-  - Key
-  - Row
-  - OnKeyboardActionListener
-  - KeyboardView
-  - KEYCODE_DELETE
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-04-03T11:31:08+08:00
 ---
 
 最近由于项目需要，需要自定义软键盘。直接摆Button真是low爆了，所以想试试系统关于键盘这方面的API。尝试了一下，用着还行，就是有一点点注意事项。
 
 键盘分为常规的数字键盘+字母键盘两部分，先上效果图：
 
-<figure style="width: 80%" class="align-center">
-    <img src="/assets/images/android/inapp_custom_soft_keyboard.png">
-    <figcaption>自定义数字键盘+字母键盘</figcaption>
-</figure>
+![自定义数字键盘+字母键盘](/assets/images/android/inapp_custom_soft_keyboard.png)
 
 创建App内软键盘非常简单，只需要一个或多个描述键盘如何布局的`Keyboard`以及容器`KeyboardView`，其中`Keyboard`中键盘布局靠xml进行。
 

@@ -1,13 +1,5 @@
 ---
 title: "关于Gradle的知识"
-categories:
-  - Android
-tags:
-  - Gradle
-  - 知识星球
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-04-28T11:38:50+08:00
 ---
 
 ## Question
@@ -35,10 +27,9 @@ PS：禁止使用manifestPlaceholders
 
 ## Answer
 
-[assembleRelease时的编译子任务](/android/week22-android-studio-build/#gradlew%E5%91%BD%E4%BB%A4)
-{: .notice--info }
-
-> 核心思想：在project afterEvaluate以后，找到处理manifest的那个task，然后再它的doLast后面通过Groovy xml API来直接修改构建生成的xml文件即可，至于用不用Gradle插件，其实原理都一样，这里直接写在build.gradle里面了。
+!!! tip
+    可以通过[assembleRelease时的编译子任务](/android/paid/zsxq/week22-android-studio-build/#gradlew)获取所有编译的子任务  
+    在project afterEvaluate以后，找到处理manifest的那个task，然后再它的doLast后面通过Groovy xml API来直接修改构建生成的xml文件即可，至于用不用Gradle插件，其实原理都一样，这里直接写在build.gradle里面了。
 
 ```groovy
 // app build.gradle
@@ -74,7 +65,7 @@ def addChannel(File manifest) {
 
 ## Link
 
-[Gradle开发入门]({{ basepath }}/assets/file/Gradle开发入门.pdf){: .btn .btn--success}  
+[Gradle开发入门](/assets/file/Gradle开发入门.pdf)  
 [Gradle从入门到实战 - Groovy基础](https://blog.csdn.net/singwhatiwanna/article/details/76084580)  
 [全面理解Gradle - 执行时序](https://blog.csdn.net/singwhatiwanna/article/details/78797506)  
 [全面理解Gradle - 定义Task](https://blog.csdn.net/singwhatiwanna/article/details/78898113)  

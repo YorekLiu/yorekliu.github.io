@@ -1,19 +1,5 @@
 ---
 title: "ConstraintLayout使用大全"
-excerpt: "ConstraintLayout使用大全，包含1.1的更新"
-categories:
-  - Android
-tags:
-  - ConstraintLayout
-  - Guideline
-  - Barrier
-  - Group
-  - Placeholder
-  - Optimizer
-  - ConstraintSet
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-07-04T16:19:47+08:00
 ---
 
 ConstraintLayout最基本的相对定位功能都足以替代RelativeLayout，更不要说其他牛逼的高级特性，比如约束宽高比、多控件整体居中、辅助线等。ConstraintLayout值得我们学习，功能非常强大，而且对于减少布局层级有非常大的帮助。  
@@ -22,7 +8,6 @@ ConstraintLayout最基本的相对定位功能都足以替代RelativeLayout，�
 目前[ConstraintLayout最新稳定版本为1.1.3](https://developer.android.com/jetpack/androidx/releases/constraintlayout)。本文是基于官方文档[ Developer Guide ](https://developer.android.com/reference/android/support/constraint/ConstraintLayout#developer-guide)的翻译。
 
 **Tips**: 现在都是androidx的年代了，但由于作者不想给测试各种东西的项目升级，所以代码也是非androidx的。注意一下，如有必要，请自行替换成androidx。
-{: .notice--warning }
 
 ## 1. 相对定位
 
@@ -33,10 +18,9 @@ ConstraintLayout最基本的相对定位功能都足以替代RelativeLayout，�
 
 例如，将button B 放到 button A 的右边（图1）
 
-<figure style="width: 40%" class="align-center">
-    <img src="/assets/images/android/constraintlayout-relative-position-example.png" style="border: none">
-    <figcaption>图1 相对定位例子</figcaption>
-</figure>
+![图1 相对定位例子](/assets/images/android/constraintlayout-relative-position-example.png)
+
+<small>图1 相对定位例子</small>
 
 xml代码如下：
 
@@ -50,10 +34,9 @@ xml代码如下：
 
 下面是所有可用的约束（图2）：
 
-<figure style="width: 40%" class="align-center">
-    <img src="/assets/images/android/constraintlayout-relative-positioning-constraints.png" style="border: none">
-    <figcaption>图2 相对定位约束</figcaption>
-</figure>
+![图2 相对定位约束](/assets/images/android/constraintlayout-relative-positioning-constraints.png)
+
+<small>图2 相对定位约束</small>
 
 - `layout_constraintLeft_toLeftOf`
 - `layout_constraintLeft_toRightOf`
@@ -69,14 +52,13 @@ xml代码如下：
 - `layout_constraintEnd_toStartOf`
 - `layout_constraintEnd_toEndOf`
 
-这些属性需要使用view的**id**或者**parent**作为值。
+这些属性需要使用view的 **id** 或者 **parent** 作为值。
 
 ## 2. Margins
 
-<figure style="width: 40%" class="align-center">
-    <img src="/assets/images/android/constraintlayout-relative-positioning-margin.png" style="border: none">
-    <figcaption>图3 相对定位的margin</figcaption>
-</figure>
+![图3 相对定位的margin](/assets/images/android/constraintlayout-relative-positioning-margin.png)
+
+<small>图3 相对定位的margin</small>
 
 如果设置了margin，它们将会作用于对应的约束上（图3），将边距强制作为为目标和源之间的空间。通常有如下属性：
 
@@ -89,7 +71,7 @@ xml代码如下：
 
 ### 2.1 作用到GONE控件上的Margins
 
-当**约束目标**的可见性为`View.GONE`时，可以使用以下属性指定要使用的不同的margin：
+当 **约束目标** 的可见性为`View.GONE`时，可以使用以下属性指定要使用的不同的margin：
 
 - `layout_goneMarginStart`
 - `layout_goneMarginEnd`
@@ -121,11 +103,12 @@ xml代码如下：
 
 当约束目标（button1）可见性分别为`View.VISIBLE`和`View.GONE`时，显示如下：
 
-<figure style="width: 100%" class="half align-center">
+<figure class="half">
     <img src="/assets/images/android/constraintlayout-margin-gone-example-1.png">
     <img src="/assets/images/android/constraintlayout-margin-gone-example-2.png">
-    <figcaption>gone margin 对不同可见性的约束目标的作用</figcaption>
 </figure>
+
+<small>gone margin 对不同可见性的约束目标的作用</small>
 
 ## 3. 居中和偏移(Bias)
 
@@ -143,19 +126,17 @@ ConstraintLayout一个有用的方面在于如何处理“不可能”的约束�
 
 在这种情况下，约束的作用就像是相反的力量平等的拉Widget（图4），这样Widget最终将在父容器中居中。这同样适用于垂直方向上的情况。
 
-<figure style="width: 40%" class="align-center">
-    <img src="/assets/images/android/constraintlayout-centering-positioning.png" style="border: none">
-    <figcaption>图4 居中定位</figcaption>
-</figure>
+![图4 居中定位](/assets/images/android/constraintlayout-centering-positioning.png)
+
+<small>图4 居中定位</small>
 
 值得一提的是，在这两个约束的前提下，如果上面的Button的`layout_width`不同，效果也不同。如下所示：
 
-<figure style="width: 100%" class="third align-center">
-    <img src="/assets/images/android/constraintlayout-center-wrap-content.png">
-    <img src="/assets/images/android/constraintlayout-center-match-parent.png">
-    <img src="/assets/images/android/constraintlayout-center-0dp.png">
-    <figcaption>wrap content、match parent、0dp时的效果</figcaption>
-</figure>
+<img src="/assets/images/android/constraintlayout-center-wrap-content.png">
+<img src="/assets/images/android/constraintlayout-center-match-parent.png">
+<img src="/assets/images/android/constraintlayout-center-0dp.png">
+
+<small>wrap content、match parent、0dp时的效果</small>
 
 
 ### 3.1 偏移(Bias)
@@ -167,10 +148,9 @@ ConstraintLayout一个有用的方面在于如何处理“不可能”的约束�
 
 比如，下面的代码可以使左侧使用30%的偏移而不是默认的50%，这样会使左侧更短，从而导致Widget更倾向于左侧（图5）：
 
-<figure style="width: 40%" class="align-center">
-    <img src="/assets/images/android/constraintlayout-centering-positioning-bias.png" style="border: none">
-    <figcaption>图5 调整了bias的居中定位</figcaption>
-</figure>
+![图5 调整了bias的居中定位](/assets/images/android/constraintlayout-centering-positioning-bias.png)
+
+<small>图5 调整了bias的居中定位</small>
 
 ```xml
 <android.support.constraint.ConstraintLayout ...> 
@@ -191,11 +171,10 @@ ConstraintLayout一个有用的方面在于如何处理“不可能”的约束�
 - `layout_constraintCircleRadius` : 到另一个widegt中心的距离
 - `layout_constraintCircleAngle` : Widget应该处于哪个角度 (0～360的角度)
 
-<figure style="width: 80%" class="half align-center">
-    <img src="/assets/images/android/constraintlayout-circle1.png" style="border: none">
-    <img src="/assets/images/android/constraintlayout-circle2.png" style="border: none">
-    <figcaption>图6 圆形定位</figcaption>
-</figure>
+<img src="/assets/images/android/constraintlayout-circle1.png" style="border: none">
+<img src="/assets/images/android/constraintlayout-circle2.png" style="border: none">
+    
+<small>图6 圆形定位</small>
 
 ```xml
 <Button android:id="@+id/buttonA" ... /> 
@@ -216,15 +195,13 @@ ConstraintLayout对标记为`View.GONE`的Widget有特定处理。
 - 对于布局过程，它们的尺寸将被视为零（基本上，它们将被解析为一个点）
 - 如果他们对其他widgets有约束，它们仍然会起到作用，但任何边距都会好像等于零
 
-<figure style="width: 40%" class="align-center">
-    <img src="/assets/images/android/constraintlayout-visibility-behavior.png" style="border: none">
-    <figcaption>图7 可见性行为</figcaption>
-</figure>
+![图7 可见性行为](/assets/images/android/constraintlayout-visibility-behavior.png)
+
+<small>图7 可见性行为</small>
 
 这种特定的行为允许我们在构建布局时暂时将widget标记为GONE，而不会破坏布局（图7），这在进行简单的布局动画时尤其有用。 
 
-**注意：** 使用的边距将是B在连接到A时定义的边距（例如图7）。在某些情况下，这可能不是我们想要的margin（例如，A距其容器的一边有100dp的边距，B到A只有16dp；如果A标记为GONE，那么B到容器的边距为16dp）。因此，我们可以指定在连接到标记为GONE的widget时要使用的备用margin（请参阅上面有关[作用到GONE控件上的Margins](/android/constraintlayout/#21-%E4%BD%9C%E7%94%A8%E5%88%B0gone%E6%8E%A7%E4%BB%B6%E4%B8%8A%E7%9A%84margins)的部分）。
-{: .notice--info }
+**注意：** 使用的边距将是B在连接到A时定义的边距（例如图7）。在某些情况下，这可能不是我们想要的margin（例如，A距其容器的一边有100dp的边距，B到A只有16dp；如果A标记为GONE，那么B到容器的边距为16dp）。因此，我们可以指定在连接到标记为GONE的widget时要使用的备用margin（请参阅上面有关[作用到GONE控件上的Margins](#21-gonemargins)的部分）。
 
 ## 6. 尺寸约束
 
@@ -249,13 +226,11 @@ widget的尺寸可以通过设置`android:layout_width`和`android:layout_height
 
 前两种工作方式和其他布局一样。最后一种方式将会调整widget的尺寸来匹配设置的约束（参见图8，(a)为wrap_content，(b)为0dp）。如果设置了margin，它们将在计算中被考虑在内（图8，0dp的(c)）。
 
-<figure style="width: 40%" class="align-center">
-    <img src="/assets/images/android/constraintlayoutdimension-match-constraints.png" style="border: none">
-    <figcaption>图8 尺寸约束</figcaption>
-</figure>
+![图8 尺寸约束](/assets/images/android/constraintlayoutdimension-match-constraints.png)
+
+<small>图8 尺寸约束</small>
 
 **重要：** 对于包含在ConstraintLayout中的Widget来说，不建议使用`MATCH_PARENT`。可以通过使用`MATCH_CONSTRAINT`来定义类似的行为，其中相应的left/right或top/bottom约束被设置为“`parent`”。
-{: .notice--info }
 
 ### 6.3 WRAP_CONTENT: 强制约束（1.1新增）
 
@@ -291,11 +266,10 @@ widget的尺寸可以通过设置`android:layout_width`和`android:layout_height
 
 对button2使不使用`app:layout_constrainedWidth="true"`的效果如下：
 
-<figure style="width: 100%" class="half align-center">
-    <img src="/assets/images/android/constraintlayout-constrainted-width-before.png" style="border: none">
-    <img src="/assets/images/android/constraintlayout-constrainted-width-after.png" style="border: none">
-    <figcaption>约束width前 & 约束width后</figcaption>
-</figure>
+<img src="/assets/images/android/constraintlayout-constrainted-width-before.png" style="border: none">
+<img src="/assets/images/android/constraintlayout-constrainted-width-after.png" style="border: none">
+
+<small>约束width前 & 约束width后</small>
 
 ### 6.4 MATCH_CONSTRAINT 尺寸（1.1新增）
 
@@ -332,7 +306,7 @@ widget的尺寸可以通过设置`android:layout_width`和`android:layout_height
 
 <p>&nbsp;</p><font size="3"><b>比例</b></font>  
 
-我们可以将Widget的一个维度定义为另一个维度的比例。为此，我们需要将至少一个约束维度设置为**0dp**（即**MATCH_CONSTRAINT**），并将属性 `layout_constraintDimensionRatio` 设置为给定比率。例如：
+我们可以将Widget的一个维度定义为另一个维度的比例。为此，我们需要将至少一个约束维度设置为 **0dp** （即 **MATCH_CONSTRAINT** ），并将属性 `layout_constraintDimensionRatio` 设置为给定比率。例如：
 
 ```xml
 <Button android:layout_width="wrap_content"
@@ -372,19 +346,17 @@ widget的尺寸可以通过设置`android:layout_width`和`android:layout_height
 
 一系列彼此之间双向连接的widgets可以理解为一条链（如图9，两个widgets组成的最小的链）
 
-<figure style="width: 40%" class="align-center">
-    <img src="/assets/images/android/constraintlayout-chains.png" style="border: none">
-    <figcaption>图9 链</figcaption>
-</figure>
+![图9 链](/assets/images/android/constraintlayout-chains.png)
+
+<small>图9 链</small>
 
 <p>&nbsp;</p><font size="3"><b>链头 (Chain heads)</b></font>  
 
 链的第一个元素（也称之为链“头”）上的属性控制着整个链：
 
-<figure style="width: 40%" class="align-center">
-    <img src="/assets/images/android/constraintlayout-chains-head.png" style="border: none">
-    <figcaption>图10 链头</figcaption>
-</figure>
+![图10 链头](/assets/images/android/constraintlayout-chains-head.png)
+
+<small>图10 链头</small>
 
 水平链上最左边的widget就是链头；同理，竖直链上最上面的widget是链头。
 
@@ -400,11 +372,8 @@ If margins are specified on connections, they will be taken in account.  In the 
 - 权重链（Weighted chain） - 在`CHAIN_SPREAD`模式中，设置为`MATCH_CONSTRAINT`的widgets，将会平分剩下的空间
 - `CHAIN_SPREAD_INSIDE` - 和`CHAIN_SPREAD`类似，但链的两端不会展开，Flutter中MainAxisAlignment.spaceBetween的效果
 - `CHAIN_PACKED` - 链中的元素会挤在一起。bias属性会影响整体的位置。
-
-<figure style="width: 60%" class="align-center">
-    <img src="/assets/images/android/constraintlayout-chains-styles.png" style="border: none">
-    <figcaption>图11 链的样式</figcaption>
-</figure>
+    ![图11 链的样式](/assets/images/android/constraintlayout-chains-styles.png)
+    <small>图11 链的样式</small>
 
 **权重链**  
 
@@ -452,9 +421,7 @@ Barrier的方向可以通过`barrierDirection`来设置，有如下可选值
 
 例如，这里有两个button，分别是@id/button1和@id/button2。`constraint_referenced_ids`将会引用它们，两个id之间用逗号区分。
 
-<figure style="width: 40%" class="align-center">
-    <img src="/assets/images/android/constraintlayout-barrier-buttons.png" style="border: none">
-</figure>
+![](/assets/images/android/constraintlayout-barrier-buttons.png)
 
 ```xml
 <android.support.constraint.Barrier
@@ -467,21 +434,15 @@ Barrier的方向可以通过`barrierDirection`来设置，有如下可选值
 
 Barrier的方向设置为了start，所以结果如下：
 
-<figure style="width: 40%" class="align-center">
-    <img src="/assets/images/android/constraintlayout-barrier-start.png" style="border: none">
-</figure>
+![](/assets/images/android/constraintlayout-barrier-start.png)
 
 相反的，我们将Barrier的方向设置为end，结果如下：
 
-<figure style="width: 40%" class="align-center">
-    <img src="/assets/images/android/constraintlayout-barrier-end.png" style="border: none">
-</figure>
+![](/assets/images/android/constraintlayout-barrier-end.png)
 
 如果widgets的尺寸变化了，Barrier将会根据设置的方向自动移动到最极端的widget上：
 
-<figure style="width: 40%" class="align-center">
-    <img src="/assets/images/android/constraintlayout-barrier-adapt.png" style="border: none">
-</figure>
+![](/assets/images/android/constraintlayout-barrier-adapt.png)
 
 其他widget可以约束到Barrier上，而不是单独的widget。这样的话，我们的layout可以自动适配widget尺寸的变化（比如，对于同一个单词，不同语言下长度会不一样）。
 
@@ -562,6 +523,4 @@ private fun showCreditCard(showCreditCard: Boolean) {
 
 显示效果如下：
 
-<figure style="width: 30%" class="align-center">
-    <img src="/assets/images/android/constraintlayout-constraint-set.gif" style="border: none">
-</figure>
+![](/assets/images/android/constraintlayout-constraint-set.gif)

@@ -1,46 +1,34 @@
 ---
-excerpt: "Android中View动画、属性动画，其内部的插值器、估值器，然后还初探属性动画的工作原理"
-header:
-  teaser: /assets/images/android/Android插值器数学模型.png
-  overlay_image: /assets/images/android/Android插值器数学模型.png
-  overlay_filter: 0.5
-categories:
-  - Android
-tags:
-  - animation
-  - Android动画
-  - 补间动画
-  - 帧动画
-  - 属性动画
-  - PropertyValuesHolder
-  - KeyframeSet
-  - CircularReveal
-toc: true
-toc_label: "目录"
+title: "Android动画"
 ---
 
 Android动画可以分为两种：View动画、属性动画。  
 View动画也分为两种：补间(Tween)动画以及帧动画。  
 
-**补间动画**通过对场景里的对象做图像变换（Translate、Scale、Rotate、Alpha）从而产生动画效果。  
-**帧动画通**过顺序播放一系列图像而产生动画效果，如果图片过多过大就容易OOM。  
-**属性动画**通过动态改变对象的属性从而达到动画效果，属性动画为Android 3.0（API 11）的新特性。  
+**补间动画** 通过对场景里的对象做图像变换（Translate、Scale、Rotate、Alpha）从而产生动画效果。  
+**帧动画通** 过顺序播放一系列图像而产生动画效果，如果图片过多过大就容易OOM。  
+**属性动画** 通过动态改变对象的属性从而达到动画效果，属性动画为Android 3.0（API 11）的新特性。  
 
 ## 1. View动画
 View动画的作用对象是View，它支持四种动画效果：平移动画、缩放动画、旋转动画以及透明度动画。
+
 ### 1.1 View动画的介绍、使用、监听器
+
 **View动画的介绍**
 
 View动画的四种变换效果对应着Animation的四个子类：TranslateAnimation、ScaleAnimation、RotateAnimation和AlphaAnimation。这四种动画既可以通过XML来定义也可以通过代码来定义，对于View动画，建议采用XML方式来定义，这样可读性更好。
 
-View动画XML文件存放位置：  
+View动画XML文件存放位置：
+
 - res/anim/filename.xml  
 
 使用方式：  
+
 - Java文件：R.anim.filename
 - XML文件：@[package:]anim/filename  
 
 语法：  
+
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <set xmlns:android="http://schemas.android.com/apk/res/android"
@@ -71,17 +59,21 @@ View动画XML文件存放位置：
     </set>
 </set>
 ```
-- \<set>表示动画合集，对应AnimationSet类，它可以包含若干个动画，也可以包含其他\<set>节点
+
+- &lt;set&gt;  
+  表示动画合集，对应AnimationSet类，它可以包含若干个动画，也可以包含其他&lt;set&gt;节点
     - android:interpolator  
-      插值器资源。该属性可以不指定，默认从平台获取，其值是@android:anim/accelerate_decelerate_interpolator。关于插值器的概念会在本章后续讲解。
+      插值器资源。该属性可以不指定，默认从平台获取，其值是`@android:anim/accelerate_decelerate_interpolator`。关于插值器的概念会在本章后续讲解。
     - android:shareInterpolator  
       *Boolean*。集合中动画是否公用插值器。
-- \<alpha>表示透明度，对应AlphaAnimation，它是一个淡入淡出的动画效果。
+- &lt;alpha>  
+  表示透明度，对应AlphaAnimation，它是一个淡入淡出的动画效果。
     - android:fromAlpha  
       *Float*。透明度的起始值
     - android:toAlpha  
       *Float*。透明度的结束值。
-- \<scale>表示缩放动画，对应ScaleAnimation。我们可以使用`pivotX`和`pivotY`来特别申明缩放的中心点。
+- &lt;scale>  
+  表示缩放动画，对应ScaleAnimation。我们可以使用`pivotX`和`pivotY`来特别申明缩放的中心点。
     - android:fromXScale  
       *Float*。水平方向缩放的起始值。
     - android:toXScale  
@@ -94,10 +86,11 @@ View动画XML文件存放位置：
       *Float*。缩放中心点的x坐标
     - android:pivotY  
       *Float*。缩放中心点的y坐标
-- \<translate>表示平移动画，对应TranslateAnimation。以下属性支持三种格式：  
--100\~100的数字，以"%"结尾，这表示相对于自己的百分比；  
--100\~100的数字，以"%p"结尾，这表示相对于父布局的百分比；  
-没有后缀的数字，表示这是一个绝对值。  
+- &lt;translate>  
+  表示平移动画，对应TranslateAnimation。以下属性支持三种格式：  
+    -100\~100的数字，以"%"结尾，这表示相对于自己的百分比；  
+    -100\~100的数字，以"%p"结尾，这表示相对于父布局的百分比；  
+    没有后缀的数字，表示这是一个绝对值。  
 **`pivotX`和`pivotY`也支持这些属性。**
     - android:fromXDelta  
       *Float或者百分比*。x的起始值
@@ -107,7 +100,7 @@ View动画XML文件存放位置：
       *Float或者百分比*。y的起始值
     - android:toYDelta  
       *Float或者百分比*。y的终止值
-- \<rotate>表示旋转动画，对应RotateAnimation。
+- &lt;rotate>表示旋转动画，对应RotateAnimation。
     - android:fromDegrees  
       *Float*。旋转开始的角度
     - android:toDegrees  
@@ -118,6 +111,7 @@ View动画XML文件存放位置：
       *Float*。缩放中心点的y坐标
 
 View动画除了以上属性外，还有一些常用的属性：
+
 - android:duration  
   动画持续时间
 - android:fillAfter  
@@ -176,6 +170,7 @@ image.startAnimation(alphaAnimation);
 ```
 
 **View动画的监听器**
+
 Animation可以设置`AnimationListener`监听器：
 ```java
 public static interface AnimationListener {
@@ -263,12 +258,15 @@ public class Rotate3dAnimation extends Animation {
 ```
 
 ### 1.3 帧动画
+
 帧动画对应AnimationDrawable。  
 
 帧动画XML文件存放位置：
+
 - res/drawable/filename.xml
 
 使用方式：
+
 - Java文件：R. drawable.filename
 - XML文件：@[package:] drawable/filename
 
@@ -282,11 +280,12 @@ public class Rotate3dAnimation extends Animation {
         android:duration="integer" />
 </animation-list>
 ```
-- \<animation-list>
-  此节点必须是根节点，它可以包含一或多个\<item>节点。
+
+- &lt;animation-list>  
+  此节点必须是根节点，它可以包含一或多个&lt;item>节点。
     - android:oneshot  
       *Boolean*。true表示只播放一次，false表示循环播放。
-- \<item>
+- &lt;item>  
   动画的一帧。
     - android:drawable  
     *Drawable资源*。
@@ -294,6 +293,7 @@ public class Rotate3dAnimation extends Animation {
     *Drawable资源*。该帧的持续时间
 
 在Java代码中可以通过如下方式使用：
+
 ```java
 ImageView rocketImage = (ImageView) findViewById(R.id.rocket_image);
 rocketImage.setBackgroundResource(R.drawable.rocket_thrust);
@@ -301,31 +301,38 @@ rocketImage.setBackgroundResource(R.drawable.rocket_thrust);
 rocketAnimation = (AnimationDrawable) rocketImage.getBackground();
 rocketAnimation.start();
 ```
+
 帧动画的资源如果过多过大容易导致OOM。  
-> <span style="color: #0092ca">由于Android中帧动画实在是占用内存过大，而且本人用Glide加载也遇到过Gif错乱的情况。最后通过隔一段时间给ImageView设置src来完成效果。这种方式不占内存，也不依赖第三方库，棒极。</span>
+> 由于Android中帧动画实在是占用内存过大，而且本人用Glide加载也遇到过Gif错乱的情况。最后通过隔一段时间给ImageView设置src来完成效果。这种方式不占内存，也不依赖第三方库，棒极。
 
 ### 1.4 View动画的特殊使用场景
+
 View动画除了给控件使用之外，还可以在ViewGroup中控制子元素的出场顺序，在Activity中可以实现不同Activity之间的切换效果等。
+
 #### 1.4.1 LayoutAnimation
+
 LayoutAnimation作用于ViewGroup，为ViewGroup指定一个动画，这样其子元素出场时都会具有这种效果，这种效果常用于ListView、GridView等上。  
+
 LayoutAnimation的使用方法遵循以下几步：  
-1.为item写出场动画anim_item  
-2.将出场动画包装成LayoutAnimation  
 
-```xml
-<layoutAnimation
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:delay="0.5"
-    android:animationOrder="normal"
-    android:animation="@anim/anim_item" />
-```
+1. 为item写出场动画anim_item  
+2. 将出场动画包装成LayoutAnimation  
 
-- android:delay  
-  *Float*。子元素开始动画的时间延迟，如果子元素入场动画为300ms，那么0.5表示每个子元素都需要延迟150ms才开始播放入场动画。
-- android:animationOrder  
-  表示子元素动画的顺序，有normal，reverse和random。reserve表示后面的子元素先开始播放入场动画。
+    ```xml
+    <layoutAnimation
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:delay="0.5"
+        android:animationOrder="normal"
+        android:animation="@anim/anim_item" />
+    ```
+    
+    - android:delay  
+      *Float*。子元素开始动画的时间延迟，如果子元素入场动画为300ms，那么0.5表示每个子元素都需要延迟150ms才开始播放入场动画。
+    - android:animationOrder  
+      表示子元素动画的顺序，有normal，reverse和random。reserve表示后面的子元素先开始播放入场动画。
 
-3.为ViewGroup指定android:layoutAnimation属性。
+3. 为ViewGroup指定android:layoutAnimation属性。
+
 除了在XML中定义之外，还可以通过LayoutAnimationController来实现：
 ```java
 Animation animation = AnimationUtils.loadAnimation(this, R.anim.anim_item);
@@ -413,21 +420,27 @@ if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
 在这种情况下，剪切圆的初始半径设置为与View一样大，因此在动画开始之前View将可见。最终半径设置为0，因此在动画结束时将隐藏View。向动画添加监听器非常重要，这样在动画完成时可以将视图的可见性设置为`INVISIBLE`。
 
 ## 2 属性动画
+
 属性动画是Android 3.0（API 11）之后加入的特性，和View动画不同，它对作用对象进行了扩展，属性动画可以对任何对象做动画，甚至可以没有对象。属性动画中有ValueAnimator、ObjectAnimator和AnimatorSet等概念，它针对的对象的属性，所以通过他们可以实现绚丽的动画。建议在代码中使用属性动画，因此这样我们可以灵活的设定初始值、终止值。
+
 ### 2.1 使用属性动画
-属性动画可以对任何对象的属性进行动画而不仅限于View，动画默认持续时间300ms，默认帧率10ms/帧。
+
+属性动画可以对任何对象的属性进行动画而不仅限于View，动画默认持续时间300ms，默认帧率10ms/帧。  
 属性动画的几个常用动画类是ValueAnimator、ObjectAnimator和AnimatorSet，其中ObjectAnimator继承至ValueAnimator，AnimatorSet是动画合集。
 
 属性动画的XML定义：
 
 属性动画XML文件存放位置：
+
 - `res/animator/filename.xml`
 
 使用方式：
+
 - Java文件：`R.animator.filename`
 - XML文件：`@[package:]animator/filename`
 
 语法：
+
 ```xml
 <set
   android:ordering=["together" | "sequentially"]>
@@ -456,11 +469,14 @@ if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
     </set>
 </set>
 ```
-- \<set>表示动画合集，对应AnimatorSet类，它可以包含若干个动画，也可以包含其他\<set>节点
+
+- &lt;set>  
+表示动画合集，对应AnimatorSet类，它可以包含若干个动画，也可以包含其他&lt;set>节点
     - android:ordering  
       `sequentially`按照顺序依次播放  
       `together`默认值，同时播放
-- \<objectAnimator>对应ObjectAnimator
+- &lt;objectAnimator>  
+对应ObjectAnimator
     - android:propertyName  
       属性动画作用对象的属性名称，比如alpha等
     - android:duration  
@@ -499,14 +515,18 @@ if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
         android:valueTo="1f"/>
 </set>
 ```
+
 在Java中使用
+
 ```java
 AnimatorSet set = (AnimatorSet) AnimatorInflater.loadAnimator(myContext,
     R.anim.property_animator);
 set.setTarget(myObject);
 set.start();
 ```
+
 ### 2.2 属性动画的监听器
+
 Animator可以设置两个监听器：`AnimatorListener`监听器、`AnimatorPauseListener`监听器（很少见）和`AnimatorUpdateListener`监听器：
 ```java
 public static interface AnimatorListener {
@@ -528,20 +548,25 @@ public static interface AnimatorUpdateListener {
 AnimatorUpdateListener的`onAnimationUpdate`的方法在动画的每一帧都会被调用，前面提到过，默认是10ms/帧。
 
 ### 2.3 使用ValueAnimator做动画
+
 ValueAnimator允许我们通过指定一组int，float或color来动画化，从而在动画持续时间内对某些类型的值进行动画处理。我们可以通过调用ValueAnimator的工厂方法：`ofInt()`、`ofFloat()`或者`ofObject`来获得ValueAnimator对象：
+
 ```java
 ValueAnimator animation = ValueAnimator.ofFloat(0f, 100f);
 animation.setDuration(1000);
 animation.start();
 ```
+
 在此代码中，当`start()`方法运行时，ValueAnimator将开始计算0到100之间动画的值，其持续时间为1000 ms。
 
-我们还可以通过执行以下操作为**自定义对象类型进行动画处理**：
+我们还可以通过执行以下操作为 **自定义对象类型进行动画处理**：
+
 ```java
 ValueAnimator animation = ValueAnimator.ofObject(new MyTypeEvaluator(), startPropertyValue, endPropertyValue);
 animation.setDuration(1000);
 animation.start();
 ```
+
 在此代码中，当`start()`方法运行时，ValueAnimator将使用MyTypeEvaluator提供的逻辑持续1000 ms，在`startPropertyValue`和`endPropertyValue`之间开始计算动画值。
 
 我们可以通过向ValueAnimator对象添加`AnimatorUpdateListener`来使用动画值，如以下代码所示：
@@ -560,6 +585,7 @@ animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 在`onAnimationUpdate()`方法中，我们可以使用`getAnimatedValue()`获取更新的动画值，并在其中一个View的属性中使用它。
 
 ### 2.4 使用ObjectAnimator做动画
+
 `ObjectAnimator`是`ValueAnimator`的一个子类（在前面的部分讨论过），它将`ValueAnimator`的估值器和插值器结合起来，使它具有目标对象属性动画化的能力。 这使得任何对象的动画化变得更加简单，我们不再需要实现`ValueAnimator.AnimatorUpdateListener`，因为动画属性会自动更新。
 
 实例化一个`ObjectAnimator`类似于一个`ValueAnimator`，但是我们也可以指定对象、对象的属性以及动画值：
@@ -568,25 +594,29 @@ ObjectAnimator animation = ObjectAnimator.ofFloat(textView, "translationX", 100f
 animation.setDuration(1000);
 animation.start();
 ```
+
 为了使ObjectAnimator正确的更新属性，我们必须保证以下几点：
+
 - 正在进行动画的对象属性必须提供有setter方法（in camel case，驼峰命名法）。因此`ObjectAnimator`会在动画期间自动更新属性，它必须能够使用setter方法操作到属性，否则程序会crash。如果object没有set方法，我们有三种选择：
-  - 如果有权限的话，给这个类加上setter方法
-  - 使用一个包装类（wrapper class）来包装原始对象，间接为其提供set方法
-  -  使用ValueAnimator来代替，自己实现属性的改变。
+    - 如果有权限的话，给这个类加上setter方法
+    - 使用一个包装类（wrapper class）来包装原始对象，间接为其提供set方法
+    -  使用ValueAnimator来代替，自己实现属性的改变。
 - 如果在ObjectAnimator工厂方法中为`values...`参数只指定一个值，则假定这个值是动画的结束值。 因此，正在动画的对象属性必须具有用于获取动画起始值的getter函数。
 - 正在动画的属性的getter（如果需要）和setter方法必须与ObjectAnimator中指定的起始值和结束值是相同的类型。 例如，如果构造以下ObjectAnimator，则必须具有
 
-```java
-targetObject.setPropName(float)
-targetObject.getPropName(float)
-
-ObjectAnimator.ofFloat(targetObject, "propName", 1f)
-```
+    ```java
+    targetObject.setPropName(float)
+    targetObject.getPropName(float)
+    
+    ObjectAnimator.ofFloat(targetObject, "propName", 1f)
+    ```
 
 - 根据要动画的属性或对象，我们可能需要在视图上调用`invalidate()`方法来强制屏幕使用更新的动画值重新绘制。 我们可以在`onAnimationUpdate()`回调中执行此操作。 例如，当Drawable对象重新绘制时，可以对Drawable对象的color属性进行动画化，只会导致屏幕更新。 View上的所有属性setters，如`setAlpha()`和`setTranslationX()`都会invalidate View，因此在使用新值调用这些方法时，不需要invalidate the View。
 
 ### 2.5 使用AnimatorSet组合多个动画
+
 下面实例代码选自 [Bouncing Balls](https://developer.android.com/resources/samples/ApiDemos/src/com/example/android/apis/animation/BouncingBalls.html) 例子 (简单修改过)，它播放下面这些动画对象以下面的方式：
+
 1. Plays bounceAnim.
 2. Plays squashAnim1, squashAnim2, stretchAnim1, and stretchAnim2 at the same time.
 3. Plays bounceBackAnim.
@@ -605,11 +635,14 @@ AnimatorSet animatorSet = new AnimatorSet();
 animatorSet.play(bouncer).before(fadeAnim);
 animatorSet.start();
 ```
+
 `play(1).before(2)` -> 播放1在2之前 -> 先播1在播2  
 `play(1).after(2)` -> 播放1在2之后 -> 先播2在播1
 
 ### 2.6 对ViewGroup进行动画
+
 我们可以使用`LayoutTransition`在ViewGroup中对动画布局进行更改。 ViewGroup中的View可以在将View添加到ViewGroup或将其从ViewGroup中删除时或使用VISIBLE，INVISIBLE或GONE调用View的`setVisibility()`方法时，经历出现或者消失的动画。 当添加或删除View时，ViewGroup中的剩余视图也可以动画进入新的位置。我们可以在`LayoutTransition`对象中定义以下动画，通过调用`setAnimator()`并传递具有以下`LayoutTransition`常量的Animator对象：
+
 - APPEARING - 动画运行在容器中的正在出现的item上
 - CHANGE_APPEARING - 动画运行在容器中由于新item正在出现导致改变的item上
 - DISAPPEARING - 动画运行在容器中的正在消失的item上
@@ -620,6 +653,7 @@ animatorSet.start();
 API Demos中的[LayoutAnimations](https://developer.android.com/resources/samples/ApiDemos/src/com/example/android/apis/animation/LayoutAnimations.html)示例显示了如何为layout transitions定义动画，然后在要动画化的View对象上设置动画。
 
 `LayoutAnimationsByDefault`及其相应的`layout_animations_by_default.xml`布局资源文件显示如何启用XML中ViewGroups的默认layout transitions。我们唯一需要做的是为ViewGroup设置`android:animateLayoutchanges`属性为true。将此属性设置为true，动画会自动出现当从ViewGroup添加或删除View，ViewGroup中的其余视图也一样。
+
 ```java
 <LinearLayout
     android:orientation="vertical"
@@ -681,10 +715,11 @@ CycleInterpolator |  @android:anim/cycle_interpolator |
 | OvershootInterpolator |  @android:anim/overshoot_interpolator |
 
 下图是其数学模型：
-![Android插值器数学模型]({{ basepath}}/assets/images/android/Android插值器数学模型.png)
+![Android插值器数学模型](/assets/images/android/Android插值器数学模型.png)
 
 
 TypeEvaluator中文翻译为估值器，其作用是根据当前属性改变的百分比来计算改变后的属性值，系统预置的有：
+
 - IntEvaluator 针对整型属性
 - FloatEvaluator 针对单精度浮点数属性
 - ArgbEvaluator 针对Color属性

@@ -1,21 +1,9 @@
 ---
 title: "Window与WindowManager"
-excerpt: "如何添加Window，Window的添加、删除、更新过程，Activity、Dialog、Toast的Window创建过程"
-categories:
-  - Android
-tags:
-  - Window
-  - PhoneWindow
-  - WindowManager
-  - WindowManagerService
-  - Activity
-  - Dialog
-  - Toast
-toc: true
-toc_label: "目录"
 ---
 
 Window表示一个窗口的概念，它存在于Window、Dialog以及Toast中，但是日常开发中并不多见，它可以实现悬浮窗。Window是一个抽象类，其具体实现是`PhoneWindow`。WindowManager是外界访问Window的入口，Window的具体实现在`WindowManagerService`中，WindowManager与`WindowManagerService`之间的交互是一个IPC过程。  
+
 Android中所有的视图都是通过Window来呈现的，不管是Activity、Dialog还是Toast，它们的视图实际上都是附加在Window上的，因此Window实际是View的直接管理者。在View的事件分发机制也可以知道，单击事件由Window传递给DecorView，再由DecorView传递给我们的View，就连Activity的设置视图的方法`setContentView`在底层也是通过Window来实现的。
 
 ## 1 Window与WindowManager
@@ -95,7 +83,7 @@ public class WindowTestActivity extends BaseActivity {
 
 实际添加Window的方法是`addFloatView`。这个方法可以将Button添加到屏幕坐标的(100, 300)处。当然使用系统级别的悬浮窗不要忘记注册权限(`<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />`)，不然在L上会报错，在M上没有`Draw over other apps`设置项。
 
-> **注意**： <span style="color: #0092ca">WindowManager.LayoutParams的x和y是与gravity的相对值。也就是说window会会先根据gravity确定位置，然后根据x,y确定偏移量。</span>gravity参数表示Window出现的位置，默认是屏幕中间。x、y的值是相对于gravity的。  
+> **注意**： **WindowManager.LayoutParams的x和y是与gravity的相对值。也就是说window会会先根据gravity确定位置，然后根据x,y确定偏移量。** gravity参数表示Window出现的位置，默认是屏幕中间。x、y的值是相对于gravity的。  
 > 通过Google Play Store(Version 6.05 or heigher is required)下载的需要该权限的应用，会被framework自动授予该权限。These are the commits [[1]](https://github.com/android/platform_frameworks_base/commit/01af6a42a6a008d4b208a92510537791b261168c) [[2]](https://github.com/android/platform_frameworks_base/commit/4ff3b614ab73539763343e0981869c7ab5ee9979) that allow the Play Store to give the automatic grant of the SYSTEM_ALERT_WINDOW permission.
 
 WindowManager的flags、type属性比较重要。上面构造函数的第三个、第四个就是它们：`layoutParams(int w, int h, int _type, int _flags, int _format)`。
@@ -178,220 +166,219 @@ private void applyDefaultToken(@NonNull ViewGroup.LayoutParams params) {
 ```
 `applyDefaultToken`方法将会为Window设置默认token，这个token只有在`AccessibilityService`中才会设置。所以，一般情况下该方法没有任何效果，可以忽略。
 
-WindowManagerImpl并没有直接实现Window的三大操作，而是全部交给了WindowManagerGlobal处理。WindowManagerGlobal以单例的模式向外提供自己的实例：`private final WindowManagerGlobal mGlobal = WindowManagerGlobal.getInstance();`。WindowManagerImpl的这种工作模式是典型的[桥接模式](/design%20patterns/bridge/)，将所有的操作全部委托给WindowManagerGlobal来实现。
+WindowManagerImpl并没有直接实现Window的三大操作，而是全部交给了WindowManagerGlobal处理。WindowManagerGlobal以单例的模式向外提供自己的实例：`private final WindowManagerGlobal mGlobal = WindowManagerGlobal.getInstance();`。WindowManagerImpl的这种工作模式是典型的[桥接模式](/design-pattern/bridge/)，将所有的操作全部委托给WindowManagerGlobal来实现。
 
 接下来我们看WindowManagerGlobal的`addView`方法，该方法分为以下几部分：  
 
 1. 检查传入参数，并调整子Window布局参数  
-   ```java
-   if (view == null) {
-       throw new IllegalArgumentException("view must not be null");
-   }
-   if (display == null) {
-       throw new IllegalArgumentException("display must not be null");
-   }
-   if (!(params instanceof WindowManager.LayoutParams)) {
-       throw new IllegalArgumentException("Params must be WindowManager.LayoutParams");
-   }
-   
-   final WindowManager.LayoutParams wparams = (WindowManager.LayoutParams) params;
-   if (parentWindow != null) {
-       parentWindow.adjustLayoutParamsForSubWindow(wparams);
-   } else {
-       // If there's no parent, then hardware acceleration for this view is
-       // set from the application's hardware acceleration setting.
-       final Context context = view.getContext();
-       if (context != null
-               && (context.getApplicationInfo().flags
-                       & ApplicationInfo.FLAG_HARDWARE_ACCELERATED) != 0) {
-           wparams.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
-       }
-   }
-   ```
-   `adjustLayoutParamsForSubWindow`方法实现是在`Window`中，该方法的作用就是根据`wparams`的type判断属于哪种Window。如果是子Window，会使用DecorView的getWindowToken来设置其token；如果是应用Window，也会根据是否有父Parent来决定将应用Token还是父Parent的应用Token设置其Token。之后会设置其packageName以及是否使用硬件加速的flags。
+    ```java
+    if (view == null) {
+        throw new IllegalArgumentException("view must not be null");
+    }
+    if (display == null) {
+        throw new IllegalArgumentException("display must not be null");
+    }
+    if (!(params instanceof WindowManager.LayoutParams)) {
+        throw new IllegalArgumentException("Params must be WindowManager.LayoutParams");
+    }
+    
+    final WindowManager.LayoutParams wparams = (WindowManager.LayoutParams) params;
+    if (parentWindow != null) {
+        parentWindow.adjustLayoutParamsForSubWindow(wparams);
+    } else {
+        // If there's no parent, then hardware acceleration for this view is
+        // set from the application's hardware acceleration setting.
+        final Context context = view.getContext();
+        if (context != null
+                && (context.getApplicationInfo().flags
+                        & ApplicationInfo.FLAG_HARDWARE_ACCELERATED) != 0) {
+            wparams.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
+        }
+    }
+    ```
+    `adjustLayoutParamsForSubWindow`方法实现是在`Window`中，该方法的作用就是根据`wparams`的type判断属于哪种Window。如果是子Window，会使用DecorView的getWindowToken来设置其token；如果是应用Window，也会根据是否有父Parent来决定将应用Token还是父Parent的应用Token设置其Token。之后会设置其packageName以及是否使用硬件加速的flags。
 
 2. 设置系统属性监听器、检查View状态、为子Window查找parentView
-
-   ```java
-   // Start watching for system property changes.
-   if (mSystemPropertyUpdater == null) {
-       mSystemPropertyUpdater = new Runnable() {
-           @Override public void run() {
-               synchronized (mLock) {
-                   for (int i = mRoots.size() - 1; i >= 0; --i) {
-                       mRoots.get(i).loadSystemProperties();
-                   }
-               }
-           }
-       };
-       SystemProperties.addChangeCallback(mSystemPropertyUpdater);
-   }
-   
-   int index = findViewLocked(view, false);
-   if (index >= 0) {
-       if (mDyingViews.contains(view)) {
-           // Don't wait for MSG_DIE to make it's way through root's queue.
-           mRoots.get(index).doDie();
-       } else {
-           throw new IllegalStateException("View " + view
-                   + " has already been added to the window manager.");
-       }
-       // The previous removeView() had not completed executing. Now it has.
-   }
-   
-   // If this is a panel window, then find the window it is being
-   // attached to for future reference.
-   if (wparams.type >= WindowManager.LayoutParams.FIRST_SUB_WINDOW &&
-           wparams.type <= WindowManager.LayoutParams.LAST_SUB_WINDOW) {
-       final int count = mViews.size();
-       for (int i = 0; i < count; i++) {
-           if (mRoots.get(i).mWindow.asBinder() == wparams.token) {
-               panelParentView = mViews.get(i);
-           }
-       }
-   }
-   ```
-   在View的检查操作中，如果View已经添加过了，且正在被删除，那么会立刻执行`doDie`进行一些相关的销毁操作；否则，如果View已经添加过，但是不在mDyingViews数组中，这说明是重复添加，会报`IllegalStateException("View " + view + " has already been added to the window manager.")`错。
+    ```java
+    // Start watching for system property changes.
+    if (mSystemPropertyUpdater == null) {
+        mSystemPropertyUpdater = new Runnable() {
+            @Override public void run() {
+                synchronized (mLock) {
+                    for (int i = mRoots.size() - 1; i >= 0; --i) {
+                        mRoots.get(i).loadSystemProperties();
+                    }
+                }
+            }
+        };
+        SystemProperties.addChangeCallback(mSystemPropertyUpdater);
+    }
+    
+    int index = findViewLocked(view, false);
+    if (index >= 0) {
+        if (mDyingViews.contains(view)) {
+            // Don't wait for MSG_DIE to make it's way through root's queue.
+            mRoots.get(index).doDie();
+        } else {
+            throw new IllegalStateException("View " + view
+                    + " has already been added to the window manager.");
+        }
+        // The previous removeView() had not completed executing. Now it has.
+    }
+    
+    // If this is a panel window, then find the window it is being
+    // attached to for future reference.
+    if (wparams.type >= WindowManager.LayoutParams.FIRST_SUB_WINDOW &&
+            wparams.type <= WindowManager.LayoutParams.LAST_SUB_WINDOW) {
+        final int count = mViews.size();
+        for (int i = 0; i < count; i++) {
+            if (mRoots.get(i).mWindow.asBinder() == wparams.token) {
+                panelParentView = mViews.get(i);
+            }
+        }
+    }
+    ```
+    在View的检查操作中，如果View已经添加过了，且正在被删除，那么会立刻执行`doDie`进行一些相关的销毁操作；否则，如果View已经添加过，但是不在mDyingViews数组中，这说明是重复添加，会报`IllegalStateException("View " + view + " has already been added to the window manager.")`错。
 
 3. 创建ViewRootImpl并将View添加到列表中  
-   在`WindowManagerGlobal`中有四个很重要的成员变量：
-   ```java
-   private final ArrayList<View> mViews = new ArrayList<View>();
-   private final ArrayList<ViewRootImpl> mRoots = new ArrayList<ViewRootImpl>();
-   private final ArrayList<WindowManager.LayoutParams> mParams =
-           new ArrayList<WindowManager.LayoutParams>();
-   private final ArraySet<View> mDyingViews = new ArraySet<View>();
-   ```
-   - mViews保存的是所有Window对应的View
-   - mRoots存储的所有Window对应的ViewRootImpl，
-   - mParams存储的所有Window对应的布局参数
-   - mDyingViews保存的正在被删除的View对象，或者说是已经调用了`removeView`方法但是删除操作还未完成的Window对象
+    在`WindowManagerGlobal`中有四个很重要的成员变量：
+    ```java
+    private final ArrayList<View> mViews = new ArrayList<View>();
+    private final ArrayList<ViewRootImpl> mRoots = new ArrayList<ViewRootImpl>();
+    private final ArrayList<WindowManager.LayoutParams> mParams =
+            new ArrayList<WindowManager.LayoutParams>();
+    private final ArraySet<View> mDyingViews = new ArraySet<View>();
+    ```
+    - mViews保存的是所有Window对应的View
+    - mRoots存储的所有Window对应的ViewRootImpl，
+    - mParams存储的所有Window对应的布局参数
+    - mDyingViews保存的正在被删除的View对象，或者说是已经调用了`removeView`方法但是删除操作还未完成的Window对象
 
-   在addView中通过如下方式将Window的一系列对象添加到列表中：
-   ```java
-   root = new ViewRootImpl(view.getContext(), display);
+    在addView中通过如下方式将Window的一系列对象添加到列表中：
+    ```java
+    root = new ViewRootImpl(view.getContext(), display);
 
-   view.setLayoutParams(wparams);
+    view.setLayoutParams(wparams);
 
-   mViews.add(view);
-   mRoots.add(root);
-   mParams.add(wparams);
-   ```
+    mViews.add(view);
+    mRoots.add(root);
+    mParams.add(wparams);
+    ```
 
 4. 通过ViewRootImpl更新界面并完成Window的添加过程
-   ```java
-   // do this last because it fires off messages to start doing things
-   try {
-       root.setView(view, wparams, panelParentView);
-   } catch (RuntimeException e) {
-       // BadTokenException or InvalidDisplayException, clean up.
-       synchronized (mLock) {
-           final int index = findViewLocked(view, false);
-           if (index >= 0) {
-               removeViewLocked(index, true);
-           }
-       }
-       throw e;
-   }
-   ```
-   我们可以看出，该方法最后调用的是ViewRootImpl的`setView(view, wparams, panelParentView);`方法。该方法内部会调用`requestLayout()`来完成异步刷新请求，进行View的测量、布局以及绘制。`requestLayout`的内部接着会调用`scheduleTraversals`方法，这实际上是View绘制的入口：
-   ```java
-   @Override
-   public void requestLayout() {
-       if (!mHandlingLayoutInLayoutRequest) {
-           checkThread();
-           mLayoutRequested = true;
-           scheduleTraversals();
-       }
-   }
-   ```
-   在`setView`方法中，调用`requestLayout`方法后，接着会通过`WindowSession`来完成Window的添加过程。
-   ```java
-   try {
-       mOrigWindowType = mWindowAttributes.type;
-       mAttachInfo.mRecomputeGlobalAttributes = true;
-       collectViewAttributes();
-       res = mWindowSession.addToDisplay(mWindow, mSeq, mWindowAttributes,
-               getHostVisibility(), mDisplay.getDisplayId(),
-               mAttachInfo.mContentInsets, mAttachInfo.mStableInsets,
-               mAttachInfo.mOutsets, mInputChannel);
-   } catch (RemoteException e) {
-       ...
-   } finally {
-       ...
-   }
-   ```
-   mWindowSession的类型是IWindowSession，它的真正实现类是`Session`，是一个Binder对象，因此Window的添加过程是一次IPC操作。下面是`mWindowSession`结构的部分代码：
-   ```java
-   // ViewRootImpl
-   mWindowSession = WindowManagerGlobal.getWindowSession();
-   
-   // WindowManagerGlobal
-   public static IWindowSession getWindowSession() {
-       synchronized (WindowManagerGlobal.class) {
-           if (sWindowSession == null) {
-               try {
-                   InputMethodManager imm = InputMethodManager.getInstance();
-                   IWindowManager windowManager = getWindowManagerService();
-                   sWindowSession = windowManager.openSession(
-                           new IWindowSessionCallback.Stub() {
-                               @Override
-                               public void onAnimatorScaleChanged(float scale) {
-                                   ValueAnimator.setDurationScale(scale);
-                               }
-                           },
-                           imm.getClient(), imm.getInputContext());
-               } catch (RemoteException e) {
-                   throw e.rethrowFromSystemServer();
-               }
-           }
-           return sWindowSession;
-       }
-   }
+    ```java
+    // do this last because it fires off messages to start doing things
+    try {
+        root.setView(view, wparams, panelParentView);
+    } catch (RuntimeException e) {
+        // BadTokenException or InvalidDisplayException, clean up.
+        synchronized (mLock) {
+            final int index = findViewLocked(view, false);
+            if (index >= 0) {
+                removeViewLocked(index, true);
+            }
+        }
+        throw e;
+    }
+    ```
+    我们可以看出，该方法最后调用的是ViewRootImpl的`setView(view, wparams, panelParentView);`方法。该方法内部会调用`requestLayout ()`来完成异步刷新请求，进行View的测量、布局以及绘制。`requestLayout`的内部接着会调用`scheduleTraversals`方法，这实际上是View绘制 的入口：
+    ```java
+    @Override
+    public void requestLayout() {
+        if (!mHandlingLayoutInLayoutRequest) {
+            checkThread();
+            mLayoutRequested = true;
+            scheduleTraversals();
+        }
+    }
+    ```
+    在`setView`方法中，调用`requestLayout`方法后，接着会通过`WindowSession`来完成Window的添加过程。
+    ```java
+    try {
+        mOrigWindowType = mWindowAttributes.type;
+        mAttachInfo.mRecomputeGlobalAttributes = true;
+        collectViewAttributes();
+        res = mWindowSession.addToDisplay(mWindow, mSeq, mWindowAttributes,
+                getHostVisibility(), mDisplay.getDisplayId(),
+                mAttachInfo.mContentInsets, mAttachInfo.mStableInsets,
+                mAttachInfo.mOutsets, mInputChannel);
+    } catch (RemoteException e) {
+        ...
+    } finally {
+        ...
+    }
+    ```
+    mWindowSession的类型是IWindowSession，它的真正实现类是`Session`，是一个Binder对象，因此Window的添加过程是一次IPC操作。下面是 `mWindowSession`结构的部分代码：
+    ```java
+    // ViewRootImpl
+    mWindowSession = WindowManagerGlobal.getWindowSession();
+    
+    // WindowManagerGlobal
+    public static IWindowSession getWindowSession() {
+        synchronized (WindowManagerGlobal.class) {
+            if (sWindowSession == null) {
+                try {
+                    InputMethodManager imm = InputMethodManager.getInstance();
+                    IWindowManager windowManager = getWindowManagerService();
+                    sWindowSession = windowManager.openSession(
+                            new IWindowSessionCallback.Stub() {
+                                @Override
+                                public void onAnimatorScaleChanged(float scale) {
+                                    ValueAnimator.setDurationScale(scale);
+                                }
+                            },
+                            imm.getClient(), imm.getInputContext());
+                } catch (RemoteException e) {
+                    throw e.rethrowFromSystemServer();
+                }
+            }
+            return sWindowSession;
+        }
+    }
 
-   public static IWindowManager getWindowManagerService() {
-       synchronized (WindowManagerGlobal.class) {
-           if (sWindowManagerService == null) {
-               sWindowManagerService = IWindowManager.Stub.asInterface(
-                       ServiceManager.getService("window"));
-               try {
-                   if (sWindowManagerService != null) {
-                       ValueAnimator.setDurationScale(
-                               sWindowManagerService.getCurrentAnimatorScale());
-                   }
-               } catch (RemoteException e) {
-                   throw e.rethrowFromSystemServer();
-               }
-           }
-           return sWindowManagerService;
-       }
-   }
-   
-   // WindowManagerService
-   @Override
-   public IWindowSession openSession(IWindowSessionCallback callback, IInputMethodClient client,
-           IInputContext inputContext) {
-       if (client == null) throw new IllegalArgumentException("null client");
-       if (inputContext == null) throw new IllegalArgumentException("null inputContext");
-       Session session = new Session(this, callback, client, inputContext);
-       return session;
-   }
-   
-   // Session
-   final class Session extends IWindowSession.Stub implements IBinder.DeathRecipient
-   ```
-   
-   我们再看一下Session的`addToDisplay`方法：
-   ```java
-   @Override
-   public int addToDisplay(IWindow window, int seq, WindowManager.LayoutParams attrs,
-           int viewVisibility, int displayId, Rect outContentInsets, Rect outStableInsets,
-           Rect outOutsets, InputChannel outInputChannel) {
-       return mService.addWindow(this, window, seq, attrs, viewVisibility, displayId,
-               outContentInsets, outStableInsets, outOutsets, outInputChannel);
-   }
-   ```
-   mService就是WindowManagerService。如此一来，Window的添加请求就交给WindowManagerService了，在WindowManagerService内部会将传入的session、client等封装成WindowState并以client为key保存在`mWindowMap`中。具体Window在WindowManagerService内部是怎么添加的，不在这里进行进一步的分析，因为都是一些细节，深入没有太大意义。到目前为止，我们对Window的添加流程已经很清楚了。
+    public static IWindowManager getWindowManagerService() {
+        synchronized (WindowManagerGlobal.class) {
+            if (sWindowManagerService == null) {
+                sWindowManagerService = IWindowManager.Stub.asInterface(
+                        ServiceManager.getService("window"));
+                try {
+                    if (sWindowManagerService != null) {
+                        ValueAnimator.setDurationScale(
+                                sWindowManagerService.getCurrentAnimatorScale());
+                    }
+                } catch (RemoteException e) {
+                    throw e.rethrowFromSystemServer();
+                }
+            }
+            return sWindowManagerService;
+        }
+    }
+    
+    // WindowManagerService
+    @Override
+    public IWindowSession openSession(IWindowSessionCallback callback, IInputMethodClient client,
+            IInputContext inputContext) {
+        if (client == null) throw new IllegalArgumentException("null client");
+        if (inputContext == null) throw new IllegalArgumentException("null inputContext");
+        Session session = new Session(this, callback, client, inputContext);
+        return session;
+    }
+    
+    // Session
+    final class Session extends IWindowSession.Stub implements IBinder.DeathRecipient
+    ```
+    
+    我们再看一下Session的`addToDisplay`方法：
+    ```java
+    @Override
+    public int addToDisplay(IWindow window, int seq, WindowManager.LayoutParams attrs,
+            int viewVisibility, int displayId, Rect outContentInsets, Rect outStableInsets,
+            Rect outOutsets, InputChannel outInputChannel) {
+        return mService.addWindow(this, window, seq, attrs, viewVisibility, displayId,
+                outContentInsets, outStableInsets, outOutsets, outInputChannel);
+    }
+    ```
+    mService就是WindowManagerService。如此一来，Window的添加请求就交给WindowManagerService了，在WindowManagerService内部会将传入的session、client等封装成WindowState并以client为key保存在`mWindowMap`中。具体Window在WindowManagerService内部是怎么添加的，不在这里进行进一步的分析，因为都是一些细节，深入没有太大意义。到目前为止，我们对Window的添加流程已经很清楚了。
 
 ### 2.2 Window的删除过程
 
@@ -467,8 +454,7 @@ boolean die(boolean immediate) {
 在immediate为false的情况下，die方法只是发送了一个`MSG_DIE`消息后返回true了，并没有完成删除操作。因此从上面的`removeViewLocked`中可以看到，View没有立刻完成删除操作，只会将其加入mDyingViews中。  
 这里的mHandler是一个`ViewRootHandler`对象，MSG_DIE消息会执行`doDie()`方法。因此在`die`方法中，如果参数immediate为true就会立刻调用`doDie`方法，这就是同步删除；如果为false，则会通过Handler来调用`doDie`方法，这就是两者的区别。
 
-关于`ViewRootHandler`，我们在[Android消息机制](/android/Android%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/)中我们提到过，`View.post(Runnable)`所抛出的Runnable对象都会由此Handler来执行。
-{: .notice--info }
+关于`ViewRootHandler`，我们在[Android消息机制](/android/framework/Android消息机制/)中我们提到过，`View.post(Runnable)`所抛出的Runnable对象都会由此Handler来执行。
 
 下面我们看看`doDie`方法：
 

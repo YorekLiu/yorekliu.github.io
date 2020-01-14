@@ -1,30 +1,5 @@
 ---
 title: "Binder简介"
-categories:
-  - Android
-tags:
-  - 知识星球
-  - Binder
-  - BpBinder
-  - BBinder
-  - ServiceManager
-  - BpServiceManager
-  - BnServiceManager
-  - MediaServer
-  - MediaPlayerService
-  - BpMediaPlayerService
-  - BnMediaPlayerService
-  - ProcessState
-  - IPCThreadState
-  - BpInterface
-  - BnInterface
-  - IBinder
-  - IInterface
-  - DECLARE_META_INTERFACE
-  - IMPLEMENT_META_INTERFACE
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-02-27T16:11:25+08:00
 ---
 
 ## Question
@@ -36,7 +11,7 @@ last_modified_at: 2019-02-27T16:11:25+08:00
 > 参考文献  
 > [Android Bander设计与实现 - 设计篇](https://blog.csdn.net/universus/article/details/6211589)——Binder机制细节阐述，不涉及源码，力推  
 > [sososeen09的Binder学习概要](https://www.jianshu.com/p/a50d3f2733d6)  
-> [IPC机制——Binder](/android/IPC%E6%9C%BA%E5%88%B6/#33-binder)  
+> [IPC机制——Binder](/android/framework/IPC%E6%9C%BA%E5%88%B6/#33-binder)  
 
 ### 1. 什么是Binder
 
@@ -51,10 +26,7 @@ Binder机制由一些系统组件组成，分别是Client、Server、Service Man
 
 总结一下Binder机制中四个组件Client、Server、Service Manager和Binder驱动程序的关系：
 
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/android/binder_overview.png">
-    <figcaption>Binder机制中四个组件之间的关系</figcaption>
-</figure>
+![Binder机制中四个组件之间的关系](/assets/images/android/binder_overview.png)
 
 1. Client、Server和Service Manager实现在用户空间中，Binder驱动程序实现在内核空间中
 2. Binder驱动程序和Service Manager在Android平台中已经实现，开发者只需要在用户空间实现自己的Client和Server
@@ -71,11 +43,11 @@ Binder机制由一些系统组件组成，分别是Client、Server、Service Man
    > 本文4.2节的源码分析中会遇到：  
    > 这里为什么会同时使用进程虚拟地址空间和内核虚拟地址空间来映射同一个物理页面呢？这就是Binder进程间通信机制的精髓所在了。**同一个物理页面，一方映射到进程虚拟地址空间，一方面映射到内核虚拟地址空间，这样，进程和内核之间就可以减少一次内存拷贝了，提到了进程间通信效率。**举个例子如，Client要将一块内存数据传递给Server，一般的做法是，Client将这块数据从它的进程空间拷贝到内核空间中，然后内核再将这个数据从内核空间拷贝到Server的进程空间，这样，Server就可以访问这个数据了。但是在这种方法中，执行了两次内存拷贝操作，而采用我们上面提到的方法，只需要把Client进程空间的数据拷贝一次到内核空间，然后Server与内核共享这个数据就可以了，整个过程只需要执行一次内存拷贝，提高了效率。
 
-   | IPC方式 | 数据拷贝次数 |
-   | --- | ---------- |
-   | 共享内存 | 0 |
-   | Binder | 1 |
-   | Socket/管道/消息队列 | 2 |
+    | IPC方式 | 数据拷贝次数 |
+    | --- | ---------- |
+    | 共享内存 | 0 |
+    | Binder | 1 |
+    | Socket/管道/消息队列 | 2 |
 
 3. **安全性**：传统IPC没有任何安全措施，完全依赖上层协议来确保。首先传统IPC的接收方无法获得对方进程可靠的UID/PID（用户ID/进程ID），从而无法鉴别对方身份。Android为每个安装好的应用程序分配了自己的UID，故进程的UID是鉴别进程身份的重要标志。使用传统IPC只能由用户在数据包里填入UID/PID，但这样不可靠，容易被恶意程序利用。可靠的身份标记只有由IPC机制本身在内核中添加。其次传统IPC访问接入点是开放的，无法建立私有通道。比如命名管道的名称，system V的键值，socket的ip地址或文件名都是开放的，只要知道这些接入点的程序都可以和对端建立连接，不管怎样都无法阻止恶意程序通过猜测接收方地址获得连接。
 
@@ -85,7 +57,7 @@ Binder机制由一些系统组件组成，分别是Client、Server、Service Man
 
 最常见的使用场景：
 
-拿Activity的启动来说。我们先回忆一下[Activity的启动流程](/android/%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/#2-activity%E7%9A%84%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B)。
+拿Activity的启动来说。我们先回忆一下[Activity的启动流程](/android/framework/%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/#2-activity)。
 
 Activity的启动需要用到ActivityManagerService，但是我们的App进程和ActivityManagerService所在的进程不是同一个进程，所以就需要用到进程间通讯了。在App进程中我们拿到的是ActivityManagerService的一个代理，也就是ActivityManagerProxy，这个ActivityManagerProxy与ActivityManagerService都实现了IActivityManager接口，因此它们具有相同的功能，但是ActivityManagerProxy只是做了一个中转，创建两个Parcel对象，一个用于携带请求的参数，一个用于拿到请求结果，然后调用transact方法，通过Binder驱动，ActivityManagerService的onTransact方法会被调用，然后根据相应的code，调用相应的方法，并把处理结果返回。
 
@@ -95,12 +67,12 @@ Activity的启动需要用到ActivityManagerService，但是我们的App进程�
 
 **在这个过程中，App进程是Server，ActivityManagerService所在的进程是Client。**
 
-另外一个使用典型的使用场景就是AIDL了：[IPC机制——使用AIDL](/android/IPC%E6%9C%BA%E5%88%B6/#44-%E4%BD%BF%E7%94%A8aidl)
+另外一个使用典型的使用场景就是AIDL了：[IPC机制——使用AIDL](/android/framework/IPC%E6%9C%BA%E5%88%B6/#44-aidl)
 
 ### 4. 加餐
 
 想了解更多Binder的底层设计，可以查阅本博客Binder系列：
 
-1. [Binder简介](/android/week11-binder/)
-2. [Binder深入理解——以MediaService为例](/android/binder1-mediaservice/)，基于[Android深入浅出之Binder机制](http://www.cnblogs.com/innost/archive/2011/01/09/1931456.html)
-3. [Binder深入理解——罗老师系列](/android/binder2/)，基于[Android进程间通信（IPC）机制Binder简要介绍和学习计划](https://blog.csdn.net/luoshengyang/article/details/6618363)
+1. [Binder简介](/android/paid/zsxq/week11-binder/)
+2. [Binder深入理解——以MediaService为例](/android/framework/binder1-mediaservice/)，基于[Android深入浅出之Binder机制](http://www.cnblogs.com/innost/archive/2011/01/09/1931456.html)
+3. [Binder深入理解——罗老师系列](/android/framework/binder2/)，基于[Android进程间通信（IPC）机制Binder简要介绍和学习计划](https://blog.csdn.net/luoshengyang/article/details/6618363)

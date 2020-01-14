@@ -147,7 +147,7 @@ public T override(int width, int height) {
 }
 ```
 
-在配置完参数后，调用`into`方法开始加载图片。整个加载流程非常冗长，详情可以看[本系列文章第二篇](/android/glide2/#3-requestbuilderinto)。所以我们这里只挑选相关的代码，其他的会一笔带过。  
+在配置完参数后，调用`into`方法开始加载图片。整个加载流程非常冗长，详情可以看[本系列文章第二篇](/android/3rd-library/glide2/#3-requestbuilderinto)。所以我们这里只挑选相关的代码，其他的会一笔带过。  
 
 先是`RequestBuilder.into(ImageView)`的实现，该方法会默认进行一些transform的配置：
 
@@ -200,7 +200,6 @@ public ViewTarget<ImageView, TranscodeType> into(@NonNull ImageView view) {
 对于这两个判断条件，如果我们调用了`dontTransform()`方法（例2、例4），那么显然条件1满足，但是条件2就不满足了。否则（例1、例3），这两个条件都是满足的，也就意味着Glide会有一个默认的transform。默认的transform会根据`ImageView`的ScaleType有不同的取值。  
 ScaleType与默认的transform之间关系如下表：
 
-{% raw %}
 <figcaption>ScaleType与默认的transform之间关系</figcaption>
 <table>
   <thead>
@@ -240,7 +239,6 @@ ScaleType与默认的transform之间关系如下表：
     </tr>
   </tbody>
 </table>
-{% endraw %}
 
 我们在`ImageView.initImageView()`方法中可以看到，默认的ScaleType为`ScaleType.FIT_CENTER`。所以，此时Glide会默认调用`optionalFitCenter()`方法。
 
@@ -520,7 +518,7 @@ public class FitCenter extends BitmapTransformation {
 }
 ```
 
-可以看到`FitCenter.transform`方法直接调用了`TransformationUtils`的`fitCenter`方法。除此之外，需要注意一下`equals`、`hashCode`、`updateDiskCacheKey`方法，这三个方法要重写的原因是因为transform会作为key的组成部分，参与到key的比较、缓存读写时safeKey生成，具体内容可以参考[Glide v4 源码解析（三）——深入探究Glide缓存机制](/android/glide3/)。
+可以看到`FitCenter.transform`方法直接调用了`TransformationUtils`的`fitCenter`方法。除此之外，需要注意一下`equals`、`hashCode`、`updateDiskCacheKey`方法，这三个方法要重写的原因是因为transform会作为key的组成部分，参与到key的比较、缓存读写时safeKey生成，具体内容可以参考[Glide v4 源码解析（三）——深入探究Glide缓存机制](/android/3rd-library/glide3/)。
 
 至于`TransformationUtils`类，该类里面有很多处理图片的静态方法，内置的几种`BitmapTransformation`都是调用该工具类里面对应的方法来完成transform功能的。我们只看`fitCenter`方法：
 

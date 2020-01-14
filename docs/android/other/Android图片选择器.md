@@ -1,15 +1,5 @@
 ---
 title: "Android图片选择器"
-excerpt: "可从相册、相机获取照片，并进行截取操作"
-categories:
-  - Android
-tags:
-  - Camera
-  - Gallery
-  - Photo
-  - Picture
-comments: true
-last_modified_at: 2018-04-08T23:37:19+08:00
 ---
 
 1.辅助的权限管理类
@@ -464,5 +454,9 @@ class MineFragment : BaseFragment(),
 }
 ```
 
-注意在AndroidManifest中注册权限，以及处理好N以上平台的`FileProvider`问题
-{: .notice--warning }
+!!! danger
+    注意在AndroidManifest中注册权限，以及处理好N以上平台的`FileProvider`问题
+
+
+---
+后记，其实拿到了原始数据后，往自己的文件夹重新写入一下，应该是一个更安全的方式。

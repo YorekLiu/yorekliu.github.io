@@ -658,7 +658,6 @@ void drainNormal() {
 ### 2.2 subscribeOn
 
 `subscribeOn`切换原理和`observeOn`非常相似。有了前面的铺垫，本小节会进行的非常快。  
-{: .notice--info }
 
 在`Observable.subscribeOn`方法中，创建了一个`ObservableSubscribeOn`对象，我们看一下其`subscribeActual`方法：
 
@@ -754,7 +753,6 @@ public ScheduledRunnable scheduleActual(final Runnable run, long delayTime, @Non
 
 **为什么`subscribeOn()`只有第一次切换有效？**  
 因为RxJava最终能影响`ObservableOnSubscribe`这个匿名实现接口的运行环境的只能是最后一次`subscribe`操作，又因为RxJava订阅的时候是从下往上订阅，所以从上往下第一个`subscribeOn()`就是最后运行的。
-{: .notice--info }
 
 举个例子：
 

@@ -1,36 +1,12 @@
 ---
 title: "Binder深入理解——罗老师系列"
-categories:
-  - Android
-tags:
-  - Binder
-  - BpBinder
-  - BBinder
-  - ServiceManager
-  - BpServiceManager
-  - BnServiceManager
-  - MediaServer
-  - MediaPlayerService
-  - BpMediaPlayerService
-  - BnMediaPlayerService
-  - ProcessState
-  - IPCThreadState
-  - BpInterface
-  - BnInterface
-  - IBinder
-  - IInterface
-  - DECLARE_META_INTERFACE
-  - IMPLEMENT_META_INTERFACE
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-02-27T16:11:27+08:00
 ---
 
 本博客Binder系列：
 
-1. [Binder简介](/android/week11-binder/)
-2. [Binder深入理解——以MediaService为例](/android/binder1-mediaservice/)，基于[Android深入浅出之Binder机制](http://www.cnblogs.com/innost/archive/2011/01/09/1931456.html)
-3. [Binder深入理解——罗老师系列](/android/binder2/)，基于[Android进程间通信（IPC）机制Binder简要介绍和学习计划](https://blog.csdn.net/luoshengyang/article/details/6618363)
+1. [Binder简介](/android/paid/zsxq/week11-binder/)
+2. [Binder深入理解——以MediaService为例](/android/framework/binder1-mediaservice/)，基于[Android深入浅出之Binder机制](http://www.cnblogs.com/innost/archive/2011/01/09/1931456.html)
+3. [Binder深入理解——罗老师系列](/android/framework/binder2/)，基于[Android进程间通信（IPC）机制Binder简要介绍和学习计划](https://blog.csdn.net/luoshengyang/article/details/6618363)
 
 ---
 
@@ -43,9 +19,9 @@ last_modified_at: 2019-02-27T16:11:27+08:00
 在第2.1.8-BnServiceManager中，我们简单谈到了这部分内容，本节会进行更加深入的讲解。  
 
 本章kernel源码地址为[https://android.googlesource.com/kernel/goldfish.git](https://android.googlesource.com/kernel/goldfish.git)，分支名为[android-goldfish-2.6.29](https://android.googlesource.com/kernel/goldfish.git/+/android-goldfish-2.6.29)
-{: .notice--info }
 
 Service Manager的main函数有三个功能：
+
 1. 打开Binder设备文件
 2. 告诉Binder驱动程序自己是Binder上下文管理者，即守护线程
 3. 进入无穷循环，充当Server的角色，等待Client的请求
@@ -83,7 +59,7 @@ struct binder_state
 };
 ```
 
-宏`BINDER_SERVICE_MANAGER`定义在**frameworks/base/cmds/servicemanager/binder.h**中
+宏`BINDER_SERVICE_MANAGER`定义在 **frameworks/base/cmds/servicemanager/binder.h** 中
 
 ```c
 #define BINDER_SERVICE_MANAGER ((void*) 0)
@@ -1190,7 +1166,6 @@ retry:
 3.&nbsp;通知Binder驱动程序它是守护进程：`binder_become_context_manager(bs);`  
 4.&nbsp;进入循环等待请求的到来：`binder_loop(bs, svcmgr_handler);`  
 在这个过程中，在Binder驱动程序中建立了一个`struct binder_proc`结构、一个`struct binder_thread`结构和一个`struct binder_node`结构，这样，Service Manager就在Android系统的进程间通信机制Binder担负起守护进程的职责了。
-{: .notice--info }
 
 ## 2 [Binder中的Server和Client获得Service Manager接口之路](https://blog.csdn.net/luoshengyang/article/details/6627260)
 
@@ -1198,7 +1173,7 @@ retry:
 
 我们知道，Service Manager在Binder机制中既充当守护进程的角色，同时它也充当着Server角色，然而它又与一般的Server不一样。对于普通的Server来说，Client如果想要获得Server的远程接口，那么必须通过Service Manager远程接口提供的getService接口来获得，这本身就是一个使用Binder机制来进行进程间通信的过程。而对于Service Manager这个Server来说，Client如果想要获得Service Manager远程接口，却不必通过进程间通信机制来获得，因为Service Manager远程接口是一个特殊的Binder引用，它的引用句柄一定是0。
 
-获取Service Manager远程接口的函数是`defaultServiceManager()`，声明在**frameworks/base/include/binder/IServiceManager.h**
+获取Service Manager远程接口的函数是`defaultServiceManager()`，声明在 **frameworks/base/include/binder/IServiceManager.h**
 
 ```c
 sp<IServiceManager> defaultServiceManager();
@@ -1223,7 +1198,7 @@ sp<IServiceManager> defaultServiceManager()
 }
 ```
 
- `gDefaultServiceManagerLock`和`gDefaultServiceManager`是全局变量，定义在**frameworks/base/libs/binder/Static.cpp**文件中：
+ `gDefaultServiceManagerLock`和`gDefaultServiceManager`是全局变量，定义在 **frameworks/base/libs/binder/Static.cpp** 文件中：
 
  ```c
 Mutex gDefaultServiceManagerLock;
@@ -1234,12 +1209,9 @@ sp<IServiceManager> gDefaultServiceManager;
 
 在继续介绍`interface_cast<IServiceManager>(ProcessState::self()->getContextObject(NULL))`的实现之前，先来看一个类图，这能够帮助们了解Service Manager远程接口的创建过程。
 
-<figure class="align-center">
-    <img src="/assets/images/android/binder_service_manager.png">
-    <figcaption>Service Manager UML图</figcaption>
-</figure>
+[![Service Manager UML图](/assets/images/android/binder_service_manager.png)](/assets/images/android/binder_service_manager.png)
 
-在2.1节已经解释过这个图了。这里在重述一遍：`BpServiceManager`类继承了`BpInterface<IServiceManager>`类，`BpInterface`是一个模板类，它定义在**frameworks/base/include/binder/IInterface.h**文件中：
+在2.1节已经解释过这个图了。这里在重述一遍：`BpServiceManager`类继承了`BpInterface<IServiceManager>`类，`BpInterface`是一个模板类，它定义在 **frameworks/base/include/binder/IInterface.h** 文件中：
 
 ```c
 template<typename INTERFACE>
@@ -1267,10 +1239,7 @@ protected:
 
 还是以MediaPlayerService来分析。首先，看一下MediaPlayerService的类图，以便我们理解下面要描述的内容。
 
-<figure class="align-center">
-    <img src="/assets/images/android/binder_media_player_service.png">
-    <figcaption>MediaPlayerService</figcaption>
-</figure>
+[![MediaPlayerService](/assets/images/android/binder_media_player_service.png)](/assets/images/android/binder_media_player_service.png)
 
 从前面的分析以及上图中可以看出`MediaPlayerService`继承至`BnMediaPlayerService`，这里的Bn是指Binder Native，用来处理Client请求的。 `BnMediaPlayerService`继承至`BnInterface<IServiceManager>`，和`BpInterface`一样，`BnInterface`也是一个模板类：
 
@@ -1295,7 +1264,6 @@ protected:
 下面正式进入本节主题，看看`MediaPlayerService`是如何启动的。
 
 大部分内容同第2.1节，所以一些代码不再重复贴出。
-{: .notice--warning }
 
 首先看frameworks/base/media/mediaserver/main_mediaserver.cpp的`main`函数。第一句代码就是
 
@@ -2610,7 +2578,7 @@ tr.data.ptr.buffer = (void *)t->buffer->data + proc->user_buffer_offset;
 tr.data.ptr.offsets = tr.data.ptr.buffer + ALIGN(t->buffer->data_size, sizeof(void *));
 ```
 
-t->buffer->data所指向的地址是内核空间的，现在要把数据返回给Service Manager进程的用户空间，而Service Manager进程的用户空间是不能访问内核空间的数据的，所以这里要作一下处理。怎么处理呢？我们在学面向对象语言的时候，对象的拷贝有深拷贝和浅拷贝之分，深拷贝是把另外分配一块新内存，然后把原始对象的内容搬过去，浅拷贝是并没有为新对象分配一块新空间，而只是分配一个引用，而个引用指向原始对象。**Binder机制用的是类似浅拷贝的方法，通过在用户空间分配一个虚拟地址，然后让这个用户空间虚拟地址与t->buffer->data这个内核空间虚拟地址指向同一个物理地址，这样就可以实现浅拷贝了。**怎么样用户空间和内核空间的虚拟地址同时指向同一个物理地址呢？请参考2.2节，那里有详细描述。这里只要将t->buffer->data加上一个偏移值proc->user_buffer_offset就可以得到t->buffer->data对应的用户空间虚拟地址了。调整了tr.data.ptr.buffer的值之后，不要忘记也要一起调整tr.data.ptr.offsets的值。
+t->buffer->data所指向的地址是内核空间的，现在要把数据返回给Service Manager进程的用户空间，而Service Manager进程的用户空间是不能访问内核空间的数据的，所以这里要作一下处理。怎么处理呢？我们在学面向对象语言的时候，对象的拷贝有深拷贝和浅拷贝之分，深拷贝是把另外分配一块新内存，然后把原始对象的内容搬过去，浅拷贝是并没有为新对象分配一块新空间，而只是分配一个引用，而个引用指向原始对象。 **Binder机制用的是类似浅拷贝的方法，通过在用户空间分配一个虚拟地址，然后让这个用户空间虚拟地址与t->buffer->data这个内核空间虚拟地址指向同一个物理地址，这样就可以实现浅拷贝了。** 怎么样用户空间和内核空间的虚拟地址同时指向同一个物理地址呢？请参考2.2节，那里有详细描述。这里只要将t->buffer->data加上一个偏移值proc->user_buffer_offset就可以得到t->buffer->data对应的用户空间虚拟地址了。调整了tr.data.ptr.buffer的值之后，不要忘记也要一起调整tr.data.ptr.offsets的值。
 
 接着就是把tr的内容拷贝到用户传进来的缓冲区去了，指针ptr指向这个用户缓冲区的地址：
 
@@ -3584,10 +3552,7 @@ reply->ipcSetDataReference(
 
 至此，`IServiceManager::addService`终于执行完毕了。这个过程非常复杂，但是如果我们能够深刻地理解这一过程，将能很好地理解Binder机制的设计思想和实现过程。这里，对`IServiceManager::addService`过程中MediaPlayerService、ServiceManager和BinderDriver之间的交互作一个小结：
 
-<figure style="width: 100%" class="align-center">
-    <img src="/assets/images/android/binder_service_manager_add_service_sequence.png">
-    <figcaption>IServiceManager::addService的时序图</figcaption>
-</figure>
+![IServiceManager::addService的时序图](/assets/images/android/binder_service_manager_add_service_sequence.png)
 
 回到frameworks/base/media/mediaserver/main_mediaserver.cpp文件中的main函数，接下去还要执行下面两个函数：
 
@@ -3795,10 +3760,7 @@ status_t BnMediaPlayerService::onTransact(
 在介绍`IMediaDeathNotifier::getMediaPlayerService()`函数之前，我们先了解一下这个函数。  
 在2.3节中我们知道，获取Service Manager远程接口时，最终是获得了一个BpServiceManager对象的IServiceManager接口。类似地，我们要获得MediaPlayerService的远程接口，实际上就是要获得一个称为BpMediaPlayerService对象的IMediaPlayerService接口。现在，我们就先来看一下BpMediaPlayerService的类图（2.3节中的是BnMediaPlayerService的类图）：
 
-<figure class="align-center">
-    <img src="/assets/images/android/binder_bp_media_player_service.png">
-    <figcaption>BpMediaPlayerService</figcaption>
-</figure>
+[![BpMediaPlayerService](/assets/images/android/binder_bp_media_player_service.png)](/assets/images/android/binder_bp_media_player_service.png)
 
 从这个类图可以看到，BpMediaPlayerService继承于BpInterface<IMediaPlayerService>类，即BpMediaPlayerService继承了IMediaPlayerService类和BpRefBase类，这两个类又分别继续了RefBase类。BpRefBase类有一个成员变量mRemote，它的类型为IBinder，实际是一个BpBinder对象。BpBinder类使用了IPCThreadState类来与Binder驱动程序进行交互，而IPCThreadState类有一个成员变量mProcess，它的类型为ProcessState，IPCThreadState类借助ProcessState类来打开Binder设备文件/dev/binder，因此，它可以和Binder驱动程序进行交互。
 
@@ -5098,5 +5060,4 @@ sp<IBinder> ProcessState::getStrongProxyForHandle(int32_t handle)
 
 有了这个BpMediaPlayerService这个远程接口之后，MediaPlayer就可以调用MediaPlayerService的服务了。
 
-Framework里面的Binder总算把自个完全整懵了。Java层的Binder可以参考[IPC机制——Binder](/android/IPC机制/#33-binder)。
-{: .notice--warning }
+Framework里面的Binder总算把自个完全整懵了。Java层的Binder可以参考[IPC机制——Binder](/android/framework/IPC机制/#33-binder)。

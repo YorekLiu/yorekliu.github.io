@@ -1,15 +1,5 @@
 ---
 title: "理解Java中synchronized关键词"
-excerpt: "理解Java中的synchronized关键字"
-categories:
-  - Android
-tags:
-  - 知识星球
-  - synchronized
-  - 多线程
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-04-25T16:38:00+08:00
 ---
 
 ## Question
@@ -56,6 +46,5 @@ class A {
 
 问题1 ：不能同步  
 问题2 ：能同步  
-{: .notice--success }
 
-关于`synchronized`关键词作用，可以参考[Java常见概念——线程——第3点](/java/java-foundation/#6-%E7%BA%BF%E7%A8%8B)
+关于`synchronized`关键词作用，可以参考[Java常见概念——线程——第3点](/java/java-foundation/#6)

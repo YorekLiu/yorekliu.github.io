@@ -40,8 +40,8 @@ title: "Glide v4 源码解析（三）"
 3. data磁盘缓存：原始的没有修改过的数据缓存
 4. resource磁盘资源：经过解码、transformed后的缓存
 
-在[Glide使用文档-缓存部分](https://muyangmin.github.io/glide-docs-cn/doc/caching.html)中有对Glide的整个缓存体系做出一个总结，前往了解一下还是非常好的。  
-{: .notice--info }
+!!! tip
+    在[Glide使用文档-缓存部分](https://muyangmin.github.io/glide-docs-cn/doc/caching.html)中有对Glide的整个缓存体系做出一个总结，前往了解一下还是非常好的。  
 
 在文档中有Glide的缓存体系的整体描述，文字摘抄如下：  
 
@@ -58,7 +58,7 @@ title: "Glide v4 源码解析（三）"
 
 下面开始一边过源码，一遍印证上面的图和概要。
 
-Glide的memory cache和disk cache在Glide创建的时候就确定了。代码在`GlideBuilder.build(Context)`方法里面。值得一提的是，Glide是单例实现的，在上一章 [1.1节 getRetriever(Context)](/android/glide2/#11-getretrievercontext) 中我们分析时贴了对应的代码。
+Glide的memory cache和disk cache在Glide创建的时候就确定了。代码在`GlideBuilder.build(Context)`方法里面。值得一提的是，Glide是单例实现的，在上一章 [1.1节 getRetriever(Context)](/android/3rd-library/glide2/#11-getretrievercontext) 中我们分析时贴了对应的代码。
 
 memory cache和disk cache在Glide创建时相关代码如下：
 
@@ -412,8 +412,8 @@ public class DiskLruCacheWrapper implements DiskCache {
 
 里面果然wrap了一个`DiskLruCache`，该类主要是为`DiskLruCache`提供了一个根据`Key`生成key的`SafeKeyGenerator`以及写锁`DiskCacheWriteLocker`。  
 
-**注意**：Glide中使用的LruCache与[Bitmap的缓存与加载](/android/Bitmap%E7%9A%84%E7%BC%93%E5%AD%98%E4%B8%8E%E5%8A%A0%E8%BD%BD/#21-lrucache)一文中提到的不一样；Glide使用的DiskLruCache虽然与文章中提到的DiskLruCache有一定的渊源，但不等同。
-{: .notice--warning }
+!!!! warning
+    **注意**：Glide中使用的LruCache与[Bitmap的缓存与加载](/android/framework/Bitmap%E7%9A%84%E7%BC%93%E5%AD%98%E4%B8%8E%E5%8A%A0%E8%BD%BD/#21-lrucache)一文中提到的不一样；Glide使用的DiskLruCache虽然与文章中提到的DiskLruCache有一定的渊源，但不等同。
 
 OK，现在DiskCache的实现都准备好了，现在看看会在哪里调用factory的`build()`方法了。  
 在本文的开头，我们看到了`diskCacheFactory`只会传入`Engine`中。在`Engine`的构造方法中会被包装成为一个`LazyDiskCacheProvider`，在被需要的时候调用`getDiskCache()`方法，这样就会调用factory的`build()`方法返回一个`DiskCache`了。
@@ -675,7 +675,7 @@ public synchronized <R> LoadStatus load(...) {
 }
 ```
 
-上面这个方法我们在前一篇文章讲解整体流程时谈到过，链接如下[Glide2-3.3-Engine.load](/android/glide2/#33-engineload)。  
+上面这个方法我们在前一篇文章讲解整体流程时谈到过，链接如下[Glide2-3.3-Engine.load](/android/3rd-library/glide2/#33-engineload)。  
 从注释和代码中我们知道了缓存首先会判断active状态的resource，然后是memory cache，最后就交给了job。那么毫无疑问，job中会进行disk cache的读操作。  
 
 只要是缓存，就离不开Key，所以先看看从active resource和memory cache中取缓存时的Key——`EngineKey`的组成成分：
@@ -694,9 +694,9 @@ public synchronized <R> LoadStatus load(...) {
 | transcodeClass | 最终要转换成的数据类型，根据`as`方法确定，加载本地res或者网络URL，都会调用`asDrawable`，所以为`Drawable` |
 | options | 如果没有设置过`transform`，此处会根据ImageView的scaleType默认指定一个KV，详见上一文2.2节 |
 
-显然，在多次加载同一个model的过程中，即使有稍许改动（比如View宽高等），Glide都不会认为这是同一个Key。此外，值得一提的是，此Key以及其他的Key覆盖`equals`、`hashCode()`、`toString()`方法的写法非常规范，详细可见[Effective-Java-第8、9、10条](/effective%20java/chapter2/#%E7%AC%AC%E5%85%AB%E6%9D%A1%E8%A6%86%E7%9B%96equals%E6%97%B6%E8%AF%B7%E9%81%B5%E5%AE%88%E9%80%9A%E7%94%A8%E7%BA%A6%E5%AE%9A)。
+显然，在多次加载同一个model的过程中，即使有稍许改动（比如View宽高等），Glide都不会认为这是同一个Key。此外，值得一提的是，此Key以及其他的Key覆盖`equals`、`hashCode()`、`toString()`方法的写法非常规范，详细可见[Effective-Java-第8、9、10条](/effective-java/chapter2/)。
 
-回到`Engine.load`方法中，active状态的resource和memory cache状态的资源其实都是`DataSource.MEMORY_CACHE`状态，从缓存加载成功后的回调中可以看到。而且，加载出来的资源都是`EngineResource`对象，该对象的管理策略采用了[引用计数算法](/jvm/java-gc/#321-%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%E7%AE%97%E6%B3%95)。该算法的特点是实现简单，判定效率也很高。
+回到`Engine.load`方法中，active状态的resource和memory cache状态的资源其实都是`DataSource.MEMORY_CACHE`状态，从缓存加载成功后的回调中可以看到。而且，加载出来的资源都是`EngineResource`对象，该对象的管理策略采用了[引用计数算法](/jvm/java-gc/#321)。该算法的特点是实现简单，判定效率也很高。
 
 `EngineResource`类的关键代码如下：
 
@@ -1177,7 +1177,7 @@ private void cacheData(Object dataToCache) {
 1. 将比较原始的data数据转变为可以供ImageView显示的resource数据
 2. 将resource数据显示出来
 
-这里面的每行代码的分析都在[Glide2-3.9-DecodeJob.FetcherReadyCallback](/android/glide2/#39-decodejobfetcherreadycallback)中，这里只说一下涉及到缓存的位置。  
+这里面的每行代码的分析都在[Glide2-3.9-DecodeJob.FetcherReadyCallback](/android/3rd-library/glide2/#39-decodejobfetcherreadycallback)中，这里只说一下涉及到缓存的位置。  
 在过程1中，将原始data encode成resource数据后，会调用`DecodeJob.onResourceDecoded`对resource数据进行进一步的处理。`DecodeJob.onResourceDecoded`首先会对resource进行transform，然后可能会进行磁盘缓存。
 
 **DecodeJob.java**
@@ -1445,8 +1445,8 @@ private class CallResourceReady implements Runnable {
 
 engineResource的引用计数会在`RequestManager.onDestory`方法中经过`clear`、`untrackOrDelegate`、`untrack`、`RequestTracker.clearRemoveAndRecycle`、`clearRemoveAndMaybeRecycle`方法，调用`SingleRequest.clear()`方法经过`releaseResource()`、`Engine.release`，进行释放。这样引用计数就为0了。
 
-Tips: 可以在打断点的时候在`Evaluate Expression`功能中调用`Log.x(String, String, Throwable)`方法打印出调用栈
-{: .notice--info }
+!!! tip
+    Tips: 可以在打断点的时候在`Evaluate Expression`功能中调用`Log.x(String, String, Throwable)`方法打印出调用栈
 
 前面在看`EngineResource`的代码时我们知道，一旦引用计数为0，就会通知`Engine`将此资源从active状态变成memory cache状态。如果我们再次加载资源时可以从memory cache中加载，那么资源又会从memory cache状态变成active状态。
 

@@ -1,16 +1,5 @@
 ---
 title: "NestedScrolling机制"
-excerpt: "NestedScrolling机制实现嵌套滑动，及其源码解析"
-categories:
-  - Android
-tags:
-  - NestedScrollingChild
-  - NestedScrollingParent
-  - NestedScrollingChildHelper
-  - NestedScrollingParentHelper
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-07-15T13:20:39+08:00
 ---
 
 NestedScrolling机制是解决嵌套滑动的一大神器，在Android 5.0 Lollipop (API 21)中提出，但是以兼容包的形式出现在了v4 support包中，所以兼容性是得到了保证的。
@@ -42,7 +31,7 @@ public static final int TYPE_NON_TOUCH = 1;
 
 注释中已经注释的很清楚了，`TYPE_TOUCH`是用户触摸屏幕造成的scroll，`TYPE_NON_TOUCH`通常是fling。
 
-另外，从5.0开始，`View`和`ViewParent`都默认实现了v1**接口里面的**方法，而`ViewGroup`实现了`ViewParent`接口。因此，NestedScrolling机制就一共涉及到三对对象了，这三个Parent侧的对象的统一调用靠`ViewParentCompat`，调用规则为：如果Parent实现了`NestedScrollingParent2`接口，就调用v2的相关接口，否则会转交给`IMPL`。而`IMPL`是版本相关的，如果API >= 21，就调用`ViewParent`的接口，否则调用v1接口。
+另外，从5.0开始，`View`和`ViewParent`都默认实现了v1 **接口里面的** 方法，而`ViewGroup`实现了`ViewParent`接口。因此，NestedScrolling机制就一共涉及到三对对象了，这三个Parent侧的对象的统一调用靠`ViewParentCompat`，调用规则为：如果Parent实现了`NestedScrollingParent2`接口，就调用v2的相关接口，否则会转交给`IMPL`。而`IMPL`是版本相关的，如果API >= 21，就调用`ViewParent`的接口，否则调用v1接口。
 
 **ViewParentCompat.java**
 
@@ -212,12 +201,9 @@ public interface NestedScrollingParent2 extends NestedScrollingParent {
 }
 ```
 
-上面理论知识介绍得差不多了，只缺少一个Child与Parent两侧联动的顺序图了，这里给出典型的`RecyclerView`与`SwipeRefreshLayout`两者的嵌套滑动顺序图（[点击查看大图](/assets/images/android/nestedscrolling.png)）：
+上面理论知识介绍得差不多了，只缺少一个Child与Parent两侧联动的顺序图了，这里给出典型的`RecyclerView`与`SwipeRefreshLayout`两者的嵌套滑动顺序图：
 
-<figure style="width: 100%" class="align-center">
-    <img src="/assets/images/android/nestedscrolling.png" alt="/assets/images/android/nestedscrolling.png">
-    <figcaption>RecyclerView与SwipeRefreshLayout两者的嵌套滑动顺序图</figcaption>
-</figure>
+[![RecyclerView与SwipeRefreshLayout两者的嵌套滑动顺序图](/assets/images/android/nestedscrolling.png)](/assets/images/android/nestedscrolling.png)
 
 值得一提的是，这里SwipeRefreshLayout相对RecyclerView而言是Parent；相对于自己的Parent而言又是Child。所以这里SwipeRefreshLayout也会将嵌套滑动事件分发给上一级，这就是一个三级嵌套滑动的典型例子了。但是，本章只研究两级，SwipeRefreshLayout的Parent暂不考虑。
 
@@ -225,7 +211,7 @@ public interface NestedScrollingParent2 extends NestedScrollingParent {
 
 ## 1. NestedScrolling机制源码解析
 
-嵌套滑动的事件分发与一般的事件传递机制相反，嵌套滑动是由子View向父View传递的，但嵌套滑动的实现还是基于事件传递机制的，具体思想可以参考[View的滑动冲突处理——内部拦截法](/android/View%E7%9A%84%E4%BA%8B%E4%BB%B6%E4%BD%93%E7%B3%BB/#522-%E5%86%85%E9%83%A8%E6%8B%A6%E6%88%AA%E6%B3%95)。由于本章是以`RecyclerView`与`SwipeRefreshLayout`两者的嵌套滑动为例，显然`RecyclerView`是作为Child的，因此嵌套滑动事件也是从它的`onTouchEvent`开始。  
+嵌套滑动的事件分发与一般的事件传递机制相反，嵌套滑动是由子View向父View传递的，但嵌套滑动的实现还是基于事件传递机制的，具体思想可以参考[View的滑动冲突处理——内部拦截法](/android/framework/View的事件体系/#522)。由于本章是以`RecyclerView`与`SwipeRefreshLayout`两者的嵌套滑动为例，显然`RecyclerView`是作为Child的，因此嵌套滑动事件也是从它的`onTouchEvent`开始。  
 
 在`ACTION_DOWN`时，`RecyclerView`借助`NestedScrollingChildHelper`向Parent发出通知，表明自己即将开始滚动。`RecyclerView`相关代码如下：
 
@@ -650,10 +636,7 @@ Child的事件通过`NestedScrollingChildHelper`分发到Parent中。此时回�
 
 下面来一个非常简单又常见的例子，效果图如下：
 
-<figure style="width: 20%" class="align-center">
-    <img src="/assets/images/android/nestedscrolling-demo-v2.gif">
-    <figcaption>嵌套滑动实战</figcaption>
-</figure>
+![嵌套滑动实战](/assets/images/android/nestedscrolling-demo-v2.gif)
 
 整个页面的整体是一个线性布局，为了能够响应RecyclerView的滑动，我们需要自定义一下LinearLayout。布局代码如下：
 
@@ -820,8 +803,9 @@ class NestedScrollingLinearLayout(
 2. 测量时，需要注意正确测量出RecyclerView的高度，不然当header折叠时，RecyclerView没有占满剩余空间
 3. Parent最好实现`NestedScrollingParent2`接口，这样可以响应fling时的scroll事件，体验更好（对比图如下，注意最后一个fling事件）
 
-<figure style="width: 40%" class="half align-center">
+<figure style="width: 50%" class="half align-center">
     <img src="/assets/images/android/nestedscrolling-demo-v1.gif">
     <img src="/assets/images/android/nestedscrolling-demo-v2.gif">
-    <figcaption>NestedScrollingParent v1 & v2 实现效果</figcaption>
+
+    <small>NestedScrollingParent v1 & v2 实现效果</small>
 </figure>

@@ -1,41 +1,16 @@
 ---
 title: "Binder深入理解——以MediaService为例"
-categories:
-  - Android
-tags:
-  - Binder
-  - BpBinder
-  - BBinder
-  - ServiceManager
-  - BpServiceManager
-  - BnServiceManager
-  - MediaServer
-  - MediaPlayerService
-  - BpMediaPlayerService
-  - BnMediaPlayerService
-  - ProcessState
-  - IPCThreadState
-  - BpInterface
-  - BnInterface
-  - IBinder
-  - IInterface
-  - DECLARE_META_INTERFACE
-  - IMPLEMENT_META_INTERFACE
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-02-27T16:11:26+08:00
 ---
 
 本博客Binder系列：
 
-1. [Binder简介](/android/week11-binder/)
-2. [Binder深入理解——以MediaService为例](/android/binder1-mediaservice/)，基于[Android深入浅出之Binder机制](http://www.cnblogs.com/innost/archive/2011/01/09/1931456.html)
-3. [Binder深入理解——罗老师系列](/android/binder2/)，基于[Android进程间通信（IPC）机制Binder简要介绍和学习计划](https://blog.csdn.net/luoshengyang/article/details/6618363)
+1. [Binder简介](/android/paid/zsxq/week11-binder/)
+2. [Binder深入理解——以MediaService为例](/android/framework/binder1-mediaservice/)，基于[Android深入浅出之Binder机制](http://www.cnblogs.com/innost/archive/2011/01/09/1931456.html)
+3. [Binder深入理解——罗老师系列](/android/framework/binder2/)，基于[Android进程间通信（IPC）机制Binder简要介绍和学习计划](https://blog.csdn.net/luoshengyang/article/details/6618363)
 
 ---
 
-本节内容源于[参考文献1——Android深入浅出之Binder机制](http://www.cnblogs.com/innost/archive/2011/01/09/1931456.html)，代码版本为[2.3.6](http://androidxref.com/2.3.6/)，摘抄部分代码略有删减。
-{: .notice--info }
+> 本节内容源于[参考文献1——Android深入浅出之Binder机制](http://www.cnblogs.com/innost/archive/2011/01/09/1931456.html)，代码版本为[2.3.6](http://androidxref.com/2.3.6/)，摘抄部分代码略有删减。
 
 MediaService的`main`函数如下：  
 **frameworks/base/media/mediaserver/main_mediaserver.cpp**
@@ -304,8 +279,7 @@ IPCThreadState* IPCThreadState::self()
 }
 ```
 
-[ThreadLocal的工作原理](/android/Android%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/#21-threadlocal%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86)
-{: .notice--info }
+[→Java层ThreadLocal的工作原理](/android/framework/Android%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/#21-threadlocal)
 
 我们找一下`pthread_setspecific`的地方，在构造函数中
 
@@ -675,7 +649,6 @@ status_t IPCThreadState::talkWithDriver(bool doReceive)
 那么，系统的另外一端肯定有个接收命令的。虽然`BnServiceManager`接收到了命令，但是并没有完成它应该干的的工作。`service_manager.c`干了这份工作，我们看看它就好了。  
 
 关于Service Manager更详细的内容，可以看2.2节。
-{: .notice--info }
 
 **frameworks/base/cmds/servicemanager/service_manager.c**
 
@@ -880,7 +853,7 @@ int do_add_service(struct binder_state *bs,
 
 同样，我们在上面已经看到了创建`MediaPlayerService`的过程，它继承至`BnMediaPlayerService`。那么，它也应该打开binder，然后进入loop状态。
 
-在[2.1.1 ProcessState](/android/week11-binder/#211-processstate)中，我们看到这里已经打开了binder。一个进程只需要打开binder一次就行了，接下来看看哪里有loop。
+在[ProcessState](#1-processstate)中，我们看到这里已经打开了binder。一个进程只需要打开binder一次就行了，接下来看看哪里有loop。
 
 在`main_mediaserver.cpp`文件中还有最后的两行代码没有分析，我们接着往下面分析。  
 
@@ -1264,7 +1237,6 @@ status_t BnMediaPlayerService::onTransact(
 **说明**：这里有点特殊，`startThreadPool`和`joinThreadPool`完后确实有两个线程：主线程和工作线程，而且都在做消息循环。  
 为什么要这么做呢？他们参数isMain都是true。不知道google搞什么。难道是怕一个线程工作量太多，所以搞两个线程来工作？这种解释应该也是合理的。  
 网上有人测试过把最后一句屏蔽掉，也能正常工作。但是难道主线程提出了，程序还能不退出吗？这个...管它的，反正知道有两个线程在那处理就行了。
-{: .notice--warning }
 
 **此外，看看`MediaPlayerClient`如何与`MediaPlayerService`进行交互。**   
 使用`MediaPlayerService`时，要先创建它的`BpMediaPlayerService`：  
@@ -1306,21 +1278,14 @@ IMediaDeathNotifier::getMediaPlayerService()
 ```
 
 Binder其实就是一个和binder设备打交道的接口，而上层IMediaPlayerService只不过把它当做一个类似socket使用罢了。  
-{: .notice--info }
 
 ## 11 小结  
 
-<figure style="width: 100%" class="align-center">
-    <img src="/assets/images/android/binder_service_manager_uml.png">
-    <figcaption>ServiceManager的UML类图</figcaption>
-</figure>
+![ServiceManager的UML类图](/assets/images/android/binder_service_manager_uml.png)
 
-整个MediaServer流程的简单描述如下图，[原图链接](https://www.processon.com/view/link/5c625e86e4b0fa03ceb037a8)  
+整个MediaServer流程的简单描述如下图：
 
-<figure style="width: 100%" class="align-center">
-    <img src="/assets/images/android/binder_mediaserver_progress.png">
-    <figcaption>MediaServer流程的简单描述</figcaption>
-</figure>
+[![MediaServer流程的简单描述](/assets/images/android/binder_mediaserver_progress.png)](/assets/images/android/binder_mediaserver_progress.png)
 
 - client调用service
   - client调用`defaultServiceManager->getService`获得一个binder，然后通过`interface_cast<IXxxService>(binder)`转换成对应的`BpXxxService`

@@ -41,7 +41,7 @@ last_modified_at: 2018-12-14T15:03:00+08:00
 
 开门见山，直接上本章成果。
 
-<iframe width="320" height="630" src="{{ base_path }}/assets/videos/flutter/flutter_chapter_01.mp4" frameborder="0" allowfullscreen></iframe>  
+<iframe width="320" height="630" src="/assets/videos/flutter/flutter_chapter_01.mp4" frameborder="0" allowfullscreen></iframe>  
 *底部导航栏以及Tab1 UI*
 
 本系列文章也会阶段性地release对应的apk供对照查看。apk都会发布在[release](https://github.com/YorekLiu/YLFlutterReady/releases)上。此外配合源码对应的tag一起食用，效果更加。      

@@ -1,23 +1,5 @@
 ---
 title: "进程保活"
-excerpt: "进程保活的方案"
-categories:
-  - Android
-tags:
-  - 知识星球
-  - 进程保活
-  - 进程优先级
-  - ProcessList
-  - OOM_ADJ
-  - startForeground
-  - Notification
-  - NotificationChannel
-  - JobScheduler
-  - JobService
-  - AccountManager
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-04-01T11:31:50+08:00
 ---
 
 进程保活方案就固定的几个，网上的资料基本都讲到了。
@@ -33,8 +15,8 @@ last_modified_at: 2019-04-01T11:31:50+08:00
 
 ### 1.1 进程优先级
 
-[Processes and Application Lifecycle](https://developer.android.com/guide/components/activities/process-lifecycle)
-{: .notice--info }
+!!! info
+    [Processes and Application Lifecycle](https://developer.android.com/guide/components/activities/process-lifecycle)
 
 进程的重要性程度依次为：
 
@@ -49,10 +31,7 @@ last_modified_at: 2019-04-01T11:31:50+08:00
 2. **可见进程**  
   正在执行用户可感知的任务，被杀死会将对用户体验产生明显的负影响。如果一个进程满足以下任一条件，即视为可见进程：
     - 拥有不在前台、但仍对用户可见的`Activity`（已调用其`onPause()`方法）。例如，如果前台`Activity`以对话框的形式显示出来，这样可以露出来上一个`Activity`，则有可能会发生这种情况。  
-    
-    例子的原文是***if the foreground Activity is displayed as a dialog that allows the previous Activity to be seen behind it***，本人觉得大部分翻译（包括官方中文）都不太准确，所以自行翻译了一下。
-    {: .notice--info }
-
+      > 例子的原文是 **if the foreground Activity is displayed as a dialog that allows the previous Activity to be seen behind it**，本人觉得大部分翻译（包括官方中文）都不太准确，所以自行翻译了一下。
     - 拥有通过`Service.startForeground()`方式来在前台服务运行的`Service`
     - 拥有一个系统用来提供用户有感的特别功能（比如动态壁纸，输入法服务等）的`Service`  
 3. **服务进程**  
@@ -60,19 +39,19 @@ last_modified_at: 2019-04-01T11:31:50+08:00
   已经运行了很长时间（例如30分钟或更长）的服务可能会降级，以允许其进程下降到下面描述的缓存LRU列表。这有助于避免非常长时间运行的服务出现内存泄漏或其他问题而占用大量RAM，进而导致系统无法有效使用缓存进程的情况。
 4. **缓存进程**  
   缓存进程是当前不需要的进程，因此当其他地方需要内存时，系统可以根据需要自由地终止进程。在正常运行的系统中，这些是内存管理中涉及的唯一过程：运行良好的系统将始终具有多个缓存进程（用于在应用程序之间进行更高效的切换），并根据需要定期终止最旧的进程。只有在非常关键（且不可取）的情况下，系统才会杀死所有缓存进程，并且必须开始杀死服务进程。  
-  **这些进程通常包含一个或多个当前对用户不可见的`Activity`实例（已调用并返回`onStop()`方法）**。如果他们正确地实现了他们的Activity生命周期，当系统杀死此类进程时，它不会影响用户返回该应用程序时的体验：它可以在新进程中重新创建相关Activity时恢复以前保存的状态。
+  **这些进程通常包含一个或多个当前对用户不可见的`Activity`实例（已调用并返回`onStop()`方法）**。如果他们正确地实现了他们的Activity生命周期，当系统杀死此类进程时，它不会影响用户返回该应用程序时的体验：它可以在新进程中重新创建相关Activity时恢复以前保存的状态。  
   这些进程保存在伪LRU列表中，列表中的最后一个进程是第一个被回收内存的进程。在此列表上排序的确切策略是平台的实现细节，但通常它会尝试在其他类型的进程之前保留更多有用的进程（用户的桌面程序所在的进程、用户看到的最后一个Activity所在的进程等）。还可以应用其他用于终止进程的策略：对允许的进程数量的硬限制，对进程可以持续缓存的时间量的限制等。
 
-在作者撰写该文章时，英文官网对于进程的重要性分类只有以上这四种，与中文官网的五种不同。英文官网中把中文官网里面的**后台进程**和**空进程**合并到了**缓存进程**中。  
-疑是中文版本没有及时更新：[进程生命周期](https://developer.android.com/guide/components/processes-and-threads.html#Lifecycle)，注意查看时在最下面把语言调整为中文，英文语言时这段内容是不可见的。
-{: .notice--info }
+!!! warning
+    在作者撰写该文章时，英文官网对于进程的重要性分类只有以上这四种，与中文官网的五种不同。英文官网中把中文官网里面的 **后台进程** 和 **空进程** 合并到了 **缓存进程** 中。  
+    疑是中文版本没有及时更新：[进程生命周期](https://developer.android.com/guide/components/processes-and-threads.html#Lifecycle)，注意查看时在最下面把语言调整为中文，英文语言时这段内容是不可见的。
 
 ### 1.2 进程回收策略
 
 上文谈到，进程有几种优先级，优先级越高越不容易被回收；越低越容易被回收。  
 这里的回收策略是Low Memory Killer机制，它是根据OOM_ADJ阈值级别触发相应力度的内存回收的机制。  
 
-关于OOM_ADJ常量的一些定义，在文件**frameworks/base/services/core/java/com/android/server/am/ProcessList.java**中，详细定义如下，后面还有简单表格：
+关于OOM_ADJ常量的一些定义，在文件 **frameworks/base/services/core/java/com/android/server/am/ProcessList.java** 中，详细定义如下，后面还有简单表格：
 
 ```java
 // Adjustment used in certain places where we don't know it yet.
@@ -167,13 +146,13 @@ static final int NATIVE_ADJ = -17;
 
 `ProcessList`中还有关于LMK的其他的一些定义（比如`PAGE_SIZE`、`MIN_CACHED_APPS`、`MAX_CACHED_APPS`等），这里不展开了。  
 在上面的这些OOM_ADJ中：
+
 - OOM_ADJ>=4，代表比较容易被杀死的Android进程
 - 0 <= OOM_ADJ <= 3，表示不容易被杀死的Android进程
 - 其他小于0的表示非Android进程，这些都是纯Linux进程
 
 上面这些数值是6.0源码里面的值，从7.0开始取值不一样了。但是优先级关系还是一致的。  
 see [7.0.0_r1_ProcessList.java](http://androidxref.com/7.0.0_r1/xref/frameworks/base/services/core/java/com/android/server/am/ProcessList.java#58)
-{: .notice--warning }
 
 可有通过shell查看进程的优先级：
 
@@ -212,10 +191,10 @@ m3note:/ # cat proc/6320/oom_adj
 
 此方式主要解决息屏后被系统杀死的情况。我们可以监听息屏和解锁的广播，在息屏时启动一个只有一个像素的透明Activity，此时应用就位于前台了，优先级为0。在解锁时将此Activity销毁。这样不会让用户感觉到流氓。  
 
-**关于息屏和解锁的广播：**在8.0开始，不能在manifest文件中声明这些广播，只能在代码中动态注册。所以，如果保活的Activity位于另外一个进程中，需要特别注意一下进程问题。  
-系统广播改动——[Changes to system broadcasts](https://developer.android.com/guide/components/broadcasts#changes-system-broadcasts)  
-可静态注册广播的列表——[Implicit Broadcast Exceptions](https://developer.android.com/guide/components/broadcast-exceptions)
-{: .notice--warning }
+!!! note "关于息屏和解锁的广播"
+    在8.0开始，不能在manifest文件中声明这些广播，只能在代码中动态注册。所以，如果保活的Activity位于另外一个进程中，需要特别注意一下进程问题。  
+    系统广播改动——[Changes to system broadcasts](https://developer.android.com/guide/components/broadcasts#changes-system-broadcasts)  
+    可静态注册广播的列表——[Implicit Broadcast Exceptions](https://developer.android.com/guide/components/broadcast-exceptions)
 
 在下面的代码中，由于保活的Activity位于`:live`进程中，所以导致receiver也在要此进程中进行动态注册，才能有效地管理保活Activity。于是在`:live`进程中新增了一个`Service`达到了此目的。
 
@@ -332,7 +311,7 @@ generic_x86:/ # cat proc/5201/oom_adj  # 锁屏时
 ### 2.2 带通知的前台Service
 
 将Service设置通过`startForeground`为前台，可以使整个进程变为前台进程。可以通过一些手段将通知栏通知取消掉，但在7.1及以后失效了。  
-另外在[前面](/android/week16-keep-app-alive/#%E8%BF%9B%E7%A8%8B%E5%9B%9E%E6%94%B6%E7%AD%96%E7%95%A5)提到，由于7.0源码的更新，进程优先级的值有了些许差别，但是整个优先级序列是没有改变的。
+另外在[前面](/android/paid/zsxq/week16-keep-app-alive/#12)提到，由于7.0源码的更新，进程优先级的值有了些许差别，但是整个优先级序列是没有改变的。
 
 在各版本模拟器上测的进程位于后台时的优先级如下：
 
@@ -418,54 +397,54 @@ class KeepLiveService : Service() {
 </manifest>
 ```
 
-此方法tinker也有在用：[TinkerPatchService#increasingPriority](https://github.com/Tencent/tinker/blob/master/tinker-android/tinker-android-lib/src/main/java/com/tencent/tinker/lib/service/TinkerPatchService.java#L159)
-{: .notice--success }
+!!! success
+    此方法tinker也有在用：[TinkerPatchService#increasingPriority](https://github.com/Tencent/tinker/blob/master/tinker-android/tinker-android-lib/src/main/java/com/tencent/tinker/lib/service/TinkerPatchService.java#L159)
 
 ## 3. 进程拉活
 
 1. 利用系统广播  
-   - 思想：在发生特定系统事件时，系统会发出响应的广播，通过“静态”注册对应的广播监听器，即可在发生响应事件时拉活。
-   - 适用范围：适用于全部Android平台
-   - 缺点：  
-      * 在前文中有提到，从8.0开始，很多广播只能在代码中动态注册，无法静态注册。也就是说，App被杀死后，无法接收到系统的广播了。
-      * 广播接收器被管理软件、系统软件通过“自启管理”等功能禁用的场景无法接收到广播，从而无法自启
-      * 系统广播事件不可控，只能保证发生事件时拉活进程，但无法保证进程挂掉后立即拉活
+    - 思想：在发生特定系统事件时，系统会发出响应的广播，通过“静态”注册对应的广播监听器，即可在发生响应事件时拉活。
+    - 适用范围：适用于全部Android平台
+    - 缺点：  
+        * 在前文中有提到，从8.0开始，很多广播只能在代码中动态注册，无法静态注册。也就是说，App被杀死后，无法接收到系统的广播了。
+        * 广播接收器被管理软件、系统软件通过“自启管理”等功能禁用的场景无法接收到广播，从而无法自启
+        * 系统广播事件不可控，只能保证发生事件时拉活进程，但无法保证进程挂掉后立即拉活
 2. 利用第三方应用广播
-   - 思想：与接收系统广播类似，此处接收第三方头部应用的广播，这时候是可以静态注册的。
-   - 适用范围：与系统广播一样。
-   - 缺点：
-      - 反编译分析过的第三方应用的多少
-      - 第三方应用的广播属于应用私有，当前版本中有效的广播，在后续版本随时就可能被移除或被改为不外发
+    - 思想：与接收系统广播类似，此处接收第三方头部应用的广播，这时候是可以静态注册的。
+    - 适用范围：与系统广播一样。
+    - 缺点：
+        - 反编译分析过的第三方应用的多少
+        - 第三方应用的广播属于应用私有，当前版本中有效的广播，在后续版本随时就可能被移除或被改为不外发
 3. 利用系统Service机制
-   - 思想：将`Service#onStartCommand`返回值设置为`START_STICKY`，利用系统在`Service`挂掉后会自动拉活。
-   - 缺点：
-      - Service第一次被异常杀死后很快被重启，第二次会比第一次慢，第三次又会比前一次慢，一旦在短时间内Service被杀死4-5次，则系统不再拉起。
-      - 进程被取得Root权限的管理工具或系统工具通过force stop掉，无法重启
+    - 思想：将`Service#onStartCommand`返回值设置为`START_STICKY`，利用系统在`Service`挂掉后会自动拉活。
+    - 缺点：
+        - Service第一次被异常杀死后很快被重启，第二次会比第一次慢，第三次又会比前一次慢，一旦在短时间内Service被杀死4-5次，则系统不再拉起。
+        - 进程被取得Root权限的管理工具或系统工具通过force stop掉，无法重启
 4. Native进程监听主进程的状态
-   - 思想：利用Linux中的`fork`机制创建Native进程，在Native进程中监控主进程的存活，当主进程挂掉后，在Native进程中立即对主进程进行拉活
-   - 适用范围：  
-   主要适用于Android 5.0以下版本手机。  
-   对于Android 5.0以上手机，系统虽然会将Native进程内的所有进程都杀死，这里其实就是系统“依次”杀死进程时间与拉活逻辑执行时间赛跑的问题，如果可以跑的比系统逻辑快，依然可以有效拉起。
-   - 方法实现挑战：
-      - 在Native进程中如何感知主进程死亡
-         1. 在Native进程中通过死循环或定时器，轮训判断主进程是否存活，档主进程不存活时进行拉活。该方案的很大缺点是不停的轮询执行判断逻辑，非常耗电。
-         2. 在主进程中创建一个监控文件，并且在主进程中持有文件锁。在拉活进程启动后申请文件锁将会被堵塞，一旦可以成功获取到锁，说明主进程挂掉，即可进行拉活。由于Android中的应用都运行于虚拟机之上，Java层的文件锁与Linux层的文件锁是不同的，要实现该功能需要封装Linux层的文件锁供上层调用。
-      - 在Native进程中如何拉活主进程  
-        通过am命令进行拉活。通过指定“--include-stopped-packages”参数来拉活主进程处于forestop状态的情况
-      - 如何保证Native进程的唯一  
-        从可扩展性和进程唯一等多方面考虑，将Native进程设计成C/S结构模式，主进程与Native进程通过`Localsocket`进行通信。在Native进程中利用Localsocket保证Native进程的唯一性，不至于出现创建多个Native进程以及Native进程变成僵尸进程等问题。
+    - 思想：利用Linux中的`fork`机制创建Native进程，在Native进程中监控主进程的存活，当主进程挂掉后，在Native进程中立即对主进程进行拉活
+    - 适用范围：  
+    主要适用于Android 5.0以下版本手机。  
+    对于Android 5.0以上手机，系统虽然会将Native进程内的所有进程都杀死，这里其实就是系统“依次”杀死进程时间与拉活逻辑执行时间赛跑的问题，如果可以跑的比系统逻辑快，依然可以有效拉起。
+    - 方法实现挑战：
+        - 在Native进程中如何感知主进程死亡
+            1. 在Native进程中通过死循环或定时器，轮训判断主进程是否存活，档主进程不存活时进行拉活。该方案的很大缺点是不停的轮询执行判断逻辑，非常耗电。
+            2. 在主进程中创建一个监控文件，并且在主进程中持有文件锁。在拉活进程启动后申请文件锁将会被堵塞，一旦可以成功获取到锁，说明主进程挂掉，即可进行拉活。由于Android中的应用都运行于虚拟机之上，Java层的文件锁与Linux层的文件锁是不同的，要实现该功能需要封装Linux层的文件锁供上层调用。
+        - 在Native进程中如何拉活主进程  
+          通过am命令进行拉活。通过指定“--include-stopped-packages”参数来拉活主进程处于forestop状态的情况
+        - 如何保证Native进程的唯一  
+          从可扩展性和进程唯一等多方面考虑，将Native进程设计成C/S结构模式，主进程与Native进程通过`Localsocket`进行通信。在Native进程中利用Localsocket保证Native进程的唯一性，不至于出现创建多个Native进程以及Native进程变成僵尸进程等问题。
 5. 双进程守护
-   - 思想：Service被系统杀死时会回调`ServiceConnection.onServiceDisconnected`方法。利用此原理，可以在两个进程中开启两个Service互绑。
-   - 适用范围：主要适用于Android 5.0以下版本手机。高版本中，双Service方案也改成了应用被杀，任何后台Service无法正常状态运行。
+    - 思想：Service被系统杀死时会回调`ServiceConnection.onServiceDisconnected`方法。利用此原理，可以在两个进程中开启两个Service互绑。
+    - 适用范围：主要适用于Android 5.0以下版本手机。高版本中，双Service方案也改成了应用被杀，任何后台Service无法正常状态运行。
 6. 利用JobScheduler机制
-   - 思想：5.0以后系统对native进程等加强了管理，native拉活方式失效。系统在Android 5.0以上版本提供了`JobScheduler`接口，系统会定时调用该进程以使应用进行一些逻辑操作。可以搭配前台Service技术提高进程优先级。
-   - 适用范围：主要适用于Android 5.0以上版本手机，7.0时候有一定影响（可以在电源管理中给APP授权）。该方案在Android 5.0以上版本中不受force stop影响，被强制停止的应用依然可以被拉活，在Android 5.0以上版本拉活效果非常好。仅在小米手机可能会出现有时无法拉活的问题。
+    - 思想：5.0以后系统对native进程等加强了管理，native拉活方式失效。系统在Android 5.0以上版本提供了`JobScheduler`接口，系统会定时调用该进程以使应用进行一些逻辑操作。可以搭配前台Service技术提高进程优先级。
+    - 适用范围：主要适用于Android 5.0以上版本手机，7.0时候有一定影响（可以在电源管理中给APP授权）。该方案在Android 5.0以上版本中不受force stop影响，被强制停止的应用依然可以被拉活，在Android 5.0以上版本拉活效果非常好。仅在小米手机可能会出现有时无法拉活的问题。
 7. 后台播放无声音频
-   - 思想：启动一个第3点的`START_STICKY` Service，且在`onDestory`方法中重启自身，然后在Service利用`MediaPlayer.setLooping(true)`循环播放音频。
-   - 使用范围：适用于7.0下手机。
+    - 思想：启动一个第3点的`START_STICKY` Service，且在`onDestory`方法中重启自身，然后在Service利用`MediaPlayer.setLooping(true)`循环播放音频。
+    - 使用范围：适用于7.0下手机。
 8. 利用账号同步机制
-   - 思想：Android系统的账号同步机制会定期同步账号进行，该方案目的在于利用同步机制进行进程的拉活。
-   - 适用范围：该方案适用于所有的Android版本，包括被force stop掉的进程也可以进行拉活。最新Android版本（Android N）中系统好像对账户同步这里做了变动，该方法不再有效。
+    - 思想：Android系统的账号同步机制会定期同步账号进行，该方案目的在于利用同步机制进行进程的拉活。
+    - 适用范围：该方案适用于所有的Android版本，包括被force stop掉的进程也可以进行拉活。最新Android版本（Android N）中系统好像对账户同步这里做了变动，该方法不再有效。
 
 ## 4. 其他策略
 

@@ -1,24 +1,8 @@
 ---
-excerpt: "Android中主线程、子线程的作用；除了Thread外还有那些可以扮演线程的角色，AsyncTask、IntentService、HandlerThread的版本差异、作用以及差别；ThreadPoolExecutor的作用"
-categories:
-  - Android
-tags:
-  - Thread
-  - AsyncTask
-  - IntentService
-  - HandlerThread
-  - ThreadPoolExecutor
-  - ThreadPool
-  - FixedThreadPool
-  - SingleThreadExecutor
-  - CachedThreadPool
-  - ScheduledThreadPool
-toc: true
-toc_label: "目录"
+title: "Android线程与线程池"
 ---
 
 本章代码基于Android 7.1。
-{: .notice--warning}
 
 ## 1 线程、线程池概述
 在Android中，线程分为主线程和子线程，主线程主要处理UI操作，耗时任务必须放在子线程中。
@@ -26,6 +10,7 @@ toc_label: "目录"
 除了Thread外，Android中扮演线程角色的还有很多，比如`AsyncTask`、`IntentService`，同时`HandlerThread`也是一种特殊的线程。对于`AsyncTask`，其底部用到了线程池，对于`IntentService`和`HandlerThread`来说，它们的底部直接使用了子线程。
 
 不同形式的线程虽然都是线程，但是它们具有不用的特点：
+
 - `AsyncTask`封装了线程池和Handler，它主要是为了开发者在子线程中更新UI。
 - `IntentService`是一个Service，系统使用了HandlerThread封装，这样可以方便的执行后台任务。当任务执行完成后，`IntentService`会自动退出。`IntentService`作用很像一个后台线程，但又因为它是一个Service，因此**不容易被系统杀死**从而尽量保证任务的执行；如果执行使用后台线程，由于这个时候没有活动的四大组件，那么这个进程的优先级会非常低，容易被系统杀死，这就是`IntentService`的特点。
 
@@ -324,7 +309,6 @@ public void run() {
 HandlerThread是一个常用的类，它在Android中一个具体的使用场景是IntentService。
 
 由于HandlerThread的run方法是一个无限循环，因此当明确不需要在使用HandlerThread时，可以通过它的`quit`或者`quitSafely`方法来终止线程的执行。
-{: .notice--warning}
 
 #### 2.3.2 IntentService
 
@@ -378,11 +362,11 @@ private final class ServiceHandler extends Handler {
 因为IntentService是通过`mServiceHandler.sendMessage(msg)`的方式来请求执行任务的，那么意味着IntentService也是顺序执行后台任务的，当有多个后台任务存在时，这些后台任务就会按照外界发起的顺序排队执行。
 
 同时需要注意，因为HandlerThread的Looper是子线程的，所以导致IntentService的`onHandleIntent`方法是运行在子线程中的。因此如果需要在上述方法中访问UI，注意线程的切换。
-{: .notice--warning}
 
 ## 3  Android中的线程池
 
 线程池的好处可以概括为一下三点：
+
 - 重用线程池中的线程，可以避免因为线程的创建和销毁带来的性能开销
 - 能有效控制线程池的最大并发数，避免大量的线程之间因为互相抢占系统资源而导致的阻塞现象
 - 能够对线程进行简单的管理，并提供定时执行以及指定间隔循环执行等功能
@@ -399,6 +383,7 @@ public ThreadPoolExecutor(int corePoolSize,
                           TimeUnit unit,
                           BlockingQueue<Runnable> workQueue)
 ```
+
 - corePoolSize  
 线程池的核心线程数。核心线程会一直存活，即使它们处于闲置状态，除非设置allowCoreThreadTimeOut
 - maximumPoolSize  
@@ -411,6 +396,7 @@ keepAliveTime参数的时间单位。常用的有MILLISECONDS、SECONDS、MINUTE
 线程池中任务队列。该队列将只保存通过`execute`方法提交的`Runnable`对象。
 
 ThreadPoolExecutor执行任务时大致遵循以下规则：
+
 1. 如果线程池中的线程数量未达到核心线程的数量，那么会直接启动一个核心线程来执行任务。
 2. 如果线程池中的线程数量已经达到或者超过了核心线程的数量，那么任务会被插入到队列中排队等待执行。
 3. 如果无法插入到队列中，这说明任务队列已满。这时候如果线程未达到线程池规定的最大值，那么会立刻启动一个非核心线程来执行任务。
@@ -461,73 +447,73 @@ public void execute(Runnable command) {
 注释和代码很清晰明白，不累述。
 
 ### 3.2 线程池的分类
+
 Android中常见四个线程池，它们分别是
+
 1. FixedThreadPool
 2. SingleThreadExecutor
 3. CachedThreadPool
 4. ScheduledThreadPool
 
 其创建方法在`Executors`里面。我们可以看一下它们的特点：
+
 - FixedThreadPool
 
-```java
-public static ExecutorService newFixedThreadPool(int nThreads) {
-    return new ThreadPoolExecutor(nThreads, nThreads,
-                                  0L, TimeUnit.MILLISECONDS,
-                                  new LinkedBlockingQueue<Runnable>());
-}
-```
-
-这是一个线程数量固定、队列大小没有限制的线程池。在任何时候，线程都将会被激活以处理任务。线程池中的线程不会停止直到调用`shutdown`。由于`FixedThreadPool`只有核心线程并且这些核心线程不会被回收，这意味着它能够更快速的响应外界的请求。
+    ```java
+    public static ExecutorService newFixedThreadPool(int nThreads) {
+        return new ThreadPoolExecutor(nThreads, nThreads,
+                                      0L, TimeUnit.MILLISECONDS,
+                                      new LinkedBlockingQueue<Runnable>());
+    }
+    ```
+    
+    这是一个线程数量固定、队列大小没有限制的线程池。在任何时候，线程都将会被激活以处理任务。线程池中的线程不会停止直到调用`shutdown`。由于`FixedThreadPool`只有核心线程并且这些核心线程不会被回收，这意味着它能够更快速的响应外界的请求。
 
 - SingleThreadExecutor
 
-```java
-public static ExecutorService newSingleThreadExecutor() {
-    return new FinalizableDelegatedExecutorService
-        (new ThreadPoolExecutor(1, 1,
-                                0L, TimeUnit.MILLISECONDS,
-                                new LinkedBlockingQueue<Runnable>()));
-}
-```
-
-这是一个单一线程、队列大小没有限制的线程池。其内部只有一个线程，可以确保所有任务都在同一个线程中按顺序执行。`SingleThreadExecutor`的意义在于统一外界任务到一个线程中，这使得这些任务之间不需要处理线程同步问题。
+    ```java
+    public static ExecutorService newSingleThreadExecutor() {
+        return new FinalizableDelegatedExecutorService
+            (new ThreadPoolExecutor(1, 1,
+                                    0L, TimeUnit.MILLISECONDS,
+                                    new LinkedBlockingQueue<Runnable>()));
+    }
+    ```
+    
+    这是一个单一线程、队列大小没有限制的线程池。其内部只有一个线程，可以确保所有任务都在同一个线程中按顺序执行。`SingleThreadExecutor`的意义在于统一外界任务到一个线程中，这使得这些任务之间不需要处理线程同步问题。
 
 - CachedThreadPool
 
-```java
-public static ExecutorService newCachedThreadPool() {
-    return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
-                                  60L, TimeUnit.SECONDS,
-                                  new SynchronousQueue<Runnable>());
-}
-```
+    ```java
+    public static ExecutorService newCachedThreadPool() {
+        return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                                      60L, TimeUnit.SECONDS,
+                                      new SynchronousQueue<Runnable>());
+    }
+    ```
+    
+    这是一个线程数量不定的线程池，他只有非核心线程，并且其最大线程数为`Integer.MAX_VALUE`。线程池中的空闲线程都有超时机制，这个超时时常为60s，超过这个时间的闲置线程就会被回收。`CachedThreadPool`的任务队列可以简单的理解为一个无法存储元素的队列，因此这将导致任何任务都会立刻执行。
 
-这是一个线程数量不定的线程池，他只有非核心线程，并且其最大线程数为`Integer.MAX_VALUE`。线程池中的空闲线程都有超时机制，这个超时时常为60s，超过这个时间的闲置线程就会被回收。`CachedThreadPool`的任务队列可以简单的理解为一个无法存储元素的队列，因此这将导致任何任务都会立刻执行。
-
-从其特性来看，这类线程池适合执行大量耗时较少的任务。当整个线程池处理闲置状态时，线程池中的线程都会因为超时而被停止，这个时候`CachedThreadPool`之中实际上是没有线程的，它几乎不占用任何系统资源。
+    从其特性来看，这类线程池适合执行大量耗时较少的任务。当整个线程池处理闲置状态时，线程池中的线程都会因为超时而被停止，这个时候`CachedThreadPool`之中实际上是没有线程的，它几乎不占用任何系统资源。
 
 - ScheduledThreadPool
 
-```java
-private static final long DEFAULT_KEEPALIVE_MILLIS = 10L;
-
-public static ScheduledExecutorService newScheduledThreadPool(int corePoolSize) {
-    return new ScheduledThreadPoolExecutor(corePoolSize);
-}
-
-public ScheduledThreadPoolExecutor(int corePoolSize) {
-    super(corePoolSize, Integer.MAX_VALUE,
-          DEFAULT_KEEPALIVE_MILLIS, MILLISECONDS,
-          new DelayedWorkQueue());
-}
-```
-
-这是一个核心线程数量固定、非核心线程数量没有限制、非核心线程闲置时间10s的线程池。此类线程池主要用于执行定时任务和具有固定周期的重复任务。
+    ```java
+    private static final long DEFAULT_KEEPALIVE_MILLIS = 10L;
+    
+    public static ScheduledExecutorService newScheduledThreadPool(int corePoolSize) {
+        return new ScheduledThreadPoolExecutor(corePoolSize);
+    }
+    
+    public ScheduledThreadPoolExecutor(int corePoolSize) {
+        super(corePoolSize, Integer.MAX_VALUE,
+              DEFAULT_KEEPALIVE_MILLIS, MILLISECONDS,
+              new DelayedWorkQueue());
+    }
+    ```
+    
+    这是一个核心线程数量固定、非核心线程数量没有限制、非核心线程闲置时间10s的线程池。此类线程池主要用于执行定时任务和具有固定周期的重复任务。
 
 ### 3.3 线程池线程复用原理
 
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/android/thread_reuse.png">
-    <figcaption>线程复用原理</figcaption>
-</figure>
+![线程复用原理](/assets/images/android/thread_reuse.png)

@@ -1,20 +1,19 @@
 ---
 title: "Android神兵利器"
-excerpt: "在各种工具中的一些技巧，有助于装逼以及提升战斗力"
-categories:
-  - Android
-toc: true
-toc_label: "目录"
 ---
 
 ## 大部分IDE
+
 减少缩进  ⌘ + [
+
 增加缩进  ⌘ + ]
 
 - - -
 
 ## vim
+
 提交时删除修改文件前面的#
+
 1. 光标移动到需要删除#的第一行 ESC
 2. Ctrl + V
 3. Shift + G
@@ -102,21 +101,22 @@ TASK com.yorek.yltodo id=408
       mCurState=5 mStateSaved=false mDestroyed=false
 ```
 
-> 第一行的*TASK*就是前台任务栈的名称，第二行的*ACTIVITY*就是前台activity的名称
+> 第一行的 *TASK* 就是前台任务栈的名称，第二行的 *ACTIVITY* 就是前台activity的名称
 
-查看页面布局需要用到sdk里面的工具，*MacOS*平台是`sdk/tools/bin/uiautomatorviewer`这个工具
+查看页面布局需要用到sdk里面的工具， *MacOS* 平台是`sdk/tools/bin/uiautomatorviewer`这个工具
 
 ```shell
 yorek@yoreks-mbp:~/Library/Android/sdk/tools/bin$ ./uiautomatorviewer
 ```
+
 在`bin`目录下通过脚本的调用方式调用即可。
 
 step 1: 点击界面左上角第二个按钮，进入分析界面  
-![step1]({{ basepath }}/assets/images/android/tools-uiautomator.png){: .align-center}
+![step1](/assets/images/android/tools-uiautomator.png)
 这四个按钮分别是打开、设备截图、压缩的设备截图、保存
 
 step 2: 在左侧的操作页面选择感兴趣的控件，右边会出现其对应的信息
-![step2]({{ basepath }}/assets/images/android/tools-uiautomator2.png){: .align-center}
+![step2](/assets/images/android/tools-uiautomator2.png)
 
 ## 性能优化常用工具
 
@@ -127,8 +127,8 @@ Android Studio Profiler集成了：
 Memory Profiler -> dump heap (MAT、AS)、Allocation Tracker  
 CPU Profiler -> Systrace、TraceView
 
-TODO: 补充具体案例
-{: .notice--warning }
+!!! danger
+    TODO: 补充具体案例
 
 ## bugreport
 
@@ -143,4 +143,3 @@ java -jar chkbugreport.jar log/bugreport-NMF26X-2019-12-30-10-36-35.txt # 解析
 上面日志文件解析完毕后，会生成一个log/bugreport-NMF26X-2019-12-30-10-36-35_out的文件夹，打开里面的index.html文件即可。
 
 chkbugreport是Sony的一个开源项目，地址如下：[https://github.com/sonyxperiadev/ChkBugReport](https://github.com/sonyxperiadev/ChkBugReport)
-{: .notice--info }

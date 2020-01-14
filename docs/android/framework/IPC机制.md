@@ -1,26 +1,5 @@
 ---
 title: "IPC机制"
-excerpt: "Android中的多进程模式、Serializable接口、Parcelable接口、Binder的Java层工作原理、Android中常见的IPC方式(Messenger、AIDL等)以及用于多Service的Binder连接池"
-header:
-  teaser: /assets/images/android/Binder工作机制.png
-  overlay_image: /assets/images/android/Binder工作机制.png
-  overlay_filter: 0.5
-categories:
-  - Android
-tags:
-  - IPC
-  - process
-  - Serializable
-  - Parcelable
-  - Binder
-  - Messenger
-  - AIDL
-  - ContentProvider
-  - Socket
-  - Binder连接池
-  - oneway
-toc: true
-toc_label: "目录"
 ---
 
 ## 1 Android IPC简介
@@ -117,7 +96,7 @@ Parcelable主要用在内存序列化上，但是通过Parcelable可以将对象
 
 `writeToParcel`，其中flags有两种值：0和1。当为1时，当前对象需要作为返回值返回，不能立即释放资源，几乎所有的情况都返回0。
 
-> Android Studio可以下载**Android Parcelable code generator**插件辅助完成序列化接口的书写。  
+> Android Studio可以下载 **Android Parcelable code generator** 插件辅助完成序列化接口的书写。  
 > Kotlin语言在配置好之后可以通过`@Parcelize`注解直接生成辅助代码。  
 
 ### 3.3 Binder
@@ -263,24 +242,24 @@ public interface IBookManager extends android.os.IInterface {
 下面介绍这两个类的每个方法的含义：
 
 - Stub
-  * DESCRIPTOR  
-    Binder的唯一标识，一般用当前Binder的完整类名。
-  * asInterface(android.os.IBinder obj)  
-    用户将服务器的Binder对象转换成客户端所需要的AIDL接口类型的对象。这种转换是区分进程的，如果客户端和服务器端位于同一进程，那么返回的就是服务器端的Stub本身，否则是封装后的Stub.proxy代理对象。
-  * asBinder  
-    返回当前Binder对象
-  * onTransact   
-    该方法会由`Proxy`中对应的功能函数(如上面`basicTypes `)调用，`IBinder`接口的具体实现者`Binder`的`transact`方法会调用`onTransact`方法，并返回boolean结果。该方法运行在服务端中的`Binder`线程池中。  
-    > 如果此方法返回false，那么客户端的请求会失败，因此我们可以利用这个特性来做权限验证。
+    * DESCRIPTOR  
+      Binder的唯一标识，一般用当前Binder的完整类名。
+    * asInterface(android.os.IBinder obj)  
+      用户将服务器的Binder对象转换成客户端所需要的AIDL接口类型的对象。这种转换是区分进程的，如果客户端和服务器端位于同一进程，那么返回的就是服务器端的Stub本身，否则是封装后的Stub.proxy代理对象。
+    * asBinder  
+      返回当前Binder对象
+    * onTransact   
+      该方法会由`Proxy`中对应的功能函数(如上面`basicTypes `)调用，`IBinder`接口的具体实现者`Binder`的`transact`方法会调用`onTransact`方法，并返回boolean结果。该方法运行在服务端中的`Binder`线程池中。  
+      > 如果此方法返回false，那么客户端的请求会失败，因此我们可以利用这个特性来做权限验证。
 
 - Proxy
-  * basicTypes
-    该方法运行在客户端。内部实现：
-    1. 创建方法所需的输入型Parcel对象_data、输出型Parcel对象_reply，如果有返回值还会创建返回值对象_result
-    2. 先向_data中写入Binder的标识`DESCRIPTOR`，然后写入方法的参数
-    3. 调用`transact`发起PRC(Remote Procedure Calls，远程过程调用)，同时挂起当前线程。
-    4. 客户端的`onTransact`方法调用，PRC返回后，当前线程继续执行，从_reply中读取PRC返回结果，若有返回值，继续读取返回值
-    5. 回收_data、_reply，如果有返回值，返回_result
+    * basicTypes  
+      该方法运行在客户端。内部实现：
+        1. 创建方法所需的输入型Parcel对象_data、输出型Parcel对象_reply，如果有返回值还会创建返回值对象_result
+        2. 先向_data中写入Binder的标识`DESCRIPTOR`，然后写入方法的参数
+        3. 调用`transact`发起PRC(Remote Procedure Calls，远程过程调用)，同时挂起当前线程。
+        4. 客户端的`onTransact`方法调用，PRC返回后，当前线程继续执行，从_reply中读取PRC返回结果，若有返回值，继续读取返回值
+        5. 回收_data、_reply，如果有返回值，返回_result
 
 需要注意两点：  
 
@@ -453,10 +432,11 @@ D/MessengerActivity: handleMessage: receive msg from Server : code = 0x0002, dat
 
 ### 4.4 使用AIDL
 
-[Android Interface Definition Language (AIDL)](https://developer.android.com/guide/components/aidl)
-{: .notice--info }
+!!! info
+    [Android Interface Definition Language (AIDL)](https://developer.android.com/guide/components/aidl)
 
-创建一个使用AIDL的绑定状态的Service，有以下几步
+创建一个使用AIDL的绑定状态的Service，有以下几步  
+
 1. 创建.aidl文件  
 该文件定义了具有方法签名的程序接口。
 2. 实现接口  
@@ -464,20 +444,17 @@ Android SDK工具会基于.aidl文件自动生成一个Java实现的接口文件
 3. 将接口暴露给客户端  
 实现Service，重写`onBind`方法，返回`Stub`类的实例。
 
-**注意**: 在第一次release后，AIDL接口的任何修改都必须能够向后兼容，这样能够避免破坏其他使用该Service的应用程序。也就是说，因为.aidl文件必须复制至其他应用为了能够使用我们的Service的接口，我们必须维护好原始接口。
-{: .notice--success }
+!!! warning
+    **注意**: 在第一次release后，AIDL接口的任何修改都必须能够向后兼容，这样能够避免破坏其他使用该Service的应用程序。也就是说，因为.aidl文件必须复制至其他应用为了能够使用我们的Service的接口，我们必须维护好原始接口。
 
 注意：**只有允许不同应用的客户端用IPC方式访问服务，并且想要在服务中处理多线程时，才有必要使用AIDL**。如果不需要执行跨越不同应用的并发IPC，就应该通过[bind service](https://developer.android.com/guide/components/bound-services.html#Binder)的方式创建接口；或者，如果您想执行IPC，但根本不需要处理多线程，则使用`Messenger`类来实现接口。无论如何，在实现AIDL之前，请您务必理解[绑定的服务](https://developer.android.com/guide/components/bound-services.html)。
-{: .notice--success }
 
-AIDL默认是同步调用还是异步调用？怎么指定调用为异步调用？  
-{: .notice--question }
-
-**默认都是同步调用，可以使用**`oneway`**关键词指定远程调用为异步调用**。  
-在开始设计AIDL接口之前，请注意对AIDL接口的调用是直接函数调用。你不应该对发生调用的线程做出假设。情况会有所不同，具体取决于调用是来自本地进程中的线程还是来自远程进程。特别的：
-1. 从本地进程进行的调用执行在进行调用的同一线程中。如果这是您的UI线程，则AIDL接口继续在UI线程中执行。如果它是另一个线程，那就是在Service的子线程中执行代码。因此，如果只有本地线程正在访问该服务，你可以完全控制在哪些线程中执行（但如果是这种情况，那么你根本不应该使用AIDL，而应该通过[bind service](https://developer.android.com/guide/components/bound-services.html#Binder)方式来创建接口）。
-2. 来自远程进程的调用将从平台在自己的进程内维护的线程池中进行调度。你必须为来自未知线程的调用做好准备，此时可能同时发生多个调用。换句话说，AIDL接口的实现必须完全是线程安全的。从同一远程对象上的一个线程上进行的调用会按顺序到达接收端。
-3. `oneway`关键字可以修改远程调用的行为。使用它时，远程调用不会阻塞；它只是发送事务数据并立即返回。接口的实现最终接受来自`Binder`线程池的常规调用，以普通的远程调用的方式。如果`oneway`用作本地调用，则没有影响，调用仍然是同步的。
+???+ "AIDL默认是同步调用还是异步调用？怎么指定调用为异步调用？"
+    **默认都是同步调用，可以使用**`oneway`**关键词指定远程调用为异步调用**。  
+    在开始设计AIDL接口之前，请注意对AIDL接口的调用是直接函数调用。你不应该对发生调用的线程做出假设。情况会有所不同，具体取决于调用是来自本地进程中的线程还是来自远程进程。特别的：  
+    1. 从本地进程进行的调用执行在进行调用的同一线程中。如果这是您的UI线程，则AIDL接口继续在UI线程中执行。如果它是另一个线程，那就是在Service的子线程中执行代码。因此，如果只有本地线程正在访问该服务，你可以完全控制在哪些线程中执行（但如果是这种情况，那么你根本不应该使用AIDL，而应该通过[bind service](https://developer.android.com/guide/components/bound-services.html#Binder)方式来创建接口）。  
+    2. 来自远程进程的调用将从平台在自己的进程内维护的线程池中进行调度。你必须为来自未知线程的调用做好准备，此时可能同时发生多个调用。换句话说，AIDL接口的实现必须完全是线程安全的。从同一远程对象上的一个线程上进行的调用会按顺序到达接收端。  
+    3. `oneway`关键字可以修改远程调用的行为。使用它时，远程调用不会阻塞；它只是发送事务数据并立即返回。接口的实现最终接受来自`Binder`线程池的常规调用，以普通的远程调用的方式。如果`oneway`用作本地调用，则没有影响，调用仍然是同步的。
 
 #### 4.4.1 创建.aidl文件
 
@@ -511,7 +488,6 @@ AIDL默认是同步调用还是异步调用？怎么指定调用为异步调用�
 
 以上6点是根据英文版翻译。  
 官方中文版本为第1、2、3条加上第4条「只支持方法；您不能公开 AIDL 中的静态字段。」
-{: .notice--warning }
 
 #### 4.4.2 实现接口
 
@@ -528,9 +504,9 @@ private final IRemoteService.Stub mBinder = new IRemoteService.Stub() {
 };
 ```
 
-> 实现接口时，有以下几条规则需要注意：
-> 1. AIDL是在服务端的Binder线程池中执行的，因此多个客户端同时访问时，需要处理好线程同步问题并保证线程安全。
-> 2. 默认情况下，RPC是同步的。如果service处理请求可能耗时的话，不要在Activity的主线程调用，这可能会导致ANR。客户端请求应该总是在子线程调用。
+> 实现接口时，有以下几条规则需要注意：  
+> 1. AIDL是在服务端的Binder线程池中执行的，因此多个客户端同时访问时，需要处理好线程同步问题并保证线程安全。  
+> 2. 默认情况下，RPC是同步的。如果service处理请求可能耗时的话，不要在Activity的主线程调用，这可能会导致ANR。客户端请求应该总是在子线程调用。  
 > 3. 抛出的异常不会发送给调用者。
 
 #### 4.4.3 暴露接口给客户端
@@ -555,9 +531,9 @@ private ServiceConnection mConnection = new ServiceConnection() {
 };
 ```
 
-**AIDL权限验证的两种方式:**
-1. 在`onBind`中验证，验证失败返回null。这样客户端无法绑定服务。
-2. 在`Stub`中的`onTransact`方法中验证，验证失败返回false。这样服务端不会执行AIDL中的方法从而可以达到效果。
+**AIDL权限验证的两种方式:**  
+1. 在`onBind`中验证，验证失败返回null。这样客户端无法绑定服务。  
+2. 在`Stub`中的`onTransact`方法中验证，验证失败返回false。这样服务端不会执行AIDL中的方法从而可以达到效果。  
 
 #### 4.4.4 例子
 
@@ -636,12 +612,11 @@ E/AIDLActivity: onServiceConnected: thread = main name = ComponentInfo{yorek.dem
 E/AIDLActivity: reply = hello world
 ```
 
-客户端与服务端双向通信的例子，可以查看[跨进程EventBus](/android/eventbus/#3-%E8%B7%A8%E8%BF%9B%E7%A8%8Beventbus)的实现
-{: .notice--info }
+客户端与服务端双向通信的例子，可以查看[跨进程EventBus](/android/3rd-library/eventbus/#3-eventbus)的实现
 
 ### 4.5 使用ContentProvider
 和Messenger一样，ContentProvider底层实现同样也是Binder，但是使用过程比AIDL要简单的多。ContentProvider的具体类型可以查看
-另一篇文章[Android四大组件(4)](/android/android%20sdk/Android四大组件(4)/)
+另一篇文章[Android四大组件(4)](/android/framework/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6(4)/)
 
 ### 4.6 使用Socket
 在服务端的Service里面使用`ServerSocket`来接收客户端的请求。在客户端使用`Socket`发送请求。通过I/O流发送、接收信息。这主要是Java知识了，不多做介绍。
@@ -654,146 +629,146 @@ Binder连接池不是Binder线程池。Binder连接池的作用是将各个业�
 
 创建一个Binder连接池有以下三步  
 
-1.为Binder连接池新建IBinderPool.aidl
-```java
-// IBinderPool.aidl
-package yorek.demoandtest.ipc.binderpool;
-
-interface IBinderPool {
-    IBinder queryBinder(int binderCode);
-}
-```
-
-2.为Binder连接池创建远程Service并实现IBinderPool(`IBinderPool.Stub`可以放到Binder连接池具体实现中，因此此处可以直接创建连接池中的Stub类)。  
-当Binder连接池连接上远程服务时，会根据不同的binderCode返回不同的Binder对象，通过这个BInder对象所执行的操作全部发生在远程Service中。
-```java
-public class BinderPoolService extends Service {
-    public static final String TAG = "BinderPoolService";
-
-    private Binder mBinderPool = new BinderPool.BinderPoolImpl();
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        Log.d(TAG, "onBind: ");
-        return mBinderPool;
+1. 为Binder连接池新建IBinderPool.aidl
+    ```java
+    // IBinderPool.aidl
+    package yorek.demoandtest.ipc.binderpool;
+    
+    interface IBinderPool {
+        IBinder queryBinder(int binderCode);
     }
-}
-```
+    ```
 
-3.实现Binder连接池
-```java
-public class BinderPool {
-    public static final String TAG = "BinderPool";
-
-    public static final int BINDER_NONE = -1;
-    public static final int BINDER_JOB_ONE = 0;
-    public static final int BINDER_JOB_TWO = 1;
-
-    private Context mContext;
-    private IBinderPool mBinderPool;
-    private static volatile BinderPool sInstance;
-    private CountDownLatch mCountDownLatch;
-
-    private ServiceConnection mBinderPoolConnection = new ServiceConnection() {
+2. 为Binder连接池创建远程Service并实现IBinderPool(`IBinderPool.Stub`可以放到Binder连接池具体实现中，因此此处可以直接创建连接池中的Stub类)。  
+    当Binder连接池连接上远程服务时，会根据不同的binderCode返回不同的Binder对象，通过这个BInder对象所执行的操作全部发生在远程Service中。
+    ```java
+    public class BinderPoolService extends Service {
+        public static final String TAG = "BinderPoolService";
+    
+        private Binder mBinderPool = new BinderPool.BinderPoolImpl();
+    
         @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            mBinderPool = IBinderPool.Stub.asInterface(service);
+        public IBinder onBind(Intent intent) {
+            Log.d(TAG, "onBind: ");
+            return mBinderPool;
+        }
+    }
+    ```
+
+3. 实现Binder连接池
+    ```java
+    public class BinderPool {
+        public static final String TAG = "BinderPool";
+    
+        public static final int BINDER_NONE = -1;
+        public static final int BINDER_JOB_ONE = 0;
+        public static final int BINDER_JOB_TWO = 1;
+    
+        private Context mContext;
+        private IBinderPool mBinderPool;
+        private static volatile BinderPool sInstance;
+        private CountDownLatch mCountDownLatch;
+    
+        private ServiceConnection mBinderPoolConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                mBinderPool = IBinderPool.Stub.asInterface(service);
+                try {
+                    mBinderPool.asBinder().linkToDeath(mBindPoolDeathRecipient, 0);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+    
+                mCountDownLatch.countDown();
+            }
+    
+            @Override
+            public void onServiceDisconnected(ComponentName name) {}
+        };
+        private IBinder.DeathRecipient mBindPoolDeathRecipient = new IBinder.DeathRecipient() {
+            @Override
+            public void binderDied() {
+                Log.w(TAG, "[binderDied] binder died.");
+                mBinderPool.asBinder().unlinkToDeath(mBindPoolDeathRecipient, 0);
+                mBinderPool = null;
+    
+                connectBinderPoolService();
+            }
+        };
+    
+        private BinderPool(Context context) {
+            mContext = context.getApplicationContext();
+            connectBinderPoolService();
+        }
+    
+        public static BinderPool getInstance(Context context) {
+            if (sInstance == null) {
+                synchronized (BinderPool.class) {
+                    if (sInstance == null) {
+                        sInstance = new BinderPool(context);
+                    }
+                }
+            }
+    
+            return sInstance;
+        }
+    
+        private synchronized void connectBinderPoolService() {
+            mCountDownLatch = new CountDownLatch(1);
+            Intent service = new Intent(mContext, BinderPoolService.class);
+            mContext.bindService(service, mBinderPoolConnection, Context.BIND_AUTO_CREATE);
+    
             try {
-                mBinderPool.asBinder().linkToDeath(mBindPoolDeathRecipient, 0);
+                mCountDownLatch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    
+        public IBinder queryBinder(int binderCode) {
+            IBinder binder = null;
+            try {
+                if (mBinderPool != null) {
+                    binder = mBinderPool.queryBinder(binderCode);
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
-
-            mCountDownLatch.countDown();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {}
-    };
-    private IBinder.DeathRecipient mBindPoolDeathRecipient = new IBinder.DeathRecipient() {
-        @Override
-        public void binderDied() {
-            Log.w(TAG, "[binderDied] binder died.");
-            mBinderPool.asBinder().unlinkToDeath(mBindPoolDeathRecipient, 0);
-            mBinderPool = null;
-
-            connectBinderPoolService();
-        }
-    };
-
-    private BinderPool(Context context) {
-        mContext = context.getApplicationContext();
-        connectBinderPoolService();
-    }
-
-    public static BinderPool getInstance(Context context) {
-        if (sInstance == null) {
-            synchronized (BinderPool.class) {
-                if (sInstance == null) {
-                    sInstance = new BinderPool(context);
-                }
-            }
-        }
-
-        return sInstance;
-    }
-
-    private synchronized void connectBinderPoolService() {
-        mCountDownLatch = new CountDownLatch(1);
-        Intent service = new Intent(mContext, BinderPoolService.class);
-        mContext.bindService(service, mBinderPoolConnection, Context.BIND_AUTO_CREATE);
-
-        try {
-            mCountDownLatch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public IBinder queryBinder(int binderCode) {
-        IBinder binder = null;
-        try {
-            if (mBinderPool != null) {
-                binder = mBinderPool.queryBinder(binderCode);
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-
-        return binder;
-    }
-
-    public static class BinderPoolImpl extends IBinderPool.Stub {
-        @Override
-        public IBinder queryBinder(int binderCode) throws RemoteException {
-            IBinder binder = null;
-
-            switch (binderCode) {
-                case BINDER_JOB_ONE:
-                    // binder = new SecurityCenterImpl();
-                    break;
-
-                case BINDER_JOB_TWO:
-                    // binder = new ComputeImpl();
-                    break;
-
-                default:
-            }
-
+    
             return binder;
         }
+    
+        public static class BinderPoolImpl extends IBinderPool.Stub {
+            @Override
+            public IBinder queryBinder(int binderCode) throws RemoteException {
+                IBinder binder = null;
+    
+                switch (binderCode) {
+                    case BINDER_JOB_ONE:
+                        // binder = new SecurityCenterImpl();
+                        break;
+    
+                    case BINDER_JOB_TWO:
+                        // binder = new ComputeImpl();
+                        break;
+    
+                    default:
+                }
+    
+                return binder;
+            }
+        }
     }
-}
-```
+    ```
 
-具体使用:
-```java
-private void doWork() {
-        BinderPool binderPool = BinderPool.getInstance(this);
-        IBinder jobOneBinder = binderPool.queryBinder(BinderPool.BINDER_JOB_ONE);
-        //ISecurityCenter mSecurityCenterImpl =
-        //        (ISecurityCenter) SecurityCenterImpl.asInterface(jobOneBinder);
-    }
-```
-在获取Binder连接池实例时，如果是第一次获取会执行`connectBinderPoolService`方法绑定到远程Service中，远程Service中运行着`BinderPool.Stub`实例。  
-注意，使用连接池时需要在额外的线程中使用，这是因为在Binder连接池中，我们通过`CountDownLatch`将`bindService`这一异步操作转换成了同步操作，这就意味着它可能是耗时的，加上**Binder方法的调用过程也可能是耗时的**，因此不建议放到主线程中。
+4. 具体使用:
+    ```java
+    private void doWork() {
+            BinderPool binderPool = BinderPool.getInstance(this);
+            IBinder jobOneBinder = binderPool.queryBinder(BinderPool.BINDER_JOB_ONE);
+            //ISecurityCenter mSecurityCenterImpl =
+            //        (ISecurityCenter) SecurityCenterImpl.asInterface(jobOneBinder);
+        }
+    ```
+    在获取Binder连接池实例时，如果是第一次获取会执行`connectBinderPoolService`方法绑定到远程Service中，远程Service中运行着`BinderPool.Stub`实例。  
+    注意，使用连接池时需要在额外的线程中使用，这是因为在Binder连接池中，我们通过`CountDownLatch`将`bindService`这一异步操作转换成了同步操作，这就意味着它可能是耗时的，加上 **Binder方法的调用过程也可能是耗时的** ，因此不建议放到主线程中。

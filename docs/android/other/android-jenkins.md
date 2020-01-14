@@ -1,14 +1,5 @@
 ---
 title: "Jenkins for android"
-excerpt: "使用Jenkins为android客户端进行CI"
-categories:
-  - Android
-tags:
-  - Jenkins
-  - CI
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-08-18T11:19:00+08:00
 ---
 
 Jenkins在CentOS以及MacOS上搭建了好几次，遇到了一些问题。这里主要记录MacOS上的搭建过程。
@@ -23,7 +14,7 @@ Jenkins在CentOS以及MacOS上搭建了好几次，遇到了一些问题。这�
 
 ### 1.1 下载tomcat
 
-tomcat版本为*8.5.32*  
+tomcat版本为 *8.5.32*  
 下载地址：[https://tomcat.apache.org/download-80.cgi](https://tomcat.apache.org/download-80.cgi)  
 选择8.5.32 -> Binary Distributions -> Core -> tar.gz
 
@@ -56,7 +47,7 @@ sudo ln -s /Library/Tomcat/bin/shutdown.sh .
 前往[https://jenkins.io/download/](https://jenkins.io/download/)  
 选择下载 Long-term Support (LTS) ->  Download Jenkins 2.121.2 for -> Generic Java package (.war)  
 最后我们会得到一个jenkins.war文件  
-显然，笔者的版本是*2.121.2*  
+显然，笔者的版本是 *2.121.2*  
 
 下载完成后，需要将`jenkins.war`复制到Tomcat的`webapps`下面。
 
@@ -122,12 +113,13 @@ git是内置的，不需要管。
 新建一个名为`test`的`Freestyle project`的项目。如果要复制其他项目的配置，可以Copy from 项目名。  
 ![jenkins_new_freestyle](/assets/images/android/jenkins_new_freestyle.png)  
 
-具体配置截图如下(新tab打开，查看大图)  
-![jenkins_item_config](/assets/images/android/jenkins_item_config.png)
+具体配置截图如下
+[![jenkins_item_config](/assets/images/android/jenkins_item_config.png)](/assets/images/android/jenkins_item_config.png)
 
 ### 3.1 General -> This project is parameterized
 
 此部分参数会在执行编译命令时传递给Android项目  
+
 - `APP_NAME`  
 **需要在项目gradle.properties中配置**，打包归档时会归档到对应的目录下  
 - `GIT_TAG`  

@@ -1,24 +1,8 @@
 ---
-excerpt: "Android的消息机制指Handler的运行机制，由Message、Handler、MessageQueue以及Looper组成。"
-header:
-  teaser: /assets/images/android/Handler处理消息的过程.png
-  overlay_image: /assets/images/android/Handler处理消息的过程.png
-  overlay_filter: 0.5
-categories:
-  - Android
-tags:
-  - 消息机制
-  - Handler
-  - Message
-  - MessageQueue
-  - Looper
-  - ThreadLocal
-toc: true
-toc_label: "目录"
-last_modified_at: 2017-08-19T22:15:50+08:00
+title: "Android消息机制"
 ---
 
-Android中的消息机制主要指Handler的运行机制。Handler的使用过程很简单，通过它可以轻松地**将一个任务切换到Handler所在的线程中去执行**。Handler在日常开发中的最常用的作用是通过它更新UI。具体来说是这样的：有时候需要在子线程中进行耗时的IO操作，可能是读取文件或者访问网络等，当耗时操作完成以后可能需要在UI上做一些改变，由于Android开发规范的限制，我们并不能在子线程中访问UI控件，否则就会触发程序异常，这个时候通过Handler就可以将更新UI的操作切换到主线程中执行。因此，本质上来说，Handler并不是专门用于更新UI的，它只是常被开发者用来更新UI。
+Android中的消息机制主要指Handler的运行机制。Handler的使用过程很简单，通过它可以轻松地 **将一个任务切换到Handler所在的线程中去执行** 。Handler在日常开发中的最常用的作用是通过它更新UI。具体来说是这样的：有时候需要在子线程中进行耗时的IO操作，可能是读取文件或者访问网络等，当耗时操作完成以后可能需要在UI上做一些改变，由于Android开发规范的限制，我们并不能在子线程中访问UI控件，否则就会触发程序异常，这个时候通过Handler就可以将更新UI的操作切换到主线程中执行。因此，本质上来说，Handler并不是专门用于更新UI的，它只是常被开发者用来更新UI。
 
 `Handler`的运行需要底层的`MessageQueue`和`Looper`支撑。`MessageQueue`的中文翻译为消息队列，顾名思义，其内部可以存储一组`Message`，以队列的形式提供插入和删除工作，**但是其内部实现是一个单链表**。`Looper`会以无限循环的方式在`MessageQueue`中查找新消息，如有则处理消息，否则阻塞(sè)。`Looper`中还有一个特殊的概念：`ThreadLocal`，`ThreadLocal`可以在不同线程中互不干扰的存储并提供数据。
 
@@ -34,7 +18,7 @@ void checkThread() {
     }
 }
 ```
-更多可以查看[Window与WindowManager](/android/Window%E4%B8%8EWindowManager/)中3.1节。
+更多可以查看[Window与WindowManager](/android/framework/Window与WindowManager/#31-activitywindow)中3.1节。
 
 Handler在创建时会采用当前线程的Looper来构建内部的消息循环模型，如果当前线程没有Looper则会运行时异常`Can't create handler inside thread that has not called Looper.prepare()`。  
 
@@ -151,7 +135,7 @@ private static int nextHashCode() {
     return nextHashCode.getAndAdd(HASH_INCREMENT);
 }
 ```
-注意到这里的nextHashCode变量，这是一个**静态**的原子整型，**threadLocalHashCode的初始化都会导致nextHashCode变量增加HASH_INCREMENT，因此每一个ThreadLocal的threadLocalHashCode都不同。**这样每一个ThreadLocal在table中的位置也就不一样了。
+注意到这里的nextHashCode变量，这是一个 **静态** 的原子整型， **threadLocalHashCode的初始化都会导致nextHashCode变量增加HASH_INCREMENT，因此每一个ThreadLocal的threadLocalHashCode都不同。** 这样每一个ThreadLocal在table中的位置也就不一样了。
 
 下面我们看看`LocalThread`作为key，是怎么样在`LocalThreadMap`中进行操作的。从源码可以知道`LocalThread`的`get/set/remove`方法都是调用的`LocalThreadMap`的对应方法。**且在**`get/set`**方法中，如果当前线程的**`ThreadLocalMap`**没有创建，则会创建并初始化**`ThreadLocalMap`**，这样**`ThreadLocal`**就会在当前线程拥有一个副本了。**
 
@@ -304,8 +288,8 @@ public static Message obtain() {
 
 这里对Message的复用做了同步处理，如果Message池不为空，将sPool指针后移一个，将原来的头结点m返回，同时计数减1。这是非常熟悉的单链表操作。如果没有可以复用的，那么就创建一个新的Message。其他的`obtain`方法的重载都会调用此方法，然后将传入参数重新赋值。
 
-所以Message的获取最好还是`obtain`，这样可以用到缓存池里面的缓存对象。
-{: .notice--info }
+!!! tip
+    所以Message的获取最好还是`obtain`，这样可以用到缓存池里面的缓存对象。
 
 然后看一下回收相关的操作：
 ```java
@@ -819,18 +803,12 @@ Handler处理消息的过程如下：
 
 其流程整理如图如下：  
 
-<figure style="width: 80%" class="align-center">
-    <img src="/assets/images/android/Handler处理消息的过程.png">
-    <figcaption>Handler处理消息的过程</figcaption>
-</figure>
+![Handler处理消息的过程](/assets/images/android/Handler处理消息的过程.png)
 
 以下是Android消息机制的简单描述图。  
 注意，图中虚线部分不存在这样的调用关系，只是对于一个Message来说，存在这样的先后的逻辑关系。  
 
-<figure style="width: 60%" class="align-center">
-    <img src="/assets/images/android/Android消息机制简单描述.png">
-    <figcaption>Android消息机制简单描述</figcaption>
-</figure>
+![Android消息机制简单描述](/assets/images/android/Android消息机制简单描述.png)
 
 ## 3 主线程的消息循环
 
@@ -975,11 +953,12 @@ private class H extends Handler {
 
 `ActivityThread`通过`ApplicationThread`和`ActivityManagerService`(AMS)进行进程间通信，AMS以IPC的方式完成`ActivityThread`的请求后回调`ApplicationThread`中的Binder方法，然后`ApplicationThread`会向`H`发送消息，`H`收到消息后会将`ApplicationThread`中的逻辑切换到`ActivityThread`中去执行，这个过程就是主线程的消息循环模型。
 
-关于应用于AMS之间的通信，可以查看另外一篇文章[四大组件启动过程](/android/android%20sdk/%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/)
+关于应用于AMS之间的通信，可以查看另外一篇文章[四大组件启动过程](/android/framework/%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/)
 
----
+## 4 经常用到的Handler
 
-另外一个问题：我们可以在应用中可以使用`View.post(Runnable)`方法。那么处理这个Message的Handler是谁呢？是ViewRootImpl的`ViewRootHandler`。
+??? question "我们可以在应用中可以使用`View.post(Runnable)`方法。那么处理这个Message的Handler是谁呢？"
+    是ViewRootImpl的`ViewRootHandler`。
 
 我们先看`View#post`：
 
@@ -1101,9 +1080,7 @@ final class ViewRootHandler extends Handler {
 ```
 可以看到ViewRootHandler处理的是一些和View相关的事情。
 
----
-
-BTW，`Activity.runOnUiThread(Runnable)`方法最终执行也是在主线程，虽然方法名已经说的很清楚了，但是我们还是看一下源码：
+??? question "`Activity.runOnUiThread(Runnable)`方法最终执行也是在主线程，虽然方法名已经说的很清楚了，但是为什么呢？"
 
 **Activity.java**
 

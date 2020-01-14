@@ -1,18 +1,9 @@
 ---
 title: "EventBus源码解析"
-excerpt: "EventBus3.1.1源码解析、跨进程EventBus如何实现"
-categories:
-  - Android
-tags:
-  - EventBus
-  - RemoteCallbackList
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-09-28T11:32:23+08:00
 ---
 
-本文基于[EventBus](https://github.com/greenrobot/EventBus/tree/V3.1.1)最新v3.1.1版本进行分析。
-{: .notice--info }
+!!! info
+    本文基于[EventBus](https://github.com/greenrobot/EventBus/tree/V3.1.1)最新v3.1.1版本进行分析。
 
 ## 1. 简单使用
 
@@ -429,7 +420,7 @@ public void postSticky(Object event) {
 }
 ```
 
-另外，在订阅者进行注册时，如果有可以响应的粘性事件，粘性方法会被触发，代码在[2.1节——注册过程](/android/eventbus/#21-%E6%B3%A8%E5%86%8C%E8%BF%87%E7%A8%8B)的末尾有讲解。
+另外，在订阅者进行注册时，如果有可以响应的粘性事件，粘性方法会被触发，代码在[2.1节——注册过程](/android/3rd-library/eventbus/#21)的末尾有讲解。
 
 粘性事件不会被消耗掉，除非手动remove掉
 

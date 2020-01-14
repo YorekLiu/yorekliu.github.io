@@ -1,18 +1,5 @@
 ---
-title: "Android搜索栏的实现——SearchView以及EditText"
-excerpt: "搜索栏是比较常用的控件了，博主在尝试系统原生的SearchView之后，陷入了沉思😿"
-header:
-  teaser: /assets/images/android/SearchView准备搜索、搜索中、搜索后.png
-  overlay_image: /assets/images/android/SearchView准备搜索、搜索中、搜索后.png
-  overlay_filter: 0.5
-categories:
-  - Android
-tags:
-  - SearchView
-  - 搜索栏
-  - EditText实现搜索栏
-toc: true
-toc_label: "目录"
+title: "Android搜索栏的实现"
 ---
 
 本篇文章介绍Android系统提供的搜索栏实现`SearchView`以及终极实现方法`EditText`。
@@ -20,7 +7,8 @@ toc_label: "目录"
 ## 1 SearchView
 
 `SearchView`提供有两个实现，这里我们选择兼容包里面的`android.support.v7.widget.SearchView`。
-![SearchView]({{ basepath }}/assets/images/android/SearchView.png)
+
+![SearchView](/assets/images/android/SearchView.png)
 
 在ActionBar上使用SearchView，需要以下几步：
 
@@ -88,7 +76,8 @@ private void setUpSearchView(SearchManager searchManager, final SearchView mSear
 }
 ```
 SearchView有很多API可供定制，下图以此是准备搜索、搜索中、搜索后的SearchView的样式。
-![SearchView准备搜索、搜索中、搜索后]({{ basepath }}/assets/images/android/SearchView准备搜索、搜索中、搜索后.png)
+
+![SearchView准备搜索、搜索中、搜索后](/assets/images/android/SearchView准备搜索、搜索中、搜索后.png)
 
 `OnQueryTextListener`用来监听SearchView输入事件，**而想要检测叉叉按钮的点击事件，兼容性最好的方式就是通过`findViewById(R.id.search_close_btn)`找到这个控件，然后给它设置点击事件**。  
 其他方式兼容性存在很大问题，不知道是Bug还是怎么样。
@@ -117,12 +106,12 @@ SearchView有很多API可供定制，下图以此是准备搜索、搜索中、�
 <action android:name="android.intent.action.SEARCH" />
 ```
 
-> 以上就是用系统自带的SearchView的使用方法。
+以上就是用系统自带的SearchView的使用方法。
 
 ## 2 EditText实现搜索框
 
 其实，发现采用EditText修改样式代替SearchView，感觉更方便。
-![EditText实现搜索框]({{ basepath }}/assets/images/android/EditText实现搜索框.png)
+![EditText实现搜索框](/assets/images/android/EditText实现搜索框.png)
 
 ```xml
 <ClearEditText
@@ -156,4 +145,4 @@ SearchView有很多API可供定制，下图以此是准备搜索、搜索中、�
 </shape>
 ```
 
-> 以上就是用EditText代替SearchView的方法。
+以上就是用EditText代替SearchView的方法。

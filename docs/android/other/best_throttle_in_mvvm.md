@@ -1,17 +1,5 @@
 ---
 title: "这可能是MVVM中最优雅的按键防抖方案"
-excerpt: "原理简单、共40行代码、无侵入"
-classes: wide
-categories:
-  - Android
-tags:
-  - MVVM
-  - 防抖
-  - 去抖
-  - onClickListener
-  - onClick
-  - BindingAdapter
-last_modified_at: 2019-03-27T21:14:50+08:00
 ---
 
 该方案基于MVVM，对`android:onClickListener="@{() -> listener.onTogglePwd()}"`和`android:onClick="@{vm::onTogglePwd}"`两种类型的点击事件防抖。  

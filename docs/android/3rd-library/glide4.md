@@ -24,7 +24,7 @@ title: "Glide v4 源码解析（四）"
 
 ## 1. Target
 
-在本系列文章的第二章中比较详细地介绍了`Glide.with(xx).load(xx).into(xx)`的过程。回想一下，在`into(ImageView)`过程中([Link](/android/glide2/#3-requestbuilderinto))，会将ImageView包装成为一个`ViewTarget`类。如果调用过`asBitmap()`方法，那么此处会是`BitmapImageViewTarget`，否则都将会是`DrawableImageViewTarget`。`BitmapImageViewTarget`和`DrawableImageViewTarget`除了`setResource`方法中调用的设置图片的API不同外，没有任何区别。
+在本系列文章的第二章中比较详细地介绍了`Glide.with(xx).load(xx).into(xx)`的过程。回想一下，在`into(ImageView)`过程中([Link](/android/3rd-library/glide2/#3-requestbuilderinto))，会将ImageView包装成为一个`ViewTarget`类。如果调用过`asBitmap()`方法，那么此处会是`BitmapImageViewTarget`，否则都将会是`DrawableImageViewTarget`。`BitmapImageViewTarget`和`DrawableImageViewTarget`除了`setResource`方法中调用的设置图片的API不同外，没有任何区别。
 
 **ImageViewTargetFactory.java**  
 

@@ -154,7 +154,6 @@ public enum Singleton {
 ```
 枚举单例写法简单，而且枚举实例的创建是线程安全的，而且在任何情况下都是它一个单例。  
 在别的几种单例中，反序列化时会重新创建对象，除非我们自己重写`readResolve`方法。
-{: .notice--success }
 
 ```java
 public final class Singleton implements Serializable {

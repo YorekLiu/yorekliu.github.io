@@ -1,19 +1,5 @@
 ---
-title: "Android四大组件(2)——Service"
-excerpt: "Service的两种状态、生命周期以及IntentService"
-header:
-  teaser: /assets/images/android/service_lifecycle.png
-  overlay_image: /assets/images/android/service_lifecycle.png
-  overlay_filter: 0.5
-  cta_url: "https://developer.android.com/guide/components/services.html"
-categories:
-  - Android
-tags:
-  - Service
-  - IntentService
-  - ServiceConnection
-toc: true
-toc_label: "目录"
+title: "Service"
 ---
 
 本章的主要角色是[Service](https://developer.android.com/guide/components/services.html)。
@@ -34,21 +20,21 @@ Service是一种能够在后台执行长期运行操作的组件，它并没有U
 
 > **启动状态与绑定状态不是互斥的。** 你能绑定一个以`startService()`启动的Service。比如，你可以通过`startService()`启动一个Service播放音乐。然后，用户可能想切歌或者获取当前歌曲的信息，此时Activity可以通过`bindService()`绑定到该Service。这种情况下，直到客户端全部解绑，`stopService()`或`stopSelf()`才能停止Service。  
 > 
-> **关于启动、绑定状态的Service如何停止？**无论`startService`几次，只需要`stopService`或者`stopSelf`一次。调用多次`bindService`，必须调用多次`unbindService`。但同一组件bind多次，后面几次实际上是没有bind上的，所以只需要unbind一次。因此，只需要调用一次`stopService`或`stopSelf`方法让Service退出启动状态，然后调用多次`unbindService`方法退出绑定状态，对执行顺序没有要求。最后一个操作会导致`Service#onDestroy`方法执行。  
+> **关于启动、绑定状态的Service如何停止？** 无论`startService`几次，只需要`stopService`或者`stopSelf`一次。调用多次`bindService`，必须调用多次`unbindService`。但同一组件bind多次，后面几次实际上是没有bind上的，所以只需要unbind一次。因此，只需要调用一次`stopService`或`stopSelf`方法让Service退出启动状态，然后调用多次`unbindService`方法退出绑定状态，对执行顺序没有要求。最后一个操作会导致`Service#onDestroy`方法执行。  
 > 
-> 举下面几个例子理清Service、ServiceConnection的生命周期方法：
+> 举下面几个例子理清Service、ServiceConnection的生命周期方法：  
 > 1. start、bind、stop、unbind  
->   [onCreate -> onStartCommand -> onStart] -> [onBind -> onServiceConnected] -> [] -> [onUnbind -> onDestroy]
+>   [onCreate -> onStartCommand -> onStart] -> [onBind -> onServiceConnected] -> [] -> [onUnbind -> onDestroy]  
 > 2. bind、start、stop、unbind  
->   [onCreate -> onBind -> onServiceConnected] -> [onStartCommand -> onStart] -> [] -> [onUnbind -> onDestroy]
+>   [onCreate -> onBind -> onServiceConnected] -> [onStartCommand -> onStart] -> [] -> [onUnbind -> onDestroy]  
 > 3. start、bind、unbind、stop  
->   [onCreate -> onStartCommand -> onStart] -> [onBind -> onServiceConnected] -> [onUnbind] -> [onDestroy]
+>   [onCreate -> onStartCommand -> onStart] -> [onBind -> onServiceConnected] -> [onUnbind] -> [onDestroy]  
 > 4. bind、start、unbind、stop  
->   [onCreate -> onBind -> onServiceConnected] -> [onStartCommand -> onStart] -> [onUnbind] -> [onDestroy]
+>   [onCreate -> onBind -> onServiceConnected] -> [onStartCommand -> onStart] -> [onUnbind] -> [onDestroy]  
 > 5. `Service.onBind`返回`null`的情况下bind、start、unbind、stop  
->   [onCreate -> onBind] -> [onStartCommand -> onStart] -> [onUnbind] -> [onDestroy]
+>   [onCreate -> onBind] -> [onStartCommand -> onStart] -> [onUnbind] -> [onDestroy]  
 > 6. bind、start、bind、start、start、bind、stop、unbind、stop、unbind  
->   [onCreate -> onBind -> onServiceConnected] -> [onStartCommand -> onStart] -> [] -> [onStartCommand -> onStart] -> [onStartCommand -> onStart] -> [] -> [] -> [onUnbind -> onDestroy] -> [] -> [报错，已经unbind过了，不能再次unbind]
+>   [onCreate -> onBind -> onServiceConnected] -> [onStartCommand -> onStart] -> [] -> [onStartCommand -> onStart] -> [onStartCommand -> onStart] -> [] -> [] -> [onUnbind -> onDestroy] -> [] -> [报错，已经unbind过了，不能再次unbind]  
 
 ## 2 Service的生命周期方法
 
@@ -70,20 +56,17 @@ Service主要有四个生命周期方法：`onCreate()`、`onStartCommand()`、`
 - `onBind()`  
    当其他组件想要通过调用`bindService()`与Service绑定（例如执行RPC）时，系统会调用此方法。在实现此方法时，必须返回`IBinder`对象给客户端，使客户端可以与`Service`进行通信。这个方法是必须要实现的；如果不支持绑定，可以直接返回null，这样客户端的方法不会回调。同时，对于支持绑定的Service，可以在此方法中进行验证，如果验证失败，可以返回null，这样客户端绑定不上。  
    
-   `ServiceConnection`里面的方法会回调在主线程；  
-   `onServiceConnected`方法在与Service的链接建立时回调，也就说Service的`onBind`方法返回了一个`IBinder`；  
-   `onServiceDisconnected`方法会在与Service的链接被动断开时调用，但此时`ServiceConnection`并没有被移除，绑定关系仍然是active状态的，Service下次运行的时候会回调`onServiceConnected`方法。此外，客户端主动断开不会回调此方法。
-   {: .notice--info }
+!!! info
+    `ServiceConnection`里面的方法会回调在主线程；  
+    `onServiceConnected`方法在与Service的链接建立时回调，也就说Service的`onBind`方法返回了一个`IBinder`；  
+    `onServiceDisconnected`方法会在与Service的链接被动断开时调用，但此时`ServiceConnection`并没有被移除，绑定关系仍然是active状态的，Service下次运行的时候会回调`onServiceConnected`方法。此外，客户端主动断开不会回调此方法。
 
 - `onDestroy()`  
    当Service不在使用时，系统会调用此方法。可以在此进行资源的回收，比如线程、注册过的监听器、receiver等。
 
 ## 3 Service的生命周期
 
-<figure style="width: 40%" class="align-center">
-    <img src="/assets/images/android/service_lifecycle.png">
-    <figcaption>Service的生命周期</figcaption>
-</figure>
+![Service的生命周期](/assets/images/android/service_lifecycle.png)
 
 Service也有两个主要的生命周期循环：
 
@@ -95,8 +78,8 @@ Service也有两个主要的生命周期循环：
 
 对于已经处于active状态的Service，再次通过`startService`或`bindService`来启动同一个Service，其`onCreate`不会再次调用，而是直接调用对应的`onStartCommand()`或者`onBind()`方法。  
 
-同一组件多次start会触发`onStartCommand()`；多次bind只会触发一次`onBind()`，因此只算一次bind。
-{: .notice--warning }
+!!! warning
+    同一组件多次start会触发`onStartCommand()`；多次bind只会触发一次`onBind()`，因此只算一次bind。
 
 ## 4 IntentService
 
@@ -112,4 +95,4 @@ IntentService有以下特点：
 
 这就是实现一个IntentService所需要的：一个构造函数和一个`onHandleIntent()`的实现。 如果要覆盖其他回调方法，例如`onCreate()`，`onStartCommand()`或`onDestroy()`，要调用父类的实现，以便IntentService可以正确处理工作线程的生命周期。当Service需要提供绑定状态时，你需要重写`onBind()`方法。
 
-关于IntentService的源码部分，可以查看另外一篇文章：[Android线程与线程池](/android/Android线程与线程池/)
+关于IntentService的源码部分，可以查看另外一篇文章：[Android线程与线程池](/android/framework/Android%E7%BA%BF%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B%E6%B1%A0/)

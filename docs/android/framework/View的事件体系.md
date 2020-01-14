@@ -1,26 +1,9 @@
 ---
 title:  "View的事件体系"
-excerpt: "View的位置参数、View的(弹性)滑动、速度检测、手势检测、事件分发机制以及滑动冲突处理"
-header:
-  teaser: /assets/images/android/ViewGroup的事件传递规则.png
-  overlay_image: /assets/images/android/ViewGroup的事件传递规则.png
-  overlay_filter: 0.5
-categories:
-  - Android
-tags:
-  - View
-  - MotionEvent
-  - VelocityTracker
-  - GestureDetector
-  - Scroller
-  - 事件分发
-  - 事件拦截
-  - 滑动冲突
-toc: true
-toc_label: "目录"
 ---
 
 本章的主要内容有：
+
 - View的基础知识
 - View的滑动、弹性滑动
 - View的事件分发机制
@@ -30,13 +13,14 @@ toc_label: "目录"
 本节包括View的位置参数、MotionEvent、VelocityTracker、GestureDetector以及Scroller。
 
 ### 1.1 View的位置参数
-View的位置由四个顶点来决定：**top、left、right、bottom**，这些都是相对于View的父容器来说的，因此是一种**相对坐标**。
+View的位置由四个顶点来决定：**top、left、right、bottom**，这些都是相对于View的父容器来说的，因此是一种 **相对坐标**。
 
-从Android 3.0以来，View新增了几个参数坐标：**x、y、translationX、translationY**。x、y是View的左上角的坐标，translationX、translationY是View左上角相对于父容器的偏移量。这也是一种**相对坐标**。
+从Android 3.0以来，View新增了几个参数坐标：**x、y、translationX、translationY**。x、y是View的左上角的坐标，translationX、translationY是View左上角相对于父容器的偏移量。这也是一种 **相对坐标**。
 
 这几个坐标的换算关系如下：  
-x = left + translationX  
-y = top + translationY
+
+> x = left + translationX  
+> y = top + translationY
 
 x、y这两个坐标参数都是虚拟的，其getter和setter是通过left、top、translationX和translationY四个参数转化而来的。
 ```java
@@ -70,10 +54,7 @@ x、y这两个坐标参数都是虚拟的，其getter和setter是通过left、to
 MotionEvent典型的三个事件：ACTION_DOWN、ACTION_MOVE、ACTION_UP  
 两组方法：`getX/getY`和`getRawX/getRawY`。前者获取相对于View左上角的x/y值，后者获取的是相对于屏幕左上角的x/y值。  
 
-<figure style="width: 40%" class="align-center">
-    <img src="/assets/images/android/view的位置坐标.png">
-    <figcaption>View的四个顶点以及MotionEvent的x、y、rawX、rawY</figcaption>
-</figure>
+![View的四个顶点以及MotionEvent的x、y、rawX、rawY](/assets/images/android/view的位置坐标.png)
 
 **2.触摸事件的一些常量**  
 这些常量定义在`frameworks/base/core/res/res/values/config.xml `文件中。
@@ -100,31 +81,34 @@ ViewConfiguration.get(this).getScaledMinimumFlingVelocity();
 ViewConfiguration.get(this).getScaledMaximumFlingVelocity();
 ```
 ### 1.3 VelocityTracker、GestureDetector和Scroller
+
 #### 1.3.1 VelocityTracker
+
 VelocityTracker可以用来追踪手指在滑动过程中的速度，包括水平和竖直方向的速度。  
+
 1. 首先在View的onTouchEvent方法中追踪当前点击事件的速度
 
-   ```java
-   VelocityTracker velocityTracker = VelocityTracker.obtain();
-   velocityTracker.addMovement(event);
-   ```
+    ```java
+    VelocityTracker velocityTracker = VelocityTracker.obtain();
+    velocityTracker.addMovement(event);
+    ```
 
 2. 在我们想知道当前的滑动速度时：  
-
-   ```java
-   velocityTracker.computeCurrentVelocity(1000);
-   
-   int xV = (int) velocityTracker.getXVelocity();
-   int xY = (int) velocityTracker.getYVelocity();
-   ```
-   这里的速度指的是单位时间内手指滑过的像素数。水平从左往右滑动，水平速度为正；反之，为负。  
+ 
+    ```java
+    velocityTracker.computeCurrentVelocity(1000);
+    
+    int xV = (int) velocityTracker.getXVelocity();
+    int xY = (int) velocityTracker.getYVelocity();
+    ```
+    这里的速度指的是单位时间内手指滑过的像素数。水平从左往右滑动，水平速度为正；反之，为负。  
 
 3. 在不需要时，需要释放掉资源
 
-   ```java
-   velocityTracker.clear();
-   velocityTracker.recycle();
-   ```
+    ```java
+    velocityTracker.clear();
+    velocityTracker.recycle();
+    ```
 
 下面是来自[官网开发者文档的实例](https://developer.android.com/training/gestures/movement#velocity)：
 
@@ -345,14 +329,14 @@ Scroller可用于实现View的弹性滑动。Scroller本身无法让View弹性�
 
 3. LayoutParams  
 
-   ```java
-   ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
-   layoutParams.width = 100;
-   layoutParams.leftMargin = 200;
-   layoutParams.rightMargin = 200;
-   view.setLayoutParams(layoutParams);
-   //或者view.requestLayout();
-   ```
+    ```java
+    ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+    layoutParams.width = 100;
+    layoutParams.leftMargin = 200;
+    layoutParams.rightMargin = 200;
+    view.setLayoutParams(layoutParams);
+    //或者view.requestLayout();
+    ```
 
 4. 动画  
 通过动画改变，主要是操作View的`translationX`和`translationY`两个属性
@@ -426,20 +410,26 @@ Scroller真正让View产生弹性滑动的原因是`startScroll`下面的`invali
 估值器的作用是根据动画过程执行的百分比来确定当前的位置。
 
 上面Scroller的`computeScrollOffset()`方法实现的功能就类似与插值器和估值器的功能。  
-关于动画的详细内容会在[Android动画](/android/android%20sdk/Android%E5%8A%A8%E7%94%BB/)中讲解。
+关于动画的详细内容会在[Android动画](/android/framework/Android%E5%8A%A8%E7%94%BB/)中讲解。
 
 ### 3.3 使用延时策略
 延时策略实现弹性滑动的核心思想是通过发送一系列延时消息从而达到一种渐进式的效果。具体来说可以使用Handler或者View的`postDelayed`，也可以使用线程的`sleep`方法。实现也比较简单，不过多描述。
 
 
 ## 4 View的事件分发机制
+
 View的事件分发机制不只针对触摸事件，其他的事件（比如按键事件、轨迹球事件）也是类似的思想。都是Activity委托Window，Window委托DecorView，DecorView再来依次通知子元素。这里我们针对触摸事件进行源码分析。
+
+!!! tip
+    如果不知道轨迹球是个啥的话，可以百度一下罗技M570轨迹球鼠标，博主正在用。
+
 ### 4.1 触摸事件的传递规则
 
-在View事件分发机制中，尤其需要注意一点：**ViewGroup继承至View**。
-{: .notice}
+!!! success
+    在View事件分发机制中，尤其需要注意一点：**ViewGroup继承至View**。
 
 ViewGroup触摸事件的分发由三个重要的方法来共同完成：
+
 1. `public boolean dispatchTouchEvent(MotionEvent ev)`  
 用来进行事件的分发。如果事件能够传递给当前View，此方法一定会被调用。返回true表示此事件被处理了。
 2. `public boolean onInterceptTouchEvent(MotionEvent ev)`  
@@ -449,10 +439,7 @@ ViewGroup触摸事件的分发由三个重要的方法来共同完成：
 
 下图表示ViewGroup的事件传递规则：
 
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/android/ViewGroup的事件传递规则.png">
-    <figcaption>ViewGroup的事件传递规则</figcaption>
-</figure>
+![ViewGroup的事件传递规则](/assets/images/android/ViewGroup的事件传递规则.png)
 
 对于一个ViewGroup来说，点击事件产生后，其`dispatchTouchEvent`方法会被调用，如果其`onInterceptTouchEvent`返回true，表示ViewGroup要拦截该事件，其`onTouchEvent`就会被调用；  
 否则，表示不拦截当前事件，点击事件就会传递给它的子元素，子元素的`dispatchTouchEvent`方法会被调用。如果最后点击事件传递到了View，由于View没有`onInterceptTouchEvent`方法，一旦有事件传递给它，其`onTouchEvent`就会被调用。  
@@ -475,7 +462,7 @@ public boolean dispatchTouchEvent(MotionEvent ev) {
 ### 4.2 事件分发的源码解析
 所有源码基于Android 7.1。  
 
-<p>&nbsp;</p><font size="3"><b>1 Activity的事件分发过程</b></font>  
+#### 4.2.1 Activity的事件分发过程
 
 当触摸事件传递到Activity时，也是从Activity的`dispatchTouchEvent`方法开始。
 
@@ -494,7 +481,7 @@ public boolean dispatchTouchEvent(MotionEvent ev) {
 
 触摸事件的具体分发是由Activity内部的Window来完成的。Window是一个抽象类，其实现类是PhoneWindow（关于Window与WindowManager会在后续章节中讲解）。
 
-这点可以从Android 7.0以后的代码上直接看出来，具体在Activity类的[attach](http://androidxref.com/7.1.1_r6/xref/frameworks/base/core/java/android/app/Activity.java#6619)方法中`mWindow = new PhoneWindow(this, window);`。[更多关于Window的知识可以查看此文章](/android/android%20sdk/Window%E4%B8%8EWindowManager/)
+这点可以从Android 7.0以后的代码上直接看出来，具体在Activity类的[attach](http://androidxref.com/7.1.1_r6/xref/frameworks/base/core/java/android/app/Activity.java#6619)方法中`mWindow = new PhoneWindow(this, window);`。[更多关于Window的知识可以查看此文章](/android/framework/Window%E4%B8%8EWindowManager/)
 
 下面接着看PhoneWindow的superDispatchTouchEvent方法：
 ```java
@@ -518,7 +505,7 @@ public class DecorView extends FrameLayout implements RootViewSurfaceTaker, Wind
 
 因此，点击事件在Activity中的传递由Activity的`dispatchTouchEvent`方法开始，Activity会将事件交给Window处理，而Window又会转手交给DecorView处理。如果DecorView里面有View处理了触摸事件，那么Activity的`dispatchTouchEvent`会返回true；否则，如果没有View处理点击事件，那么Activity的`onTouchEvent`会被调用。
 
-<p>&nbsp;</p><font size="3"><b>2 顶级View的事件分发过程</b></font>  
+#### 4.2.2 顶级View的事件分发过程
 
 在4.1节中我们以伪代码的形式阐述了ViewGroup的触摸事件传递规则，现在我们看看真正的源码。ViewGroup的事件分发机制主要体现在`dispatchTouchEvent`方法中。这个方法太长，也比较难看，我们分段说明。
 
@@ -699,7 +686,7 @@ if (mFirstTouchTarget == null) {
 ```
 在前面的代码中分析过`dispatchTransformedTouchEvent`方法，此处第三个参数传入null，显然会调用`super.dispatchTouchEvent(transformedEvent)`，即View的`dispatchTouchEvent`方法，此时点击事件会传递给View处理。
 
-<p>&nbsp;</p><font size="3"><b>3. View的事件处理过程</b></font>  
+#### 4.2.3 View的事件处理过程
 
 View对点击事件的处理比较简单。因为View是叶子节点了，它没有子元素，无法向下传递事件，只能自己处理。
 
@@ -735,103 +722,100 @@ View首先会判断有没有设置OnTouchListener，若有则会先执行OnTouch
 
 1. 即使View处于DISABLED状态，只要其是可点击或者可长按，就能消耗事件。
 
-   ```java
-   if ((viewFlags & ENABLED_MASK) == DISABLED) {
-      if (action == MotionEvent.ACTION_UP && (mPrivateFlags & PFLAG_PRESSED) != 0) {
-          setPressed(false);
-      }
-      // A disabled view that is clickable still consumes the touch
-      // events, it just doesn't respond to them.
-      return (((viewFlags & CLICKABLE) == CLICKABLE
-              || (viewFlags & LONG_CLICKABLE) == LONG_CLICKABLE)
-              || (viewFlags & CONTEXT_CLICKABLE) == CONTEXT_CLICKABLE);
-   }
-   ```
-
-2. 如果有TouchDelegat，则调用TouchDelegat的onTouchEvent。若代理消耗了事件，则不再继续执行。
-
     ```java
-    if (mTouchDelegate != null) {
-        if (mTouchDelegate.onTouchEvent(event)) {
-            return true;
-        }
+    if ((viewFlags & ENABLED_MASK) == DISABLED) {
+       if (action == MotionEvent.ACTION_UP && (mPrivateFlags & PFLAG_PRESSED) != 0) {
+           setPressed(false);
+       }
+       // A disabled view that is clickable still consumes the touch
+       // events, it just doesn't respond to them.
+       return (((viewFlags & CLICKABLE) == CLICKABLE
+               || (viewFlags & LONG_CLICKABLE) == LONG_CLICKABLE)
+               || (viewFlags & CONTEXT_CLICKABLE) == CONTEXT_CLICKABLE);
     }
     ```
 
+2. 如果有TouchDelegat，则调用TouchDelegat的onTouchEvent。若代理消耗了事件，则不再继续执行。
+
+     ```java
+     if (mTouchDelegate != null) {
+         if (mTouchDelegate.onTouchEvent(event)) {
+             return true;
+         }
+     }
+     ```
+
 3. 当View处于可点击或者可长按时，就会消耗事件，即`onTouchEvent`返回true。点击事件发生在`performClick`方法中。PerformClick是一个封装`performClick`在`run`方法的Runnable类。
 
-   ```java
-   if (((viewFlags & CLICKABLE) == CLICKABLE ||
-           (viewFlags & LONG_CLICKABLE) == LONG_CLICKABLE) ||
-           (viewFlags & CONTEXT_CLICKABLE) == CONTEXT_CLICKABLE) {
-       switch (action) {
-           case MotionEvent.ACTION_UP:
-                   ...
-                   if (!mHasPerformedLongPress && !mIgnoreNextUpEvent) {
-                       ...
-                       if (!focusTaken) {
-                           // Use a Runnable and post this rather than calling
-                           // performClick directly. This lets other visual state
-                           // of the view update before click actions start.
-                           if (mPerformClick == null) {
-                               mPerformClick = new PerformClick();
-                           }
-                           if (!post(mPerformClick)) {
-                               performClick();
-                           }
-                       }
-                   }
-               ...
-               break;
-           ...
-       }
-   
-       return true;
-   }
-   ```
+    ```java
+    if (((viewFlags & CLICKABLE) == CLICKABLE ||
+            (viewFlags & LONG_CLICKABLE) == LONG_CLICKABLE) ||
+            (viewFlags & CONTEXT_CLICKABLE) == CONTEXT_CLICKABLE) {
+        switch (action) {
+            case MotionEvent.ACTION_UP:
+                    ...
+                    if (!mHasPerformedLongPress && !mIgnoreNextUpEvent) {
+                        ...
+                        if (!focusTaken) {
+                            // Use a Runnable and post this rather than calling
+                            // performClick directly. This lets other visual state
+                            // of the view update before click actions start.
+                            if (mPerformClick == null) {
+                                mPerformClick = new PerformClick();
+                            }
+                            if (!post(mPerformClick)) {
+                                performClick();
+                            }
+                        }
+                    }
+                ...
+                break;
+            ...
+        }
+    
+        return true;
+    }
+    ```
 
 4. 点击事件的执行过程：View首先会判断有没有设置OnClickListener，若有则会先执行OnClickListener的`onClick`方法，并返回true；否则返回false。
 
-   ```java
-   public boolean performClick() {
-       final boolean result;
-       final ListenerInfo li = mListenerInfo;
-       if (li != null && li.mOnClickListener != null) {
-           playSoundEffect(SoundEffectConstants.CLICK);
-           li.mOnClickListener.onClick(this);
-           result = true;
-       } else {
-           result = false;
-       }
-   
-       ...
-       return result;
-   }
-   ```
-
-View的LONG_CLICKABLE属性默认为false；而CLICKABLE属性和具体的View有关，即可点击的View比如Button其属性为true，不可点击的比如TextView则为false。`setOnClickListener`以及`setOnLongClickListener`会将View的对应属性设为true。
-```java
-public void setOnClickListener(@Nullable OnClickListener l) {
-    if (!isClickable()) {
-        setClickable(true);
+    ```java
+    public boolean performClick() {
+        final boolean result;
+        final ListenerInfo li = mListenerInfo;
+        if (li != null && li.mOnClickListener != null) {
+            playSoundEffect(SoundEffectConstants.CLICK);
+            li.mOnClickListener.onClick(this);
+            result = true;
+        } else {
+            result = false;
+        }
+    
+        ...
+        return result;
     }
-    getListenerInfo().mOnClickListener = l;
-}
+    ```
 
-public void setOnLongClickListener(@Nullable OnLongClickListener l)  {
-    if (!isLongClickable()) {
-        setLongClickable(true);
+    View的LONG_CLICKABLE属性默认为false；而CLICKABLE属性和具体的View有关，即可点击的View比如Button其属性为true，不可点击的比如TextView则为false。`setOnClickListener`以及`setOnLongClickListener`会将View的对应属性设为true。
+    ```java
+    public void setOnClickListener(@Nullable OnClickListener l) {
+        if (!isClickable()) {
+            setClickable(true);
+        }
+        getListenerInfo().mOnClickListener = l;
     }
-    getListenerInfo().mOnLongClickListener = l;
-}
-```
+    
+    public void setOnLongClickListener(@Nullable OnLongClickListener l)  {
+        if (!isLongClickable()) {
+            setLongClickable(true);
+        }
+        getListenerInfo().mOnLongClickListener = l;
+    }
+    ```
 
 小结一下，View的事件分发机制流程图可以小结如下：
 
-<figure style="width: 100%" class="align-center">
-    <img src="/assets/images/android/view-event-dispatch.png">
-    <figcaption>View事件传递流程图</figcaption>
-</figure>
+![View事件传递流程图](/assets/images/android/view-event-dispatch.png)
 
 ### 4.3 事件传递规则的一些结论
 
@@ -854,7 +838,7 @@ public void setOnLongClickListener(@Nullable OnLongClickListener l)  {
 
 ### 4.5 View的点击事件是如何触发的
 
-View的点击事件是如何触发的，一切都在`View.onTouchEvent`方法里面。其实很简单，只要手指**按下、移动、抬起**时都在View里面，那么就会触发了。  
+View的点击事件是如何触发的，一切都在`View.onTouchEvent`方法里面。其实很简单，只要手指 **按下、移动、抬起** 时都在View里面，那么就会触发了。  
 
 我们先看看手指按下时的事件`ACTION_DOWN`：
 
@@ -1113,22 +1097,19 @@ private void removeLongPressCallback() {
 ### 5.1 常见的滑动冲突场景
 
 常见的滑动冲突场景可以分一下三类：
+
 - 外部滑动方向与内部滑动方向不一致（左图）
 - 外部滑动方向与内部滑动方向一致（右图）
 - 上面两种情况的嵌套
 
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/android/两种基本滑动冲突.png">
-    <figcaption>两种基本滑动冲突</figcaption>
-</figure>
+![两种基本滑动冲突](/assets/images/android/两种基本滑动冲突.png)
 
 场景1主要是ViewPager+Fragment，Fragment里面往往是一个ListView。但是ViewPager内部已经处理了这种滑动冲突，因此采用ViewPager时我们无需关系。但如果采用ScrollView就需要手动处理了。我们可以根据在水平方向和竖直方向移动的大小来判断用户往哪个方向移动。
 > 在ViewPager的一页中嵌套一个相同方向的ViewPager也无需处理滑动冲突。比如网易云的主界面。
 
 场景2就比较复杂了，需要根据具体的逻辑来判断。一个典型的场景是电商应用商品详情页，滑到底部继续滑就可以从购买页面进入商品详情页面。
 
-第二种情况也有可能是一个嵌套滑动问题，比如CoordinatorLayout效果，这种情况下需要使用[NestedScrolling机制](/android/nestedscrolling/)进行解决了。
-{: .notice--info }
+第二种情况也有可能是一个嵌套滑动问题，比如CoordinatorLayout效果，这种情况下需要使用[NestedScrolling机制](/android/other/nestedscrolling/)进行解决了。
 
 ### 5.2 滑动冲突的解决方式
 

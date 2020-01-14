@@ -101,7 +101,7 @@ class MyGlideModule : GlideModule {
 
 在经过第1小节之后，我们已经初步了解了GlideModule。现在我们看看Glide到底以怎样的顺序来应用这些GlideModule的。
 
-相关源码其实在[Glide2——从源码的角度理解Glide三步的执行流程](/android/glide2/#11-getretrievercontext)中提到过。调用`Glide.with`方法就会完成Glide单例的创建，代码在`initializeGlide`方法中。该方法的作用就是获取各种GlideModule，并调用对应的方法。
+相关源码其实在[Glide2——从源码的角度理解Glide三步的执行流程](/android/3rd-library/glide2/#11-getretrievercontext)中提到过。调用`Glide.with`方法就会完成Glide单例的创建，代码在`initializeGlide`方法中。该方法的作用就是获取各种GlideModule，并调用对应的方法。
 
 ```java
 @SuppressWarnings("deprecation")
@@ -740,7 +740,7 @@ registry.replace(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(
 
 所以我们可以理解为，原本交给`HttpGlideUrlLoader.Factory()`处理的任务会交给`OkHttpUrlLoader.Factory()`处理。
 
-`OkHttpUrlLoader.Factory`的无参构造器会使用[DCL单例模式](/design%20patterns/singleton/#33-double-check-lockdcl%E6%A8%A1%E5%BC%8F)创建一个`OkHttpClient()`对象，其`build`方法会返回一个`new OkHttpUrlLoader(client)`：
+`OkHttpUrlLoader.Factory`的无参构造器会使用[DCL单例模式](/design-pattern/singleton/#33-double-check-lockdcl)创建一个`OkHttpClient()`对象，其`build`方法会返回一个`new OkHttpUrlLoader(client)`：
 
 ```java
 public static class Factory implements ModelLoaderFactory<GlideUrl, InputStream> {
@@ -831,7 +831,7 @@ public void onResponse(@NonNull Call call, @NonNull Response response) {
 
 `OkHttpStreamFetcher`的实现比`HttpUrlFetcher`简单多了，而且看起来也没有什么难度。
 
-我们删掉app后重新运行，让资源重新从网络获取。在源码打上断点后可以看到Threads中出现了一个`OkHttp http://cn.bing.com/...`的OkHttp线程，这就是OkHttp正在加载图片了。关于这OkHttp源码部分可以参考[OkHttp3](/android/week12-retrofit-okhttp/#okhttp3)。
+我们删掉app后重新运行，让资源重新从网络获取。在源码打上断点后可以看到Threads中出现了一个`OkHttp http://cn.bing.com/...`的OkHttp线程，这就是OkHttp正在加载图片了。关于这OkHttp源码部分可以参考[OkHttp3](/android/3rd-library/okhttp/)。
 
 <figure style="width: 50%" class="align-center">
     <img src="/assets/images/android/glide-okhttp-integration.jpg">

@@ -1,26 +1,12 @@
 ---
 title: "PermissionDispatcher源码解析"
-excerpt: "基于注解的动态权限请求框架PermissionDispatcher源码解析"
-categories:
-  - Android
-tags:
-  - PermissionDispatcher
-  - JavaPoet
-  - KotlinPoet
-  - RuntimePermissions
-header:
-  overlay_image: /assets/images/android/permissiondispatcher-overview.png
-  overlay_filter: rgba(126, 202, 286, 0.6)
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-08-14T17:54:33+08:00
 ---
 
-基于[PermissionDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) v4.5.0 左右的最新master源码，节点为`332b4a1`。
-{: .notice--info }
+!!! info
+    基于[PermissionDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) v4.5.0 左右的最新master源码，节点为`332b4a1`。
 
 PermissionDispatcher是一个基于注解的动态权限请求框架。其主要工作原理就是在编译时获取指定注解的内容，然后生成辅助文件参与编译。本文将通过源码深入介绍PermissionDispatcher的原理。  
-另外关于注解的一些介绍，在[注解的定义及解析](/android/annotation)一文中有详细的介绍。
+另外关于注解的一些介绍，在[注解的定义及解析](/android/other/annotation/)一文中有详细的介绍。
 
 下面首先介绍一下PermissionDispatcher的模块关系图，以及各个模块的作用：
 
@@ -138,7 +124,7 @@ private fun showRationaleDialog(@StringRes messageResId: Int, request: Permissio
 
 ## 4. processor模块
 
-接着就是最重要的processor模块了，这是一个注解处理器模块，用途就是在编辑时生成辅助文件，辅助文件参与后续的编译过程。关于注解的一些介绍，在[注解的定义及解析](/android/annotation)一文中有详细的介绍。
+接着就是最重要的processor模块了，这是一个注解处理器模块，用途就是在编辑时生成辅助文件，辅助文件参与后续的编译过程。关于注解的一些介绍，在[注解的定义及解析](/android/other/annotation/)一文中有详细的介绍。
 
 要了解一个注解处理器的作用是什么，我们先要通过注册文件找到它，注册文件的目录是固定的：
 
@@ -160,7 +146,7 @@ permissions.dispatcher.processor.PermissionsProcessor,isolating
 
 这是配置给Gradle的，目的是开启Gradle增量编译，具体内容可以参考 [Incremental annotation processing](https://docs.gradle.org/current/userguide/java_plugin.html#sec:incremental_annotation_processing)。
 
-下面正式开始解读`PermissionsProcessor`，示例代码及对应的编译后的辅助文件可以参考[附录](/android/permissiondispatcher/#%E9%99%84%E5%BD%95)。
+下面正式开始解读`PermissionsProcessor`，示例代码及对应的编译后的辅助文件可以参考[附录](/#_1)。
 
 首先看看`PermissionsProcessor`除了`process`外的其他方法：
 
@@ -366,7 +352,7 @@ override fun createFile(rpe: RuntimePermissionsElement, requestCodeProvider: Req
 第8行生成权限请求回调方法。  
 第9行为每个请求生成一个`PermissionRequest`的实现类。  
 上面就是Kotlin辅助文件的生成过程，对照[附录-MainActivity.kt in samplekotlin](#mainactivitykt-in-samplekotlin)与[附录-kt辅助文件
-](#kt辅助文件)有助于理解每一行的作用。
+](#kt)有助于理解每一行的作用。
 
 
 **JavaBaseProcessorUnit.kt**
@@ -393,7 +379,7 @@ private fun createTypeSpec(rpe: RuntimePermissionsElement, requestCodeProvider: 
 ```
 
 上面就是Java辅助文件的生成过程，经过了KotlinBaseProcessorUnit之后，读起来应该不费力。同样，对照[附录-MainActivity.java in sample](#mainactivityjava-in-sample)与[附录-java辅助文件
-](#java辅助文件)有助于理解每一行的作用。
+](#java)有助于理解每一行的作用。
 
 ## 附录
 

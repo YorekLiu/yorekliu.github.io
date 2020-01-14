@@ -1,13 +1,5 @@
 ---
-title: "Android四大组件(3)——Broadcasts"
-excerpt: "广播的注册、发送以及带权限的广播"
-categories:
-  - Android
-tags:
-  - LocalBroadcastManager
-  - BroadcastReceiver
-toc: true
-toc_label: "目录"
+title: "Broadcasts"
 ---
 
 本章的主要内容是[Broadcasts](https://developer.android.com/guide/components/broadcasts.html)
@@ -18,11 +10,13 @@ Broadcasts是一种通讯组件，Android应用程序可以发送或接收来自
 系统广播的action的列表，可以在SDK中找到，目录是`platforms/android-25/data/broadcast_actions.txt`
 
 ### 1.1 系统广播的变更
-Android 7.0及以上平台不可以发送以下系统广播，该项优化影响所有的应用，不仅仅是目标为Android 7.0的应用：
-- ACTION_NEW_PICTURE
+Android 7.0及以上平台不可以发送以下系统广播，该项优化影响所有的应用，不仅仅是目标为Android 7.0的应用：  
+
+- ACTION_NEW_PICTURE  
 - ACTION_NEW_VIDEO
 
 应用目标为Android 7.0 (API level 24)及更高平台必须动态注册以下广播，静态注册无效：
+
 - CONNECTIVITY_ACTION
 
 ## 2 广播的注册
@@ -40,7 +34,9 @@ Android 7.0及以上平台不可以发送以下系统广播，该项优化影响
 >2. 如果只需要应用内广播，可以使用本地广播`LocalBroadcastManager.registerReceiver(BroadcastReceiver, IntentFilter)`来替代。
 
 ## 3 广播的发送
+
 Android提供了四种广播的发送方式：
+
 1. `sendOrderedBroadcast(Intent, String)`发送有序广播  
 该广播一次发送给一个接受者，每个接受者轮流执行，该广播可以携带结果给下一个接受者，或者被接受者丢弃，这样就不会传递给下一个接受者了。接受者的顺序按照`android:priority`排列，同一优先级的广播接收者将会无序执行。
 2. `sendBroadcast(Intent)`发送普通广播  

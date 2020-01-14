@@ -136,7 +136,6 @@ C(log.txt, Windows(explorer.exe), PerfLogs(null.txt), Program File(ftp.txt))
 ```
 
 该实例是一种透明的组合模式，因为"不管是叶子结点还是枝干节点都有相同的结构"
-{: .notice--success }
 
 ## 4. 源码中的例子
 

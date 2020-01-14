@@ -1,44 +1,16 @@
 ---
 title: "Android Studio build过程"
-excerpt: "Android Studio点击build按钮后，Android Studio就会编译整个项目并将apk安装到手机上，这个过程的背后到底发生了什么？"
-categories:
-  - Android
-tags:
-  - 知识星球
-  - gradle
-  - assemble
-  - aR
-  - aapt
-  - aidl
-  - javac
-  - dx
-  - apkbuilder
-  - jarsigner
-  - zipalign
-  - ApkBuilderMain
-  - apksigner
-  - ProGuard
-  - R8
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-04-16T16:25:10+08:00
 ---
 
-Android Studio点击build按钮后，Android Studio就会编译整个项目并将apk安装到手机上，请详细描述下这个过程的背后到底发生了什么？
-{: .notice--question }
-
-点击build按钮后，AS会根据Build Variants中Module的Build Variant的类型对对应的Module执行`gradlew :${Module}:assemble${variant}`  
-以一个典型的单Module的工程为例，此处就是`gradlew :app:assembleDebug`
-{: .notice }
+???+ question "Android Studio点击build按钮后，Android Studio就会编译整个项目并将apk安装到手机上，请详细描述下这个过程的背后到底发生了什么？"
+    点击build按钮后，AS会根据Build Variants中Module的Build Variant的类型对对应的Module执行`gradlew :${Module}:assemble${variant}`  
+    以一个典型的单Module的工程为例，此处就是`gradlew :app:assembleDebug`
 
 ## [The build process](https://developer.android.com/studio/build#build-process)  
 
 下面是典型Android应用的构建过程：  
 
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/android/build-process.png">
-    <figcaption>典型Android App模块的构建过程</figcaption>
-</figure>
+![典型Android App模块的构建过程](/assets/images/android/build-process.png)
 
 该过程一般分为四步：编译 -> 打包 -> 签名 -> 对齐
 
@@ -47,32 +19,27 @@ Android Studio点击build按钮后，Android Studio就会编译整个项目并�
 3. APK Packager会使用debug签名文件或release签名文件对APK进行签名
 4. 在生成最终的APK之前，APK Packager会使用[zipalign](https://developer.android.com/studio/command-line/zipalign.html)工具进行优化，此工具会使我们的App在运行时使用更少的内存
 
-
-<figure style="width: 66%" class="align-right">
-    <img src="/assets/images/android/android_apk_build_process.png">
-    <figcaption>更详细的Android App模块的构建过程</figcaption>
-</figure>
+![更详细的Android App模块的构建过程](/assets/images/android/android_apk_build_process.png)
 
 右图是更详细的构建过程图（*该部分内容没有在官网上找到出处，据说是老版本官网的内容*）
 
 可以很明显的看到，这里面有七步：
 
-1. 应用资源（res文件、assets文件、AndroidManifest.xml以及android.jar）通过**aapt**生成`R.java`文件以及打包好的资源文件
-2. AIDL文件通过**aidl**生成对应的Java文件
-3. 源码文件、`R.java`文件以及AIDL生成的Java文件通过**javac**编译成`.class`文件
-4. 第3步生成的`.class`文件以及第三方库中的`.class`文件通过**dx**处理生成`classes.dex`文件
-5. 打包好的资源文件、上一步生成的`classes.dex`文件、第三方库中的资源文件以及`.so`文件等其他资源通过**apkbuilder**生成未签名的`.apk`文件
-6. 调用**jarsigner**对上面未签名`.apk`进行签名
-7. 调用**zipalign**对签名后的`.apk`进行对齐处理
+1. 应用资源（res文件、assets文件、AndroidManifest.xml以及android.jar）通过 **aapt** 生成`R.java`文件以及打包好的资源文件
+2. AIDL文件通过 **aidl** 生成对应的Java文件
+3. 源码文件、`R.java`文件以及AIDL生成的Java文件通过 **javac** 编译成`.class`文件
+4. 第3步生成的`.class`文件以及第三方库中的`.class`文件通过 **dx** 处理生成`classes.dex`文件
+5. 打包好的资源文件、上一步生成的`classes.dex`文件、第三方库中的资源文件以及`.so`文件等其他资源通过 **apkbuilder** 生成未签名的`.apk`文件
+6. 调用 **jarsigner** 对上面未签名`.apk`进行签名
+7. 调用 **zipalign** 对签名后的`.apk`进行对齐处理
 
-注意：`apkbuilder`是一个调用了`tools/lib/sdklib.jar`里面`com.android.sdklib.build.`
-`ApkBuilderMain`的脚本，在某次sdk更新之后脚本被删除了，但是调用还在。  
-关于`jarsigner`与脚本`apksigner`，这两着的差别在于V1签名和V2签名；`apksigner`支持V2签名。[Android-APK签名工具-jarsigner和apksigner](https://www.jianshu.com/p/53078d03c9bf)
-{: .notice--warning }
+!!! warning
+    注意：`apkbuilder`是一个调用了`tools/lib/sdklib.jar`里面`com.android.sdklib.build.`
+    `ApkBuilderMain`的脚本，在某次sdk更新之后脚本被删除了，但是调用还在。  
+    关于`jarsigner`与脚本`apksigner`，这两着的差别在于V1签名和V2签名；`apksigner`支持V2签名。[Android-APK签名工具-jarsigner和apksigner](https://www.jianshu.com/p/53078d03c9bf)
 
 编译工具路径可以参考：[Android SDK Build Tools](https://developer.android.com/studio/command-line#tools-build)  
 编译流程可以参考：[Android逆向分析(2) APK的打包与安装](http://blog.zhaiyifan.cn/2016/02/13/android-reverse-2/)
-{: .notice--info }
 
 点击查看[更详细的构建流程](/assets/images/android_build_process_detail.png)
 
@@ -80,14 +47,13 @@ Android Studio点击build按钮后，Android Studio就会编译整个项目并�
 
 在App构建的过程中，生成`.dex`文件之前，还会经过ProGuard或者R8的处理。这一步可以将App和Library中没有使用的代码、资源文件进行移除（又称Tree Shaking）；同时对于需要使用的代码，会使用短名称混淆这些类、字段和方法。
 
-本节参考文献：
-[Shrink, obfuscate, and optimize your app - Android Developers](https://developer.android.com/studio/build/shrink-code)  
-截止2019-09-02，英语语言介绍的是R8编译器，中文文档还没有更新，所以还是ProGuard编译器。
-{: .notice--info }
+> 本节参考文献：
+> [Shrink, obfuscate, and optimize your app - Android Developers](https://developer.android.com/studio/build/shrink-code)  
+> 截止2019-09-02，英语语言介绍的是R8编译器，中文文档还没有更新，所以还是ProGuard编译器。
 
-要尽可能减小 APK 文件，我们应该启用*压缩*来移除 release build 中未使用的代码和资源。在启用压缩时，我们还可以从*混淆*（缩短类和成员的名称）和*优化*（采用更积极的策略来进一步缩小应用程序的大小）中获益。
+要尽可能减小 APK 文件，我们应该启用*压缩*来移除 release build 中未使用的代码和资源。在启用压缩时，我们还可以从 *混淆* （缩短类和成员的名称）和 *优化* （采用更积极的策略来进一步缩小应用程序的大小）中获益。
 
-当我们的项目使用[Android Gradle plugin 3.4.0]()或以上时，插件不再使用ProGuard编辑器来执行编译期代码优化。取而代之的是R8编译器，其将处理以下编译期任务：
+当我们的项目使用Android Gradle plugin 3.4.0或以上时，插件不再使用ProGuard编辑器来执行编译期代码优化。取而代之的是R8编译器，其将处理以下编译期任务：
 
 - **代码压缩（Code shrinking or tree-shaking）** 检测并安全地从应用程序及其依赖库中删除未使用的类、字段、方法和属性（这使其成为处理[64k引用限制](https://developer.android.com/studio/build/multidex.html)的有用工具）。例如，如果我们只使用了依赖库的少量API，则压缩可以识别我们应用中未使用的库代码，并从我们的应用中只删除这部分代码。
 - **资源压缩（Resource shrinking）** 从打包的应用程序中删除未使用的资源，包括应用程序依赖库中未使用的资源。它与代码压缩一起使用，这样一旦删除了未使用的代码，也可以安全地删除不再引用的任何资源。
@@ -96,7 +62,7 @@ Android Studio点击build按钮后，Android Studio就会编译整个项目并�
 
 在构建应用程序的 release 版本时，默认情况下，R8会自动执行上述编译时任务。但是，我们可以通过ProGuard规则文件禁用某些任务或自定义R8的行为。事实上，**R8适用于所有现有的ProGuard规则文件**，因此更新Android Gradle插件来使用R8，这不应该要求我们更改现有规则。
 
-<p>&nbsp;</p><font size="3"><b>启用压缩、混淆以及优化</b></font>  
+### 启用压缩、混淆以及优化
 
 由于这些编译时优化会增加编译时间，且可能因为没有充分准备规则而会引入Bug。所以，开启这些编译优化任务最好的时间就是在版本发布前的最终版本。在项目级别的`build.gradle`文件中添加如下代码就可以开启压缩、混淆和优化了：
 
@@ -124,7 +90,7 @@ android {
 }
 ```
 
-<p>&nbsp;</p><font size="3"><b>R8配置文件</b></font>  
+#### R8配置文件
 
 下面是R8使用的ProGuard配置文件的来源：
 
@@ -132,11 +98,11 @@ android {
 
 | Source | Location | Description |
 | ------ | -------- | ----------- |
-| Android Studio | **\<module-dir\>/proguard-rules.pro** |  |
+| Android Studio | **&lt;module-dir\>/proguard-rules.pro** |  |
 | Android Gradle Plugin | Generated by the Android Gradle plugin at compile time. | The Android Gradle plugin generates **proguard-android-optimize.txt**, which includes rules that are useful to most Android projects and enables [@Keep* annotations](https://developer.android.com/reference/androidx/annotation/Keep.html). |
-| Library dependencies | AAR libraries: **\<library-dir\>/proguard.txt**<br /><br />JAR libraries: **\<library-dir\>/META-INF/proguard/** | 如果aar库中已经包含了ProGuard文件，R8会自动使用这些规则。然而，我们需要注意，由于ProGuard规则是相加的，因此aar库中的规则也会影响到app中其他部分。 |
-| Android Asset Package Tool 2 (AAPT2) | After building your project with **minifyEnabled true: \<module-dir\>/build/intermediates/proguard-rules/debug/aapt_rules.txt** | AAPT2 generates keep rules based on references to classes in your app’s manifest, layouts, and other app resources. For example, AAPT2 includes a keep rule for each Activity that you register in your app’s manifest as an entry point. |
-| Custom configuration files | By default, when you create a new module using Android Studio, the IDE creates **\<module-dir\>/proguard-rules.pro** for you to add your own rules. | You can [include additional configurations](https://developer.android.com/studio/build/shrink-code#add-configuration), and R8 applies them at compile-time. |
+| Library dependencies | AAR libraries: **&lt;library-dir\>/proguard.txt**<br /><br />JAR libraries: **&lt;library-dir\>/META-INF/proguard/** | 如果aar库中已经包含了ProGuard文件，R8会自动使用这些规则。然而，我们需要注意，由于ProGuard规则是相加的，因此aar库中的规则也会影响到app中其他部分。 |
+| Android Asset Package Tool 2 (AAPT2) | After building your project with **minifyEnabled true: &lt;module-dir\>/build/intermediates/proguard-rules/debug/aapt_rules.txt** | AAPT2 generates keep rules based on references to classes in your app’s manifest, layouts, and other app resources. For example, AAPT2 includes a keep rule for each Activity that you register in your app’s manifest as an entry point. |
+| Custom configuration files | By default, when you create a new module using Android Studio, the IDE creates **&lt;module-dir\>/proguard-rules.pro** for you to add your own rules. | You can [include additional configurations](https://developer.android.com/studio/build/shrink-code#add-configuration), and R8 applies them at compile-time. |
 
 当我们将`minifyEnabled`属性设置为`true`时，R8编译器会将上面表格中所有的来源结合到一起。这在排除R8故障的时候非常重要，因为其他编译期的依赖，例如三方库，可能会引发我们不知道的R8行为的改变。
 
@@ -147,7 +113,7 @@ android {
 -printconfiguration ~/tmp/full-r8-config.txt
 ```
 
-<p>&nbsp;</p><font size="2"><b>额外配置</b></font>  
+### 额外配置
 
 我们对不同的编译变量添加不同的ProGuard文件，在对应的`productFlavor`代码块中。下面的例子给`flavor2`添加了`flavor2-rules.pro`，因此，`flavor2`现在使用3个ProGuard规则了，因为`release`代码块中的rules也会被使用：
 
@@ -177,20 +143,18 @@ android {
 }
 ```
 
-<p>&nbsp;</p><font size="3"><b>代码压缩</b></font>  
+#### 代码压缩
 
 要缩小应用程序的代码，R8首先根据组合的配置文件集确定应用程序代码中的所有入口点（*entry point*）。这些入口点包括Android平台可用于打开应用程序的 Activity 或 Service 的所有类。从每个入口点开始，R8检查应用程序的代码，以构建应用程序可能在运行时访问的所有方法，成员变量和其他类的图。未连接到该图的代码被视为不能到达的（*unreachable*），可能会从应用中删除。
 
 下图显示了一个具有运行时依赖库的应用程序。在检查应用程序代码时，R8确定可以从`MainActivity.class`入口点抵达方法`foo()`、`faz()`和`bar()`。但是，我们的应用程序在运行时从不使用类`OkayApi.class`或其方法`baz()`，因此R8在压缩应用程序时会删除该代码。
 
-<figure style="width: 80%" class="align-center">
-    <img src="/assets/images/android/tree-shaking.png">
-    <figcaption>At compile-time, R8 builds a graph based on your project's combined keep rules to determine unreachable code.</figcaption>
-</figure>
+![At compile-time, R8 builds a graph based on your project's combined keep rules to determine unreachable code.](/assets/images/android/tree-shaking.png)
+<small>At compile-time, R8 builds a graph based on your project's combined keep rules to determine unreachable code.</small>
 
 R8通过项目的R8配置文件中的`-keep`规则确定入口点。也就是说，keep 规则指定R8在压缩应用程序时不应丢弃的类，R8将这些类视为应用程序的可能入口点。Android Gradle插件和AAPT2会自动生成大多数应用项目所需的保留规则，例如activities、views和services。但是，如果我们需要用其他keep规则来自定义此默认行为，这也是支持的。
 
-<p>&nbsp;</p><font size="2"><b>自定义需要keep的代码</b></font>  
+### 自定义需要keep的代码
 
 对于大多数情况，默认的ProGuard规则文件（`proguard-android-optimize.txt`）足以让R8删除未使用的代码。但是，某些情况很难让R8正确分析，并且可能会删除我们的应用实际需要的代码。可能错误删除代码的一些示例包括： 
 
@@ -207,7 +171,7 @@ R8通过项目的R8配置文件中的`-keep`规则确定入口点。也就是说
 
 在使用`-keep`选项时，有很多注意事项需要我们注意，更多关于这方面的内容可以阅读[ProGuard Manual](https://www.guardsquare.com/en/products/proguard/manual/usage)。[TroubleShooting](https://www.guardsquare.com/en/products/proguard/manual/troubleshooting)这一小节列出了我们可能遇到的常见问题。
 
-<p>&nbsp;</p><font size="3"><b>压缩资源</b></font>  
+#### 压缩资源
 
 资源压缩只与代码压缩协同工作。在代码压缩器删除所有未使用的代码之后，资源压缩器可以识别应用仍在使用的资源。这在我们添加包含资源的代码库时体现得尤为明显 ------ 我们必须移除未使用的库代码，使库资源变为未引用资源，才能通过资源压缩器将它们移除。
 
@@ -227,7 +191,7 @@ android {
 }
 ```
 
-<p>&nbsp;</p><font size="2"><b>自定义需要keep的资源</b></font>  
+### 自定义需要keep的资源
 
 如果我们有一些资源想要keep或者discard，我们可以在`/res/raw/keep.xml`文件中进行声明。`tools:keep`和`tools:discard`属性都接收以逗号(“,”)分隔的资源名字的列表，资源名字可以使用星号(“*”)作为一个通配符。
 
@@ -242,7 +206,7 @@ android {
 
 指定要舍弃的资源可能看似愚蠢，因为我们本可将它们删除，但在使用构建变体时，这样做可能很有用。例如，如果我们明知给定资源表面上会在代码中使用（并因此不会被压缩器移除），但实际不会用于给定构建变体，就可以将所有资源放入公用项目目录，然后为每个构建变体创建一个不同的 keep.xml 文件。构建工具也可能无法根据需要正确识别资源，这是因为编译器会添加内联资源 ID，而资源分析器可能不知道真正引用的资源和恰巧具有相同值的代码中的整数值之间的差别。
 
-<p>&nbsp;</p><font size="2"><b>启用严格引用检查</b></font>  
+### 启用严格引用检查
 
 通常，资源压缩器可以准确地确定是否使用了资源。但是，如果我们的代码调用`Resources.getIdentifier()`（或者如果我们的任何库执行此操作 ------ AppCompat库执行此操作），则表示我们的代码将根据动态生成的字符串查找资源名称。当我们执行这一调用时，默认情况下资源压缩器会采取防御性行为，将所有具有匹配名称格式的资源标记为可能已使用，无法移除。
 
@@ -265,7 +229,7 @@ val res = resources.getIdentifier(name, "drawable", packageName)
 
 如果我们确实启用了严格压缩模式，并且代码也引用了包含动态生成字符串的资源，如上所示，那么我们必须使用通过`tools:keep`属性手动keep这些资源。
 
-<p>&nbsp;</p><font size="2"><b>移除无用的<a href="https://developer.android.com/guide/topics/resources/providing-resources.html#AlternativeResources">替代资源</a></b></font>  
+### 移除无用的<a href="https://developer.android.com/guide/topics/resources/providing-resources.html#AlternativeResources">替代资源</a>
 
 下面的代码片段展示了怎么样将语言资源限定为仅支持英语和法语：
 
@@ -280,7 +244,7 @@ android {
 
 同理，我们也可以利用 APK 拆分为不同设备构建不同的 APK，自定义在 APK 中包括的屏幕密度或 ABI 资源。
 
-<p>&nbsp;</p><font size="2"><b>合并重复资源</b></font>  
+### 合并重复资源
 
 默认情况下，Gradle 还会合并同名资源，例如可能位于不同资源文件夹中的同名drawables。这一行为不受 `shrinkResources` 属性控制，也无法停用，因为在有多个资源匹配代码查询的名称时，有必要利用这一行为来避免错误。
 
@@ -300,14 +264,14 @@ Gradle 会按以下级联优先顺序合并重复资源：
 
 如果完全相同的资源出现在同一源集中，Gradle 无法合并它们，并且会发出资源合并错误。如果我们在 `build.gradle` 文件的 `sourceSet` 属性中定义了多个源集，则可能会发生这种情况，例如，如果 `src/main/res/` 和 `src/main/res2/` 包含完全相同的资源，就可能会发生这种情况。
 
-<p>&nbsp;</p><font size="3"><b>代码混淆</b></font>  
+#### 代码混淆
 
 混淆的目的是通过缩短应用程序的类，方法和字段的名称来减少应用程序的大小。  
 虽然混淆不会从我们的应用程序中删除代码，但在具有索引许多类、方法和字段的DEX文件的应用程序中可以看到显著的减小。
 
 此外，如果我们的代码依赖于应用程序的方法和类的可预测命名 ------ 例如，在使用反射时，我们应该将这些签名视为入口点并为它们指定保留规则。那些保留规则告诉R8不仅要将该代码保留在应用程序的最终DEX中，还要保留其原始命名。
 
-<p>&nbsp;</p><font size="3"><b>代码优化</b></font>  
+#### 代码优化
 
 为了进一步缩小我们的应用程序，R8会在更深层次上检查我们的代码，以删除更多未使用的代码，或者在可能的情况下重写代码以使其更简洁。下面是几个优化的例子：
 
@@ -318,7 +282,7 @@ Gradle 会按以下级联优先顺序合并重复资源：
 
 R8不允许我们禁用或启用零碎的优化，或修改优化的行为。实际上，R8忽略了任何试图修改默认优化的ProGuard规则，例如`-optimizations`和`-optimizepasses`。此限制很重要，因为随着R8的不断改进，维护标准的优化行为有助于Android Studio团队轻松排除故障并解决我们可能遇到的任何问题。
 
-<p>&nbsp;</p><font size="2"><b>启用更激进的优化</b></font>  
+### 启用更激进的优化
 
 R8包含一组默认情况下未启用的其他优化。我们可以通过在项目的`gradle.properties`文件中包含以下内容来启用这些其他优化：
 

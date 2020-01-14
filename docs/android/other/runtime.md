@@ -1,17 +1,5 @@
 ---
 title: "Android Runtime"
-excerpt: "Dalvik、JIT、ART、AOT等概念以及联系"
-categories:
-  - Android
-tags:
-  - Dalvik
-  - ART
-  - JIT
-  - AOT
-  - CMS
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-09-26T16:16:04+08:00
 ---
 
 首先介绍一下这些概念：
@@ -32,11 +20,12 @@ last_modified_at: 2019-09-26T16:16:04+08:00
 ## 2. JIT与AOT的区别
 
 |  | RAM占用 | ROM占用 | 流畅度 | 省电 | 兼容性 | 加载速度 |
-|  | --------------- | ---------- | ---------- |
+|  |  |  |  | --------------- | ---------- | ---------- |
 | Just-in-time | 大 | 小 | 普通 | 普通 | 好 | 慢 |
 | Ahead-of-time | 小 | 大 | 好 | 好 | 普通 | 快 |
 
 JIT与AOT的区别主要是编译发生的时间不同所导致的：
+
 - AOT 提前编译会导致安装时比较慢，编译后的产物也会占用一定的存储空间
 - JIT 及时编译安装过程很快，但是运行时需要编译，所以会性能消耗和内存消耗
 
@@ -58,10 +47,7 @@ Android 运行组件在管理配置文件指导的编译时，可最大程度降
 
 关于混合模式的具体流程，在[实现 ART 即时 (JIT) 编译器](https://source.android.com/devices/tech/dalvik/jit-compiler)一文中也有提及：
 
-<figure style="width: 60%" class="align-center">
-    <img src="/assets/images/android/jit-workflow.png" style="border: none">
-    <figcaption>JIT Workflow</figcaption>
-</figure>
+![JIT Workflow](/assets/images/android/jit-workflow.png)
 
 - 在不影响前台应用性能的情况下运行 JIT 所需的内存取决于相关应用。大型应用比小型应用需要更多内存。一般来说，大型应用所需的内存稳定维持在 4 MB 左右。
 
@@ -71,7 +57,7 @@ Android 运行组件在管理配置文件指导的编译时，可最大程度降
 
 [调试 ART 垃圾回收](https://source.android.com/devices/tech/dalvik/gc-debug)
 
-[CMS垃圾回收器](/jvm/java-gc/#356-cms%E6%94%B6%E9%9B%86%E5%99%A8)
+[CMS垃圾回收器](/jvm/java-gc/#356-cms)
 
 与 Dalvik 相比，ART CMS (Concurrent Mark Sweep) 垃圾回收计划在很多方面都有一定的改善：
 

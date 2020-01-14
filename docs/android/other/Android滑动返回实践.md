@@ -1,14 +1,5 @@
 ---
 title: "Android滑动返回实践"
-excerpt: "给App快速添加滑动返回功能"
-categories:
-  - Android
-tags:
-  - SwipeBack
-  - AppCompatDelegate
-  - ContentView
-  - onContentChanged
-last_modified_at: 2018-04-09T18:01:10+08:00
 ---
 
 ## 1. 前言
@@ -156,6 +147,4 @@ public static AppCompatDelegate create(Activity activity, AppCompatCallback call
 
 最后上一段Final版本效果的视频
 
-{% include base_path %}
-
-<iframe width="320" height="568" src="{{ base_path }}/assets/videos/swipe_back.mp4" frameborder="0" allowfullscreen></iframe>
+<iframe width="320" height="568" src="/assets/videos/swipe_back.mp4" frameborder="0" allowfullscreen></iframe>

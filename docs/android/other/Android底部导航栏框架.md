@@ -1,40 +1,23 @@
 ---
-title: "Android BottomNavigationView + ViewPager + Fragment实现底部导航栏"
-excerpt: "BottomNavigationView + ViewPager + Fragment实现底部导航栏的方式；BottomNavigationView disable特殊效果；正常状态、选中状态Menu颜色"
-header:
-  teaser: /assets/images/android/bottomnavigationbar未设置后.png
-  overlay_image: /assets/images/android/bottomnavigationbar未设置后.png
-  overlay_filter: 0.5
-categories:
-  - Android
-tags:
-  - BottomNavigationView
-  - ShiftingMode
-  - ViewPager
-  - Fragment
-  - 底部导航
-  - Shadow
-  - Menu
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-06-06T15:47:53+08:00
+title: "Android原生底部导航栏"
 ---
 
 BottomNavigationView+ViewPager+Fragment可以用来实现常见的底部导航的UI架构。本章的主要内容就是讲解这个UI样式的详细实现过程。
 
 此外BottomNavigationView使用起来还是有一些值得摸索的小细节，本章也会在下部分内容结合BottomNavigationView的源码进行解释，这些细节包括：
+
 - Menu数据超过3个会启用ShiftingMode，如何禁用这种讨厌的效果？
 - 点击Menu进行切换时，选中的Menu的文字会变大，如何禁用这种UI设计师觉得不OK的效果（我觉得很OK啊）？
 - 控制Menu选中、未选中状态ICON、文字颜色
 - 阴影问题（全文搜索“阴影”）
 
 话不多说，先上最终效果图。  
-![BottomNavigationView实现底部导航栏]({{ basepath }}/assets/images/android/BottomNavigationView实现底部导航栏.png)
+![BottomNavigationView实现底部导航栏](/assets/images/android/BottomNavigationView实现底部导航栏.png)
 
 ## 1 BottomNavigationView实现底部导航栏
 首先简单说说这种效果的编写流程。  
 
-I. 在`build.gradle`中引入**最新**的`design`以及`appcompat`库
+I. 在`build.gradle`中引入 **最新** 的`design`以及`appcompat`库
 ```java
 dependencies {
     compile 'com.android.support:appcompat-v7:25.0.1'
@@ -108,10 +91,10 @@ IV. 写Activity的布局文件
         android:angle="270" />
 </shape>
 ```
-也可以使用`BottomNavigationView`的`app:elevation="8dp"`属性为其加上阴影，但是个人觉得效果不理想。若使用这种方式，**还要注意为其加上`android:background`属性，不然阴影不会出现。**另外elevation没效果的bug已经修复了，将`design`库更新到`25.0.1`可以解决这个问题[This has been released in support library 25.0.1](https://issuetracker.google.com/issues/37124558)。
+也可以使用`BottomNavigationView`的`app:elevation="8dp"`属性为其加上阴影，但是个人觉得效果不理想。若使用这种方式， **还要注意为其加上`android:background`属性，不然阴影不会出现。** 另外elevation没效果的bug已经修复了，将`design`库更新到`25.0.1`可以解决这个问题[This has been released in support library 25.0.1](https://issuetracker.google.com/issues/37124558)。
 
 下面上一张对比图，左边是系统自带的，右边是通过View实现的。
-![左边为elevation实现、右边为View实现]({{ basepath }}/assets/images/android/bottomnavigationbar-shadow.png)
+![左边为elevation实现、右边为View实现](/assets/images/android/bottomnavigationbar-shadow.png)
 
 
 V. 写Activity的代码
@@ -217,7 +200,6 @@ public class BottomNavigationViewActivity extends ActivityBase
 `initEvent`里面分别给ViewPager和BottomNavigationView绑定了一个Listener。这两个Listener就是ViewPager和BottomNavigationView联动的关键。  
 首先看一下BottomNavigationView的OnNavigationItemSelectedListener，它就只有一个方法`onNavigationItemSelected`。在这个方法里面我们控制ViewPager切换到对应的Fragment。
 然后在看一下ViewPager的OnPageChangeListener，这里我们只用到了`onPageSelected`方法。同样，这里控制BottomNavigationView选择对应的Menu。
-{: .notice--warning}
 
 另外：由于ViewPager的特性，会导致有些fragment不断的销毁，重建。在需要的时候，我们可以重写`FragmentPagerAdapter`的`destroyItem方法`，将里面调用父类的方法删除，这样可以阻止Fragment的销毁。
 ```java
@@ -305,11 +287,13 @@ public class RepayCalendarFragment extends BaseFragment {
 > 到此，第一节就已经结束了。这个控件还是挺方便的。但是，还是有一些坑啊，比如最开始提到的三个细节。下面这一节来讲解如何达到这些效果。
 
 ## 2 BottomNavigationView的细节调整
+
 ### 2.1 禁用ShiftingMode模式
+
 如果你的Menu超过三个，那么需要此步骤。否则，不需要。因为控件内部会根据`mShiftingMode = mMenu.size() > 3;`决定启不启用mShiftingMode。
 
 我们先看禁用ShiftingMode前后对比图：
-![禁用ShiftingMode前后对比图.png]({{ basepath }}/assets/images/android/禁用ShiftingMode前后对比图.png)
+![禁用ShiftingMode前后对比图.png](/assets/images/android/禁用ShiftingMode前后对比图.png)
 
 禁用代码：
 ```java
@@ -347,7 +331,9 @@ BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
 想要知道为什么这样做可以解决这个问题，我们需要查看源码了。
 
 ### 2.2 BottomNavigationView源码解析
+
 首先看一下BottomNavigationView里面几个类成员变量：
+
 ```java
 private final MenuBuilder mMenu;
 private final BottomNavigationMenuView mMenuView;
@@ -551,8 +537,11 @@ protected MenuItem addInternal(int group, int id, int categoryOrder, CharSequenc
 ```
 
 ### 2.3 禁用选中项文字变大
+
 另外我们关注第二个细节。
-![第二个细节对比.png]({{ basepath }}/assets/images/android/bottomnavigationbar-text-scale.png)
+
+![第二个细节对比.png](/assets/images/android/bottomnavigationbar-text-scale.png)
+
 选中的Item，底下的文字会比没有选中的大一号。如果我们想改，也是有办法的。
 
 我们只需要在我们工程的`dimens.xml`中加入一行代码就OK了。
@@ -591,22 +580,10 @@ public BottomNavigationItemView(Context context, AttributeSet attrs, int defStyl
 
 按照第一节的设置，BottomNavigationView的表现如下：
 
-{% capture fig_img %}
-![没有特意控制Menu渲染前]({{ basepath }}/assets/images/android/bottomnavigationbar未设置前.png)
-{% endcapture %}
-<figure>
-  {{ fig_img | markdownify | remove: "<p>" | remove: "</p>" }}
-  <figcaption>没有特意控制Menu渲染前</figcaption>
-</figure>
+![没有特意控制Menu渲染前](/assets/images/android/bottomnavigationbar未设置前.png)
 
 在控制渲染后：
-{% capture fig_img %}
-![控制Menu渲染后]({{ basepath }}/assets/images/android/bottomnavigationbar未设置后.png)
-{% endcapture %}
-<figure>
-  {{ fig_img | markdownify | remove: "<p>" | remove: "</p>" }}
-  <figcaption>控制Menu渲染后</figcaption>
-</figure>
+![控制Menu渲染后](/assets/images/android/bottomnavigationbar未设置后.png)
 
 通过上面对比知道，我们可以精确的控制Menu的文字、ICON在各种状态下显示的样子。
 
@@ -622,7 +599,7 @@ public BottomNavigationItemView(Context context, AttributeSet attrs, int defStyl
     app:itemTextColor="@drawable/tab_text_color_selector"
     app:menu="@menu/menu_bottom_navigation" />
 ```
-上面新增了两个控制属性：`app:itemIconTint`以及`app:itemTextColor`，这两个分别控制各种状态下**非透明部分**图标的渲染以及文字的渲染。  
+上面新增了两个控制属性：`app:itemIconTint`以及`app:itemTextColor`，这两个分别控制各种状态下 **非透明部分** 图标的渲染以及文字的渲染。  
 
 也就是说想要达到上面渲染后的效果，还需要改menu文件里面的`android:icon`部分：
 ```xml
@@ -653,7 +630,6 @@ icon的drawable如下：
 ```
 
 至此，三个麻烦的问题都解决了。BottomNavigationView的工作原理大致也过了一遍。
-{: .notice--success}
 
 ### 2.5 禁止tint icon
 
@@ -687,7 +663,7 @@ BTW，禁用点击ripple效果可以设置`app:itemBackground="@null"`。
 
 自从Google推出了androidx之后，原来design库有了新的替代品，而BottomNavigationView也有了新的包名`com.google.android.material.bottomnavigation.BottomNavigationView`。该组件在`com.google.android.material:material:x.x.x`中。  
 
-Material库中的BNV使用和之前的差不多，不过2.1节的[禁用ShiftingMode模式](/android/Android%E5%BA%95%E9%83%A8%E5%AF%BC%E8%88%AA%E6%A0%8F%E6%A1%86%E6%9E%B6/#21-%E7%A6%81%E7%94%A8shiftingmode%E6%A8%A1%E5%BC%8F)反射修改方式已经失效，毕竟两个库内部不太一样。新BNV提供了`app:itemHorizontalTranslationEnabled`和`app:labelVisibilityMode`方便开发者选择需要的样式。  
+Material库中的BNV使用和之前的差不多，不过2.1节的[禁用ShiftingMode模式](#21-shiftingmode)反射修改方式已经失效，毕竟两个库内部不太一样。新BNV提供了`app:itemHorizontalTranslationEnabled`和`app:labelVisibilityMode`方便开发者选择需要的样式。  
 `app:itemHorizontalTranslationEnabled`可以简单粗暴的控制ShiftingMode是否开启。`app:labelVisibilityMode`有四种值可以设置，对应的xml选项如下：
 
 | LabelVisibilityMode | xml选项 | UI表现 |
@@ -697,7 +673,7 @@ Material库中的BNV使用和之前的差不多，不过2.1节的[禁用Shifting
 |LABEL_VISIBILITY_LABELED | labeled | label会在所有的item上显示 |
 |LABEL_VISIBILITY_UNLABELED | unlabeled | label会在所有的item上都不显示 |
 
-毫无疑问，我们只需要令`app:itemHorizontalTranslationEnabled="false"`和`app:labelVisibilityMode="labeled"`即可完成[禁用ShiftingMode模式](/android/Android%E5%BA%95%E9%83%A8%E5%AF%BC%E8%88%AA%E6%A0%8F%E6%A1%86%E6%9E%B6/#21-%E7%A6%81%E7%94%A8shiftingmode%E6%A8%A1%E5%BC%8F)的效果。  
+毫无疑问，我们只需要令`app:itemHorizontalTranslationEnabled="false"`和`app:labelVisibilityMode="labeled"`即可完成[禁用ShiftingMode模式](#21-shiftingmode)的效果。  
 
 实际上，只需要令`app:labelVisibilityMode="labeled"`即可。因为，此时`BottomNavigationMenuView.isShifting`会返回false，轮不到短路与后面的`itemHorizontalTranslationEnabled`出手。
 
@@ -742,7 +718,7 @@ Material库中的BNV使用和之前的差不多，不过2.1节的[禁用Shifting
   }
 ```
 
-2.3节的[禁用选中项文字变大](/android/Android%E5%BA%95%E9%83%A8%E5%AF%BC%E8%88%AA%E6%A0%8F%E6%A1%86%E6%9E%B6/#23-%E7%A6%81%E7%94%A8%E9%80%89%E4%B8%AD%E9%A1%B9%E6%96%87%E5%AD%97%E5%8F%98%E5%A4%A7)仍然实用于新BNV中。因为`design_bottom_navigation_item.xml`中仍然使用了`design_bottom_navigation_text_size`、`design_bottom_navigation_active_text_size`作为两个label的默认大小。  
+2.3节的[禁用选中项文字变大](#23)仍然实用于新BNV中。因为`design_bottom_navigation_item.xml`中仍然使用了`design_bottom_navigation_text_size`、`design_bottom_navigation_active_text_size`作为两个label的默认大小。  
 当然，我们也可以使用新BNV提供的`app:itemTextAppearanceActive`、`app:itemTextAppearanceInactive`来控制文字大小。
 
 此外，新BNV还提供了`app:itemIconSize`控制icon的大小。这样一来新BNV的可定制性就更强了。

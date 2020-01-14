@@ -1,26 +1,13 @@
 ---
 title: "RecyclerView高级特性——拖拽排序以及滑动删除"
-categories:
-  - Android
-tags:
-  - RecyclerView
-  - ItemTouchHelper
-  - swipe
-  - drag
-comments: true
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-04-08T22:31:19+08:00
 ---
-
-{% include base_path %}
 
 RecyclerView高级特性系列：
 
-- [ListView、RecyclerView缓存策略解析](/android/recyclerview-cache/)
-- [RecyclerView高级特性——拖拽排序以及滑动删除](/android/RecyclerView-Sort&Delete/)
-- [RecyclerView高级特性——ItemDecoration](/android/recyclerview-item-docoration/)
-- [RecyclerView的一些使用细节——多级嵌套时的缓存优化、smooth scroll问题](/android/recyclerview-others/)
+- [ListView、RecyclerView缓存策略解析](/android/other/recyclerview-cache/)
+- [RecyclerView高级特性——拖拽排序以及滑动删除](/android/other/RecyclerView-Sort&Delete/)
+- [RecyclerView高级特性——ItemDecoration](/android/other/recyclerview-item-docoration/)
+- [RecyclerView的一些使用细节——多级嵌套时的缓存优化、smooth scroll问题](/android/other/recyclerview-others/)
 
 ---
 
@@ -28,10 +15,11 @@ RecyclerView支持拖拽排序以及滑动删除，实现过程也比较简单�
 
 下面先上一段demo效果视频：
 
-<iframe width="320" height="568" src="{{ base_path }}/assets/videos/recyclerview_drag_swipe.mp4" frameborder="0" allowfullscreen></iframe>
+<iframe width="320" height="568" src="/assets/videos/recyclerview_drag_swipe.mp4" frameborder="0" allowfullscreen></iframe>
 
 
 主要流程如下：
+
 1. 定义拖拽操作、滑动删除接口
 3. `Adapter`中实现第一步的接口，这里主要是体现对数据的操作
 2. 自定义Callback实现`android.support.v7.widget.helper.ItemTouchHelper.Callback`，此Callback就是`RecyclerView`实现拖拽、滑动删除的关键
@@ -95,6 +83,7 @@ public class TodoTaskAdapter extends BaseQuickAdapter<TodoTask, BaseViewHolder> 
 ```
 
 如上所示  
+
 - 交换时使用`Collections.swap`将对应位置的数据进行交换，然后通知数据有更改(`notifyItemMoved`以及`notifyItemRemoved`)会有默认的动画效果。
 - 删除以及标记完成都是简单的移除了数据，然后通知更新。这里可以按照自己的业务来，这里只是demo
 
@@ -222,4 +211,3 @@ touchHelper.attachToRecyclerView(mRecyclerView);
 ```
 
 此处只是一个demo，让Adapter实现`IDragSwipe`接口，实际上本人觉得并不妥当。
-{: .notice--warning }

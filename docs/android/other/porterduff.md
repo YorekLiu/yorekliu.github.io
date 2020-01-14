@@ -1,24 +1,12 @@
 ---
 title: "使用Porter-Duff合成数字图像"
-excerpt: "12种Alpha合成模式（Alpha compositing modes）+ 6种混合模式（Blending modes）在[KK, Q]版本上面表现异同"
-categories:
-  - Android
-tags:
-  - PorterDuff
-  - Xfermode
-header:
-  overlay_image: /assets/images/android/porterduff-difference.png
-  overlay_filter: rgba(128, 128, 128, 0.7)
-classes: wide
-last_modified_at: 2019-06-25T02:28:02+08:00
 ---
 
 [PorterDuff.Mode](https://developer.android.com/reference/android/graphics/PorterDuff.Mode.html)
-{: .notice--info }
 
 ---
 
-Porter-Duff的名称是对 Thomas Porter 和 Tom Duff 的工作的致敬，他们在1984年的题为“合成数字图像”的开创性论文中提出了这一点。在论文中，作者描述了12个合成操作，这些操作控制了怎样计算 **source （要呈现的图形对象）**与 **destination （渲染目标的内容）**的组合所产生的颜色。  
+Porter-Duff的名称是对 Thomas Porter 和 Tom Duff 的工作的致敬，他们在1984年的题为“合成数字图像”的开创性论文中提出了这一点。在论文中，作者描述了12个合成操作，这些操作控制了怎样计算 **source （要呈现的图形对象）** 与 **destination （渲染目标的内容）** 的组合所产生的颜色。  
 
 “合成数字图像”发表于1984年7月的 *Computer Graphics* 第18卷第3期。  
 
@@ -79,17 +67,16 @@ PorterDuff.Mode.DARKEN, PorterDuff.Mode.LIGHTEN
 
 先上测试所需的两个图片：
 
-<figure style="width: 30%" class="half align-center">
-    <img src="/assets/images/android/src.png">
-    <img src="/assets/images/android/dst.png">
-    <figcaption>Source image & Destination image</figcaption>
-</figure>
+<img src="/assets/images/android/src.png">
+<img src="/assets/images/android/dst.png">
+
+<small>Source image & Destination image</small>
 
 然后就是测试代码了：  
 
-**注意**：我在查资料时发现有文章说Canvas实现效果和Bitmap实现效果有差异，后者会得到官网的效果。所以，下面的测试代码有两个方法，`drawCanvas`使用Canvas实现，`drawBitmap`使用Bitmap实现。后来在KK到Q上面进行测试，发现两个方法在其他一样的情况下效果都一样。  
-真正对实现效果有影响的是**layerType**，该值默认会是`LAYER_TYPE_NONE`，我们只需要指定为`LAYER_TYPE_SOFTWARE`就会得到官网的效果。而且对于`LAYER_TYPE_NONE`来说，各个API Level之间还有一点差异，详见后面表格以及测试结果资源 [porterduff.zip](/assets/file/porterduff.zip)
-{: .notice--primary }
+!!! warning
+    **注意**：我在查资料时发现有文章说Canvas实现效果和Bitmap实现效果有差异，后者会得到官网的效果。所以，下面的测试代码有两个方法，`drawCanvas`使用Canvas实现，`drawBitmap`使用Bitmap实现。后来在KK到Q上面进行测试，发现两个方法在其他一样的情况下效果都一样。  
+    真正对实现效果有影响的是**layerType**，该值默认会是`LAYER_TYPE_NONE`，我们只需要指定为`LAYER_TYPE_SOFTWARE`就会得到官网的效果。而且对于`LAYER_TYPE_NONE`来说，各个API Level之间还有一点差异，详见后面表格以及测试结果资源 [porterduff.zip](/assets/file/porterduff.zip)
 
 **activity_porter_duff.xml**
 
@@ -227,9 +214,8 @@ class PorterDuffActivity : AppCompatActivity() {
 
 测试结果如下：
 
-<figcaption>KK到Q版本PorterDuff表现的异同</figcaption>
+<small>KK到Q版本PorterDuff表现的异同</small>
 
-{% raw %}
 <table>
   <thead>
     <tr>
@@ -273,6 +259,5 @@ class PorterDuffActivity : AppCompatActivity() {
     </tr>
   </tbody>
 </table>
-{% endraw %}
 
 上图的1、2、3、4分别指 *Porter-Duff效果重现图* 中的第1、2、3、4张图。

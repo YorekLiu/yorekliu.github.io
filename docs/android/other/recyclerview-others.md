@@ -1,23 +1,13 @@
 ---
 title: "RecyclerView的一些使用细节"
-excerpt: "RecyclerView多级嵌套时的缓存优化、smooth scroll问题"
-categories:
-  - Android
-tags:
-  - RecyclerView
-  - RecycledViewPool
-  - SmoothScroller
-toc: true
-toc_label: "目录"
-last_modified_at: 2020-01-05T03:23:18+08:00
 ---
 
 RecyclerView高级特性系列：
 
-- [ListView、RecyclerView缓存策略解析](/android/recyclerview-cache/)
-- [RecyclerView高级特性——拖拽排序以及滑动删除](/android/RecyclerView-Sort&Delete/)
-- [RecyclerView高级特性——ItemDecoration](/android/recyclerview-item-docoration/)
-- [RecyclerView的一些使用细节——多级嵌套时的缓存优化、smooth scroll问题](/android/recyclerview-others/)
+- [ListView、RecyclerView缓存策略解析](/android/other/recyclerview-cache/)
+- [RecyclerView高级特性——拖拽排序以及滑动删除](/android/other/RecyclerView-Sort&Delete/)
+- [RecyclerView高级特性——ItemDecoration](/android/other/recyclerview-item-docoration/)
+- [RecyclerView的一些使用细节——多级嵌套时的缓存优化、smooth scroll问题](/android/other/recyclerview-others/)
 
 ---
 
@@ -31,7 +21,7 @@ RecyclerView高级特性系列：
 - 对于最外层的RecyclerView A来说，它的item复用显然是没有任何问题的
 - 对于A里面每一项的RecyclerView B来说，复用的性价比太低了。因为A的项一旦显示出来，B里面的就会全部显示；A一旦滑出屏幕，B里面的就会放进缓存。但是缓存里面的item只会被当前的B使用。也可以是说，如果A里面有10项，每一项里面都有5个小项，那么我将A从头滑到尾，那么就会有50项在内存中。
 
-那么问题来了，有没有什么方法让B之间共享缓存呢？肯定是有的，我们需要使用到`RecyclerView.RecycledViewPool`，这个东西我们在[ListView、RecyclerView缓存策略解析](/android/recyclerview-cache/)这篇文章中分析过，这里只说使用方式。
+那么问题来了，有没有什么方法让B之间共享缓存呢？肯定是有的，我们需要使用到`RecyclerView.RecycledViewPool`，这个东西我们在[ListView、RecyclerView缓存策略解析](/android/other/recyclerview-cache/)这篇文章中分析过，这里只说使用方式。
 
 平平无奇的RecyclerView A的初始化：
 

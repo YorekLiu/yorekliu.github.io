@@ -1,13 +1,5 @@
 ---
 title: "Android暂停酷狗、网易云音乐等音乐播放器的播放"
-excerpt: "Android N实测对Google Play Music、网易云音乐、酷狗等音乐播放器有效"
-categories:
-  - Android
-tags:
-  - AudioManager
-  - MediaPlayer
-comments: true
-last_modified_at: 2017-05-04T10:39:19+08:00
 ---
 
 在某些时候，我们想暂停其他第三方音乐播放器(比如Google Play Music、网易云音乐等等)的播放，完成这些事情还要恢复。

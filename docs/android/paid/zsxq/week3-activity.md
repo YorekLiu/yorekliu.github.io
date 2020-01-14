@@ -1,14 +1,5 @@
 ---
 title: "理解Activity的启动模式"
-excerpt: "理解Activity的启动模式"
-categories:
-  - Android
-tags:
-  - Activity
-  - 知识星球
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-04-25T16:38:30+08:00
 ---
 
 ## Question
@@ -18,11 +9,12 @@ last_modified_at: 2018-04-25T16:38:30+08:00
 2、清晰地描述下onNewIntent和onConfigurationChanged这两个生命周期方法的场景？
 
 ## Answer
-关于Activity，可以看这篇全面的文章：[Android四大组件(1)——Activity]({{ basepath }}/android/Android四大组件(1)/)
+关于Activity，可以看这篇全面的文章：[Activity](/android/framework/Android四大组件(1)/)
 
 ### 1. Activity的启动模式
 
 目前有四种启动模式：standard、singleTop、singleTask、singleInstance
+
 - standard  
   标准模式  
   每次启动activity都会创建一个新的实例，不管该实例是否已经存在。被启动的activity会运行在启动该activity的任务栈中。所以使用非Activity类型的Context启动一个standard Activity就会报错，解决该问题的办法是为待启动的Activity指定FLAG_ACTIVITY_NEW_TASK，这样启动的时候就会为它准备一个新的任务栈，这样待启动Activity实际上是以singleTask模式启动的。

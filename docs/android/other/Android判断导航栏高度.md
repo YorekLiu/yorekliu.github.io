@@ -1,18 +1,5 @@
 ---
 title: "Android判断虚拟按键(导航栏)显示与否、高度以及获取屏幕实际高度"
-excerpt: "由一个Bug引起的关于导航栏占用高度的测量方式，以及最后想出来的获取屏幕实际高度的方法"
-categories:
-  - Android
-tags:
-  - 虚拟按键高度
-  - NavigationBar
-  - 屏幕高度
-  - StatusBar
-  - SystemProperties
-  - realsize
-  - fullscreen
-toc: true
-toc_label: "目录"
 ---
 
 最近发现了一个Bug：网络异常时弹出SnackBar提示检查网络。
@@ -67,7 +54,6 @@ boolean mHasNavigationBar = resources.getBoolean(resourceId);
 ```
 
 题外话：按照同样的原理，将上面的`config_showNavigationBar`换成`status_bar_height`就可以获取状态栏的高度。
-{: .notice--warning}
 
 获取statusbar的高度可以使用这个方法
 ```java
@@ -83,9 +69,7 @@ public static int getStatusBarHeight(Context context) {
 
 其次，`SystemProperties`的API在普通应用也是获取不到的。但是`SystemProperties`中的值可以简单的理解为记录在`system/build.prop`中这个文件中。我们可以通过Runtime.exec读取该文件，获取`qemu.hw.mainkeys`属性的值。
 
-目前，博主在阅读[滴滴的开源项目VirtualAPK](https://github.com/didi/VirtualAPK)时，学会了不用通过读`system/build.prop`就可以获取系统变量的方法了。并用到了项目中  
-<a href="/android/Android超级截图" class="btn btn--primary">了解更多</a>
-{: .notice--warning}
+目前，博主在阅读[滴滴的开源项目VirtualAPK](https://github.com/didi/VirtualAPK)时，学会了不用通过读`system/build.prop`就可以获取系统变量的方法了。原理是Fake SystemProperties文件。
 
 ### 1.2 获取NavigationBar的高度
 这步也是和上面`config_showNavigationBar`获取一样：
@@ -111,7 +95,7 @@ int navigationBarHeight = resources.getDimensionPixelSize(resourceId);
 
 所以我们可以判断DecorView的高度与可用屏幕高度是否相等来判断是否有导航栏，因为导航栏是不会计算到可用屏幕高度中的。
 
-![DecorView上大致的布局]({{ basepath }}/assets/images/android/DecorView上大致的布局.png )
+![DecorView上大致的布局](/assets/images/android/DecorView上大致的布局.png)
 
 具体判断NavigationBar是否存在的代码如下
 ```java
@@ -131,6 +115,7 @@ private Runnable mRunnable = new Runnable() {
 ```
 
 **因此，可以得出两个小技巧**：
+
 1. **获取NavigationBar的高度**  
 在上面的代码中，我们可以用DecorView的高度减去屏幕可用高度，若为0表示当前NavigationBar不占用高度；若不为0，则就是NavigationBar的高度
 2. **获取整个屏幕的高度**  

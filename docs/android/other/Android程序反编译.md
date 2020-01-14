@@ -1,22 +1,15 @@
 ---
 title: "MacOS下Android程序反编译"
-excerpt: "本文介绍MacOS系统下入门级别的Android反编译教程"
-categories:
-  - Android
-tags:
-  - Decompile
-  - Charles
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-04-09T12:56:10+08:00
 ---
 
 ## 1. 反编译
 
-[反编译文件下载]({{ basepath }}/assets/file/decompile.zip){: .btn .btn--success}
+[点击下载反编译文件](/assets/file/decompile.zip)
 
 ### 1.1 工具准备
+
 反编译工具三件套：
+
 1. apktool -- 将apk中的xml文件、图片、语言资源文件等反编译成原状态
 2. dex2jar -- 将dex文件反编译成jar包文件
 3. jdgui -- 把jar包文件转化成可读写的Java源文件
@@ -25,7 +18,9 @@ last_modified_at: 2018-04-09T12:56:10+08:00
 > 若要看Java源代码，需要使用`dex2jar`以及`jdgui`
 
 ### 1.2 apktool
+
 该步骤需要`apktool`工具，此工具有两个文件
+
 - `apktool.jar`
 - `apktool.sh`
 
@@ -41,10 +36,10 @@ chmod a+x apktool.sh
 ./apktool.sh d com.hrhx.android.app_4.2.0_402002.apk
 ```
 
-![decompile_apktool]({{ basepath }}/assets/images/android/decompile_apktool.png)
+![decompile_apktool](/assets/images/android/decompile_apktool.png)
 
 执行完成后，可以在当前目录下看到与apk名称相同的子目录，我们可以从这里提取出资源文件。
-![decompile_apktool_result]({{ basepath }}/assets/images/android/decompile_apktool_result.png)
+![decompile_apktool_result](/assets/images/android/decompile_apktool_result.png)
 
 ### 1.3 使用`dex2jar`和`jdgui`查看Java源代码
 > 首先我们需要清除掉上一步反编译出来的临时文件夹，以免对后续操作产生影响。
@@ -77,11 +72,10 @@ java -jar jd-gui-1.4.0.jar classes-dex2jar.jar
 ```
 
 最后结果如下：
-![decompile_jd]({{ basepath }}/assets/images/android/decompile_jd.png)
+![decompile_jd](/assets/images/android/decompile_jd.png)
 
 > 从反编译结果来看，乐固加固效果还不错。所以，就像本文excerpt所写:本文只是介绍入门级别的Android反编译教程，对于加固了的应用就不太好使了
 
 ## 2. Charles抓包工具
 
-[Charles for mac]({{ basepath }}/assets/file/Charles.zip){: .btn .btn--success}  
-[Charles SSL证书]({{ basepath }}/assets/file/Charles.cer){: .btn .btn--success}
+[Charles for mac](/assets/file/Charles.zip)

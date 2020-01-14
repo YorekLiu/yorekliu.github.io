@@ -1,21 +1,5 @@
 ---
 title: "初学者的Dagger2教程"
-excerpt: "循序渐进、简单易懂"
-categories:
-  - Android
-tags:
-  - Dagger
-  - Dagger2
-  - Inject
-  - Component
-  - Module
-  - Provides
-  - Binds
-  - Singleton
-  - Lazy
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-03-31T01:13:04+08:00
 ---
 
 最近新开了个项目，想搞点事情。  
@@ -110,7 +94,7 @@ interface DogComponent {
 }
 ```
 
-**在**`DaggerActivity`**中使用时**，通过下面的代码完成自动注入：
+**在** `DaggerActivity` **中使用时** ，通过下面的代码完成自动注入：
 
 ```kotlin
 DaggerDogComponent.builder().build().inject(this)
@@ -123,8 +107,7 @@ DaggerDogComponent.builder().build().inject(this)
 tv.text = dog.drink()
 ```
 
-我们加粗强调了**在**`DaggerActivity`**中使用**，这是因为Dagger是强类型的，在哪个类中使用，就只能声明inject哪个类。如果我们把上面声明中的`DaggerActivity`换成基类`BaseActivity`，编译会通过，但是一运行就会报错。另外，在`builder`时如需要设置Module，但是没有声明`inject`此类，设置Module的方法会生成为`@deprecated`类型。
-{: .notice--warning }
+我们加粗强调了 **在** `DaggerActivity` **中使用** ，这是因为Dagger是强类型的，在哪个类中使用，就只能声明inject哪个类。如果我们把上面声明中的`DaggerActivity`换成基类`BaseActivity`，编译会通过，但是一运行就会报错。另外，在`builder`时如需要设置Module，但是没有声明`inject`此类，设置Module的方法会生成为`@deprecated`类型。
 
 ## 2. 对象注入
 
@@ -133,7 +116,6 @@ tv.text = dog.drink()
 首先我们需要写一个`Water`类，由于这是被`Dog`需要的。所以，`Water`需要有一个`@Inject`的无参构造方法，然后在原来`Dog`的构造方法中直接加上`water`参数就可以了。
 
 `@Component`部分和`DaggerActivity`中的代码无需任何改动，多么amazing。
-{: .notice--info }
 
 看看改动后的`Water`和`Dog`代码：
 
@@ -152,7 +134,6 @@ class Water @Inject constructor() {
 经过上面的改动后，我们再次运行，就可以看到`Dog`已经喝到`Water`了。
 
 此外，需要注意，基于上面的代码，如果我们在`DaggerActivity`中新`@Inject`一份`Water`，那么这两份`Water`并不是同一个`Water`。那么，如何得到一个Singleton的`Water`呢，可以使用`@Singleton`注解，下面一节会提到。
-{: .notice--success }
 
 ## 3. 模型与单例
 
@@ -215,7 +196,6 @@ interface OkHttpComponent {
 怎么验证呢，我们可以在`DaggerActivity`中直接声明两个`OkHttpClient`，然后在注释掉`@Singleton`前后，打印其的`toString`方法返回的值，观察其hashcode的16进制表示是否相同即可。
 
 需要注意，只对同一次`Inject`有效。如果在Application中inject一次，然后在页面中inject一次，这两次还是会生成不同的对象。
-{: .notice--warning }
 
 ## 4. 带参注入
 
@@ -268,7 +248,6 @@ DaggerDogComponent.builder().dogModule(DogModule(10)).build().inject(this)
 这样就将参数10传入到`Dog`中。
 
 在第一节说道，Dagger是强类型的。如果没有inject到，会出现`@deprecated`的提示，建议此处将`DogComponent`中`inject`参数换成`AppCompatActivity`重新编译看看`dogModule`方法的提示。
-{: .notice--info }
 
 ## 5. 多Module注入
 
@@ -387,7 +366,6 @@ class DogModule(
 
 **注意**：并不是所有创建`Dog`的方法都需要加上`@Named`注解，没有注解的可以匹配上没有注解的。比如，在这里可以删掉`@Named("b")`注解，注入的客户端也不加`@Named("b")`注解，这样可以匹配上。  
 同时，需要注意，在同一个`@Module`里面不能有同样函数名的`@Provides`，即使函数签名不一样，否则会报错：*error: Cannot have more than one @Provides method with the same name in a single module*。
-{: .notice--warning }
 
 最后在客户端注入就行了：
 
@@ -411,11 +389,10 @@ override fun onCreate(savedInstanceState: Bundle?) {
 ```
 
 **注意**：在客户端注入的时候，直接加上注解`@Named("b")`是不OK的，正确的写法是`@field:Named("b")`。作者在这里卡了很久，一直在某天晚上11点想起来了……
-{: .notice--warning }
 
 **下面接着看@Qualifier注解**  
 
-`@Named`注解里面的value得是一个`String`，虽然**可以传入静态字符串常量**，但还是感觉太Kotlin，不JAVA。
+`@Named`注解里面的value得是一个`String`，虽然 **可以传入静态字符串常量** ，但还是感觉太Kotlin，不JAVA。
 
 所以这里看看`@Qualifier`的用法，首先我们需要使用该注解为两种不同的`Dog`编写两个不同的注解类：
 

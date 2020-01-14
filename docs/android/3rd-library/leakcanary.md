@@ -1,19 +1,9 @@
 ---
 title: "LeakCanary2源码解析"
-excerpt: "LeakCanary-2.0-beta-3源码解析"
-categories:
-  - Android
-tags:
-  - LeakCanary
-  - ReferenceQueue
-  - WeakReference
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-10-18T16:04:05+08:00
 ---
 
-本文基于[LeakCanary](https://github.com/square/leakcanary/tree/v2.0-beta-3)最新2.0-beta-3版本进行分析。
-{: .notice--info }
+!!! info
+    本文基于[LeakCanary](https://github.com/square/leakcanary/tree/v2.0-beta-3)最新2.0-beta-3版本进行分析。
 
 众所周知，LeakCanary是一个内存泄漏检测的工具。那么，内存泄漏是如何定义的，通常有哪些情况呢？  
 在分析源代码之前，我们先弄清楚这两个问题。这两个问题在[LeakCanary - Fundamentals](https://square.github.io/leakcanary/fundamentals/)中有提及。
@@ -561,7 +551,6 @@ internal class AndroidXFragmentDestroyWatcher(
 2. 5秒钟之后再检查一下是否出现在了引用队列中，若出现了，则没有泄露。
 
 为什么会是5S，这里猜测与Android GC有关。在Activity.H中，收到`GC_WHEN_IDLE`消息时会进行`Looper.myQueue().addIdleHandler(mGcIdler)`，而`mGcIdler`最后会触发`doGcIfNeeded`操作，在该方法中会判断上次GC与现在时间的差值，而这个值就是`MIN_TIME_BETWEEN_GCS = 5*1000`。
-{: .notice--info }
 
 回到上面的代码，需要了解两个方法`removeWeaklyReachableObjects()`与`moveToRetained(key)`。前者比较简单，就会将引用队列中出现的对象从map中移除，因为它们没有发生内存泄漏。但是注意一下注释，这里强调了一点：**弱引用入队列发生在终结函数或者GC发生之前**。
 

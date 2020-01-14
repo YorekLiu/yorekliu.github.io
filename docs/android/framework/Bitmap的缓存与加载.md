@@ -1,22 +1,5 @@
 ---
 title: "Bitmap的缓存与加载"
-excerpt: "Bitmap大图片的加载技术，以及LruCache、DiskLruCache缓存的使用"
-categories:
-  - Android
-tags:
-  - Bitmap
-  - OOM
-  - OutOfMemoryError
-  - LruCache
-  - DiskLruCache
-  - Editor
-  - Snapshot
-  - BitmapFactory
-  - BitmapFactory.Options
-  - ImageSampler
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-01-09T12:51:02+08:00
 ---
 
 来自官方的建议：[Loading Large Bitmaps Efficiently](https://developer.android.com/topic/performance/graphics/load-bitmap.html)
@@ -56,7 +39,7 @@ last_modified_at: 2018-01-09T12:51:02+08:00
 > 
 > 因此，**图片占用内存大小和手机的密度成正比，所在文件夹密度成反比**
 > 
-> 对应文件夹密度可以查表[不同像素密度的配置限定符](/android/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/#513-%E4%BB%85%E6%94%AF%E6%8C%81%E7%89%B9%E5%AE%9A%E5%AF%86%E5%BA%A6)
+> 对应文件夹密度可以查表[不同像素密度的配置限定符](/android/framework/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/#513)
 
 我们可以采用`BitmapFactory.Options`来设置decode的配置。在decode前将`inJustDecodeBounds`属性设置为`true`，虽然将会返回`null`的`bitmap`，但是可以得到`outWidth`、`outHeight`以及`outMimeType`。这样我们可以在创建(以及申请内存)前获得图片的像素尺寸和类型。
 
@@ -649,7 +632,9 @@ DiskLruCache的创建是通过`open`方法创建的，下面是其方法签名
 ```java
 public static DiskLruCache open(File directory, int appVersion, int valueCount, long maxSize)
 ```
+
 这四个参数的含义如下：
+
  - directory  
    数据的缓存地址
  - appVersion  
@@ -740,4 +725,5 @@ public void delete() throws IOException
 
 ---
 **参考文献**
+
 - [Android DiskLruCache完全解析，硬盘缓存的最佳方案](http://blog.csdn.net/guolin_blog/article/details/28863651)

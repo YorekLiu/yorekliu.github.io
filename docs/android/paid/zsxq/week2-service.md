@@ -1,25 +1,17 @@
 ---
 title: "理解Service"
-excerpt: "清晰地理解Service"
-categories:
-  - Android
-tags:
-  - Service
-  - 知识星球
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-04-25T16:38:20+08:00
 ---
 
 ## Question
 话题：清晰地理解Service。
+
 1. Service的start和bind状态有什么区别？
 2. 同一个Service，先startService，然后再bindService，如何把它停止掉？
 3. 你有注意到Service的onStartCommand方法的返回值吗？不同返回值有什么区别？
 4. Service的生命周期方法onCreate、onStart、onBind等运行在哪个线程？
 
 ## Answer
-关于Service，可以看这篇全面的文章：[Android四大组件(2)——Service]({{ basepath }}/android/Android四大组件(2)/)
+关于Service，可以看这篇全面的文章：[Service](/android/framework/Android四大组件(2)/)
 
 ### 1. start和bind状态的区别
 当一个应用组件调用了`startService`时，Service会处于启动状态。当Service启动后，它能够无期限的运行在后台，甚至开启该Service的组件已经销毁了。可以在Service内部调用`stopSelf()`或者其他组件调用`stopService()`来终止Service。`IntentService`会自动调用`stopSelf`方法。

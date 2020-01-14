@@ -1,13 +1,5 @@
 ---
-title: "RxJava,了解一下"
-excerpt: "RxJava是最流行的异步操作、响应式编程框架了，其最大的优点就是简洁(代码在逻辑上非常易懂)。来了解一下吧"
-categories:
-  - Android
-tags:
-  - RxJava
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-02-24T13:23:00+08:00
+title: "RxJava操作符大全"
 ---
 
 > 本文基于RxJava 2.0文档，Github地址：[https://github.com/ReactiveX/RxJava](https://github.com/ReactiveX/RxJava)  

@@ -1,16 +1,5 @@
 ---
 title: "MVC、MVP和MVVM"
-excerpt: "三种开发模式的设计图以及它们的适用场景和优缺点"
-categories:
-  - Android
-tags:
-  - 知识星球
-  - MVC
-  - MVP
-  - MVVM
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-04-16T00:52:39+08:00
 ---
 
 ## 1. MVC
@@ -31,10 +20,7 @@ MVC简单来说就是通过Controller来操作Model层的数据，并且返回�
 
 > 大多数情况下，View和Model都不会直接交互，而是通过Controller来间接交互。
 
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/android/mvc.png">
-    <figcaption>MVC示意图</figcaption>
-</figure>
+![MVC示意图](/assets/images/android/mvc.png)
 
 **适用场景**：适用于较小，功能较少，业务逻辑较少的项目。
 
@@ -51,12 +37,9 @@ MVP（Model-View-Presenter）是MVC的演化版本，MVP的角色定义如下
 - View：负责处理用户事件和视图部分的展示。在Android中，它可能是Activity、Fragment类或者是某个View控件。  
 - Presenter：作为View和Model之间沟通的桥梁，它从Model层检索数据后返回给View层，使得View和Model之间没有耦合。  
 
-在MVP里，Presenter完全将Model和View进行了分离，主要的程序逻辑在Presenter里实现。而且，Presenter与具体的View是没有直接关联的，而是通过**定义好的接口进行交互**，从而使得在变更View时可以保持Presenter的不变，这点符合面向接口编程的特点。View只应该有简单的setter/getter方法，以及用户输入和设置界面显示的内容，除此之外就不应该有更多的内容。绝不允许View直接访问Model，这就是其与MVC的很大不同之处。
+在MVP里，Presenter完全将Model和View进行了分离，主要的程序逻辑在Presenter里实现。而且，Presenter与具体的View是没有直接关联的，而是通过 **定义好的接口进行交互** ，从而使得在变更View时可以保持Presenter的不变，这点符合面向接口编程的特点。View只应该有简单的setter/getter方法，以及用户输入和设置界面显示的内容，除此之外就不应该有更多的内容。绝不允许View直接访问Model，这就是其与MVC的很大不同之处。
 
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/android/mvp.png">
-    <figcaption>MVP示意图</figcaption>
-</figure>
+![MVP示意图](/assets/images/android/mvp.png)
 
 **适用场景**：视图界面不是很多的项目中。
 
@@ -75,10 +58,7 @@ MVP（Model-View-Presenter）是MVC的演化版本，MVP的角色定义如下
 
 MVVM（Model-View-ViewModel）将Presenter改为ViewModel，其和MVP类似，不同的是ViewModel跟Model和View进行双向绑定：当View发生改变时，ViewModel通知Model进行更新数据；同理Model数据更新后，ViewModel通知View更新。MVVM的结构图如下所示。
 
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/android/mvvm.png">
-    <figcaption>MVVM示意图</figcaption>
-</figure>
+![MVVM示意图](/assets/images/android/mvvm.png)
 
 **适用场景：适用于界面展示的数据较多的项目。**
 

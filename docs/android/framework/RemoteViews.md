@@ -1,20 +1,5 @@
 ---
 title: "RemoteViews"
-excerpt: "本文依附于RemoteViews的主要使用场景来分析其工作原理"
-categories:
-  - Android
-tags:
-  - RemoteViews
-  - Notification
-  - NotificationManager
-  - AppWidget
-  - AppWidgetProvider
-  - AppWidgetManager
-  - PendingIntent
-  - Intent
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-01-29T16:47:00+08:00
 ---
 
 RemoteViews在Android中的使用场景有两种：通知栏和桌面小插件。为了更好的分析`RemoteViews`的内部机制，本章先介绍`RemoteViews`在通知栏和桌面小部件上的应用。
@@ -54,10 +39,7 @@ NotificationManager notificationManager = (NotificationManager) getSystemService
 notificationManager.notify(1, notification);
 ```
 
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/android/remoteviews-system-notification.png">
-    <figcaption>系统默认的通知样式</figcaption>
-</figure>
+![系统默认的通知样式](/assets/images/android/remoteviews-system-notification.png)
 
 **2.自定义通知样式**  
 
@@ -87,10 +69,7 @@ NotificationManager notificationManager = (NotificationManager) getSystemService
 notificationManager.notify(2, notification);
 ```
 
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/android/remoteviews-custom-notification.png">
-    <figcaption>自定义通知样式</figcaption>
-</figure>
+![自定义通知样式](/assets/images/android/remoteviews-custom-notification.png)
 
 我们只需要提供当前应用的包名和布局文件的资源id就可以创建一个`RemoteViews`。更新`RemoteViews`里面的View需要通过`RemoteViews`提供的一系列的方法来更新View。
 
@@ -219,6 +198,7 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 第一个action用于识别小部件的单击行为，而第二个action作为桌面小插件的标识而存在，这是系统的规范。如果不加，那么这个receiver不会识别成为一个桌面小部件，从而无法出现在手机的小部件列表中。
 
 `AppWidgetProvider`除了常用的`onUpdate`方法外，还有`onEnabled`、`onDisabled`、`onDeteled`、`onReceive`等方法。这些方法会被`onReceive`根据action进行分发。
+
 - `onEnabled`  
   当小部件第一次添加到桌面时调用该方法，可添加多次但只在第一次调用
 - `onUpdate`  
@@ -226,7 +206,7 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 - `onDeteled`  
   每删除一次桌面小部件就会调用一次
 - `onDisabled`  
-  当**最后一个**该类型的小部件被删除时就会调用该方法
+  当 **最后一个** 该类型的小部件被删除时就会调用该方法
 - `onReceive`  
   这是基类的方法，在小部件中用于分发具体的事件给其他方法
 
@@ -299,6 +279,7 @@ public void onReceive(Context context, Intent intent) {
 | getBroadcast | 获得一个可以发送广播的PendingIntent |
 
 上面这三个方法的参数都是相同的`getActivity(Context context, int requestCode, Intent intent, int flags)`  
+
 - requestCode  
   表示`PendingIntent`发送方的请求码，多数情况设置为0即可，另外requestCode会影响到flags的效果。
 - flags  
@@ -310,6 +291,7 @@ flags是用来标记`PendingIntent`效果的，这里面需要判断`PendingInte
 > 如果两个`Intent`的`ComponentName`和`intent-filter`都相同，那么这两个`Intent`就是相等的。需要注意的是，Extras不参与Intent的匹配过程。
 
 flags的含义如下：  
+
 - `FLAG_ONE_SHOT`  
   `PendingIntent`只能使用一次，然后就会被自动取消，后续还有相同的`PendingIntent`的`send`就会调用失败。
 - `FLAG_NO_CREATE`  
@@ -324,20 +306,20 @@ flags的含义如下：
 1. 如果`NotificationManager.notify`的id是同一个值，那么不管`PendingIntent`是否匹配，后面的通知都会直接替换前面的通知。
 2. 如果`notify`的id值不同，那么`PendingIntent`不匹配时，这些通知之间不会干扰；
 3. 如果`notify`的id值不同且`PendingIntent`匹配时  
-   1. FLAG_ONE_SHOT  
-     后续通知中的`PendingIntent`会和第一条保持一致，包括其中的extra data；点击任何一条通知后，剩下的通知匀无法打开，当所有的通知都被清除后，会再次重复这个过程。
-   2. FLAG_CANCEL_CURRENT  
-     只有最新的通知可以打开，之前弹出的通知均无法打开
-   3. FLAG_UPDATE_CURRENT  
-     之前弹出的通知中的`PendingIntent`都会更新，最终它们和最新的一体通知保持完全一致，包括其中的extra data，并且这些通知都是可以打开的。
+    1. FLAG_ONE_SHOT  
+       后续通知中的`PendingIntent`会和第一条保持一致，包括其中的extra data；点击任何一条通知后，剩下的通知匀无法打开，当所有的通知都被清除后，会再次重复这个过程。
+    2. FLAG_CANCEL_CURRENT  
+      只有最新的通知可以打开，之前弹出的通知均无法打开
+    3. FLAG_UPDATE_CURRENT  
+      之前弹出的通知中的`PendingIntent`都会更新，最终它们和最新的一体通知保持完全一致，包括其中的extra data，并且这些通知都是可以打开的。
 
 ## 2 RemoteViews的内部机制
 
-`RemoteViews`的作用是**在其他进程中显示并更新View界面**。
+`RemoteViews`的作用是 **在其他进程中显示并更新View界面**。
 
-> `RemoteViews`不能支持所有的View类型，它所支持的所有类型如下：
-> - FrameLayout、LinerLayout、RelativeLayout、GridLayout
-> - AnalogClock、Button、Chronometer、ImageButton、ImageView、ProgressBar、TextView、ViewFilpper、> ListView、GridView、StackView、AdapterViewFlipper以及ViewStub  
+> `RemoteViews`不能支持所有的View类型，它所支持的所有类型如下：  
+> - FrameLayout、LinerLayout、RelativeLayout、GridLayout  
+> - AnalogClock、Button、Chronometer、ImageButton、ImageView、ProgressBar、TextView、ViewFilpper、ListView、GridView、StackView、AdapterViewFlipper以及ViewStub  
 > 
 > From [Creating the App Widget Layout](https://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout)
 
@@ -360,10 +342,7 @@ flags的含义如下：
 
 系统并没有通过`Binder`去直接支持`View`的跨进程访问，而是提供了一个`Action`的概念，`Action`代表一个`View`操作，`Action`同样实现了`Parcelable`接口。首先系统会将`View`操作封装到`Action`对象并将这些对象跨进程传输到远程进程，接着在远程进程中执行`Action`的操作。在我们的应用中每调用一次set方法，`RemoteViews`中就会添加一个对应的`Action`对象，当我们通过`NotificationManager`和`AppWidgetManager`提交更新时，这些`Action`对象就会传输到远程进程中并在远程进程中依次执行。远程进程通过`RemoteViews`的`apply`方法进行View的更新操作，`RemoteViews#apply`方法内部会去遍历所有的`Action`对象并调用它们的`apply`方法，具体的View更新操作是由`Action`对象的`apply`方法来完成的。
 
-<figure style="width: 80%" class="align-center">
-    <img src="/assets/images/android/remoteviews.png">
-    <figcaption>RemoteViews的内部机制</figcaption>
-</figure>
+![RemoteViews的内部机制](/assets/images/android/remoteviews.png)
 
 ### 2.1 RemoteViews的创建
 

@@ -1,21 +1,9 @@
 ---
 title: "大尺寸图片加载问题"
-excerpt: "给定一个1000 x 20000（宽1000px，高20000px）的大图，如何正常加载显示且不发生OOM？"
-categories:
-  - Android
-tags:
-  - 知识星球
-  - BitmapFactory.Options
-  - BitmapFactory
-  - BitmapRegionDecoder
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-04-17T15:38:36+08:00
 ---
 
-给定一个1000 x 20000（宽1000px，高20000px）的大图，如何正常加载显示且不发生OOM？  
-测试例子：[485ad.jpg (670x12287)](http://renyugang.io/wp-content/uploads/2018/06/485ad.jpg)
-{: .notice--question }
+???+ question "给定一个1000 x 20000（宽1000px，高20000px）的大图，如何正常加载显示且不发生OOM？"
+    测试例子：[485ad.jpg (670x12287)](http://renyugang.io/wp-content/uploads/2018/06/485ad.jpg)
 
 解决此问题的思路有两种：
 
@@ -24,17 +12,18 @@ last_modified_at: 2019-04-17T15:38:36+08:00
 
 ## 1. 采样加载
 
-此方法代码参考[Bitmap的加载](/android/Bitmap%E7%9A%84%E7%BC%93%E5%AD%98%E4%B8%8E%E5%8A%A0%E8%BD%BD/#1-bitmap%E7%9A%84%E5%8A%A0%E8%BD%BD)。
+此方法代码参考[Bitmap的加载](/android/framework/Bitmap%E7%9A%84%E7%BC%93%E5%AD%98%E4%B8%8E%E5%8A%A0%E8%BD%BD/#1-bitmap)。
 
 <figure style="width: 66%" class="align-center">
-    <img src="/assets/images/android/load_image_no_sample.png">
-    <figcaption>不使用inSampleSize时内存情况</figcaption>
+    <img src="">
+    <figcaption></figcaption>
 </figure>
 
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/android/load_image_sample.png">
-    <figcaption>inSampleSize=4时内存情况</figcaption>
-</figure>
+![不使用inSampleSize时内存情况](/assets/images/android/load_image_no_sample.png)
+<small>不使用inSampleSize时内存情况</small>
+
+![inSampleSize=4时内存情况](/assets/images/android/load_image_sample.png)
+<small>inSampleSize=4时内存情况</small>
 
 不使用`inSampleSize`时，Bitmap占用Java堆内存为：37.4-5=32.4M  
 当`inSampleSize=4`时，占用内存理论上会变为原来的1/(4*4)=1/16，也就是32.4/16=2.025M，从图中差不多一致。

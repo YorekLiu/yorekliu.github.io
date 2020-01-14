@@ -1,22 +1,13 @@
 ---
 title: "RecyclerView高级特性——ItemDecoration"
-excerpt: "使用ItemDocoration为Item添加装饰"
-categories:
-  - Android
-tags:
-  - RecyclerView
-  - ItemDecoration
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-05-29T01:44:17+08:00
 ---
 
 RecyclerView高级特性系列：
 
-- [ListView、RecyclerView缓存策略解析](/android/recyclerview-cache/)
-- [RecyclerView高级特性——拖拽排序以及滑动删除](/android/RecyclerView-Sort&Delete/)
-- [RecyclerView高级特性——ItemDecoration](/android/recyclerview-item-docoration/)
-- [RecyclerView的一些使用细节——多级嵌套时的缓存优化、smooth scroll问题](/android/recyclerview-others/)
+- [ListView、RecyclerView缓存策略解析](/android/other/recyclerview-cache/)
+- [RecyclerView高级特性——拖拽排序以及滑动删除](/android/other/RecyclerView-Sort&Delete/)
+- [RecyclerView高级特性——ItemDecoration](/android/other/recyclerview-item-docoration/)
+- [RecyclerView的一些使用细节——多级嵌套时的缓存优化、smooth scroll问题](/android/other/recyclerview-others/)
 
 ---
 
@@ -24,10 +15,7 @@ RecyclerView高级特性系列：
 
 `RecyclerView.ItemDecoration`最常见的作用就是用来绘制RecyclerView Item之间的分割线。但如果你认为它只能用来绘制分割线，那就大错特错了。这里结合一个具体项目的需求来谈谈`RecyclerView.ItemDecoration`高级一点的用法。
 
-<figure style="width: 80%" class="align-center">
-    <img src="/assets/images/android/item-decoration-demo.png">
-    <figcaption>有点细节的时间轴</figcaption>
-</figure>
+![有点细节的时间轴](/assets/images/android/item-decoration-demo.png)
 
 具体需求如上所示，首先整体上可以肯定是一个RecyclerView，然后看看item如何实现。Item可以分为左右两边，右边的好实现，关键是左边的时间轴有点麻烦。  
 从图中可以注意到，正在进行的item icon比较大，刚好和title上下对齐；其他状态的item icon都相对于title居中显示。那么对于这种状态下的item，时间轴要怎么画呢？  

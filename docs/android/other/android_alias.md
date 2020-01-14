@@ -1,22 +1,11 @@
 ---
 title: "Android马甲包的那些事儿"
-excerpt: "全面可配置logo、app名称、Java代码、应用签名、各种key等"
-categories:
-  - Android
-tags:
-  - 马甲包
-  - productFlavors
-  - overlay
-  - buildConfigField
-  - resValue
-  - signingConfig
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-11-30T16:33:24+08:00
 ---
 
-制作Android马甲包最简单的方式就是使用**productFlavors**机制。  
+制作Android马甲包最简单的方式就是使用 **productFlavors** 机制。  
+
 本文就是在productFlavors机制的基础上制作的马甲包，每个马甲只需要
+
 1. 在`build.gradle`文件中配置一下包名、各种key、签名文件
 2. 配置启动页、logo、app名等资源
 3. 配置服务器域名、微信分享回调Activity等代码
@@ -27,8 +16,7 @@ last_modified_at: 2018-11-30T16:33:24+08:00
 
 如下面代码所示，我们在`build.gradle`中使用productFlavors机制可以创建两个flavor——hdd以及jinyouzi，这样在Build Variant中就可以通过hddDebug、hddRelease、jinyouziDebug、jinyouziRelease来编译对应马甲的debug、release包。
 
-注意，在此文章中hdd是基线包，jinyouzi是马甲包。
-{: .notice--danger }
+**注意，在此文章中hdd是基线包，jinyouzi是马甲包。**
 
 ```gradle
 android {
@@ -54,24 +42,21 @@ android {
 
 - 对于资源文件来说，flavor下的资源会“覆盖”main下面的资源，也就是flavor的优先级高——不知道官方怎么称呼，我借用Android系统开发中的名词，称之为`overlay`机制。  
 
-   其实这点与apk的编译流程有关，在[Shrink, obfuscate, and optimize your app - Merge duplicate resources](https://developer.android.com/studio/build/shrink-code#merge-resources)中有提到：  
-   Gradle merges duplicate resources in the following cascading priority order:  
-   Gradle 会按以下级联优先顺序合并重复资源：  
-   Dependencies → Main → Build flavor → Build type  
-   依赖项 → 主资源 → 构建flavor → 构建类型  
-   For example, if a duplicate resource appears in both your main resources and a build flavor, Gradle selects the one in the build flavor.  
-   例如，如果某个重复资源同时出现在主资源和构建flavor中，Gradle 会选择构建flavor中的重复资源。  
-   该文章的中文翻译在[Android Studio build过程 - ProGuard & R8](/android/week22-android-studio-build/#proguard--r8)一文中有翻译。
-   {: .notice--info }
+    > 其实这点与apk的编译流程有关，在[Shrink, obfuscate, and optimize your app - Merge duplicate resources](https://developer.android.com/studio/build/shrink-code#merge-resources)中有提到：  
+    > Gradle merges duplicate resources in the following cascading priority order:  
+    > Gradle 会按以下级联优先顺序合并重复资源：  
+    > Dependencies → Main → Build flavor → Build type  
+    > 依赖项 → 主资源 → 构建flavor → 构建类型  
+    > For example, if a duplicate resource appears in both your main resources and a build flavor, Gradle selects the one in the build flavor.  
+    > 
+    > 例如，如果某个重复资源同时出现在主资源和构建flavor中，Gradle 会选择构建flavor中的重复资源。  
+    > 该文章的中文翻译在[Android Studio build过程 - ProGuard & R8](/android/paid/zsxq/week22-android-studio-build/#proguard-r8)一文中有翻译。
 
 - 对于代码文件来说，如果flavor和main下有代码文件名称一样，编译时会报错。所以需要把各个flavor有差异的文件放到各个flavor下，而不是main下。  
 
 **这就是马甲包的资源、代码管理的关键点。** 这段关键点一头雾水没关系，后面具体配置的时候就会体会到。
 
-<figure style="width: 242px" class="align-center">
-    <img src="/assets/images/android/android_alias_flavor_dir.png">
-    <figcaption>添加flavor后app的目录层次</figcaption>
-</figure>
+![添加flavor后app的目录层次](/assets/images/android/android_alias_flavor_dir.png)
 
 
 此外，**各个flavor原本就能配置不同的applicationId、版本号、友盟统计分享等key以及签名文件等**，具体代码在后面会谈到。
@@ -80,6 +65,7 @@ android {
 ## 2. 具体需求
 
 我们先下面会从以下几个方面说明实际需求需要修改的位置：
+
 1. applicationId、版本号
 2. 资源文件
 3. 各种key的配置
@@ -131,7 +117,7 @@ applicationId在AndroidManifest.xml中也需要使用到，这个在第2.3小节
 对于drawable、mipmap资源而言，文件会替换基线的文件。  
 对于values里面的资源而言，资源不是简单粗暴的文件覆盖，而是每一项具体资源的覆盖。我们只需要在jinyouzi中新增对应的strings、color就可以了。
 
-比如jinyouzi中的**colors.xml**
+比如jinyouzi中的 **colors.xml**
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
@@ -146,7 +132,7 @@ applicationId在AndroidManifest.xml中也需要使用到，这个在第2.3小节
 </resources>
 ```
 
-jinyouzi中的**strings.xml**  
+jinyouzi中的 **strings.xml**  
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
@@ -157,8 +143,8 @@ jinyouzi中的**strings.xml**
 </resources>
 ```
 
-同一个资源id，马甲包有就用马甲包的，否则用基线的。
-{: .notice--info }
+!!! success
+    同一个资源id，马甲包有就用马甲包的，否则用基线的。
 
 
 ### 2.3 各种key的配置
@@ -261,6 +247,7 @@ android {
 ```
 
 在上面的配置中，我们为各个flavor定义了不同的
+
 - applicationId
 - 版本号
 - Bugly ID
@@ -348,7 +335,6 @@ class HddApplication : Application() {
 还可以通过resValue、meta-data方式来实现上面功能。  
 resValue编译时会产生对应的资源文件。  
 meta-data方式通过动态替换AndriodManifest中的meta-data，然后在程序中获取实现。
-{: .notice--primary }
 
 另外因为QQ分享Key以及应用scheme需要在`AndroidManifest.xml`中配置对应的值，所以这里使用了manifestPlaceholders。
 ```xml
@@ -423,22 +409,36 @@ manifestPlaceholders = [
 ```
 
 总结一下上面的`AndroidManifest.xml`代码：
+
 - applicationId在微信分享回调页面、FileProvider两处位置要配置。  
 - manifestPlaceholders中scheme配置到SplashActivity上，qq_id配置到QQ分享AuthActivity上
 
-QQ分享配置需要注意，qq_id定义的是int类型。所以QQ_SHARE_ID配置为`"\"$qq_id\""`。且AndroidManifest中对应的scheme也将为正确的tencent1000xxxxxx。
-{: .notice--info }
+!!! danger
+    QQ分享配置需要注意，qq_id定义的是int类型。所以QQ_SHARE_ID配置为`"\"$qq_id\""`。且AndroidManifest中对应的scheme也将为正确的tencent1000xxxxxx。
 
 微信分享回调Activity必须是应用实际包名目录下的wxapi子目录中的WXEntryActivity文件，任意更改目录都不会收到微信分享回调。  
 比如在在hdd马甲下配置微信分享回调，需要在`com.xxx.xxxxxxx.app.wxapi`下创建WXEntryActivity文件。  
 jinyouzi马甲下配置，则需要在`com.xxx.flavor.app.wxapi`下创建。  
 **这部分代码写到对应flavor目录下。**
-{: .notice--info }
 
-<figure style="width: 307px" class="align-center">
-    <img src="/assets/images/android/android_alias_flavor_wxapi.png">
-    <figcaption>在flavor中配置微信分享回调</figcaption>
-</figure>
+![在flavor中配置微信分享回调](/assets/images/android/android_alias_flavor_wxapi.png)
+
+当然，合理利用activity-alias能更漂亮的完成微信回调WXEntryActivity的配置，比如说：
+
+```xml
+<!-- 微信分享 -->
+<activity
+    android:name="anydir.WXEntryActivity"
+    android:configChanges="keyboardHidden|orientation|screenSize"
+    android:exported="true"
+    android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+<activity-alias
+    android:name="${applicationId}.wxapi.WXEntryActivity"
+    android:exported="true"
+    android:launchMode="singleTask"
+    android:targetActivity="anydir.WXEntryActivity"
+    android:taskAffinity="com.tencent.mm" />
+```
 
 
 ### 2.4 代码文件
@@ -485,10 +485,9 @@ object HttpConfig {
 
 **Note:** 由于其他代码使用HttpConfig时会通过基线包名import，所以马甲的HttpConfig文件package以及其他可供外部代码使用的域、方法等入口需要与基线保持一致，以免编译报错。  
 除入口外，各个马甲内部可以自由扩展，但与基线代码交互时一定要走入口，避免直接交互。
-{: .notice--primary }
 
 ### 2.5 签名配置
-其实在[2.3 各种key的配置中](/android/android_alias/#23-各种key的配置)的`build.gradle`中已经贴出了该部分代码。下面说明一下。  
+其实在[2.3 各种key的配置中](#23-key)的`build.gradle`中已经贴出了该部分代码。下面说明一下。  
 我们知道可以给每个flavor单独配置signingConfig，但是这种配置在debug包时会用Android默认的debug签名。大部分情况OK，除了测试环境微信分享。  
 
 不能忍，所以我们解决一下，让各个马甲的debug、release签名保持一致。

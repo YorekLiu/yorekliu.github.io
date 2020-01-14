@@ -1,25 +1,10 @@
 ---
-title: "Android四大组件(1)——Activity"
-excerpt: "Activity的生命周期、启动模式以及IntentFilter的匹配规则"
-header:
-  teaser: /assets/images/android/activity_lifecycle.png
-  overlay_image: /assets/images/android/activity_lifecycle.png
-  overlay_filter: 0.5
-  cta_url: "https://developer.android.com/reference/android/app/Activity.html"
-categories:
-  - Android
-tags:
-  - Activity
-  - Intent
-  - IntentFilter
-toc: true
-toc_label: "目录"
+title: "Activity"
 ---
-{% include base_path %}
 
 Android四大组件分别是Activity、Service、ContentProvider以及BroadcastReceiver。其中，Activity是使用最频繁的一个组件，可以翻译为界面。当然，我们常见的界面除了Activity，还有Window(这里指悬浮窗，类似于360的悬浮球)、Dialog以及Toast。Android中所有的视图都是通过Window来呈现的。
 
-此外，Fragment也是常用的一个容器，关于Fragment，可以查看[Android四大组件(4)](/android/Android四大组件(4)/)，两者一起看能更好的了解彼此。
+此外，Fragment也是常用的一个容器，关于Fragment，可以查看[Android四大组件(4)](/android/framework/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6(4)/)，两者一起看能更好的了解彼此。
 
 本章的主要内容有：Activity生命周期、启动模式、IntentFilter匹配规则。
 
@@ -34,10 +19,7 @@ Activity的生命周期分为两个部分：正常情况、异常情况。
 
 如图，是正常情况下Activity所经历的生命周期。  
 
-<figure style="width: 60%" class="align-center">
-    <img src="/assets/images/android/activity_lifecycle.png">
-    <figcaption>activity_lifecycle</figcaption>
-</figure>
+![activity_lifecycle](/assets/images/android/activity_lifecycle.png)
 
 各个生命周期方法解释如下：
 
@@ -77,9 +59,9 @@ A: onStop() called
 
 由于activity是异常终止的，所以系统会调用`onSaveInstanceState(Bundle)`保存当前activity的状态，当activity被重新创建后，会调用`onRestoreInstanceState`；此外重新创建时Bundle也会传入`onCreate`方法中。
 
-`onSaveInstanceState`将会调用在`onStop`之前，与`onPause`没有固定的时序关系。  
-`onRestoreInstanceState`在`onStart`与`onPostCreate`之间被调用。`onPostCreate`在`onResume`之前调用。
-{: .notice--info }
+!!! info
+    `onSaveInstanceState`将会调用在`onStop`之前，与`onPause`没有固定的时序关系。  
+    `onRestoreInstanceState`在`onStart`与`onPostCreate`之间被调用。`onPostCreate`在`onResume`之前调用。
 
 另外，在资源改变导致重新创建时，系统自动为我们做了一些恢复工作。具体某个特定的View能够为我们恢复哪些数据，可以查看View的这两个方法。
 
@@ -88,7 +70,6 @@ A: onStop() called
 我们可以通过配置activity的configChanges属性达到目的。比如我们不想屏幕旋转时重新创建，可以在activity添加`android:configChanges="orientation"`，如果我们想指定多个值，可以通过或操作"\|"连接起来，比如"mcc\|mnc"  
 
 [点击查看activity的所有配置以及解释](https://developer.android.com/guide/topics/manifest/activity-element)
-{: .notice--info }
 
 > **横竖屏切换生命周期？**
 >
@@ -111,22 +92,21 @@ A: onStop() called
 1. 前台Activity —— 正在和用户进行交互，处于running状态
 2. 可见但非前台 —— 比如Activity弹出了一个对话框
 3. 后台Activity —— 已经执行了onStop
-4. 未持有Activity和其他组件(Service和BroadcastReceiver)的**空进程**
+4. 未持有Activity和其他组件(Service和BroadcastReceiver)的 **空进程**
 
 > 因此，后台工作不适合脱离四大组件而独自运行，这样容易被杀死。比较好的方式是将后台任务放入Service中，这样能保证进程有一定的优先级。
 
-**进程优先级**可以查看[进程保活中关于进程优先级的译文](/android/week16-keep-app-alive/#%E8%BF%9B%E7%A8%8B%E4%BC%98%E5%85%88%E7%BA%A7)。
-{: .notice--info }
+!!! tip
+    **进程优先级** 可以查看[进程保活中关于进程优先级的译文](/android/paid/zsxq/week16-keep-app-alive/#11)。
 
 ## 2 Activity的启动模式
 
 本节的主要内容有：Activity的LaunchMode以及Flags
 
-参考资料：[Understand Tasks and Back Stack](https://developer.android.com/guide/components/activities/tasks-and-back-stack)
-{: .notice--info }
+!!! info
+    参考资料：[Understand Tasks and Back Stack](https://developer.android.com/guide/components/activities/tasks-and-back-stack)
 
 **注意：** 有些启动模式只能在manifest文件中进行描述，没有对应的flags；同样，有些启动模式也只能在flags中进行描述，manifest文件中不能。
-{: .notice--info }
 
 任务栈分为前台任务栈和后台任务栈，后台任务栈中的activity处于暂停状态，用户可以通过操作将后台任务栈再次调回前台。  
 可以使用`adb shell dumpsys activity`查看任务栈信息，信息在`Running activities (most recent first)`这一栏中。
@@ -147,10 +127,7 @@ manifest文件有四种启动模式：standard、singleTop、singleTask、single
 
 无论Activity是在新Task中启动，还是在启动它的Activity所在的Task中启动，“返回”按钮始终会将用户带到上一个Activity。但是，如果启动launchMode指定为`singleTask`的Activity，则如果在后台Task中存在该Activity的实例，则将整个Task带到前台。此时，回退栈的顶部会包含被带入前台的Task中的所有活动。下图说明了这种情况。
 
-<figure style="width: 60%" class="align-center">
-    <img src="/assets/images/android/diagram_backstack_singletask_multiactivity.png">
-    <figcaption>回退栈与singleTask</figcaption>
-</figure>
+![回退栈与singleTask](/assets/images/android/diagram_backstack_singletask_multiactivity.png)
 
 ### 2.2 Activity的Flags
 
@@ -207,8 +184,8 @@ Activity中有些Flags可以影响Activity的启动模式，有些则可以影�
 
 ## 3 IntentFilter的匹配规则
 
-关于[PendingIntent](/android/RemoteViews/#13-pendingintent%E6%A6%82%E8%BF%B0)在RemoteViews的文章中有介绍。
-{: .notice--success }
+!!! success
+    关于[PendingIntent](/android/framework/RemoteViews/#13-pendingintent)在RemoteViews的文章中有介绍。
 
 intent-filter在AndroidManifest.xml中的写法
 
@@ -421,8 +398,8 @@ data的匹配规则和action类似，**它要求Intent中必须含有data数据�
 ```
 
 最后，通过隐式启动Activity时，如果没有Activity能够匹配我们的隐式Intent，我们startActivity就会报错。
-我们有两种方法解决：
-1. 可以使用PackageManager或者Intent的`resolveActivity`方法，如果没有匹配的Activity则会返回null。（Intent的该方法是基于PackageManager的同名方法的。）
+我们有两种方法解决：  
+1. 可以使用PackageManager或者Intent的`resolveActivity`方法，如果没有匹配的Activity则会返回null。（Intent的该方法是基于PackageManager的同名方法的。）  
 2. 可以使用PackageManager的`queryIntentActivities`方法，该方法会返回所有成功匹配的Activity信息，而不是resolveActivity的最佳匹配。
   注意下PackageManager的第二个参数，这里要传入MATCH_DEFAULT_ONLY这个参数，这个参数的意义在于匹配声明了"android.intent.category.DEFAULT"的Activity，不然匹配上的Activity不一定可以成功启动。
 

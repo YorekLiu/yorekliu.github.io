@@ -1,12 +1,5 @@
 ---
 title: "普通Android程序使用SystemProrities"
-excerpt: "如何不使用反射、Runtime获取系统属性"
-categories:
-  - Android
-tags:
-  - SystemProrities
-comments: true
-last_modified_at: 2018-03-06T22:17:19+08:00
 ---
 
 在Android平常开发中，有时候我们需要用到系统的属性。这些属性一般在ROM编译时会在`system/build.prop`这个位置
@@ -32,7 +25,7 @@ try {
 
 ## 1. 创建目录
 在java目录下创建`android/os`目录，如下  
-![system_prorities_project]({{ basepath }}/assets/images/android/system_prorities_project.png)
+![system_prorities_project](/assets/images/android/system_prorities_project.png)
 
 ## 2. 创建文件并复制内容
 在上面的目录下创建`SystemProperties.java`文件，内容如下
