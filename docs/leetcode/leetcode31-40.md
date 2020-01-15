@@ -1,5 +1,5 @@
 ---
-title: "LeetCode(4)"
+title: "LeetCode(31-40)"
 ---
 
 ## 31. Next Permutation

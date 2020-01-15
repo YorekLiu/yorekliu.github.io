@@ -197,30 +197,30 @@ nav:
     - Design Pattern:
       - design-pattern/design-pattern.md
       - design-pattern/design-principle.md
-      - design-pattern/abstract-factory.md
-      - design-pattern/adapter.md
-      - design-pattern/bridge.md
-      - design-pattern/builder.md
-      - design-pattern/chain-of-responsibility.md
-      - design-pattern/command.md
-      - design-pattern/composite.md
-      - design-pattern/confusing-design-pattern.md
-      - design-pattern/decorator.md
-      - design-pattern/facade.md
-      - design-pattern/factory-method.md
-      - design-pattern/flyweight.md
-      - design-pattern/interpreter.md
-      - design-pattern/iterator.md
-      - design-pattern/mediator.md
-      - design-pattern/memento.md
-      - design-pattern/observer.md
-      - design-pattern/prototype.md
-      - design-pattern/proxy.md
       - design-pattern/singleton.md
-      - design-pattern/state.md
+      - design-pattern/builder.md
+      - design-pattern/prototype.md
+      - design-pattern/factory-method.md
+      - design-pattern/abstract-factory.md
+      - design-pattern/proxy.md
+      - design-pattern/composite.md
+      - design-pattern/adapter.md
+      - design-pattern/decorator.md
+      - design-pattern/flyweight.md
+      - design-pattern/facade.md
+      - design-pattern/bridge.md
       - design-pattern/strategy.md
+      - design-pattern/state.md
+      - design-pattern/chain-of-responsibility.md
+      - design-pattern/interpreter.md
+      - design-pattern/command.md
+      - design-pattern/observer.md
+      - design-pattern/memento.md
+      - design-pattern/iterator.md
       - design-pattern/template-method.md
       - design-pattern/visitor.md
+      - design-pattern/mediator.md
+      - design-pattern/confusing-design-pattern.md
     - Effective Java:
       - effective-java/effective-java.md
       - effective-java/chapter1.md

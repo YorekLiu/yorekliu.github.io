@@ -1,5 +1,5 @@
 ---
-title: "LeetCode(6)"
+title: "LeetCode(51-60)"
 ---
 
 ## 51. N-Queens

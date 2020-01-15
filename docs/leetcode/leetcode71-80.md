@@ -1,5 +1,5 @@
 ---
-title: "LeetCode(8)"
+title: "LeetCode(71-80)"
 ---
 
 ## 71. Simplify Path

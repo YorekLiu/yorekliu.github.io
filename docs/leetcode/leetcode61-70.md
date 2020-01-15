@@ -1,5 +1,5 @@
 ---
-title: "LeetCode(7)"
+title: "LeetCode(61-70)"
 ---
 
 ## 61. Rotate List
