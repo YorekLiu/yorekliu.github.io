@@ -1,34 +1,9 @@
 ---
 title: "年轻人的第一个Flutter程序(4)"
-excerpt: "自定义View、嵌套滑动、TabBar的使用等"
-categories:
-  - Flutter
-tags:
-  - Flutter
-  - DefaultTabController
-  - TabController
-  - TabBar
-  - TabBarView
-  - Tab
-  - AutomaticKeepAliveClientMixin
-  - CustomScrollView
-  - SliverGrid
-  - SliverList
-  - AspectRatio
-  - CustomPaint
-  - CustomPainter
-  - Canvas
-  - Paint
-  - TextSpan
-  - TextPainter
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-01-03T14:39:16+08:00
 ---
 
 本系列文章也会阶段性地release对应的apk供对照查看。apk都会发布在[release](https://github.com/YorekLiu/YLFlutterReady/releases)上。此外配合源码对应的tag一起食用，效果更加。  
 本章代码tag为`chapter03`，配合[chapter03.apk](https://github.com/YorekLiu/YLFlutterReady/releases/download/chapter03/chapter03.apk)。  
-{: .notice--primary }
 
 本章的主要技术要点为
 
@@ -38,21 +13,17 @@ last_modified_at: 2019-01-03T14:39:16+08:00
 
 老规矩，我们先上UI效果图：
 
-<figure>
-  <img src="/assets/images/flutter/flutter_demo_tab2.png"/>
-  <figcaption>tab2 UI效果</figcaption>
-</figure>
+![tab2 UI效果](/assets/images/flutter/flutter_demo_tab2.png)
 
 第一张图展示的是7天内完成任务的次数，第二张图是具体任务的完成情况（横坐标随便弄了下）。  
 
 ## 1. 关于TabBar
 
-[Working with Tabs](https://flutter.io/docs/cookbook/design/tabs)  
-{: .notice--info }
-
+[Working with Tabs](https://flutter.io/docs/cookbook/design/tabs)    
 <cite>上面就是官方对于Tab的Demo。</cite>  
 
 我们可以看到，这部分有如下控件  
+
 - `DefaultTabController`、`TabController`  
   顾名思义，就是用来控制Tab
 - `TabBar`  
@@ -227,8 +198,6 @@ return CustomScrollView(
 ## 3. 自定义View  
 
 [How do I use a Canvas to draw/paint?](https://flutter.io/docs/get-started/flutter-for/android-devs#how-do-i-use-a-canvas-to-drawpaint)  
-{: .notice--info }
-
 <cite>自定义View的示例</cite>
 
 在上面的示例中我们可以看到，Flutter中自定义View通过`CustomPainter`来完成，它有两个重要方法：`paint`方法完成绘制工作，`shouldRepaint`决定是否需要重绘。  

@@ -164,8 +164,8 @@ nav:
       - android/other/RxJava.md
       - android/other/soft-keyboard-in-app.md
       - android/other/SystemProrities.md
-      - android/other/琐碎知识点.md
       - android/other/腾讯X5内核入坑指南.md
+      - android/other/琐碎知识点.md
   - Flutter:
     - flutter/flutter_first_project_1.md
     - flutter/flutter_first_project_2.md
@@ -173,11 +173,11 @@ nav:
     - flutter/flutter_first_project_4.md
   - LeetCode:
     - leetcode/algo.md
+    - leetcode/code_interviews.md
     - leetcode/code_interviews_3.md
     - leetcode/code_interviews_4.md
     - leetcode/code_interviews_5.md
     - leetcode/code_interviews_6.md
-    - leetcode/code_interviews.md
     - leetcode/leetcode1-10.md
     - leetcode/leetcode11-20.md
     - leetcode/leetcode21-30.md

@@ -1,36 +1,11 @@
 ---
 title: "年轻人的第一个Flutter程序(2)"
-excerpt: "Demo底部导航栏(的坑) + Tab1的UI"
-categories:
-  - Flutter
-tags:
-  - Flutter
-  - Assets
-  - Font
-  - BottomNavigationBar
-  - Scaffold
-  - Animation
-  - AnimationController
-  - TickerProvider
-  - Ticker
-  - Simulation
-  - SchedulerBinding
-  - Scheduler
-  - Simulation
-  - Curve
-  - Tween
-  - Animatable
-  - intl
-  - DateTime
-  - DateFormat
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-12-14T15:03:00+08:00
 ---
 
 本章主要完成了首页底部导航栏以及Tab1的UI，另外记录了途中遇到的大坑。  
 
 主要内容有：
+
 - Asset及默认字体
 - BottomNavigationBar实现底部导航栏(**有大坑**)
 - 动画Animation以及源码分析
@@ -45,8 +20,7 @@ last_modified_at: 2018-12-14T15:03:00+08:00
 *底部导航栏以及Tab1 UI*
 
 本系列文章也会阶段性地release对应的apk供对照查看。apk都会发布在[release](https://github.com/YorekLiu/YLFlutterReady/releases)上。此外配合源码对应的tag一起食用，效果更加。      
-本章代码tag为`chapter01`，配合[chapter01.apk](https://github.com/YorekLiu/YLFlutterReady/releases/download/chapter01/chapter01.apk)。  
-{: .notice--primary }
+本章代码tag为`chapter01`，配合[chapter01.apk](https://github.com/YorekLiu/YLFlutterReady/releases/download/chapter01/chapter01.apk)。
 
 ## 2. 底部导航栏
 
@@ -109,7 +83,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
 flutter_gallery已经包含在本地的SDK中了。位于`$FLUTTER_ROOT/examples/flutter_gallery`。  
 建议参照README编译出来看看Flutter为我们提供那些方便的便利。
-{: .notice--primary }
 
 直接上修改过的主页代码：  
 **main.dart**
@@ -295,13 +268,15 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 ```
 
 上面这段代码知识点比较多，可以分为以下三点
-1. BottomNavigationBar的**大坑**
+
+1. BottomNavigationBar的 **大坑**
 2. Asset的使用——字体、图片等
 3. 动画Animation
 
 ### 2.1 BottomNavigationBar的大坑
 
 BottomNavigationBar从官方demo上来看很美好，使用很简单。但是在实际过程中，遇到了两个问题
+
 1. BottomNavigationBarItem的每次切换都伴随着Tab的重建
 2. 解决了1之后，BottomNavigationBarItem来回切换后，Tab内容不能发生任何交互  
 
@@ -355,7 +330,7 @@ flutter: [_MainPageState] [_buildTransitionsStack] index=0:[<'Ready'>] index=1:[
 flutter: [NavigationIconView] [NavigationIconView] title=Stats, status=AnimationStatus.dismissed
 flutter: [NavigationIconView] [NavigationIconView] title=Ready, status=AnimationStatus.completed
 ```
-由Tab2切换回Tab1的点击事件发生之后(1)，先执行Tab2页面的退场动画，然后更新_currentIndex，最后执行Tab1的进场动画(2, 3)。这三行代码执行完之后，UI就会刷新，body方法也会重新执行，这时由于动画才刚开始，所以Tab2的opacity还是1.0，Tab1的opacity是0.0(4)。所以排序完的结果是`index=0:[<'Ready'>] index=1:[<'Stats'>]`(5)，然后Stack按此顺序显示。最后Tab2页面的退场动画和Tab1的进场动画执行完毕(6, 7)。而Stack的布局特点**顾名思义就是Stack形式—— “长子”在底部**，因此tab1实际上位于栈低，所以不能有交互。  
+由Tab2切换回Tab1的点击事件发生之后(1)，先执行Tab2页面的退场动画，然后更新_currentIndex，最后执行Tab1的进场动画(2, 3)。这三行代码执行完之后，UI就会刷新，body方法也会重新执行，这时由于动画才刚开始，所以Tab2的opacity还是1.0，Tab1的opacity是0.0(4)。所以排序完的结果是`index=0:[<'Ready'>] index=1:[<'Stats'>]`(5)，然后Stack按此顺序显示。最后Tab2页面的退场动画和Tab1的进场动画执行完毕(6, 7)。而Stack的布局特点 **顾名思义就是Stack形式—— “长子”在底部** ，因此tab1实际上位于栈低，所以不能有交互。  
 解决办法就是在动画完成时重新刷新下UI:
 ```dart
 onTap: (int index) {
@@ -374,16 +349,14 @@ onTap: (int index) {
 /// the children to their new locations rather than recreate them at their
 /// new location.
 ```
-上面就解释了stack布局特点以及**为何需要加一个key，才能避免被recreate**。  
+上面就解释了stack布局特点以及 **为何需要加一个key，才能避免被recreate** 。  
 
 [Stack示例](https://flutter.io/docs/development/ui/layout#stack)  
-{: .notice--info }
 
 ### 2.2 Asset的使用——字体
 
 [Using custom fonts](https://flutter.io/docs/cookbook/design/fonts)  
 [Assets and images](https://flutter.io/docs/development/ui/assets-and-images)  
-{: .notice--info }
 
 > While Android treats resources and assets as distinct items, Flutter apps have only assets. <cite><a href="https://flutter.io/docs/get-started/flutter-for/android-devs#where-do-i-store-my-resolution-dependent-image-files">Where do I store my resolution-dependent image files?</a></cite>
 
@@ -443,7 +416,6 @@ class MyApp extends StatelessWidget {
 
 [Cookbook - Fade a Widget in and out](https://flutter.io/docs/cookbook/animation/opacity-animation)  
 [User Interface - Animations](https://flutter.io/docs/development/ui/animations)  
-{: .notice--info }
 
 #### 2.3.1 Animation的使用
 
@@ -532,24 +504,27 @@ void dispose() {
 ```
 
 在上面这些代码中，涉及到了如下概念：
+
 - AnimationController  
   用来控制动画，可以进行`forward`、`reverse`、`fling`等操作
 - Animation  
   表示可以在动画生命周期内发生改变的特定类型的值，大部分Widget都可以接受一个Animation对象作为参数，从而监听动画值的改变、读取当前动画值  
   可以用过`addListener`和`addStatusListener`添加监听器
 - Tween  
-  抽象类，起到一个**估值器**的作用，即将0.0-1.0的进度映射为具体的动画值
+  抽象类，起到一个 **估值器** 的作用，即将0.0-1.0的进度映射为具体的动画值
 - Curve  
-  抽象类，起到一个**插值器**的作用，即将0.0-1.0的进度**曲线映射**为0.0-1.0的进度  
+  抽象类，起到一个 **插值器** 的作用，即将0.0-1.0的进度 **曲线映射** 为0.0-1.0的进度  
   Curve必须满足这两个条件：t=0.0 to 0.0 且 t=1.0 to 1.0  
 
-  Flutter可以Curve嵌套Curve，传入第一个Curve的t为动画流逝的百分比，传出最后一个Curve的结果为属性值改变的百分比。
-  {: .notice--info }
+    !!! notice
+        Flutter可以Curve嵌套Curve，传入第一个Curve的t为动画流逝的百分比，传出最后一个Curve的结果为属性值改变的百分比。
+  
 
 #### 2.3.2 关于Animation和Animatable
 `Animatable`抽象类映射一个double值到特定类型的值。double值通常会在0.0到1.0的范围内。`Animatable`的主要子类是`Tween`。   
 
 `Tween`还有一些子类：
+
 - ColorTween
 - SizeTween
 - RectTween
@@ -559,6 +534,7 @@ void dispose() {
 - CurveTween
 
 另外，`Curve`也有一些子类：
+
 - [\_Linear](https://flutter.github.io/assets-for-api-docs/assets/animation/curve_linear.mp4)：线形
 - [SawTooth](https://docs.flutter.io/flutter/animation/SawTooth-class.html)：锯齿形
 - [Interval](https://docs.flutter.io/flutter/animation/Interval-class.html)：begin-end之间有效
@@ -734,6 +710,7 @@ class AnimationController extends Animation<double>
 创建`AnimationController`时内部首先会创建一个`Ticker`，然后初始化`AnimationController`的_value和_status。\_value的值会被clamp在[lowerBound, upperBound]范围之内，然后根据\_value与两个边界以及动画方向确定初始\_status。  
 
 这里冒出了一个`Ticker`：
+
 - Ticker类会hookScheduler的`scheduleFrameCallback()`机制，以便在每个tick中调用回调，在回调方法中会更新动画的进度并通知所有的(状态)监听器  
 
 然后来看看创建`Ticker`的过程。  
@@ -807,11 +784,13 @@ void _tick(Duration elapsed) {
 ```
 `elapsed`参数是动画开始到现在的duration，这会在后面讲到。  
 `_tick`方法干了3件事：
+
 1. 根据elapsed计算当前动画的进度
 2. 判断动画是否已经完成。若已完成，则设置对应的状态，并调用`stop`方法释放一些资源
 3. 通知所有的由`addListener`监听的监听器以及由`addStatusListener`监听的状态监听器
 
 在计算时，还涉及到了一个`Simulation`类：
+
 - `Simulation`抽象类将一个相对时间值映射到时间流逝百分比
 
 我们以`AnimationController`的`forward`过程为例，其内部的调用流程为`_animateToInternal(upperBound)`->`_startSimulation(_InterpolationSimulation(_value, target, simulationDuration, curve, scale));`  
@@ -1026,6 +1005,7 @@ void _tick(Duration timeStamp) {
 #### 2.3.4 Animation源码总结
 
 在探索源码的时候，我们额外看到了三个动画相关的类
+
 - Scheduler  
   The SchedulerBinding is a singleton class that exposes the Flutter scheduling primitives.  
   在动画中，key primitive指的就是帧回调。
@@ -1035,6 +1015,7 @@ void _tick(Duration timeStamp) {
   Simulation抽象类将一个相对时间值映射到时间流逝百分比
 
 我们总结一下Animation工作的流程。
+
 1. 创建`AnimationController`时会调用`TickerProvider#createTicker`创建`Ticker`对象，并会注册回调到`_tick`方法
 2. 调用`forward`时，会创建`Simulation`对象并作为参数传入`_startSimulation`方法
 3. 在`_startSimulation`方法中会调用`_ticker.start()`开始动画
@@ -1164,19 +1145,19 @@ return Card(
 );
 ```
 上面都是一些常用Widget的组合，没有什么特别的东西。不过也有一点小结
+
 1. Flutter中的Widget不像Android中的View那样，有非常多通用的布局属性。当我们需要在Flutter中加一些padding、margin或者color等属性时，如果某个具体的Widget没有提供这个属性，我们需要使用一个包含该属性的Widget包裹它。
 2. 在第二节的代码中，我们使用了如下代码来设置`BottomNavigationBar`的背景色为白色。
-  ```dart
-bottomNavigationBar: Theme(
-  data: Theme.of(context).copyWith(canvasColor: Colors.white),
-  child: botNavBar,
-),
-  ```
-  这是因为没有属性可以直接修改`BottomNavigationBar`的背景色，其默认颜色是canvasColor。如果我们在`MaterialApp`中没有指定canvasColor，canvasColor默认就为`canvasColor ??= isDark ? Colors.grey[850] : Colors.grey[50];`。同时canvasColor也是`Scaffold`的颜色。  
+    ```dart
+    bottomNavigationBar: Theme(
+      data: Theme.of(context).copyWith(canvasColor: Colors.white),
+      child: botNavBar,
+    ),
+    ```
+    这是因为没有属性可以直接修改`BottomNavigationBar`的背景色，其默认颜色是canvasColor。如果我们在`MaterialApp`中没有指定canvasColor，canvasColor默认就为`canvasColor ??= isDark ? Colors.grey[850] : Colors.grey[50];`。同时canvasColor也是`Scaffold`的颜色。  
   所以我们copy一份主题，然后修改`canvasColor`为白色，传给`BottomNavigationBar`，这样就OK了。
 
-[Using Themes to share colors and font styles](https://flutter.io/docs/cookbook/design/themes)
-{: .notice--info }
+    [Using Themes to share colors and font styles](https://flutter.io/docs/cookbook/design/themes)
 
 ### 3.2 使用三方库
 
@@ -1215,7 +1196,6 @@ String formatDate(DateTime dateTime) {
 ```
 
 [Using packages](https://flutter.io/docs/development/packages-and-plugins/using-packages)
-{: .notice--info }
 
 ---
 
@@ -1258,4 +1238,3 @@ class TaskListPage extends StatelessWidget {
 我们在下一章中将会新增一个Task的详情/新增页面，编辑完成后会SQLite来存储数据。编辑的同时也会存下相关的日志，这样tab2就有数据可以展示了。
 
 另外，但是我们注意到Tab1也可以是一个Scaffold，在整个主页也是Scaffold的情况下，真是amazing。
-{: .notice--primary }

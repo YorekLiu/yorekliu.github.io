@@ -1,41 +1,12 @@
 ---
 title: "年轻人的第一个Flutter程序(3)"
-excerpt: "页面跳转、表单、数据库、异步任务"
-categories:
-  - Flutter
-tags:
-  - Flutter
-  - Hero
-  - Navigator
-  - MaterialPageRoute
-  - Form
-  - GlobalKey
-  - TextField
-  - TextFormField
-  - FocusNode
-  - FocusScope
-  - autofocus
-  - TextEditingController
-  - SharedPreferences
-  - SQLite
-  - SQFlite
-  - dynamic
-  - Database
-  - Future
-  - async
-  - await
-  - then
-  - FutureBuilder
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-12-19T17:31:01+08:00
 ---
 
 本系列文章也会阶段性地release对应的apk供对照查看。apk都会发布在[release](https://github.com/YorekLiu/YLFlutterReady/releases)上。此外配合源码对应的tag一起食用，效果更加。      
 本章代码tag为`chapter02`，配合[chapter02.apk](https://github.com/YorekLiu/YLFlutterReady/releases/download/chapter02/chapter02.apk)。  
-{: .notice--primary }
 
 本章的主要技术要点为
+
 - 页面的跳转
 - 表单的写法：`TextFormField`与`TextField`的差别
 - Flutter中的数据库以及其他存储方式
@@ -43,17 +14,14 @@ last_modified_at: 2018-12-19T17:31:01+08:00
 
 老规矩，我们先上UI效果图：
 
-<figure>
-  <img src="/assets/images/flutter/flutter_demo_task_add_edit.png"/>
-  <figcaption>新建、编辑Task时的UI</figcaption>
-</figure>
+![新建、编辑Task时的UI](/assets/images/flutter/flutter_demo_task_add_edit.png)
 
 ## 1. 页面的跳转  
 
 [Navigation](https://flutter.io/docs/cookbook#navigation)
-{: .notice--info }
 
 上面介绍了5个方面的内容：
+
 1. 使用`Hero`完成共享元素动画
 2. 使用`Navigator.push`和`Navigator.pop`进入、退出页面
 3. 如何使用`Navigator.pushNamed`进入a named router
@@ -172,9 +140,9 @@ Navigator.pop(context, true);
 ## 2. 表单
 
 [Forms](https://flutter.io/docs/cookbook#forms)
-{: .notice--info }
 
 上面介绍了5个方面的内容：
+
 1. **表单`Form`及其校验**  
   依赖于`GlobalKey`，通过`GlobalKey.currentState.validate()`方法进行校验
 2. **`TextField`、`TextFormField`的样式**  
@@ -192,7 +160,7 @@ Navigator.pop(context, true);
 
 我们这里使用到了`Form`、`TextFormField`、`autofocus`、`FocusNode`和`TextEditingController`。  
 
-具体使用请看**task_add_detail.dart**
+具体使用请看 **task_add_detail.dart**
 ```dart
 class TaskDetailOrAddForm extends StatefulWidget {
 
@@ -465,7 +433,6 @@ class _TaskDetailOrAddFormState extends State<TaskDetailOrAddForm> {
 Flutter中数据库以及其他存储方式和Android非常像：也有`File`、`SharedPreferences`以及`SQLite`。  
 
 [Persistence](https://flutter.io/docs/cookbook#persistence)
-{: .notice--info }
 
 上面包含了`File`、`SharedPreferences`两种方式。  
 
@@ -473,6 +440,7 @@ Flutter中数据库以及其他存储方式和Android非常像：也有`File`、
 `SQLite`和`SharedPreferences`一样，也需要引入库，库名为[SQFlite](https://pub.dartlang.org/packages/sqflite)。  
 
 它有以下特点：
+
 - 支持事务和批处理
 - open时自动版本管理
 - insert/query/update/delete操作助手
@@ -807,7 +775,6 @@ class _TaskListPageState extends State<TaskListPage> {
 
 [Asynchrony support](https://www.dartlang.org/guides/language/language-tour#asynchrony-support)  
 [dart:async - asynchronous programming](https://www.dartlang.org/guides/libraries/library-tour#dartasync---asynchronous-programming)  
-{: .notice--info }
 
 本节只讨论`Future`。与`Future`有关的有三个关键词`async`、`await`、`then`。
 
@@ -870,7 +837,6 @@ HttpRequest.getString(url).then((String result) {
 ```
 
 Important: Be sure to invoke `catchError()` on the result of `then()`—not on the result of the original Future. Otherwise, the `catchError()` can handle errors only from the original Future’s computation, but not from the handler registered by `then()`.
-{: .notice--info }
 
 
 `then`方法返回一个`Future`，它可以执行多个异步任务以特定的顺序。如果使用`then`注册的回调返回一个`Future`，那么`then`会返回等效的`Future`。如果回到哦返回其他类型的值，`then`会用该值创建一个新的`Future`。
@@ -885,6 +851,7 @@ result
 });
 ```
 在上面的例子中，方法会以下面的顺序执行：
+
 1. `costlyQuery()`
 2. `expensiveWork()`
 3. `lengthyComputation()`

@@ -1,20 +1,5 @@
 ---
 title: "年轻人的第一个Flutter程序(1)"
-excerpt: "结合官方文档，从0开始一个Flutter程序，力求每个要点给到出处"
-categories:
-  - Flutter
-tags:
-  - Flutter
-  - StatelessWidget
-  - StatefulWidget
-  - Column
-  - Row
-  - MainAxisAlignment
-  - MainAxisSize
-  - CrossAxisAlignment
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-12-05T16:55:20+08:00
 ---
 
 ## 1. 前言
@@ -184,6 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
 简单的来说，
+
 - StatefulWidget表示可以与用户进行交互或者随着时间的推移可以发生变化的控件
 - StatelessWidget只是简单的展示控件
 
@@ -201,6 +187,7 @@ class _MyHomePageState extends State<MyHomePage> {
 ```
 
 效果如下：
+
 <iframe width="320" height="283" src="/assets/videos/flutter/flutter_live_template_stateful.mp4" frameborder="0" allowfullscreen></iframe>
 
 
@@ -211,21 +198,23 @@ class _MyHomePageState extends State<MyHomePage> {
 
 我们还是说下Column、Row布局的特点吧。从下面的图片中可以看出，Row相当于水平方向的线性布局，Column相当于竖直方向的线性布局。  
 
-![row-diagram.png](/assets/images/flutter/row-diagram.png){: .align-left }  ![column-diagram.png](/assets/images/flutter/column-diagram.png){: .align-center }
+![row-diagram.png](/assets/images/flutter/row-diagram.png)  ![column-diagram.png](/assets/images/flutter/column-diagram.png)
 
 Row和Column都有mainAxisAlignment和crossAxisAlignment两个属性控制其子布局在对应方向上的显示  
 
 对于Row来说，因为它是水平方向的，所以
+
 - mainAxisAlignment控制其子布局在水平方向的显示
 - crossAxisAlignment控制竖直方向的显示
 
 对于Column来说，因为它是竖直方向的，所以
+
 - mainAxisAlignment控制竖直方向的显示
 - crossAxisAlignment控制水平方向的显示
 
 mainAxisAlignment和crossAxisAlignment有很多枚举值，表1举出了所有的枚举值以及对应的效果。
 
-**Table 1.** MainAxisAlignment、MainAxisSize、CrossAxisAlignment的所有枚举值  
+<small>**Table 1.** MainAxisAlignment、MainAxisSize、CrossAxisAlignment的所有枚举值</small>  
 
 | 枚举值 | 效果 |
 | :--- | :- |
@@ -248,19 +237,16 @@ mainAxisAlignment和crossAxisAlignment有很多枚举值，表1举出了所有�
 
 表格看的不够直观，以Column为例上图，分别展示三个属性的效果。  
 
-<figure class="align-center">
-  <img src="/assets/images/flutter/column_main_axis_align.jpg"/>
-  <figcaption>Column中MainAxisAlignment取start、end、center、spaceBetween、spaceAround、spaceEvenly值时的效果</figcaption>
-</figure>
+![Column中MainAxisAlignment取start、end、center、spaceBetween、spaceAround、spaceEvenly值时的效果](/assets/images/flutter/column_main_axis_align.jpg)
 
-<figure class="align-center">
-  <img src="/assets/images/flutter/column_main_axis_size.png"/>
-  <figcaption>Column中MainAxisSize取min、max值时的效果</figcaption>
-</figure>
+<small>Column中MainAxisAlignment取start、end、center、spaceBetween、spaceAround、spaceEvenly值时的效果</small>
 
-<figure class="align-center">
-  <img src="/assets/images/flutter/column_cross_axis_align.png"/>
-  <figcaption>Column中CrossAxisAlignment取start、end、center、stretch、baseline值时的效果</figcaption>
-</figure>
+![Column中MainAxisSize取min、max值时的效果](/assets/images/flutter/column_main_axis_size.png)
+
+<small>Column中MainAxisSize取min、max值时的效果</small>
+
+![Column中CrossAxisAlignment取start、end、center、stretch、baseline值时的效果](/assets/images/flutter/column_cross_axis_align.png)
+
+<small>Column中CrossAxisAlignment取start、end、center、stretch、baseline值时的效果</small>
 
 在下一章，我们将基于现有工程进行「年轻人的第一个Flutter程序」。Flutter, Ready？
