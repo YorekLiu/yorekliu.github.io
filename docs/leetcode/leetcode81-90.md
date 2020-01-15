@@ -1,57 +1,36 @@
 ---
 title: "LeetCode(9)"
-excerpt: "LeetCode81-90总结"
-categories:
-  - Algorithm
-tags:
-  - LeetCode
-  - Binary Search
-  - Dynamic Programming
-  - Linked List
-  - Array
-  - String
-  - Two Pointers
-  - Backtracking
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-06-28T02:05:15+08:00
 ---
-
-<script type="text/javascript" async
-  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
 
 ## 81. Search in Rotated Sorted Array II
 
-[Binary Search](/tags/#binary-search){: .tag } 
+- Binary Search 
 
-Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
-
-(i.e., `[0,0,1,2,2,5,6]` might become `[2,5,6,0,0,1,2]`).
-
-You are given a target value to search. If found in the array return `true`, otherwise return `false`.
+> Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
+> 
+> (i.e., `[0,0,1,2,2,5,6]` might become `[2,5,6,0,0,1,2]`).
+> 
+> You are given a target value to search. If found in the array return `true`, otherwise return `false`.
 
 **Example 1:**
 
-**Input:** nums = [2,5,6,0,0,1,2], target = 0  
-**Output:** true
-{: .notice }
+> **Input:** nums = [2,5,6,0,0,1,2], target = 0  
+> **Output:** true
 
 **Example 2:**
 
-**Input:** nums = [2,5,6,0,0,1,2], target = 3  
-**Output:** false
-{: .notice }
+> **Input:** nums = [2,5,6,0,0,1,2], target = 3  
+> **Output:** false
 
 **Follow up:**
 
-- This is a follow up problem to [Search in Rotated Sorted Array](/algorithm/leetcode31-40/#33-search-in-rotated-sorted-array), where `nums` may contain duplicates.
+- This is a follow up problem to [Search in Rotated Sorted Array](/leetcode/leetcode31-40/#33-search-in-rotated-sorted-array), where `nums` may contain duplicates.
 - Would this affect the run-time complexity? How and why?
 
 **Solution**  
 
-此题与[CI-(11)旋转数组的最小数字](/algorithm/code_interviews/#621-11%E6%97%8B%E8%BD%AC%E6%95%B0%E7%BB%84%E7%9A%84%E6%9C%80%E5%B0%8F%E6%95%B0%E5%AD%97)非常类似。  
-也就是说在[Search in Rotated Sorted Array](/algorithm/leetcode31-40/#33-search-in-rotated-sorted-array)基础上考虑一种特殊情况：`{1, 0, 1, 1, 1}`和`{1, 1, 1, 0, 1}`。在这两个数组中最小数字为别位于左右半区。所以上面的算法一定会失败一种情况。因此，当lo，mid，hi对应的数字都相等时，我们必须采用顺序查找。
+此题与[CI-(11)旋转数组的最小数字](/leetcode/code_interviews_1/#621-11)非常类似。  
+也就是说在[Search in Rotated Sorted Array](/leetcode/leetcode31-40/#33-search-in-rotated-sorted-array)基础上考虑一种特殊情况：`{1, 0, 1, 1, 1}`和`{1, 1, 1, 0, 1}`。在这两个数组中最小数字为别位于左右半区。所以上面的算法一定会失败一种情况。因此，当lo，mid，hi对应的数字都相等时，我们必须采用顺序查找。
 
 Runtime 1 ms
 
@@ -110,25 +89,23 @@ class Solution {
 
 ## 82. Remove Duplicates from Sorted List II
 
-[Linked List](/tags/#linked-list){: .tag } 
+- Linked List 
 
-Given a sorted linked list, delete all nodes that have duplicate numbers, leaving only *distinct* numbers from the original list.
+> Given a sorted linked list, delete all nodes that have duplicate numbers, leaving only *distinct* numbers from the original list.
 
 **Example 1:**
 
-**Input:** 1->2->3->3->4->4->5  
-**Output:** 1->2->5
-{: .notice }
+> **Input:** 1->2->3->3->4->4->5  
+> **Output:** 1->2->5
 
 **Example 2:**
 
-**Input:** 1->1->1->2->3  
-**Output:** 2->3
-{: .notice }
+> **Input:** 1->1->1->2->3  
+> **Output:** 2->3
 
 **Solution**  
 
-此题同[CI-18-2-删除链表中重复的结点](/algorithm/code_interviews_3/#132-%E5%88%A0%E9%99%A4%E9%93%BE%E8%A1%A8%E4%B8%AD%E9%87%8D%E5%A4%8D%E7%9A%84%E7%BB%93%E7%82%B9)
+此题同[CI-18-2-删除链表中重复的结点](/leetcode/code_interviews_3/#132)
 
 Runtime 1 ms
 
@@ -178,21 +155,19 @@ class Solution {
 
 ## 83. Remove Duplicates from Sorted List
 
-[Linked List](/tags/#linked-list){: .tag } 
+- Linked List 
 
-Given a sorted linked list, delete all duplicates such that each element appear only *once*.
+> Given a sorted linked list, delete all duplicates such that each element appear only *once*.
 
 **Example 1:**
 
-**Input:** 1->1->2  
-**Output:** 1->2
-{: .notice }
+> **Input:** 1->1->2  
+> **Output:** 1->2
 
 **Example 2:**
 
-**Input:** 1->1->2->3->3  
-**Output:** 1->2->3
-{: .notice }
+> **Input:** 1->1->2->3->3  
+> **Output:** 1->2->3
 
 **Solution**  
 
@@ -231,21 +206,18 @@ class Solution {
 
 ## 84. Largest Rectangle in Histogram
 
-[Array](/tags/#array){: .tag } [Stack](/tags/#stack){: .tag } 
+- Array 
+- Stack 
 
-Given *n* non-negative integers representing the histogram's bar height where the width of each bar is 1, find the area of largest rectangle in the histogram.
-
-<figure style="width: 50%" class="half align-center">
-    <img src="/assets/images/leetcode/question_84_1.png">
-    <img src="/assets/images/leetcode/question_84_2.png">
-    <figcaption>1. Above is a histogram where width of each bar is 1, given height = `[2,1,5,6,2,3]`.<br />2. The largest rectangle is shown in the shaded area, which has area = `10` unit.</figcaption>
-</figure>
+> Given *n* non-negative integers representing the histogram's bar height where the width of each bar is 1, find the area of largest rectangle in the histogram.  
+> ![容器中数据被中间的一个或两个数据分隔成为两部分](/assets/images/leetcode/question_84_1.png)  
+> ![容器中数据被中间的一个或两个数据分隔成为两部分](/assets/images/leetcode/question_84_2.png)  
+> <small>1. Above is a histogram where width of each bar is 1, given height = `[2,1,5,6,2,3]`.<br />2. The largest rectangle is shown in the shaded area, which has area = `10` unit.</small>  
 
 **Example:**
 
-**Input:** [2,1,5,6,2,3]  
-**Output:** 10
-{: .notice }
+> **Input:** [2,1,5,6,2,3]  
+> **Output:** 10
 
 **Solution**  
 
@@ -253,10 +225,9 @@ Given *n* non-negative integers representing the histogram's bar height where th
 同样，对于任意的i，从右边往后找到第一个小于当前高度的bar，其下标记为lessFromRight[i]，若没有找到，则设为n。  
 (lessFromRight[i] - lessFromLeft[i] - 1)表示的就是当前i的解，图解如下图：
 
-<figure style="width: 40%" class="align-center">
-    <img src="/assets/images/leetcode/question_84_3.png">
-    <figcaption>(lessFromRight[i] - lessFromLeft[i] - 1)的意义</figcaption>
-</figure>
+![(lessFromRight[i] - lessFromLeft[i] - 1)的意义](/assets/images/leetcode/question_84_3.png)
+
+<small>(lessFromRight[i] - lessFromLeft[i] - 1)的意义</small>
 
 这样就容易理解为什么lessFromLeft[i]的默认值为-1，lessFromRight[i]的默认值为n了。
 
@@ -303,35 +274,36 @@ class Solution {
 
 ## 85. Maximal Rectangle
 
-[Dynamic Programming](/tags/#dynamic-programming){: .tag }
+- Dynamic Programming
 
-Given a 2D binary matrix filled with 0's and 1's, find the largest rectangle containing only 1's and return its area.
+> Given a 2D binary matrix filled with 0's and 1's, find the largest rectangle containing only 1's and return its area.
 
 **Example:**
 
-**Input:**  
-[  
-&emsp;&emsp;&emsp;["1","0","1","0","0"],  
-&emsp;&emsp;&emsp;["1","0","1","1","1"],  
-&emsp;&emsp;&emsp;["1","1","1","1","1"],  
-&emsp;&emsp;&emsp;["1","0","0","1","0"]  
-]  
-**Output:** 6
-{: .notice }
+> **Input:**  
+> [  
+> &emsp;&emsp;&emsp;["1","0","1","0","0"],  
+> &emsp;&emsp;&emsp;["1","0","1","1","1"],  
+> &emsp;&emsp;&emsp;["1","1","1","1","1"],  
+> &emsp;&emsp;&emsp;["1","0","0","1","0"]  
+> ]  
+> **Output:** 6
 
 **Solution: [Dynamic Programming](https://leetcode.com/problems/maximal-rectangle/discuss/29054/Share-my-DP-solution)**  
 
 Solution比较难理解。总体来说可以采用DP解法，一行一行遍历。对某一个具体的坐标，有如下解：  
 
-$$f(i, j)=[right(i,j) - left(i,j)] * height(i,j)$$
+$$
+f(i, j)=[right(i,j) - left(i,j)] * height(i,j)
+$$
 
 其中：
 
-- $$height(i,j)$$表示上方连续的1的个数
-- $$left(i, j)$$表示对任意k∈[j, i]，使得height[k] >= height[i]成立的最左边的索引j
-- $$right(i, j)$$表示对任意k∈[i, j]，使得height[k] >= height[i]成立的最右边的索引j
+- $height(i,j)$表示上方连续的1的个数
+- $left(i, j)$表示对任意k∈[j, i]，使得height[k] >= height[i]成立的最左边的索引j
+- $right(i, j)$表示对任意k∈[i, j]，使得height[k] >= height[i]成立的最右边的索引j
 
-这样一来，$$left$$和$$right$$就能表示包含当前点的、且高为$$height$$的矩形的边界。
+这样一来，$left$和$right$就能表示包含当前点的、且高为$height$的矩形的边界。
 
 [Solution解题过程](/assets/images/leetcode/question_85_solution.png)
 
@@ -387,17 +359,16 @@ class Solution {
 
 ## 86. Partition List
 
-[Linked List](/tags/#linked-list){: .tag }
+- Linked List
 
-Given a linked list and a value *x*, partition it such that all nodes less than *x* come before nodes greater than or equal to *x*.
-
-You should preserve the original relative order of the nodes in each of the two partitions.
+> Given a linked list and a value *x*, partition it such that all nodes less than *x* come before nodes greater than or equal to *x*.
+> 
+> You should preserve the original relative order of the nodes in each of the two partitions.
 
 **Example:**
 
-**Input:** head = 1->4->3->2->5->2, x = 3  
-**Output:** 1->2->2->4->3->5
-{: .notice }
+> **Input:** head = 1->4->3->2->5->2, x = 3  
+> **Output:** 1->2->2->4->3->5
 
 **Solution**  
 
@@ -457,49 +428,46 @@ class Solution {
 
 ## 87. Scramble String
 
-[String](/tags/#string){: .tag } [Dynamic Programming](/tags/#dynamic-programming){: .tag }
+- String 
+- Dynamic Programming
 
-Given a string *s1*, we may represent it as a binary tree by partitioning it to two non-empty substrings recursively.
-
-Below is one possible representation of *s1* = `"great"`:
-
-&nbsp;&nbsp;&nbsp;&nbsp;great  
-&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;\  
-&nbsp;&nbsp;gr&nbsp;&nbsp;&nbsp;eat  
-&nbsp;/&nbsp;\&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;\  
-g&nbsp;&nbsp;r&nbsp;&nbsp;e&nbsp;&nbsp;&nbsp;at  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;\  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;&nbsp;&nbsp;t  
-{: .notice }
-
-To scramble the string, we may choose any non-leaf node and swap its two children.
-
-For example, if we choose the node `"gr"` and swap its two children, it produces a scrambled string `"rgeat"`.
-
-&nbsp;&nbsp;&nbsp;&nbsp;rgeat  
-&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;\  
-&nbsp;&nbsp;rg&nbsp;&nbsp;&nbsp;eat  
-&nbsp;/&nbsp;\&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;\  
-r&nbsp;&nbsp;g&nbsp;&nbsp;e&nbsp;&nbsp;&nbsp;at  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;\  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;&nbsp;&nbsp;t  
-{: .notice }
-
-We say that `"rgtae"` is a scrambled string of `"great"`.
-
-Given two strings *s1* and *s2* of the same length, determine if *s2* is a scrambled string of *s1*.
+> Given a string *s1*, we may represent it as a binary tree by partitioning it to two non-empty substrings recursively.
+> 
+> Below is one possible representation of *s1* = `"great"`:
+> 
+> &nbsp;&nbsp;&nbsp;&nbsp;great  
+> &nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;\  
+> &nbsp;&nbsp;gr&nbsp;&nbsp;&nbsp;eat  
+> &nbsp;/&nbsp;\&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;\  
+> g&nbsp;&nbsp;r&nbsp;&nbsp;e&nbsp;&nbsp;&nbsp;at  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;\  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;&nbsp;&nbsp;t  
+> 
+> To scramble the string, we may choose any non-leaf node and swap its two children.
+> 
+> For example, if we choose the node `"gr"` and swap its two children, it produces a scrambled string `"rgeat"`.
+> 
+> &nbsp;&nbsp;&nbsp;&nbsp;rgeat  
+> &nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;\  
+> &nbsp;&nbsp;rg&nbsp;&nbsp;&nbsp;eat  
+> &nbsp;/&nbsp;\&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;\  
+> r&nbsp;&nbsp;g&nbsp;&nbsp;e&nbsp;&nbsp;&nbsp;at  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;\  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;&nbsp;&nbsp;t  
+> 
+> We say that `"rgtae"` is a scrambled string of `"great"`.
+> 
+> Given two strings *s1* and *s2* of the same length, determine if *s2* is a scrambled string of *s1*.
 
 **Example 1:**
 
-**Input:** s1 = "great", s2 = "rgeat"  
-**Output:** true  
-{: .notice }
+> **Input:** s1 = "great", s2 = "rgeat"  
+> **Output:** true  
 
 **Example 2:**
 
-**Input:** s1 = "abcde", s2 = "caebd"  
-**Output:** false  
-{: .notice }
+> **Input:** s1 = "abcde", s2 = "caebd"  
+> **Output:** false  
 
 **Solution**  
 
@@ -541,9 +509,10 @@ class Solution {
 
 ## 88. Merge Sorted Array
 
-[Array](/tags/#array){: .tag } [Two Pointers](/tags/#two-pointers){: .tag }
+- Array 
+- Two Pointers
 
-Given two sorted integer arrays *nums1* and *nums2*, merge *nums2* into *nums1* as one sorted array.
+> Given two sorted integer arrays *nums1* and *nums2*, merge *nums2* into *nums1* as one sorted array.
 
 **Note:**
 
@@ -552,14 +521,12 @@ Given two sorted integer arrays *nums1* and *nums2*, merge *nums2* into *nums1* 
 
 **Example:**
 
-**Input:**  
-nums1 = [1,2,3,0,0,0], m = 3  
-nums2 = [2,5,6],       n = 3  
-**Output:** [1,2,2,3,5,6]  
-{: .notice }
+> **Input:**  
+> nums1 = [1,2,3,0,0,0], m = 3  
+> nums2 = [2,5,6],       n = 3  
+> **Output:** [1,2,2,3,5,6]  
 
 **Solution**  
-
 
 Runtime 0 ms
 
@@ -587,40 +554,37 @@ class Solution {
 
 ## 89. Gray Code
 
-[Backtracking](/tags/#backtracking){: .tag } 
+- Backtracking 
 
-The gray code is a binary numeral system where two successive values differ in only one bit.
-
-Given a non-negative integer n representing the total number of bits in the code, print the sequence of gray code. A gray code sequence must begin with 0.
+> The gray code is a binary numeral system where two successive values differ in only one bit.
+> 
+> Given a non-negative integer n representing the total number of bits in the code, print the sequence of gray code. A gray code sequence must begin with 0.
 
 **Example 1:**
 
-**Input:** 2  
-**Output:** [0,1,3,2]  
-**Explanation:**  
-00 - 0  
-01 - 1  
-11 - 3  
-10 - 2  
-For a given n, a gray code sequence may not be uniquely defined. For example, [0,2,3,1] is also a valid gray code sequence.  
-00 - 0  
-10 - 2  
-11 - 3  
-01 - 1  
-{: .notice }
+> **Input:** 2  
+> **Output:** [0,1,3,2]  
+> **Explanation:**  
+> 00 - 0  
+> 01 - 1  
+> 11 - 3  
+> 10 - 2  
+> For a given n, a gray code sequence may not be uniquely defined. For example, [0,2,3,1] is also a valid gray code sequence.  
+> 00 - 0  
+> 10 - 2  
+> 11 - 3  
+> 01 - 1  
 
 **Example 2:**  
 
-**Input:** 0  
-**Output:** [0]  
-**Explanation:** We define the gray code sequence to begin with 0.  
-             A gray code sequence of n has size = 2n, which for n = 0 the size is 20 = 1.  
-             Therefore, for n = 0 the gray code sequence is [0].  
-{: .notice }
+> **Input:** 0  
+> **Output:** [0]  
+> **Explanation:** We define the gray code sequence to begin with 0. A gray code sequence of n has size = 2n, which for n = 0 the size is 20 = 1. Therefore, for n = 0 the gray code sequence is [0].  
+
 
 **Solution**  
 
-从下面的解题过程中可以看出，$$f(n)$$与$$f(n-1)$$之间有很大的关系，只需要在原来$$f(n-1)$$的基础上加上一份最高位置为1的**顺序相反**的$$f(n-1)$$就得到了$$f(n)$$。
+从下面的解题过程中可以看出，$f(n)$与$f(n-1)$之间有很大的关系，只需要在原来$f(n-1)$的基础上加上一份最高位置为1的 **顺序相反** 的$f(n-1)$就得到了$f(n)$。
 
 [解题过程](/assets/images/leetcode/question_89_solution.png)
 
@@ -648,25 +612,24 @@ class Solution {
 
 ## 90. Subsets II
 
-[Backtracking](/tags/#backtracking){: .tag } 
+- Backtracking 
 
-Given a collection of integers that might contain duplicates, ***nums***, return all possible subsets (the power set).
+> Given a collection of integers that might contain duplicates, ***nums***, return all possible subsets (the power set).
 
 **Note:** The solution set must not contain duplicate subsets.
 
 **Example:**
 
-**Input:** [1,2,2]  
-**Output:**  
-[  
-&nbsp;&nbsp;&nbsp;[2],  
-&nbsp;&nbsp;&nbsp;[1],  
-&nbsp;&nbsp;&nbsp;[1,2,2],  
-&nbsp;&nbsp;&nbsp;[2,2],  
-&nbsp;&nbsp;&nbsp;[1,2],  
-&nbsp;&nbsp;&nbsp;[]  
-]
-{: .notice }
+> **Input:** [1,2,2]  
+> **Output:**  
+> [  
+> &nbsp;&nbsp;&nbsp;[2],  
+> &nbsp;&nbsp;&nbsp;[1],  
+> &nbsp;&nbsp;&nbsp;[1,2,2],  
+> &nbsp;&nbsp;&nbsp;[2,2],  
+> &nbsp;&nbsp;&nbsp;[1,2],  
+> &nbsp;&nbsp;&nbsp;[]  
+> ]
 
 **Solution**  
 

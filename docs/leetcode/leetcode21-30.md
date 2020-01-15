@@ -1,35 +1,17 @@
 ---
 title: "LeetCode(3)"
-excerpt: "LeetCode21-30总结"
-categories:
-  - Algorithm
-tags:
-  - LeetCode
-  - Linked List
-  - String
-  - Backtracking
-  - Divide and Conquer
-  - Heap
-  - Array
-  - Two Pointers
-  - Binary Search
-  - Hash Table
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-11-12T10:55:49+08:00
 ---
 
 ## 21. Merge Two Sorted Lists
 
-[Linked List](/tags/#linked-list){: .tag }
+- Linked List
 
-Merge two sorted linked lists and return it as a new list. The new list should be made by splicing together the nodes of the first two lists.
+> Merge two sorted linked lists and return it as a new list. The new list should be made by splicing together the nodes of the first two lists.
 
 **Example:**
 
-Input: 1->2->4, 1->3->4  
-Output: 1->1->2->3->4->4
-{: .notice }
+> Input: 1->2->4, 1->3->4  
+> Output: 1->1->2->3->4->4
 
 ```java
 /**
@@ -72,25 +54,26 @@ class Solution {
 1.如果一个链表为空，那么直接链上另一个链表并返回即可  
 2.否则，比较剩余的两链表头节点的数值大小，将较小者插入列表  
 **列表操作最好不要直接操作入参列表**
-{: .notice--success }
+
 
 ## 22. Generate Parentheses
 
-[String](/tags/#string){: .tag } [Backtracking](/tags/#backtracking){: .tag }
+- String 
+- Backtracking
 
-Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
-
-For example, given n = 3, a solution set is:
-
-```
-[
-  "((()))",
-  "(()())",
-  "(())()",
-  "()(())",
-  "()()()"
-]
-```
+> Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
+> 
+> For example, given n = 3, a solution set is:
+> 
+> ```
+> [
+>   "((()))",
+>   "(()())",
+>   "(())()",
+>   "()(())",
+>   "()()()"
+> ]
+> ```
 
 **Brute Force**  
 ```java
@@ -128,7 +111,6 @@ class Solution {
 
 暴力破解法的要点在于递归，递归时分别给当前字符串加上左括号或右括号。  
 当括号添加完成后判断是否满足条件。
-{: .notice--success }
 
 **Backtracking**  
 ```java
@@ -153,30 +135,31 @@ class Solution {
 }
 ```
 
-回溯法在暴力破解法的基础上进行了改进：不直接添加左右括号，而是判断当前位置能不能为左右括号  。具体表现为：  
-1.`open < n`表明左括号还没有放完，可以继续放  
-2.`close < open`表明右括号比左括号少，可以放右括号  
+回溯法在暴力破解法的基础上进行了改进：不直接添加左右括号，而是判断当前位置能不能为左右括号。
+具体表现为：  
+
+1. `open < n`表明左括号还没有放完，可以继续放  
+2. `close < open`表明右括号比左括号少，可以放右括号  
+
 这样保证了括号的正确性，因此只要能够达到长度，必定是合法的括号。
-{: .notice--success }
 
 ## 23. Merge k Sorted Lists
 
-[Linked List](/tags/#linked-list){: .tag } [Divide and Conquer](/tags/#divide-and-conquer){: .tag }
-[Heap](/tags/#heap){: .tag }
+- Linked List 
+- Divide and Conquer
+- Heap
 
-Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity.
+> Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity.
 
 **Example:**  
 
-Input:  
-[  
-&emsp;1->4->5,  
-&emsp;1->3->4,  
-&emsp;2->6  
-]  
-Output: 1->1->2->3->4->4->5->6    
-{: .notice }
-
+> Input:  
+> [  
+> &emsp;1->4->5,  
+> &emsp;1->3->4,  
+> &emsp;2->6  
+> ]  
+> Output: 1->1->2->3->4->4->5->6    
 
 ```java
 /**
@@ -227,20 +210,19 @@ class Solution {
 ```
 
 此题使用#21的思路，将链表两两进行合并，这样问题就退化了。
-{: .notice--success }
 
 ## 24. Swap Nodes in Pairs
 
-[Linked List](/tags/#linked-list){: .tag }
+- Linked List
 
-Given a linked list, swap every two adjacent nodes and return its head.
+> Given a linked list, swap every two adjacent nodes and return its head.
 
 **Example:**  
 
 Given 1->2->3->4, you should return the list as 2->1->4->3.
-{: .notice }
 
 **Note:**
+
 - Your algorithm should use only constant extra space.
 - You may **not** modify the values in the list's nodes, only nodes itself may be changed.
 
@@ -276,24 +258,23 @@ class Solution {
 ```
 
 此题要求将链表节点两两交换，比较简单。
-{: .notice--success }
 
 ## 25. Reverse Nodes in k-Group
 
-[Linked List](/tags/#linked-list){: .tag }
+- Linked List
 
-Given a linked list, reverse the nodes of a linked list *k* at a time and return its modified list.
-
-*k* is a positive integer and is less than or equal to the length of the linked list. If the number of nodes is not a multiple of *k* then left-out nodes in the end should remain as it is.
+> Given a linked list, reverse the nodes of a linked list *k* at a time and return its modified list.
+> 
+> *k* is a positive integer and is less than or equal to the length of the linked list. If the number of nodes is not a multiple of *k* then left-out nodes in the end should remain as it is.
 
 **Example:**  
 
-Given this linked list: `1->2->3->4->5`  
-For k = 2, you should return: `2->1->4->3->5`  
-For k = 3, you should return: `3->2->1->4->5`
-{: .notice }
+> Given this linked list: `1->2->3->4->5`  
+> For k = 2, you should return: `2->1->4->3->5`  
+> For k = 3, you should return: `3->2->1->4->5`
 
 **Note:**
+
 - Only constant extra memory is allowed.
 - You may not alter the values in the list's nodes, only nodes itself may be changed.
 
@@ -347,7 +328,6 @@ class Solution {
 
 此题要求将链表进行k组逆序，基本知识点是单列表的逆序问题。  
 注意逆序时，每组头尾节点的处理。  
-{: .notice--success }
 
 **单链表的逆序**
 ```java
@@ -367,25 +347,24 @@ public ListNode reverseKGroup(ListNode head, int k) {
 
 ## 26. Remove Duplicates from Sorted Array
 
-[Array](/tags/#array){: .tag } [Two Pointers](/tags/#two-pointers){: .tag }
+- Array 
+- Two Pointers
 
-Given a sorted array nums, remove the duplicates in-place such that each element appear only once and return the new length.
-
-Do not allocate extra space for another array, you must do this by modifying the input array in-place with O(1) extra memory.
+> Given a sorted array nums, remove the duplicates in-place such that each element appear only once and return the new length.
+> 
+> Do not allocate extra space for another array, you must do this by modifying the input array in-place with O(1) extra memory.
 
 **Example 1:**  
 
-Given nums = [1,1,2],  
-Your function should return length = 2, with the first two elements of nums being 1 and 2 respectively.  
-It doesn't matter what you leave beyond the returned length.
-{: .notice }
+> Given nums = [1,1,2],  
+> Your function should return length = 2, with the first two elements of nums being 1 and 2 respectively.  
+> It doesn't matter what you leave beyond the returned length.
 
 **Example 2:**  
 
-Given nums = [0,0,1,1,1,2,2,3,3,4],  
-Your function should return length = 5, with the first five elements of nums being modified to 0, 1, 2, 3, and 4 respectively.  
-It doesn't matter what values are set beyond the returned length.
-{: .notice }
+> Given nums = [0,0,1,1,1,2,2,3,3,4],  
+> Your function should return length = 5, with the first five elements of nums being modified to 0, 1, 2, 3, and 4 respectively.  
+> It doesn't matter what values are set beyond the returned length.
 
 **Clarification:**  
 Confused why the returned value is an integer but your answer is an array?
@@ -428,32 +407,30 @@ class Solution {
 ```
 
 比较简单的问题，我们只需要在统计有效长度时顺便将当前有效长度的下标数据中塞入i当前的值即可。
-{: .notice--success }
 
 ## 27. Remove Element
 
-[Array](/tags/#array){: .tag } [Two Pointers](/tags/#two-pointers){: .tag }
+- Array 
+- Two Pointers
 
-Given an array nums and a value val, remove all instances of that value in-place and return the new length.
-
-Do not allocate extra space for another array, you must do this by modifying the input array in-place with O(1) extra memory.
-
-The order of elements can be changed. It doesn't matter what you leave beyond the new length.
+> Given an array nums and a value val, remove all instances of that value in-place and return the new length.
+> 
+> Do not allocate extra space for another array, you must do this by modifying the input array in-place with O(1) extra memory.
+> 
+> The order of elements can be changed. It doesn't matter what you leave beyond the new length.
 
 **Example 1:**  
 
-Given nums = [3,2,2,3], val = 3,  
-Your function should return length = 2, with the first two elements of nums being 2.  
-It doesn't matter what you leave beyond the returned length.
-{: .notice }
+> Given nums = [3,2,2,3], val = 3,  
+> Your function should return length = 2, with the first two elements of nums being 2.  
+> It doesn't matter what you leave beyond the returned length.
 
 **Example 2:**  
 
-Given nums = [0,1,2,2,3,0,4,2], val = 2,  
-Your function should return length = 5, with the first five elements of nums containing 0, 1, 3, 0, and 4.  
-Note that the order of those five elements can be arbitrary.  
-It doesn't matter what values are set beyond the returned length.
-{: .notice }
+> Given nums = [0,1,2,2,3,0,4,2], val = 2,  
+> Your function should return length = 5, with the first five elements of nums containing 0, 1, 3, 0, and 4.  
+> Note that the order of those five elements can be arbitrary.  
+> It doesn't matter what values are set beyond the returned length.
 
 **Clarification:**  
 Confused why the returned value is an integer but your answer is an array?
@@ -503,27 +480,25 @@ class Solution {
 ```
 
 首先将数组排序，找出val在数组中出现的开始、结束坐标。将结束坐标后的数据移动依次往前排即可。
-{: .notice--success }
 
 ## 28. Implement strStr()
 
-[String](/tags/#string){: .tag } [Two Pointers](/tags/#two-pointers){: .tag }
+- String 
+- Two Pointers
 
-Implement strStr().
-
-Return the index of the first occurrence of needle in haystack, or -1 if needle is not part of haystack.
+> Implement strStr().
+> 
+> Return the index of the first occurrence of needle in haystack, or -1 if needle is not part of haystack.
 
 **Example 1:**  
 
-Input: haystack = "hello", needle = "ll"  
-Output: 2
-{: .notice }
+> Input: haystack = "hello", needle = "ll"  
+> Output: 2
 
 **Example 2:**  
 
-Input: haystack = "aaaaa", needle = "bba"  
-Output: -1
-{: .notice }
+> Input: haystack = "aaaaa", needle = "bba"  
+> Output: -1
 
 **Clarification:**  
 What should we return when `needle` is an empty string? This is a great question to ask during an interview.
@@ -566,31 +541,30 @@ KMP算法：
 首先取needle的第0个字符，在`haystack`中找到第0个匹配字符  
 1.如果匹配，继续读`needle`下一个字符，直到`needle`被读完，此时已经找到匹配结果了。  
 2.如果第0个字符不匹配，且index不为0，说明`needle`的头部匹配，此时将i回退到当时的后一位，继续开始匹配。
-{: .notice--success }
+
 
 ## 29. Divide Two Integers
 
-[Binary Search](/tags/#binary-search){: .tag }
+- Binary Search
 
-Given two integers `dividend` and `divisor`, divide two integers without using multiplication, division and mod operator.
-
-Return the quotient after dividing `dividend` by `divisor`.
-
-The integer division should truncate toward zero.
+> Given two integers `dividend` and `divisor`, divide two integers without using multiplication, division and mod operator.
+> 
+> Return the quotient after dividing `dividend` by `divisor`.
+> 
+> The integer division should truncate toward zero.
 
 **Example 1:**  
 
-Input: dividend = 10, divisor = 3  
-Output: 3
-{: .notice }
+> Input: dividend = 10, divisor = 3  
+> Output: 3
 
 **Example 2:**  
 
-Input: dividend = 7, divisor = -3  
-Output: -2
-{: .notice }
+> Input: dividend = 7, divisor = -3  
+> Output: -2
 
 **Note:**  
+
 - Both dividend and divisor will be 32-bit signed integers.
 - The divisor will never be 0.
 - Assume we are dealing with an environment which could only store integers within the 32-bit signed integer range: [−2^31,  2^31 − 1]. For the purpose of this problem, assume that your function returns 2^31 − 1 when the division result overflows.
@@ -631,31 +605,30 @@ class Solution {
 **Note**:  
 1.注意`Math.abs(Integer.MIN_VALUE)=Integer.MIN_VALUE`，所以在第二步中采取了`Math.abs((long) dividend)`操作  
 2.返回结果时不要`return (int) sign * res;`，这里的「\*」违反了规则
-{: .notice--success }
 
 ## 30. Substring with Concatenation of All Words
 
-[Hash Table](/tags/#hash-table){: .tag } [Two Pointers](/tags/#two-points){: .tag } [String](/tags/#string){: .tag }
+- Hash Table 
+- Two Pointers 
+- String
 
-You are given a string, s, and a list of words, words, that are all of the same length. Find all starting indices of substring(s) in s that is a concatenation of each word in words exactly once and without any intervening characters.
+> You are given a string, s, and a list of words, words, that are all of the same length. Find all starting indices of substring(s) in s that is a concatenation of each word in words exactly once and without any intervening characters.
 
 **Example 1:**  
 
-Input:  
-  s = "barfoothefoobarman",  
-  words = ["foo","bar"]  
-Output: [0,9]  
-Explanation: Substrings starting at index 0 and 9 are "barfoor" and "foobar" respectively.  
-The output order does not matter, returning [9,0] is fine too.
-{: .notice }
+> Input:  
+>   s = "barfoothefoobarman",  
+>   words = ["foo","bar"]  
+> Output: [0,9]  
+> Explanation: Substrings starting at index 0 and 9 are "barfoor" and "foobar" respectively.  
+> The output order does not matter, returning [9,0] is fine too.
 
 **Example 2:**  
 
-Input:  
-  s = "wordgoodstudentgoodword",  
-  words = ["word","student"]  
-Output: []
-{: .notice }
+> Input:  
+>   s = "wordgoodstudentgoodword",  
+>   words = ["word","student"]  
+> Output: []
 
 **Code:**  
 ```java
@@ -712,4 +685,3 @@ class Solution {
 5.每次扩充区间前，判断滑动窗口是否达到了长度的上限  
 5.1.若达到了，窗口进行滑动，同时判断滑过的字符串是否是关键词  
 5.2.若是，将此关键词在临时表以及其他地方记录复位。
-{: .notice--success }

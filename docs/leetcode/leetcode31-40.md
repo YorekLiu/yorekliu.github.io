@@ -1,37 +1,22 @@
 ---
 title: "LeetCode(4)"
-excerpt: "LeetCode31-40总结"
-categories:
-  - Algorithm
-tags:
-  - LeetCode
-  - Array
-  - String
-  - Dynamic Programming
-  - Binary Search
-  - Hash Table
-  - Hash Set
-  - Backtracking
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-12-03T16:25:29+08:00
 ---
 
 ## 31. Next Permutation
 
-[Array](/tags/#array){: .tag }
+- Array
 
-Implement next permutation, which rearranges numbers into the lexicographically next greater permutation of numbers.
-
-If such arrangement is not possible, it must rearrange it as the lowest possible order (ie, sorted in ascending order).
-
-The replacement must be in-place and use only constant extra memory.
-
-Here are some examples. Inputs are in the left-hand column and its corresponding outputs are in the right-hand column.
-
-`1,2,3` → `1,3,2`  
-`3,2,1` → `1,2,3`  
-`1,1,5` → `1,5,1`  
+> Implement next permutation, which rearranges numbers into the lexicographically next greater permutation of numbers.
+> 
+> If such arrangement is not possible, it must rearrange it as the lowest possible order (ie, sorted in ascending order).
+> 
+> The replacement must be in-place and use only constant extra memory.
+> 
+> Here are some examples. Inputs are in the left-hand column and its corresponding outputs are in the right-hand column.
+> 
+> `1,2,3` → `1,3,2`  
+> `3,2,1` → `1,2,3`  
+> `1,1,5` → `1,5,1`  
 
 
 **Solution**  
@@ -71,33 +56,30 @@ class Solution {
 }
 ```
 
-![question_31.gif](/assets/images/leetcode/question_31.gif){: .align-center }
+![question_31.gif](/assets/images/leetcode/question_31.gif)
 
 首先从尾部开始查找，找到第一个递减(从尾部看)的元素i  
 从i往尾部查找，找到第一个大于i的元素j，交换i,j  
 将nums从i+1开始，反转
-{: .notice--success }
-
 
 ## 32. Longest Valid Parentheses
 
-[String](/tags/#string){: .tag } [Dynamic Programming](/tags/#dynamic-programming){: .tag }
+- String 
+- Dynamic Programming
 
-Given a string containing just the characters '(' and ')', find the length of the longest valid (well-formed) parentheses substring.
+> Given a string containing just the characters '(' and ')', find the length of the longest valid (well-formed) parentheses substring.
 
 **Example 1:**
 
-Input: "(()"  
-Output: 2  
-Explanation: The longest valid parentheses substring is "()"
-{: .notice }
+> Input: "(()"  
+> Output: 2  
+> Explanation: The longest valid parentheses substring is "()"
 
 **Example 2:**  
 
-Input: ")()())"  
-Output: 4  
-Explanation: The longest valid parentheses substring is "()()"  
-{: .notice }
+> Input: ")()())"  
+> Output: 4  
+> Explanation: The longest valid parentheses substring is "()()"  
 
 **Solution**
 
@@ -132,7 +114,6 @@ class Solution {
 而难题在于如何用上一个阶段的结果得出这个阶段的结果。我们可以分为两种情况讨论：  
 1、i-1为'('时，此时我们只需要将i-2的dp值加上'()'的长度2即可。  
 2、i-1为')'时，dp[i-1]的值就表示了上一个阶段的值，所以i-dp[i-1]就得到了上个阶段起始的坐标。这里我们只要关心i-dp[i-1]-1是'('的情况，因为'('才能和s[i]=')'匹配。因此，dp[i] = dp[i - 1] + dp[i - dp[i - 1] - 2] + 2。
-{: .notice--success }
 
 **Approach 2: Using Stack**
 
@@ -164,7 +145,6 @@ class Solution {
 
 经中此篇如此高深，难道你当真懂得？  
 经中此篇如此高深，我的确不懂!
-{: .notice--warning }
 
 不过在讨论区的高票答案也是Stack解法，理解起来简单多了。两者核心思想应该是一致的。  
 **Approach 2.2: Using Stack**
@@ -193,7 +173,6 @@ class Solution {
 ```
 
 将匹配不成功的索引push进栈，元素处理完后，栈中元素就是合法元素的临界点。两两之间都是合法的元素集合。直接其计算长度取较大者即可。
-{: .notice--success }
 
 **Approach 3: Without extra space**
 
@@ -233,29 +212,28 @@ public class Solution {
 
 ## 33. Search in Rotated Sorted Array
 
-[Array](/tags/#array){: .tag } [Binary Search](/tags/#binary-search){: .tag }
+- Array 
+- Binary Search
 
-Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
-
-(i.e., `[0,1,2,4,5,6,7]` might become `[4,5,6,7,0,1,2]`).
-
-You are given a target value to search. If found in the array return its index, otherwise return `-1`.
-
-You may assume no duplicate exists in the array.
-
-Your algorithm's runtime complexity must be in the order of O(log n).
+> Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
+> 
+> (i.e., `[0,1,2,4,5,6,7]` might become `[4,5,6,7,0,1,2]`).
+> 
+> You are given a target value to search. If found in the array return its index, otherwise return `-1`.
+> 
+> You may assume no duplicate exists in the array.
+> 
+> Your algorithm's runtime complexity must be in the order of O(log n).
 
 **Example 1:**
 
-Input: nums = [4,5,6,7,0,1,2], target = 0  
-Output: 4
-{: .notice }
+> Input: nums = [4,5,6,7,0,1,2], target = 0  
+> Output: 4
 
 **Example 2:**
 
-Input: nums = [4,5,6,7,0,1,2], target = 3  
-Output: -1
-{: .notice }
+> Input: nums = [4,5,6,7,0,1,2], target = 3  
+> Output: -1
 
 **Solution**  
 ```java
@@ -293,29 +271,27 @@ class Solution {
 
 题目要求`O(log n)`的时间复杂度，因此需要用到二分查找算法。  
 首先二分查找pivot的下标，然后二分查找target。
-{: .notice--success }
 
 ## 34. Find First and Last Position of Element in Sorted Array
 
-[Array](/tags/#array){: .tag } [Binary Search](/tags/#binary-search){: .tag }
+- Array 
+- Binary Search
 
-Given an array of integers nums sorted in ascending order, find the starting and ending position of a given target value.
-
-Your algorithm's runtime complexity must be in the order of O(log n).
-
-If the target is not found in the array, return [-1, -1].
+> Given an array of integers nums sorted in ascending order, find the starting and ending position of a given target value.
+> 
+> Your algorithm's runtime complexity must be in the order of O(log n).
+> 
+> If the target is not found in the array, return [-1, -1].
 
 **Example 1:**
 
-Input: nums = [5,7,7,8,8,10], target = 8  
-Output: [3,4]
-{: .notice }
+> Input: nums = [5,7,7,8,8,10], target = 8  
+> Output: [3,4]
 
 **Example 2:**
 
-Input: nums = [5,7,7,8,8,10], target = 6  
-Output: [-1,-1]
-{: .notice }
+> Input: nums = [5,7,7,8,8,10], target = 6  
+> Output: [-1,-1]
 
 **Solution**
 ```java
@@ -360,39 +336,35 @@ class Solution {
 
 注意二分查找的左右边界问题。  
 因为左右边界的边界更新不一样，所以`extremeInsertionIndex`方法使用left值判断要求的左边界还是右边界。  
-{: .notice--success }
 
 ## 35. Search Insert Position  
 
-[Array](/tags/#array){: .tag } [Binary Search](/tags/#binary-search){: .tag }
+- Array 
+- Binary Search
 
-Given a sorted array and a target value, return the index if the target is found. If not, return the index where it would be if it were inserted in order.
-
-You may assume no duplicates in the array.
+> Given a sorted array and a target value, return the index if the target is found. If not, return the index where it would be if it were inserted in order.
+> 
+> You may assume no duplicates in the array.
 
 **Example 1:**
 
-Input: [1,3,5,6], 5  
-Output: 2
-{: .notice }
+> Input: [1,3,5,6], 5  
+> Output: 2
 
 **Example 2:**
 
-Input: [1,3,5,6], 2  
-Output: 1
-{: .notice }
+> Input: [1,3,5,6], 2  
+> Output: 1
 
 **Example 3:**
 
-Input: [1,3,5,6], 7  
-Output: 4
-{: .notice }
+> Input: [1,3,5,6], 7  
+> Output: 4
 
 **Example 4:**
 
-Input: [1,3,5,6], 0  
-Output: 0
-{: .notice }
+> Input: [1,3,5,6], 0  
+> Output: 0
 
 **Solution**
 ```java
@@ -417,60 +389,58 @@ class Solution {
 ```
 
 本题考察的标准的二分查找，在lo==hi这一轮时，lo为满足条件的位置。
-{: .notice--success }
+
 
 ## 36. Valid Sudoku
 
-[Hash Table](/tags/#hash-table){: .tag } [Hash Set](/tags/#hash-set){: .tag }  
+- Hash Table 
+- Hash Set]  
 
-Determine if a 9x9 Sudoku board is valid. Only the filled cells need to be validated **according to the following rules**:
-1. Each row must contain the digits `1-9` without repetition.
-2. Each column must contain the digits `1-9` without repetition.
-3. Each of the 9 `3x3` sub-boxes of the grid must contain the digits `1-9` without repetition.
-
-<figure style="width: 250px" class="align-center">
-    <img src="/assets/images/leetcode/question_36.png">
-    <figcaption>A partially filled sudoku which is valid.</figcaption>
-</figure>
-
-The Sudoku board could be partially filled, where empty cells are filled with the character `'.'`.
+> Determine if a 9x9 Sudoku board is valid. Only the filled cells need to be validated **according to the following rules**:
+> 
+> 1. Each row must contain the digits `1-9` without repetition.
+> 2. Each column must contain the digits `1-9` without repetition.
+> 3. Each of the 9 `3x3` sub-boxes of the grid must contain the digits `1-9` without repetition.
+> ![A partially filled sudoku which is valid.](/assets/images/leetcode/question_36.png)  
+> <small>A partially filled sudoku which is valid.</small>
+> 
+> The Sudoku board could be partially filled, where empty cells are filled with the character `'.'`.
 
 **Example 1:**
 
-Input:  
-[  
-&emsp;&emsp;["5","3",".",".","7",".",".",".","."],  
-&emsp;&emsp;["6",".",".","1","9","5",".",".","."],  
-&emsp;&emsp;[".","9","8",".",".",".",".","6","."],  
-&emsp;&emsp;["8",".",".",".","6",".",".",".","3"],  
-&emsp;&emsp;["4",".",".","8",".","3",".",".","1"],  
-&emsp;&emsp;["7",".",".",".","2",".",".",".","6"],  
-&emsp;&emsp;[".","6",".",".",".",".","2","8","."],  
-&emsp;&emsp;[".",".",".","4","1","9",".",".","5"],  
-&emsp;&emsp;[".",".",".",".","8",".",".","7","9"]  
-]  
-Output: true
-{: .notice }
+> Input:  
+> [  
+> &emsp;&emsp;["5","3",".",".","7",".",".",".","."],  
+> &emsp;&emsp;["6",".",".","1","9","5",".",".","."],  
+> &emsp;&emsp;[".","9","8",".",".",".",".","6","."],  
+> &emsp;&emsp;["8",".",".",".","6",".",".",".","3"],  
+> &emsp;&emsp;["4",".",".","8",".","3",".",".","1"],  
+> &emsp;&emsp;["7",".",".",".","2",".",".",".","6"],  
+> &emsp;&emsp;[".","6",".",".",".",".","2","8","."],  
+> &emsp;&emsp;[".",".",".","4","1","9",".",".","5"],  
+> &emsp;&emsp;[".",".",".",".","8",".",".","7","9"]  
+> ]  
+> Output: true
 
 **Example 2:**
 
-Input:  
-[  
-&emsp;&emsp;["8","3",".",".","7",".",".",".","."],  
-&emsp;&emsp;["6",".",".","1","9","5",".",".","."],  
-&emsp;&emsp;[".","9","8",".",".",".",".","6","."],  
-&emsp;&emsp;["8",".",".",".","6",".",".",".","3"],  
-&emsp;&emsp;["4",".",".","8",".","3",".",".","1"],  
-&emsp;&emsp;["7",".",".",".","2",".",".",".","6"],  
-&emsp;&emsp;[".","6",".",".",".",".","2","8","."],  
-&emsp;&emsp;[".",".",".","4","1","9",".",".","5"],  
-&emsp;&emsp;[".",".",".",".","8",".",".","7","9"]  
-]  
-Output: false  
-Explanation: Same as Example 1, except with the 5 in the top left corner being modified to 8. Since there are two 8's in the top left 3x3 sub-box, it is invalid.
-{: .notice }
+> Input:  
+> [  
+> &emsp;&emsp;["8","3",".",".","7",".",".",".","."],  
+> &emsp;&emsp;["6",".",".","1","9","5",".",".","."],  
+> &emsp;&emsp;[".","9","8",".",".",".",".","6","."],  
+> &emsp;&emsp;["8",".",".",".","6",".",".",".","3"],  
+> &emsp;&emsp;["4",".",".","8",".","3",".",".","1"],  
+> &emsp;&emsp;["7",".",".",".","2",".",".",".","6"],  
+> &emsp;&emsp;[".","6",".",".",".",".","2","8","."],  
+> &emsp;&emsp;[".",".",".","4","1","9",".",".","5"],  
+> &emsp;&emsp;[".",".",".",".","8",".",".","7","9"]  
+> ]  
+> Output: false  
+> Explanation: Same as Example 1, except with the 5 in the top left corner being modified to 8. Since there are two 8's in the top left 3x3 sub-box, it is invalid.
 
 **Note:**
+
 - A Sudoku board (partially filled) could be valid but is not necessarily solvable.
 - Only the filled cells need to be validated according to the mentioned rules.
 - The given board contain only digits `1-9` and the character `'.'`.
@@ -557,31 +527,26 @@ class Solution {
 }
 ```
 
-本题要求的是数独棋盘是否**满足规则**，而不是求解。  
+本题要求的是数独棋盘是否 **满足规则** ，而不是求解。  
 HashTable的解法比较自然，HashSet的解法更加牛逼。但是runtime差不多。
-{: .notice--success }
-
 
 ## 37. Sudoku Solver
 
-[Hash Table](/tags/#hash-table){: .tag } [Backtracking](/tags/#backtracking){: .tag }  
+- Hash Table 
+- Backtracking  
 
-Determine if a 9x9 Sudoku board is valid. Only the filled cells need to be validated **according to the following rules**:
-1. Each row must contain the digits `1-9` without repetition.
-2. Each column must contain the digits `1-9` without repetition.
-3. Each of the 9 `3x3` sub-boxes of the grid must contain the digits `1-9` without repetition.
-
-<figure style="width: 250px" class="align-center">
-    <img src="/assets/images/leetcode/question_37_1.png">
-    <figcaption>A sudoku puzzle...</figcaption>
-</figure>
-
-<figure style="width: 250px" class="align-center">
-    <img src="/assets/images/leetcode/question_37_2.png">
-    <figcaption>...and its solution numbers marked in red.</figcaption>
-</figure>
+> Determine if a 9x9 Sudoku board is valid. Only the filled cells need to be validated **according to the following rules**:
+> 
+> 1. Each row must contain the digits `1-9` without repetition.
+> 2. Each column must contain the digits `1-9` without repetition.
+> 3. Each of the 9 `3x3` sub-boxes of the grid must contain the digits `1-9` without repetition.
+> ![A sudoku puzzle...](/assets/images/leetcode/question_37_1.png)  
+> <small>A sudoku puzzle...</small>  
+> ![...and its solution numbers marked in red.](/assets/images/leetcode/question_37_2.png)  
+> <small>...and its solution numbers marked in red.</small>  
 
 **Note:**
+
 - The given board contain only digits `1-9` and the character `'.'`.
 - You may assume that the given Sudoku puzzle will have a single unique solution.
 - The given board size is always `9x9`.
@@ -630,38 +595,35 @@ class Solution {
 }
 ```
 
-使用**暴力法**求解：  
+使用 **暴力法** 求解：  
 1、遍历每一个格子，在当前格子没有值的情况下尝试放置1~9  
 2.1、如果可以放置，在此基础上递归调用求解算法，如果算法返回true则求解成功，否则清除放置的值，继续下次循环  
 2.2、如果都不能放置，返回false
-{: .notice--success }
-
 
 ## 38. Count and Say
 
-[String](/tags/#string){: .tag }  
+- String  
 
-The count-and-say sequence is the sequence of integers with the first five terms as following:
-
-1.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;1  
-2.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;11  
-3.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;21  
-4.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;1211  
-5.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;111221  
-6.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;312211  
-7.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;13112221  
-8.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;1113213211  
-9.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;31131211131221  
-10.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;13211311123113112211  
-{: .notice }
-
-`1` is read off as `"one 1"` or `11`.  
-`11` is read off as `"two 1s"` or `21`.  
-`21` is read off as `"one 2, then one 1"` or `1211`.  
-
-Given an integer *n* where 1 ≤ *n* ≤ 30, generate the *n*th term of the count-and-say sequence.
-
-Note: Each term of the sequence of integers will be represented as a string.
+> The count-and-say sequence is the sequence of integers with the first five terms as following:
+> 
+> 1.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;1  
+> 2.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;11  
+> 3.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;21  
+> 4.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;1211  
+> 5.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;111221  
+> 6.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;312211  
+> 7.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;13112221  
+> 8.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;1113213211  
+> 9.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;31131211131221  
+> 10.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;13211311123113112211  
+> 
+> `1` is read off as `"one 1"` or `11`.  
+> `11` is read off as `"two 1s"` or `21`.  
+> `21` is read off as `"one 2, then one 1"` or `1211`.  
+> 
+> Given an integer *n* where 1 ≤ *n* ≤ 30, generate the *n*th term of the count-and-say sequence.
+> 
+> **Note**: Each term of the sequence of integers will be represented as a string.
 
 **Solution**
 
@@ -701,40 +663,39 @@ class Solution {
 ```
 
 此题理解题意很重要，我们注意到除开1之外，其他数的结果都是前一个数结果的读音。  
-{: .notice--success }
 
 ## 39. Combination Sum
 
-[Array](/tags/#array){: .tag }  [Backtracking](/tags/#backtracking){: .tag }  
+- Array  
+- Backtracking  
 
-Given a set of candidate numbers (candidates) (without duplicates) and a target number (target), find all unique combinations in candidates where the candidate numbers sums to target.
-
-The same repeated number may be chosen from candidates unlimited number of times.
+> Given a set of candidate numbers (candidates) (without duplicates) and a target number (target), find all unique combinations in candidates where the candidate numbers sums to target.
+> 
+> The same repeated number may be chosen from candidates unlimited number of times.
 
 **Note:**
+
 - All numbers (including target) will be positive integers.
 - The solution set must not contain duplicate combinations.
 
 **Example 1:**
 
-Input: candidates = [2,3,6,7], target = 7,  
-A solution set is:  
-[  
-&emsp;&emsp;[7],  
-&emsp;&emsp;[2,2,3]  
-]
-{: .notice }
+> Input: candidates = [2,3,6,7], target = 7,  
+> A solution set is:  
+> [  
+> &emsp;&emsp;[7],  
+> &emsp;&emsp;[2,2,3]  
+> ]
 
 **Example 2:**
 
-Input: candidates = [2,3,5], target = 8,  
-A solution set is:  
-[  
-&emsp;&emsp;[2,2,2,2],  
-&emsp;&emsp;[2,3,3],  
-&emsp;&emsp;[3,5]  
-]
-{: .notice }
+> Input: candidates = [2,3,5], target = 8,  
+> A solution set is:  
+> [  
+> &emsp;&emsp;[2,2,2,2],  
+> &emsp;&emsp;[2,3,3],  
+> &emsp;&emsp;[3,5]  
+> ]
 
 **Solution**
 
@@ -763,41 +724,40 @@ class Solution {
 ```
 
 回溯法求解此题，比较标准的回溯法。
-{: .notice--success }
 
 ## 40. Combination Sum II
 
-[Array](/tags/#array){: .tag }  [Backtracking](/tags/#backtracking){: .tag }  
+- Array  
+- Backtracking  
 
-Given a set of candidate numbers (candidates) and a target number (target), find all unique combinations in candidates where the candidate numbers sums to target.
-
-Each number in candidates may only be used once in the combination.  
+> Given a set of candidate numbers (candidates) and a target number (target), find all unique combinations in candidates where the candidate numbers sums to target.
+> 
+> Each number in candidates may only be used once in the combination.  
 
 **Note:**
+
 - All numbers (including target) will be positive integers.
 - The solution set must not contain duplicate combinations.
 
 **Example 1:**
 
-Input: candidates = [10,1,2,7,6,1,5], target = 8,  
-A solution set is:  
-[  
-&emsp;&emsp;[1, 7],  
-&emsp;&emsp;[1, 2, 5],  
-&emsp;&emsp;[2, 6],  
-&emsp;&emsp;[1, 1, 6]  
-]
-{: .notice }
+> Input: candidates = [10,1,2,7,6,1,5], target = 8,  
+> A solution set is:  
+> [  
+> &emsp;&emsp;[1, 7],  
+> &emsp;&emsp;[1, 2, 5],  
+> &emsp;&emsp;[2, 6],  
+> &emsp;&emsp;[1, 1, 6]  
+> ]
 
 **Example 2:**
 
-Input: candidates = [2,5,2,1,2], target = 5,  
-A solution set is:  
-[  
-&emsp;&emsp;[1,2,2],  
-&emsp;&emsp;[5]  
-]
-{: .notice }
+> Input: candidates = [2,5,2,1,2], target = 5,  
+> A solution set is:  
+> [  
+> &emsp;&emsp;[1,2,2],  
+> &emsp;&emsp;[5]  
+> ]
 
 **Solution**
 
@@ -830,4 +790,3 @@ class Solution {
 此题也是采用回溯法求解，注意如何去掉重复的情况。  
 `if(i > start && candidates[i] == candidates[i-1])`非常容易令人困惑。  
 [0..start-1]已经处理了，当i>start时，我们已经尝试过了[start, i-1]之间的元素了，此时candidates[i] == candidates[i-1]可以略过。
-{: .notice--success }

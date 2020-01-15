@@ -71,6 +71,9 @@ markdown_extensions:
       custom_checkbox: true
   - pymdownx.tilde
 
+extra_javascript:
+  - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'
+
 google_analytics:
   - 'UA-155096376-1'
   - 'auto'
@@ -172,8 +175,8 @@ nav:
     - flutter/flutter_first_project_3.md
     - flutter/flutter_first_project_4.md
   - LeetCode:
-    - leetcode/algo.md
-    - leetcode/code_interviews.md
+    - leetcode/index.md
+    - leetcode/code_interviews_1.md
     - leetcode/code_interviews_3.md
     - leetcode/code_interviews_4.md
     - leetcode/code_interviews_5.md

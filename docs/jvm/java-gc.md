@@ -255,7 +255,7 @@ no, i am dead :(
 现在的商业虚拟机都采用这种收集算法来回收新生代，IBM公司的专门研究表明，新生代中的对象98%是“朝生夕死”的，所以并不需要按照1:1的比例来划分内存空间，而是将内存分为一块较大的Eden空间和两块较小的Survivor空间，每次使用Eden和其中一块Survivor。当回收时，将Eden和Survivor中还存活着的对象一次性地复制到另外一块Survivor空间上，最后清理掉Eden和刚才用过的Survivor空间。HotSpot虚拟机默认Eden和Survivor的大小比例是8:1，也就是每次新生代中可用内存空间为整个新生代容量的90%（80%+10%），只有10%的内存会被“浪费”。当然，98%的对象可回收只是一般场景下的数据，我们没有办法保证每次回收都只有不多于10%的对象存活，当Survivor空间不够用时，需要依赖其他内存（这里指老年代）进行分配担保（Handle Promotion）。
 
 这里需要说明一下，在HotSpot中的这种分代方式从最初就是这种布局，与IBM的研究并没有什么实际联系。本书列举IBM的研究只是为了说明这种分代布局的意义所在。
-{: .notice--info }
+
 
 内存的分配担保就好比我们去银行借款，如果我们信誉很好，在98%的情况下都能按时偿还，于是银行可能会默认我们下一次也能按时按量地偿还贷款，只需要有一个担保人能保证如果我不能还款时，可以从他的账户扣钱，那银行就认为没有风险了。内存的分配担保也一样，如果另外一块Survivor空间没有足够空间存放上一次新生代收集下来的存活对象时，这些对象将直接通过分配担保机制进入老年代。关于对新生代进行分配担保的内容，在本章稍后在讲解垃圾收集器执行规则时还会再详细讲解。
 
@@ -381,7 +381,7 @@ ParNew收集器除了多线程收集之外，其他与Serial收集器相比并�
 不幸的是，CMS作为老年代的收集器，却无法与JDK 1.4.0中已经存在的新生代收集器Parallel Scavenge配合工作，所以在JDK 1.5中使用CMS来收集老年代的时候，新生代只能选择ParNew或者Serial收集器中的一个。ParNew收集器也是使用-XX:+UseConcMarkSweepGC选项后的默认新生代收集器，也可以使用-XX:+UseParNewGC选项来强制指定它。
 
 Parallel Scavenge收集器及后面提到的G1收集器都没有使用传统的GC收集器代码框架，而另外独立实现，其余几种收集器则共用了部分的框架代码，详细内容可参考：http://blogs.sun.com/jonthecollector/entry/our_collectors。
-{: .notice--info }
+
 
 **ParNew收集器在单CPU的环境中绝对不会有比Serial收集器更好的效果，甚至由于存在线程交互的开销，该收集器在通过超线程技术实现的两个CPU的环境中都不能百分之百地保证可以超越Serial收集器。当然，随着可以使用的CPU的数量的增加，它对于GC时系统资源的有效利用还是很有好处的。**它默认开启的收集线程数与CPU的数量相同，在CPU非常多（譬如32个，现在CPU动辄就4核加超线程，服务器超过32个逻辑CPU的情况越来越多了）的环境下，可以使用-XX:ParallelGCThreads参数来限制垃圾收集的线程数。
 
@@ -405,7 +405,7 @@ GCTimeRatio参数的值应当是一个大于0且小于100的整数，也就是�
 **由于与吞吐量关系密切，Parallel Scavenge收集器也经常称为“吞吐量优先”收集器。**除上述两个参数之外，Parallel Scavenge收集器还有一个参数-XX:+UseAdaptiveSizePolicy值得关注。这是一个开关参数，当这个参数打开之后，就不需要手工指定新生代的大小（-Xmn）、Eden与Survivor区的比例（-XX:SurvivorRatio）、晋升老年代对象年龄（-XX:PretenureSizeThreshold）等细节参数了，虚拟机会根据当前系统的运行情况收集性能监控信息，动态调整这些参数以提供最合适的停顿时间或者最大的吞吐量，这种调节方式称为GC自适应的调节策略（GC Ergonomics）。如果读者对于收集器运作原来不太了解，手工优化存在困难的时候，使用Parallel Scavenge收集器配合自适应调节策略，把内存管理的调优任务交给虚拟机去完成将是一个不错的选择。只需要把基本的内存数据设置好（如-Xmx设置最大堆），然后使用MaxGCPauseMillis参数（更关注最大停顿时间）或GCTimeRatio（更关注吞吐量）参数给虚拟机设立一个优化目标，那具体细节参数的调节工作就由虚拟机完成了。**自适应调节策略也是Parallel Scavenge收集器与ParNew收集器的一个重要区别。**
 
 关于GC Ergonomics的官方介绍：http://download.oracle.com/javase/1.5.0/docs/guide/vm/gc-ergonomics.html
-{: .notice--info }
+
 
 ### 3.5.4 Serial Old收集器
 
@@ -417,7 +417,7 @@ GCTimeRatio参数的值应当是一个大于0且小于100的整数，也就是�
 </figure>
 
 需要说明一下，Parallel Scavenge收集器架构中本身有PS MarkSweep收集器来进行老年代收集，并非直接使用了Serial Old收集器，但是这个PS MarkSweep收集器与Serial Old的实现非常接近，所以在官方的许多资料中都是直接以Serial Old代替PS MarkSweep进行讲解，这里笔者也采用这种方式。
-{: .notice--info }
+
 
 ### 3.5.5 Parallel Old收集器
 
@@ -611,7 +611,7 @@ JDK 1.7中的各种垃圾收集器到此已全部介绍完毕，在描述过程�
 注意：作者多次提到的Minor GC和Full GC有什么不一样吗？  
 新生代GC（Minor GC）：指发生在新生代的垃圾收集动作，因为Java对象大多都具备朝生夕灭的特性，所以Minor GC非常频繁，一般回收速度也比较快。  
 老年代GC（Major GC/Full GC）：指发生在老年代的GC，出现了Major GC，经常会伴随至少一次的Minor GC（但非绝对的，在Parallel Scavenge收集器的收集策略里就有直接进行Major GC的策略选择过程）。Major GC的速度一般会比Minor GC慢10倍以上。  
-{: .notice--info }
+
 
 <figcaption>代码清单3-5 新生代Minor GC</figcaption>
 
@@ -669,7 +669,7 @@ Heap
 
 
 **注意**：`PretenureSizeThreshold`参数只对Serial和ParNew两款收集器有效，Parallel Scavenge收集器不认识这个参数，Parallel Scavenge收集器一般并不需要设置。如果遇到必须使用此参数的场合，可以考虑ParNew加CMS的收集器组合。
-{: .notice--info }
+
 
 <figcaption>代码清单3-6 大对象直接进入老年代</figcaption>
 
@@ -864,7 +864,7 @@ Did you mean '(+/-)PromotionFailureALot'?
 Error: Could not create the Java Virtual Machine.  
 Error: A fatal exception has occurred. Program will exit.  
 后面运行结果全是摘抄。
-{: .notice--warning }
+
 
 
 以`HandlePromotionFailure=false`参数来运行的结果：

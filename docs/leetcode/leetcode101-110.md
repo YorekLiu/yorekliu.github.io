@@ -1,44 +1,27 @@
 ---
 title: "LeetCode(11)"
-excerpt: "LeetCode101-110总结"
-categories:
-  - Algorithm
-tags:
-  - LeetCode
-  - Tree
-  - Depth-first Search
-  - Breadth-first Search
-  - Stack
-  - Linked List
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-07-26T12:36:43+08:00
 ---
-
-<script type="text/javascript" async
-  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
 
 ## 101. Symmetric Tree
 
-[Tree](/tags/#tree){: .tag } [Depth-first Search](/tags/#depth-first-search){: .tag } [Breadth-first Search](/tags/#breadth-first-search){: .tag } 
+- Tree 
+- Depth-first Search 
+- Breadth-first Search 
 
-Given a binary tree, check whether it is a mirror of itself (ie, symmetric around its center).
-
-For example, this binary tree `[1,2,2,3,4,4,3]` is symmetric:
-
-<img src="/assets/images/leetcode/question_101_example_1.png" style="border: none">
-{: .notice }
-
-But the following `[1,2,2,null,3,null,3]` is not:
-
-<img src="/assets/images/leetcode/question_101_example_2.png" style="border: none">
-{: .notice }
+> Given a binary tree, check whether it is a mirror of itself (ie, symmetric around its center).
+> 
+> For example, this binary tree `[1,2,2,3,4,4,3]` is symmetric:
+> 
+> <img src="/assets/images/leetcode/question_101_example_1.png" style="border: none">
+> 
+> But the following `[1,2,2,null,3,null,3]` is not:
+> 
+> <img src="/assets/images/leetcode/question_101_example_2.png" style="border: none">
 
 **Note:**
 Bonus points if you could solve it both recursively and iteratively.
 
-此题同[CI-(28)对称的二叉树](/algorithm/code_interviews_4/#12-28%E5%AF%B9%E7%A7%B0%E7%9A%84%E4%BA%8C%E5%8F%89%E6%A0%91)
+此题同[CI-(28)对称的二叉树](/leetcode/code_interviews_4/#12-28)
 
 **Solution**  
 
@@ -74,26 +57,25 @@ class Solution {
 
 ## 102. Binary Tree Level Order Traversal
 
-[Tree](/tags/#tree){: .tag } [Breadth-first Search](/tags/#breadth-first-search){: .tag } 
+- Tree 
+- Breadth-first Search 
 
-Given a binary tree, return the *level* order traversal of its nodes' values. (ie, from left to right, level by level).
+> Given a binary tree, return the *level* order traversal of its nodes' values. (ie, from left to right, level by level).
+> 
+> For example:
+> Given binary tree `[3,9,20,null,null,15,7]`,
+> 
+> <img src="/assets/images/leetcode/question_102_example.png" style="border: none">
+> 
+> return its level order traversal as:
+> 
+> [  
+> &nbsp;&nbsp;&nbsp;&nbsp;[3],  
+> &nbsp;&nbsp;&nbsp;&nbsp;[9,20],  
+> &nbsp;&nbsp;&nbsp;&nbsp;[15,7]  
+> ]
 
-For example:
-Given binary tree `[3,9,20,null,null,15,7]`,
-
-<img src="/assets/images/leetcode/question_102_example.png" style="border: none">
-{: .notice }
-
-return its level order traversal as:
-
-[  
-&nbsp;&nbsp;&nbsp;&nbsp;[3],  
-&nbsp;&nbsp;&nbsp;&nbsp;[9,20],  
-&nbsp;&nbsp;&nbsp;&nbsp;[15,7]  
-]
-{: .notice }
-
-此题同[CI-32(2)-分行从上到下打印二叉树](/algorithm/code_interviews_4/#232-%E5%88%86%E8%A1%8C%E4%BB%8E%E4%B8%8A%E5%88%B0%E4%B8%8B%E6%89%93%E5%8D%B0%E4%BA%8C%E5%8F%89%E6%A0%91)
+此题同[CI-32(2)-分行从上到下打印二叉树](/leetcode/code_interviews_4/#232)
 
 **Solution**  
 
@@ -148,26 +130,26 @@ class Solution {
 
 ## 103. Binary Tree Zigzag Level Order Traversal
 
-[Stack](/tags/#stack){: .tag } [Tree](/tags/#tree){: .tag } [Breadth-first Search](/tags/#breadth-first-search){: .tag } 
+- Stack 
+- Tree 
+- Breadth-first Search 
 
-Given a binary tree, return the *zigzag level order* traversal of its nodes' values. (ie, from left to right, then right to left for the next level and alternate between).
+> Given a binary tree, return the *zigzag level order* traversal of its nodes' values. (ie, from left to right, then right to left for the next level and alternate between).
+> 
+> For example:
+> Given binary tree `[3,9,20,null,null,15,7]`,
+> 
+> <img src="/assets/images/leetcode/question_102_example.png" style="border: none">
+> 
+> return its level order traversal as:
+> 
+> [  
+> &nbsp;&nbsp;&nbsp;&nbsp;[3],  
+> &nbsp;&nbsp;&nbsp;&nbsp;[20,9],  
+> &nbsp;&nbsp;&nbsp;&nbsp;[15,7]  
+> ]
 
-For example:
-Given binary tree `[3,9,20,null,null,15,7]`,
-
-<img src="/assets/images/leetcode/question_102_example.png" style="border: none">
-{: .notice }
-
-return its level order traversal as:
-
-[  
-&nbsp;&nbsp;&nbsp;&nbsp;[3],  
-&nbsp;&nbsp;&nbsp;&nbsp;[20,9],  
-&nbsp;&nbsp;&nbsp;&nbsp;[15,7]  
-]
-{: .notice }
-
-此题同[CI-32(3)-之字形打印二叉树](/algorithm/code_interviews_4/#233-%E4%B9%8B%E5%AD%97%E5%BD%A2%E6%89%93%E5%8D%B0%E4%BA%8C%E5%8F%89%E6%A0%91)
+此题同[CI-32(3)-之字形打印二叉树](/leetcode/code_interviews_4/#233)
 
 **Solution**  
 
@@ -232,24 +214,24 @@ class Solution {
 
 ## 104. Maximum Depth of Binary Tree
 
-[Tree](/tags/#tree){: .tag } [Depth-first Search](/tags/#depth-first-search){: .tag } 
+- Tree 
+- Depth-first Search 
 
-Given a binary tree, find its maximum depth.
-
-The maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.
+> Given a binary tree, find its maximum depth.
+> 
+> The maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.
 
 **Note:** A leaf is a node with no children.
 
 **Example:**  
 
-Given binary tree `[3,9,20,null,null,15,7]`,
+> Given binary tree `[3,9,20,null,null,15,7]`,
+> 
+> <img src="/assets/images/leetcode/question_104_example.png" style="border: none">
+> 
+> return its depth = 3.
 
-<img src="/assets/images/leetcode/question_104_example.png" style="border: none">
-{: .notice }
-
-return its depth = 3.
-
-此题同[CI-55(1)-二叉树的深度](/algorithm/code_interviews_6/#31-%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%B7%B1%E5%BA%A6)
+此题同[CI-55(1)-二叉树的深度](/leetcode/code_interviews_6/#31)
 
 **Solution**  
 
@@ -277,25 +259,25 @@ class Solution {
 
 ## 105. Construct Binary Tree from Preorder and Inorder Traversal
 
-[Tree](/tags/#tree){: .tag } [Depth-first Search](/tags/#depth-first-search){: .tag } 
+- Tree 
+- Depth-first Search 
 
-Given preorder and inorder traversal of a tree, construct the binary tree.
+> Given preorder and inorder traversal of a tree, construct the binary tree.
+> 
+> **Note:**  
+> You may assume that duplicates do not exist in the tree.
+> 
+> For example, given
+> 
+> preorder = [3,9,20,15,7]  
+> inorder = [9,3,15,20,7]
+> 
+> Return the following binary tree:
+> 
+> <img src="/assets/images/leetcode/question_104_example.png" style="border: none">
 
-**Note:**  
-You may assume that duplicates do not exist in the tree.
 
-For example, given
-
-preorder = [3,9,20,15,7]  
-inorder = [9,3,15,20,7]
-{: .notice }
-
-Return the following binary tree:
-
-<img src="/assets/images/leetcode/question_104_example.png" style="border: none">
-{: .notice }
-
-此题同[CI-7-重建二叉树](/algorithm/code_interviews/#41-7%E9%87%8D%E5%BB%BA%E4%BA%8C%E5%8F%89%E6%A0%91)
+此题同[CI-7-重建二叉树](/leetcode/code_interviews_1/#41-7)
 
 **Solution**  
 
@@ -351,23 +333,23 @@ class Solution {
 
 ## 106. Construct Binary Tree from Inorder and Postorder Traversal
 
-[Tree](/tags/#tree){: .tag } [Depth-first Search](/tags/#depth-first-search){: .tag } 
+- Tree 
+- Depth-first Search 
 
-Given inorder and postorder traversal of a tree, construct the binary tree.
-
-**Note:**  
-You may assume that duplicates do not exist in the tree.
-
-For example, given
-
-inorder = [9,3,15,20,7]  
-postorder = [9,15,7,20,3]
-{: .notice }
-
-Return the following binary tree:
-
-<img src="/assets/images/leetcode/question_104_example.png" style="border: none">
-{: .notice }
+> Given inorder and postorder traversal of a tree, construct the binary tree.
+> 
+> **Note:**  
+> You may assume that duplicates do not exist in the tree.
+> 
+> For example, given
+> 
+> inorder = [9,3,15,20,7]  
+> postorder = [9,15,7,20,3]
+> 
+> 
+> Return the following binary tree:
+> 
+> <img src="/assets/images/leetcode/question_104_example.png" style="border: none">
 
 **Solution**  
 
@@ -418,28 +400,28 @@ class Solution {
 
 ## 107. Binary Tree Level Order Traversal II
 
-[Tree](/tags/#tree){: .tag } [Breadth-first Search](/tags/#breadth-first-search){: .tag } 
+- Tree 
+- Breadth-first Search 
 
-Given a binary tree, return the *bottom-up level order* traversal of its nodes' values. (ie, from left to right, level by level from leaf to root).
-
-For example:
-Given binary tree `[3,9,20,null,null,15,7]`,
-
-<img src="/assets/images/leetcode/question_102_example.png" style="border: none">
-{: .notice }
-
-return its level order traversal as:
-
-[  
-&nbsp;&nbsp;&nbsp;&nbsp;[15,7],  
-&nbsp;&nbsp;&nbsp;&nbsp;[9,20],  
-&nbsp;&nbsp;&nbsp;&nbsp;[3]  
-]
-{: .notice }
+> Given a binary tree, return the *bottom-up level order* traversal of its nodes' values. (ie, from left to right, level by level  from leaf to root).
+> 
+> For example:
+> Given binary tree `[3,9,20,null,null,15,7]`,
+> 
+> <img src="/assets/images/leetcode/question_102_example.png" style="border: none">
+> 
+> 
+> return its level order traversal as:
+> 
+> [  
+> &nbsp;&nbsp;&nbsp;&nbsp;[15,7],  
+> &nbsp;&nbsp;&nbsp;&nbsp;[9,20],  
+> &nbsp;&nbsp;&nbsp;&nbsp;[3]  
+> ]
 
 **Solution**  
 
-在[LeetCode-102-Binary Tree Level Order Traversal](/algorithm/leetcode101-110/#102-binary-tree-level-order-traversal)的基础上，将每层的结果插入到链头即可。所以，结果采用LinkedList保存。
+在[LC-102-Binary Tree Level Order Traversal](/leetcode/leetcode101-110/#102-binary-tree-level-order-traversal)的基础上，将每层的结果插入到链头即可。所以，结果采用LinkedList保存。
 
 Runtime 1 ms
 
@@ -492,18 +474,18 @@ class Solution {
 
 ## 108. Convert Sorted Array to Binary Search Tree
 
-[Tree](/tags/#tree){: .tag } [Depth-first Search](/tags/#depth-first-search){: .tag } 
+- Tree 
+- Depth-first Search 
 
-Given an array where elements are sorted in ascending order, convert it to a height balanced BST.
-
-For this problem, a height-balanced binary tree is defined as a binary tree in which the depth of the two subtrees of every node never differ by more than 1.
+> Given an array where elements are sorted in ascending order, convert it to a height balanced BST.
+> 
+> For this problem, a height-balanced binary tree is defined as a binary tree in which the depth of the two subtrees of every node never differ by more than 1.
 
 **Example:**
 
-Given the sorted array: [-10,-3,0,5,9],  
-One possible answer is: [0,-3,9,-10,null,5], which represents the following height balanced BST:  
-<img src="/assets/images/leetcode/question_108_example.png" style="border: none">
-{: .notice }
+> Given the sorted array: [-10,-3,0,5,9],  
+> One possible answer is: [0,-3,9,-10,null,5], which represents the following height balanced BST:  
+> <img src="/assets/images/leetcode/question_108_example.png" style="border: none">
 
 **Solution**  
 
@@ -544,18 +526,18 @@ class Solution {
 
 ## 109. Convert Sorted List to Binary Search Tree
 
-[Linked List](/tags/#linked-list){: .tag } [Depth-first Search](/tags/#depth-first-search){: .tag } 
+- Linked List 
+- Depth-first Search 
 
-Given a singly linked list where elements are sorted in ascending order, convert it to a height balanced BST.
-
-For this problem, a height-balanced binary tree is defined as a binary tree in which the depth of the two subtrees of every node never differ by more than 1.
+> Given a singly linked list where elements are sorted in ascending order, convert it to a height balanced BST.
+> 
+> For this problem, a height-balanced binary tree is defined as a binary tree in which the depth of the two subtrees of every node never differ by more than 1.
 
 **Example:**
 
-Given the sorted array: [-10,-3,0,5,9],  
-One possible answer is: [0,-3,9,-10,null,5], which represents the following height balanced BST:  
-<img src="/assets/images/leetcode/question_108_example.png" style="border: none">
-{: .notice }
+> Given the sorted array: [-10,-3,0,5,9],  
+> One possible answer is: [0,-3,9,-10,null,5], which represents the following height balanced BST:  
+> <img src="/assets/images/leetcode/question_108_example.png" style="border: none">
 
 **Solution**  
 
@@ -619,31 +601,30 @@ class Solution {
 
 ## 110. Balanced Binary Tree
 
-[Tree](/tags/#tree){: .tag } [Depth-first Search](/tags/#depth-first-search){: .tag } 
+- Tree 
+- Depth-first Search 
 
-Given a binary tree, determine if it is height-balanced.
-
-For this problem, a height-balanced binary tree is defined as a binary tree in which the depth of the two subtrees of *every* node never differ by more than 1.
+> Given a binary tree, determine if it is height-balanced.
+> 
+> For this problem, a height-balanced binary tree is defined as a binary tree in which the depth of the two subtrees of *every* node never differ by more than 1.
 
 **Example 1:**
 
-Given the following tree `[3,9,20,null,null,15,7]`:
- 
-<img src="/assets/images/leetcode/question_102_example.png" style="border: none">
-{: .notice }
-
-return true.
+> Given the following tree `[3,9,20,null,null,15,7]`:
+>  
+> <img src="/assets/images/leetcode/question_102_example.png" style="border: none">
+> 
+> return true.
 
 **Example 2:**  
 
-Given the following tree `[1,2,2,3,3,null,null,4,4]`:
- 
-<img src="/assets/images/leetcode/question_110_example.png" style="border: none">
-{: .notice }
+> Given the following tree `[1,2,2,3,3,null,null,4,4]`:
+>  
+> <img src="/assets/images/leetcode/question_110_example.png" style="border: none">
+> 
+> return false.
 
-return false.
-
-此题同[CI-55(2)-平衡二叉树](/algorithm/code_interviews_6/#32-%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91)
+此题同[CI-55(2)-平衡二叉树](/leetcode/code_interviews_6/#32)
 
 **Solution**  
 

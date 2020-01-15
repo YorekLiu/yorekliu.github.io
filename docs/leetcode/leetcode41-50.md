@@ -1,54 +1,30 @@
 ---
 title: "LeetCode(5)"
-excerpt: "LeetCode41-50总结"
-categories:
-  - Algorithm
-tags:
-  - LeetCode
-  - Array
-  - Stack
-  - Two Pointers
-  - Backtracking
-  - Dynamic Programming
-  - Greedy
-  - Hash Table
-  - String
-  - Math
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-05-08T14:51:55+08:00
 ---
-
-<script type="text/javascript" async
-  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
 
 ## 41. First Missing Positive
 
-[Array](/tags/#array){: .tag } 
+- Array 
 
-Given an unsorted integer array, find the smallest missing positive integer.
+> Given an unsorted integer array, find the smallest missing positive integer.
 
 **Example 1:**
 
-**Input:** [1,2,0]  
-**Output:** 3  
-{: .notice }
+> **Input:** [1,2,0]  
+> **Output:** 3  
 
-**Example 2:**  
-**Input:** [3,4,-1,1]  
-**Output:** 2
-{: .notice }
+**Example 2:** 
+
+> **Input:** [3,4,-1,1]  
+> **Output:** 2
 
 **Example 3:**
 
-**Input:** [7,8,9,11,12]  
-**Output:** 1
-{: .notice }
+> **Input:** [7,8,9,11,12]  
+> **Output:** 1
 
 **Note:**
 Your algorithm should run in `O(n)` time and uses constant extra space.
-
 
 **Solution**  
 ```java
@@ -77,30 +53,27 @@ class Solution {
 ```
 
 我们将nums[i]放置到nums[i]-1这个位置(比如将num[i]=3放置到下标为2的位置)，然后遍历一遍就可以得出答案。
-{: .notice--success }
 
 ## 42. Trapping Rain Water
 
-[Array](/tags/#array){: .tag } [Two Pointers](/tags/#two-pointers){: .tag } [Dynamic Programming](/tags/#dynamic-programming){: .tag } 
+- Array 
+- Two Pointers 
+- Dynamic Programming 
 
-Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it is able to trap after raining.
-
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/leetcode/rainwatertrap.png">
-    <figcaption>The above elevation map is represented by array [0,1,0,2,1,0,1,3,2,1,2,1]. In this case, 6 units of rain water (blue section) are being trapped.</figcaption>
-</figure>
+> Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it is able to trap after raining.
+> ![The above elevation map is represented by array [0,1,0,2,1,0,1,3,2,1,2,1]. In this case, 6 units of rain water (blue section) are being trapped.](/assets/images/leetcode/rainwatertrap.png)  
+> <small>The above elevation map is represented by array [0,1,0,2,1,0,1,3,2,1,2,1]. In this case, 6 units of rain water (blue section) are being trapped.</small>
 
 **Example:**
 
-**Input:** [0,1,0,2,1,0,1,3,2,1,2,1]  
-**Output:** 6
-{: .notice }
+> **Input:** [0,1,0,2,1,0,1,3,2,1,2,1]  
+> **Output:** 6
 
 **Solution**  
 
 **Approach 1: Brute force**  
 遍历数组，对于每一个i，从自身开始往左找出当前最大的值max_left，从自身开始往右找出最大的值max_right，两者较小者减去当前i的值，即为这一格可以容纳的雨水的含量。  
-时间复杂度为$$O(n^2)$$，空间复杂度为$$O(1)$$。
+时间复杂度为$O(n^2)$，空间复杂度为$O(1)$。
 
 ```java
 class Solution {
@@ -132,13 +105,11 @@ class Solution {
 **Approach 2: Dynamic Programming**  
 
 在上面的解法中，我们每一步都需要算出两侧最高的bar。这些值都可以存储起来的，哦，这就是动态规划算法。  
-该方法时间复杂度为$$O(n)$$，空间复杂度为$$O(n)$$。
+该方法时间复杂度为$O(n)$，空间复杂度为$O(n)$。
 
 该思想可以使用下面的图来表示：
 
-<figure style="width: 80%" class="align-center">
-    <img src="/assets/images/leetcode/trapping_rain_water.png">
-</figure>
+![](/assets/images/leetcode/trapping_rain_water.png)
 
 ```java
 class Solution {
@@ -170,21 +141,19 @@ class Solution {
 
 ## 43. Multiply Strings
 
-[String](/tags/#string){: .tag } 
+- String 
 
-Given two non-negative integers `num1` and `num2` represented as strings, return the product of `num1` and `num2`, also represented as a string.
+> Given two non-negative integers `num1` and `num2` represented as strings, return the product of `num1` and `num2`, also represented as a string.
 
 **Example 1:**
 
-**Input:** num1 = "2", num2 = "3"  
-**Output:** "6"
-{: .notice }
+> **Input:** num1 = "2", num2 = "3"  
+> **Output:** "6"
 
 **Example 2:**
 
-**Input:** num1 = "123", num2 = "456"  
-**Output:** "56088"
-{: .notice }
+> **Input:** num1 = "123", num2 = "456"  
+> **Output:** "56088"
 
 **Note:**
 
@@ -201,10 +170,9 @@ Given two non-negative integers `num1` and `num2` represented as strings, return
 > Start from right to left, perform multiplication on every pair of digits, and add them together. Let's draw the process! From the following draft, we can immediately conclude:  
 > `num1[i] * num2[j]` will be placed at indices `[i + j`, `i + j + 1]`
 
-<figure style="width: 80%" class="align-center">
-    <img src="/assets/images/leetcode/question_43.jpg">
-    <figcaption>评论区：“big god. please accept my knees”</figcaption>
-</figure>
+![评论区：“big god. please accept my knees”](/assets/images/leetcode/question_43.jpg)
+
+<small>评论区：“big god. please accept my knees”</small>
 
 ```java
 class Solution {
@@ -246,15 +214,14 @@ class Solution {
 
 ## 44. Wildcard Matching
 
-[String](/tags/#string){: .tag } [Backtracking](/tags/#backtracking){: .tag } 
+- String Backtracking 
 
-Given an input string (`s`) and a pattern (`p`), implement wildcard pattern matching with support for '`?`' and '`*`'.
-
-'?' Matches any single character.  
-'\*' Matches any sequence of characters (including the empty sequence).  
-{: .notice }
-
-The matching should cover the **entire** input string (not partial).
+> Given an input string (`s`) and a pattern (`p`), implement wildcard pattern matching with support for '`?`' and '`*`'.
+> 
+> '?' Matches any single character.  
+> '\*' Matches any sequence of characters (including the empty sequence).  
+> 
+> The matching should cover the **entire** input string (not partial).
 
 **Note**:
 
@@ -263,51 +230,46 @@ The matching should cover the **entire** input string (not partial).
 
 **Example 1**:
 
-**Input:**  
-s = "aa"  
-p = "a"  
-**Output:** false  
-**Explanation:** "a" does not match the entire string "aa".
-{: .notice }
+> **Input:**  
+> s = "aa"  
+> p = "a"  
+> **Output:** false  
+> **Explanation:** "a" does not match the entire string "aa".
 
 **Example 2**:
 
-**Input:**  
-s = "aa"  
-p = "\*"  
-**Output:** true  
-**Explanation:** '\*' matches any sequence.  
-{: .notice }
+> **Input:**  
+> s = "aa"  
+> p = "\*"  
+> **Output:** true  
+> **Explanation:** '\*' matches any sequence.  
 
 **Example 3**:
 
-**Input:**  
-s = "cb"  
-p = "?a"  
-**Output:** false  
-**Explanation:** '?' matches 'c', but the second letter is 'a', which does not match 'b'.  
-{: .notice }
+> **Input:**  
+> s = "cb"  
+> p = "?a"  
+> **Output:** false  
+> **Explanation:** '?' matches 'c', but the second letter is 'a', which does not match 'b'.  
 
 **Example 4**:
 
-**Input:**  
-s = "adceb"  
-p = "\*a\*b"  
-**Output:** true  
-**Explanation:** The first '\*' matches the empty sequence, while the second '\*' matches the substring "dce".  
-{: .notice }
+> **Input:**  
+> s = "adceb"  
+> p = "\*a\*b"  
+> **Output:** true  
+> **Explanation:** The first '\*' matches the empty sequence, while the second '\*' matches the substring "dce".  
 
 **Example 5**:
 
-**Input:**  
-s = "acdcb"  
-p = "a\*c?b"  
-**Output:** false  
-{: .notice }
+> **Input:**  
+> s = "acdcb"  
+> p = "a\*c?b"  
+> **Output:** false  
 
 **Solution**  
 
-该题是一个通配符问题，与[10. Regular Expression Matching](/algorithm/leetcode1-10/#10-regular-expression-matching)题目不同，第10题要求`*`可以匹配0或多个前面的元素，而此题`*`则是可以匹配0个或多个任意元素。  
+该题是一个通配符问题，与[LC-10-Regular Expression Matching](/leetcode/leetcode1-10/#10-regular-expression-matching)题目不同，第10题要求`*`可以匹配0或多个前面的元素，而此题`*`则是可以匹配0个或多个任意元素。  
 所以此题肯定是要进行回溯的。具体表现在，如果出现了`*`，则记录下当前的位置以待回溯，同时记录当前str的索引match，p++继续后面的匹配。如果匹配不成功，那么进行回溯。回溯时需要注意一点，p要进一步，不然会导致进入死循环，s和match也要进一步，因为前面是一次失败的匹配。
 
 ```java
@@ -345,29 +307,26 @@ public boolean isMatch(String str, String pattern) {
 
 ## 45. Jump Game II
 
-[Greedy](/tags/#greedy){: .tag } [Dynamic Programming](/tags/#dynamic-programming){: .tag } 
+- Greedy 
+- Dynamic Programming 
 
-[55 Jump Game](/algorithm/leetcode51-60/#55-jump-game)  
-{: .notice--info }
+同类型题：[LC-55-Jump Game](/leetcode/leetcode51-60/#55-jump-game)  
 
-Given an array of non-negative integers, you are initially positioned at the first index of the array.
-
-Each element in the array represents your maximum jump length at that position.
-
-Your goal is to reach the last index in the minimum number of jumps.
+> Given an array of non-negative integers, you are initially positioned at the first index of the array.
+> 
+> Each element in the array represents your maximum jump length at that position.
+> 
+> Your goal is to reach the last index in the minimum number of jumps.
 
 **Example:**
 
-**Input:** [2,3,1,1,4]  
-**Output:** 2  
-**Explanation:** The minimum number of jumps to reach the last index is 2.
-    Jump 1 step from index 0 to 1, then 3 steps to the last index.  
-{: .notice }
+> **Input:** [2,3,1,1,4]  
+> **Output:** 2  
+> **Explanation:** The minimum number of jumps to reach the last index is 2. Jump 1 step from index 0 to 1, then 3 steps to the last index.  
 
 **Note:**
 
 You can assume that you can always reach the last index.
-
 
 **Solution**  
 
@@ -420,25 +379,24 @@ class Solution {
 
 ## 46. Permutations
 
-[Backtracking](/tags/#backtracking){: .tag } 
+- Backtracking 
 
-Given a collection of **distinct** integers, return all possible permutations.
+> Given a collection of **distinct** integers, return all possible permutations.
 
 **Example:**
 
-**Input:** [1,2,3]  
-**Output:**  
-[  
-&emsp;&emsp;&emsp;&emsp;[1,2,3],  
-&emsp;&emsp;&emsp;&emsp;[1,3,2],  
-&emsp;&emsp;&emsp;&emsp;[2,1,3],  
-&emsp;&emsp;&emsp;&emsp;[2,3,1],  
-&emsp;&emsp;&emsp;&emsp;[3,1,2],  
-&emsp;&emsp;&emsp;&emsp;[3,2,1]  
-]
-{: .notice }
+> **Input:** [1,2,3]  
+> **Output:**  
+> [  
+> &emsp;&emsp;&emsp;&emsp;[1,2,3],  
+> &emsp;&emsp;&emsp;&emsp;[1,3,2],  
+> &emsp;&emsp;&emsp;&emsp;[2,1,3],  
+> &emsp;&emsp;&emsp;&emsp;[2,3,1],  
+> &emsp;&emsp;&emsp;&emsp;[3,1,2],  
+> &emsp;&emsp;&emsp;&emsp;[3,2,1]  
+> ]
 
-全排列问题，与[剑指Offer-(38)字符串的排列](/algorithm/code_interviews_4/#34-38%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E6%8E%92%E5%88%97)类似。
+全排列问题，与[CI-(38)字符串的排列](/leetcode/code_interviews_4/#34-38)类似。
 
 **Solution**  
 
@@ -482,20 +440,19 @@ class Solution {
 
 ## 47. Permutations II
 
-[Backtracking](/tags/#backtracking){: .tag } 
+- Backtracking 
 
-Given a collection of numbers that might contain duplicates, return all possible unique permutations.
+> Given a collection of numbers that might contain duplicates, return all possible unique permutations.
 
 **Example:**
 
-**Input:** [1,1,2]  
-**Output:**  
-[  
-&emsp;&emsp;&emsp;&emsp;[1,1,2],  
-&emsp;&emsp;&emsp;&emsp;[1,2,1],  
-&emsp;&emsp;&emsp;&emsp;[2,1,1]  
-]  
-{: .notice }
+> **Input:** [1,1,2]  
+> **Output:**  
+> [  
+> &emsp;&emsp;&emsp;&emsp;[1,1,2],  
+> &emsp;&emsp;&emsp;&emsp;[1,2,1],  
+> &emsp;&emsp;&emsp;&emsp;[2,1,1]  
+> ]  
 
 **Solution**  
 
@@ -504,8 +461,6 @@ Given a collection of numbers that might contain duplicates, return all possible
 > Sort the array "int[] nums" to make sure we can skip the same value.
 > 
 > when a number has the same value with its previous, we can use this number only if his previous is used
-
-
 
 ```java
 class Solution {
@@ -544,11 +499,11 @@ class Solution {
 
 ## 48. Rotate Image
 
-[Array](/tags/#array){: .tag } 
+- Array 
 
-You are given an n x n 2D matrix representing an image.
-
-Rotate the image by 90 degrees (clockwise).
+> You are given an n x n 2D matrix representing an image.
+> 
+> Rotate the image by 90 degrees (clockwise).
 
 **Note:**
 
@@ -556,37 +511,35 @@ You have to rotate the image in-place, which means you have to modify the input 
 
 **Example 1:**
 
-Given **input matrix** =  
-[  
-&emsp;&emsp;&emsp;&emsp;[1,2,3],  
-&emsp;&emsp;&emsp;&emsp;[4,5,6],  
-&emsp;&emsp;&emsp;&emsp;[7,8,9]  
-],  
-rotate the input matrix **in-place** such that it becomes:  
-[  
-&emsp;&emsp;&emsp;&emsp;[7,4,1],  
-&emsp;&emsp;&emsp;&emsp;[8,5,2],  
-&emsp;&emsp;&emsp;&emsp;[9,6,3]  
-]  
-{: .notice }
+> Given **input matrix** =  
+> [  
+> &emsp;&emsp;&emsp;&emsp;[1,2,3],  
+> &emsp;&emsp;&emsp;&emsp;[4,5,6],  
+> &emsp;&emsp;&emsp;&emsp;[7,8,9]  
+> ],  
+> rotate the input matrix **in-place** such that it becomes:  
+> [  
+> &emsp;&emsp;&emsp;&emsp;[7,4,1],  
+> &emsp;&emsp;&emsp;&emsp;[8,5,2],  
+> &emsp;&emsp;&emsp;&emsp;[9,6,3]  
+> ]  
 
 **Example 2:**
 
-Given **input matrix** =  
-[  
-&emsp;&emsp;&emsp;&emsp;[ 5, 1, 9,11],  
-&emsp;&emsp;&emsp;&emsp;[ 2, 4, 8,10],  
-&emsp;&emsp;&emsp;&emsp;[13, 3, 6, 7],  
-&emsp;&emsp;&emsp;&emsp;[15,14,12,16]  
-],   
-rotate the input matrix **in-place** such that it becomes:  
-[  
-&emsp;&emsp;&emsp;&emsp;[15,13, 2, 5],  
-&emsp;&emsp;&emsp;&emsp;[14, 3, 4, 1],  
-&emsp;&emsp;&emsp;&emsp;[12, 6, 8, 9],  
-&emsp;&emsp;&emsp;&emsp;[16, 7,10,11]  
-]  
-{: .notice }
+> Given **input matrix** =  
+> [  
+> &emsp;&emsp;&emsp;&emsp;[ 5, 1, 9,11],  
+> &emsp;&emsp;&emsp;&emsp;[ 2, 4, 8,10],  
+> &emsp;&emsp;&emsp;&emsp;[13, 3, 6, 7],  
+> &emsp;&emsp;&emsp;&emsp;[15,14,12,16]  
+> ],   
+> rotate the input matrix **in-place** such that it becomes:  
+> [  
+> &emsp;&emsp;&emsp;&emsp;[15,13, 2, 5],  
+> &emsp;&emsp;&emsp;&emsp;[14, 3, 4, 1],  
+> &emsp;&emsp;&emsp;&emsp;[12, 6, 8, 9],  
+> &emsp;&emsp;&emsp;&emsp;[16, 7,10,11]  
+> ]  
 
 **Solution**
 
@@ -656,20 +609,20 @@ class Solution {
 
 ## 49. Group Anagrams
 
-[Hash Table](/tags/#hash-table){: .tag } [String](/tags/#string){: .tag } 
+- Hash Table 
+- String 
 
-Given an array of strings, group anagrams together.
+> Given an array of strings, group anagrams together.
 
 **Example:**
 
-**Input:** ["eat", "tea", "tan", "ate", "nat", "bat"],  
-**Output:**  
-[  
-&emsp;&emsp;&emsp;&emsp;["ate","eat","tea"],  
-&emsp;&emsp;&emsp;&emsp;["nat","tan"],  
-&emsp;&emsp;&emsp;&emsp;["bat"]  
-]  
-{: .notice }
+> **Input:** ["eat", "tea", "tan", "ate", "nat", "bat"],  
+> **Output:**  
+> [  
+> &emsp;&emsp;&emsp;&emsp;["ate","eat","tea"],  
+> &emsp;&emsp;&emsp;&emsp;["nat","tan"],  
+> &emsp;&emsp;&emsp;&emsp;["bat"]  
+> ]  
 
 **Note:**
 
@@ -686,8 +639,8 @@ Given an array of strings, group anagrams together.
 
 假设这里有N个字符串，字符串中最长字符的长度为K，那么两种方式的时间、空间复杂度为：
 
-1. 时间复杂度为$$O(N \cdot KlogK)$$，空间复杂度为$$O(NK)$$
-2. 时间复杂度为$$O(N \cdot K)$$，空间复杂度为$$O(NK)$$
+1. 时间复杂度为$O(N \cdot KlogK)$，空间复杂度为$O(NK)$
+2. 时间复杂度为$O(N \cdot K)$，空间复杂度为$O(NK)$
 
 **Approach 1: Categorize by Sorted String**
 
@@ -739,37 +692,34 @@ class Solution {
 
 ## 50. Pow(x, n)
 
-[Math](/tags/#math){: .tag } 
+- Math 
 
-Implement `pow(x, n)`, which calculates *x* raised to the power n $$(x^n)$$.
+> Implement `pow(x, n)`, which calculates *x* raised to the power n $(x^n)$.
 
 **Example 1:**
 
-**Input:** 2.00000, 10  
-**Output:** 1024.00000  
-{: .notice }
+> **Input:** 2.00000, 10  
+> **Output:** 1024.00000  
 
 **Example 2:**
 
-**Input:** 2.10000, 3  
-**Output:** 9.26100  
-{: .notice }
+> **Input:** 2.10000, 3  
+> **Output:** 9.26100  
 
 **Example 3:**
 
-**Input:** 2.00000, -2  
-**Output:** 0.25000  
-**Explanation:** 2-2 = 1/22 = 1/4 = 0.25  
-{: .notice }
+> **Input:** 2.00000, -2  
+> **Output:** 0.25000  
+> **Explanation:** 2-2 = 1/22 = 1/4 = 0.25  
 
 **Note:**
 
 - -100.0 < *x* < 100.0
-- *n* is a 32-bit signed integer, within the range $$[−2^{31}, 2^{31} − 1]$$
+- *n* is a 32-bit signed integer, within the range $[−2^{31}, 2^{31} − 1]$
 
 **Solution**
 
-同[CI-16-数值的整数次方](/algorithm/code_interviews_3/#11-16%E6%95%B0%E5%80%BC%E7%9A%84%E6%95%B4%E6%95%B0%E6%AC%A1%E6%96%B9)，需要注意n的溢出问题。
+同[CI-16-数值的整数次方](/leetcode/code_interviews_3/#11-16)，需要注意n的溢出问题。
 
 ```java
 public class Solution {

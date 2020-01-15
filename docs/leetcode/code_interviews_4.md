@@ -1,37 +1,18 @@
 ---
 title: "解决问题的思路"
-excerpt: "剑指Offer笔记3——解决面试题的思路 27-38"
-categories:
-  - Algorithm
-tags:
-  - Linked List
-  - Tree
-  - Stack
-  - Queue
-  - String
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-01-21T15:45:11+08:00
 ---
-
-<script type="text/javascript" async
-  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
 
 ## 1. 画图让抽象问题形象化
 
-
 ### 1.1 (27)二叉树的镜像
 
-请完成一个函数，输入一个二叉树，该函数输出它的镜像。
-{: .notice }
+> 请完成一个函数，输入一个二叉树，该函数输出它的镜像。
 
 二叉树的镜像的特点如下图所示：
 
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/leetcode/ci_binary_tree_27.png" />
-    <figcaption>两颗互为镜像的二叉树</figcaption>
-</figure>
+![两颗互为镜像的二叉树](/assets/images/leetcode/ci_binary_tree_27.png)
+
+<small>两颗互为镜像的二叉树</small>
 
 我们可以看出一棵树的镜像是这么生成的：先前序遍历这棵树的每个节点，如果遍历到的节点有子节点，就交换它的两个子节点。当交换完所有非叶节点的左、右子节点之后，就得到了树的镜像。  
 
@@ -93,17 +74,15 @@ public BinaryTreeNode mirrorIteratively(BinaryTreeNode root) {
 
 ### 1.2 (28)对称的二叉树
 
-请实现一个函数，用来判断一棵二叉树是不是对称的。如果一棵二叉树和它的镜像一样，那么它是对称的。
-{: .notice }
+> 请实现一个函数，用来判断一棵二叉树是不是对称的。如果一棵二叉树和它的镜像一样，那么它是对称的。
 
-此题同[LeetCode-101-Symmetric Tree](/algorithm/leetcode101-110/#101-symmetric-tree)
+此题同[LC-101-Symmetric Tree](/leetcode/leetcode101-110/#101-symmetric-tree)
 
 在下图所示的3棵树中，第一棵二叉树是对称的，另外两棵不是。  
 
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/leetcode/ci_binary_tree_28.png" />
-    <figcaption>第一棵是对称的，另外两棵不是</figcaption>
-</figure>
+![第一棵是对称的，另外两棵不是](/assets/images/leetcode/ci_binary_tree_28.png)
+
+<small>第一棵是对称的，另外两棵不是</small>
 
 我们可以先比较根节点，然后递归比较左子树的左节点与右子树的右节点、左子树的右节点与右子树的子节点。  
 
@@ -132,16 +111,13 @@ private boolean isSymmetrical(BinaryTreeNode root1, BinaryTreeNode root2) {
 
 ### 1.3 (29)顺时针打印矩阵
 
-输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字
-{: .notice }
+> 输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字
 
 例如输入如下矩阵，依次打印出数字1	2	3	4	8	12	16 15	14 13	9	5	6	7	11 10
 
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/leetcode/ci_29.png" />
-</figure>
+![](/assets/images/leetcode/ci_29.png)
 
-此题同[LeetCode-54-Spiral Matrix](/algorithm/leetcode51-60/#54-spiral-matrix)
+此题同[LC-54-Spiral Matrix](/leetcode/leetcode51-60/#54-spiral-matrix)
 
 这道题完全没有涉及复杂的数据结构或者高级的算法，看起来是一个很简单的问题。但实际上解决这个问题时会在代码中包含多个循环，而且需要判断多个边界条件。
 
@@ -202,8 +178,7 @@ private void printMatrixInCircle(int[][] numbers, int columns, int rows, int sta
 
 ### 2.1 (30)包含min函数的栈
 
-定义栈的数据结构，请在该类型中实现一个能够得到栈的最小元素的min函数。在该栈中，调用min、push及pop的时间复杂度都是O(1)。
-{: .notice }
+> 定义栈的数据结构，请在该类型中实现一个能够得到栈的最小元素的min函数。在该栈中，调用min、push及pop的时间复杂度都是O(1)。
 
 我们可以在栈的内部额外使用一个辅助栈，栈中同步保存每次进栈操作时栈中最小值。  
 
@@ -241,8 +216,7 @@ class StackWithMin<E extends Comparable> extends Stack<E> {
 
 ### 2.2 (31)栈的压入、弹出序列
 
-输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否为该栈的弹出顺序。假设压入栈的所有数字均不相等。例如序列1、2、3、4、5是某栈的压栈序列，序列4、5、3、2、1是该压栈序列对应的一个弹出序列，但4、3、5、1、2就不可能是该压栈序列的弹出序列。
-{: .notice }
+> 输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否为该栈的弹出顺序。假设压入栈的所有数字均不相等。例如序列1、2、3、4、5是某栈的压栈序列，序列4、5、3、2、1是该压栈序列对应的一个弹出序列，但4、3、5、1、2就不可能是该压栈序列的弹出序列。
 
 我们可以找到判断一个序列是不是栈的弹出序列的规律：如果下一个弹出的数字刚好是栈顶数字，那么直接弹出；如果下一个弹出的数字不在栈顶，则把压栈序列中还没有入栈的数字压入辅助栈，直到把下一个需要弹出的数字压入栈顶为止；如果所有数字都压入栈后仍然没有找到下一个弹出的数字，那么该序列不可能是一个序列。
 
@@ -291,8 +265,7 @@ private boolean isPopOrder(int[] push, int[] pop) {
 
 #### 2.3.1 不分行从上到下打印二叉树
 
-从上往下打印出二叉树的每个结点，同一层的结点按照从左到右的顺序打印。
-{: .notice }
+> 从上往下打印出二叉树的每个结点，同一层的结点按照从左到右的顺序打印。
 
 该题就是一个二叉树的层序遍历问题。
 
@@ -319,20 +292,17 @@ private void printFromTopToBottom(BinaryTreeNode root) {
 }
 ```
 
-**本题扩展**  
-如何广度优先遍历一副有向图？同样也可以基于队列实现。树是图的一种特殊退化形式，从上到下按层遍历二叉树，从本质上来说就是广度优先遍历二叉树。
-{: .notice--info }
+!!! info "本题扩展"
+    如何广度优先遍历一副有向图？同样也可以基于队列实现。树是图的一种特殊退化形式，从上到下按层遍历二叉树，从本质上来说就是广度优先遍历二叉树。
 
-**举一反三**  
-不管广度优先遍历一副有向图还是一棵树，都要用到队列。首先把起始节点(对树而言是根节点)放入队列。接下来每次从队列的头部取出一个节点，遍历这个节点之后就把它能达到的节点(对树而言是子节点)都依次放入队列。重复这个遍历过程，直到队列中的节点全部被遍历为止。
-{: .notice--info }
+!!! info "举一反三"
+    不管广度优先遍历一副有向图还是一棵树，都要用到队列。首先把起始节点(对树而言是根节点)放入队列。接下来每次从队列的头部取出一个节点，遍历这个节点之后就把它能达到的节点(对树而言是子节点)都依次放入队列。重复这个遍历过程，直到队列中的节点全部被遍历为止。
 
 #### 2.3.2 分行从上到下打印二叉树
 
-从上到下按层打印二叉树，同一层的结点按从左到右的顺序打印，每一层打印到一行。
-{: .notice }
+> 从上到下按层打印二叉树，同一层的结点按从左到右的顺序打印，每一层打印到一行。
 
-此题同[LeetCode-102-Binary Tree Level Order Traversal](/algorithm/leetcode101-110/#102-binary-tree-level-order-traversal)
+此题同[LC-102-Binary Tree Level Order Traversal](/leetcode/leetcode101-110/#102-binary-tree-level-order-traversal)
 
 在前面代码的基础上额外加两个变量：一个表示在当前层中还没有打印的节点数；另一个变量表示下一层节点的数目
 
@@ -373,10 +343,9 @@ private void print(BinaryTreeNode root) {
 
 #### 2.3.3 之字形打印二叉树
 
-请实现一个函数按照之字形顺序打印二叉树，即第一行按照从左到右的顺序打印，第二层按照从右到左的顺序打印，第三行再按照从左到右的顺序打印，其他行以此类推。
-{: .notice }
+> 请实现一个函数按照之字形顺序打印二叉树，即第一行按照从左到右的顺序打印，第二层按照从右到左的顺序打印，第三行再按照从左到右的顺序打印，其他行以此类推。
 
-此题同[LeetCode-103-Binary Tree Zigzag Level Order Traversal](/algorithm/leetcode101-110/#103-binary-tree-zigzag-level-order-traversal)
+此题同[LC-103-Binary Tree Zigzag Level Order Traversal](/leetcode/leetcode101-110/#103-binary-tree-zigzag-level-order-traversal)
 
 按之字形顺序打印二叉树需要两个栈。我们在打印某一层节点时，把下一层的子节点保存在对应的栈中。如果当前打印的是奇数层，则先保存左子节点再保存右子节点到第一个栈里；如果当前打印的是偶数层，则先保存右子节点再保存左子节点到第二个栈里。
 
@@ -424,8 +393,7 @@ private void print(BinaryTreeNode root) {
 
 ### 2.4 (33)二叉搜索树的后序遍历序列
 
-输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历的结果。如果是则返回true，否则返回false。假设输入的数组的任意两个数字都互不相同。
-{: .notice }
+> 输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历的结果。如果是则返回true，否则返回false。假设输入的数组的任意两个数字都互不相同。
 
 根据二叉搜索树的特征以及树的后序遍历序列特征，我们可以写出下面的代码：
 
@@ -470,19 +438,16 @@ private boolean verifySequenceOfBSTInner(int[] sequence, int start, int end) {
 }
 ```
 
-**相关题目**  
-输入一个整数数组，判断该数组是不是某二叉搜索树的前序遍历结果。  
-*这和前面问题的后序遍历很类似，只是在前序遍历得到的序列中，第一个数字是根节点的值。*
-{: .notice--info }
+!!! info "相关题目"
+    输入一个整数数组，判断该数组是不是某二叉搜索树的前序遍历结果。  
+    *这和前面问题的后序遍历很类似，只是在前序遍历得到的序列中，第一个数字是根节点的值。*
 
-**举一反三**  
-如果面试题要求处理一颗二叉树的遍历序列，则可以先找到二叉树的根节点，再基于根节点把整棵树的遍历序列拆分成左子树对应的子序列和右子树对应的子序列，接下来再递归地处理这两个子序列。本题和第七题“重建二叉树”应用的也是这种思路。
-{: .notice--info }
+!!! info "举一反三"
+    如果面试题要求处理一颗二叉树的遍历序列，则可以先找到二叉树的根节点，再基于根节点把整棵树的遍历序列拆分成左子树对应的子序列和右子树对应的子序列，接下来再递归地处理这两个子序列。本题和第七题“重建二叉树”应用的也是这种思路。
 
 ### 2.5 (34)二叉树中和为某一值的路径
 
-输入一棵二叉树和一个整数，打印出二叉树中结点值的和为输入整数的所有路径。从树的根结点开始往下一直到叶结点所经过的结点形成一条路径。
-{: .notice }
+> 输入一棵二叉树和一个整数，打印出二叉树中结点值的和为输入整数的所有路径。从树的根结点开始往下一直到叶结点所经过的结点形成一条路径。
 
 在树的前中后序遍历方式中，只有前序遍历是首先访问根节点的。  
 当用前序遍历的方式访问到某一节点时，我们把该节点添加到路径上，并累加该节点的值。如果当前节点不是叶节点，则继续访问它的子节点。如果该节点为叶节点，并且路径中节点值和刚好等于输入的整数，则当前路径符合要求，我们打印出来。当前节点访问结束后，递归函数自动回到它的父节点。因此，我们在函数退出之前要把路径上删除当前节点并减去当前节点的值，以确保父节点时路径刚好是从根节点到父节点。我们不难看出保存路径的数据结构是一个栈，因为路径要与递归调用状态一致，而递归调用的本质就是一个压栈和出栈的过程。  
@@ -537,46 +502,44 @@ private void findPath(BinaryTreeNode root, int expectedSum, List<Integer> path) 
 
 ### 3.1 (35)复杂链表的复制
 
-请实现函数ComplexListNode clone(ComplexListNode head)，复制一个复杂链表。在复杂链表中，每个结点除了有一个next指针指向下一个结点外，还有一个sibling指向链表中的任意结点或者null。
-{: .notice }
+> 请实现函数ComplexListNode clone(ComplexListNode head)，复制一个复杂链表。在复杂链表中，每个结点除了有一个next指针指向下一个结点外，还有一个sibling指向链表中的任意结点或者null。
 
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/leetcode/ci_list_node_35.png" />
-    <figcaption>一个含有5个节点的复杂链表</figcaption>
-</figure>
+![一个含有5个节点的复杂链表](/assets/images/leetcode/ci_list_node_35.png)
+
+<small>一个含有5个节点的复杂链表</small>
 
 **解法一：笨方法**  
+
 首先复制原始链表上的每个节点，并用next链接起来；然后设置每个节点的sibling指针。  
-对于一个含有n个节点的链表，由于定位每个节点的sibling都需要从链表头节点开始经过$$O(n)$$步才能找到，因此这种方法总的时间复杂度是$$O(n^2)$$。
+对于一个含有n个节点的链表，由于定位每个节点的sibling都需要从链表头节点开始经过$O(n)$步才能找到，因此这种方法总的时间复杂度是$O(n^2)$。
 
 **解法二：空间换时间**  
 上述方法的时间主要花费在定位节点的sibling上面，我们试着在方面去进行优化。  
-我们还是分为两步：第一步仍然是复制原始链表上的每个节点N创建N'，然后把每个节点N用next链接起来，同时把<N, N'>的配对信息放到一个哈希表中；  
-第二步还是设置复制链表的sibling。如果在原始链表中节点N的sibling指向节点S，那么在复制链表中，对应的N'应该指向S'。由于有了哈希表，我们可以用$$O(1)$$的时间根据S找到S'。  
-这种方法相当于用空间换时间。该方法时间复杂度为$$O(n)$$，空间复杂度也为$$O(n)$$。
+我们还是分为两步：第一步仍然是复制原始链表上的每个节点N创建N'，然后把每个节点N用next链接起来，同时把<N, N'\>的配对信息放到一个哈希表中；  
+第二步还是设置复制链表的sibling。如果在原始链表中节点N的sibling指向节点S，那么在复制链表中，对应的N'应该指向S'。由于有了哈希表，我们可以用$O(1)$的时间根据S找到S'。  
+这种方法相当于用空间换时间。该方法时间复杂度为$O(n)$，空间复杂度也为$O(n)$。
 
-**解法三：不用辅助空间的情况下实现$$O(n)$$的时间效率**  
+**解法三：不用辅助空间的情况下实现$O(n)$的时间效率**  
 第一步仍然是根据原始链表的每个节点N创建对应的N'。这一次，我们把N'链接到N的后面。例子中的链表经过这一步之后的结构如下所示：  
 
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/leetcode/ci_list_node_35_1.png" />
-    <figcaption>复制复杂链表的第一步</figcaption>
-</figure>
+![复制复杂链表的第一步](/assets/images/leetcode/ci_list_node_35_1.png)
+
+<small>复制复杂链表的第一步</small>
 
 第二步设置复制出来的节点的sibling。假设原始链表上的N的sibling指向节点S，那么其对应复制出来的N'是N的next指向的节点，同样S'也是S的next指向的节点。设置sibling之后的链表如图所示：
 
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/leetcode/ci_list_node_35_2.png" />
-    <figcaption>复制复杂链表的第二步</figcaption>
-</figure>  
+![复制复杂链表的第二步](/assets/images/leetcode/ci_list_node_35_2.png)
+
+<small>复制复杂链表的第二步</small>
+
 *注：如果原始链表上的节点N的sibling指向S，则其复制节点N'的sibling指向S的复制节点S'。*
 
 第三步把这个长链表拆分为两个链表：奇数、偶数位置分别是原始链表和复制出来的链表。  
 
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/leetcode/ci_list_node_35_3.png" />
-    <figcaption>复制复杂链表的第三步</figcaption>
-</figure>  
+![复制复杂链表的第三步](/assets/images/leetcode/ci_list_node_35_3.png)
+
+<small>复制复杂链表的第三步</small>
+
 *注：把第二步得到的链表拆分成为两个链表，奇数位置上的节点组成原始链表，偶数位置上的节点组成复制出来的节点。*
 
 ```java
@@ -671,15 +634,13 @@ private static class ComplexListNode {
 
 ### 3.2 (36)二叉搜索树与双向链表  
 
-输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的双向链表。要求不能创建任何新的结点，只能调整树中结点指针的指向。
-{: .notice }
+> 输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的双向链表。要求不能创建任何新的结点，只能调整树中结点指针的指向。
 
 如下图所示，左边的二叉搜索树经过转换之后变成右边的排序双向链表。  
 
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/leetcode/ci_binary_tree_36.png" />
-    <figcaption>一颗二叉搜索树及转换之后的排序双向链表</figcaption>
-</figure>  
+![一颗二叉搜索树及转换之后的排序双向链表](/assets/images/leetcode/ci_binary_tree_36.png)
+
+<small>一颗二叉搜索树及转换之后的排序双向链表</small>
 
 ```java
 private BinaryTreeNode last;
@@ -727,17 +688,15 @@ private void convertNode(BinaryTreeNode node) {
 
 ### 3.3 (37)序列化二叉树
 
-请实现两个函数，分别用来序列化和反序列化二叉树。
-{: .notice }
+> 请实现两个函数，分别用来序列化和反序列化二叉树。
 
 如果二叉树的序列化是从根节点开始的，那么相应的反序列化在根节点的数值读出来的时候就可以开始了。因此，我们可以根据前序遍历的顺序来序列化二叉树，因为前序遍历是从根节点开始的。在遍历二叉树碰到空指针时，将这些空指针序列化为一个特殊的字符（如'$'）。这样就填满成为一个满二叉树了。
 
 例如，下面的二叉树被序列化成为字符串“1,2,4,$,$,$,3,5,$,$,6,$,$”。
 
-<figure style="width: 33%" class="align-center">
-    <img src="/assets/images/leetcode/ci_binary_tree_37.png" />
-    <figcaption>一颗被序列化成字符串“1,2,4,$,$,$,3,5,$,$,6,$,$”的二叉树</figcaption>
-</figure>  
+![一颗被序列化成字符串“1,2,4,$,$,$,3,5,$,$,6,$,$”的二叉树](/assets/images/leetcode/ci_binary_tree_37.png)
+
+<small>一颗被序列化成字符串“1,2,4,$,$,$,3,5,$,$,6,$,$”的二叉树</small>
 
 ```java
 private String serialize(BinaryTreeNode root) {
@@ -787,13 +746,12 @@ private BinaryTreeNode deserializeInner(String[] chars) {
 
 ### 3.4 (38)字符串的排列
 
-输入一个字符串，打印出该字符串中字符的所有排列。例如输入字符串abc，则打印出由字符a、b、c所能排列出来的所有字符串abc、acb、bac、bca、cab和cba。
-{: .notice }
+> 输入一个字符串，打印出该字符串中字符的所有排列。例如输入字符串abc，则打印出由字符a、b、c所能排列出来的所有字符串abc、acb、bac、bca、cab和cba。
 
 我们可以考虑把这个复杂问题分解成小的问题。比如，我们把第一个字符串看成由两部分组成：第一部分是它的第一个字符；第二部分是后面的所有字符。  
 我们求整个字符串的排列，可以看成两步。第一步求所有可能出现在第一个位置的字符，即把第一个字符和后面所有的字符交换。第二步固定第一个字符，求后面所有字符的排列。这时候我们仍然把后面的所有字符分为两部分：后面字符的第一个字符，以及这个字符之后的所有字符。然后把第一个字符逐一和它后面的字符交换。这就是典型的递归思路。  
 
-此题同[LeetCode-46-Permutations](/algorithm/leetcode41-50/#46-permutations)
+此题同[LC-46-Permutations](/leetcode/leetcode41-50/#46-permutations)
 
 ```java
 private void permutation(String str) {
@@ -825,32 +783,22 @@ private void permutationInner(char[] str, int begin) {
 }
 ```
 
-**本题扩展**  
-如果不是求字符的所有排列，而是求字符的所有组合，应该怎么办呢？  
-<cite>还是输入个字符a、b、c，则它们的组合有a、b、c、ab、ac、bc、abc。当交换字符串中的两个字符时，虽然能得到两个不同的排列，但却是同一个组合。比如ab和ba是不同的排列，但只算一个组合。  
-如果输入n个字符，则这n个字符能构成长度为1,2,...,n的组合。在求n个字符的长度为m（1≤m≤n）的组合的时候，我们把这n个字符分成两部分:第一个字符和其余的所有字符。如果组合里包含第一个字符，则下一步在剩余的字符里选取m-1个字符；如果组合里不包含第一个字符，则下一步在剩余的n-1个符里选取m个字符。也就是说，我们可以把求n个字符组成长度为m的组合的问题分解成两个子问题，分别求n-1个字符中长度为m-1的组合，以及求n-1个字符中长度为m的组合。这两个子问题都可以用递归的方式解决。</cite>
-{: .notice--info }
+!!! info "本题扩展"
+    如果不是求字符的所有排列，而是求字符的所有组合，应该怎么办呢？  
+    <cite>还是输入个字符a、b、c，则它们的组合有a、b、c、ab、ac、bc、abc。当交换字符串中的两个字符时，虽然能得到两个不同的排列，但却是同一个组合。比如ab和ba是不同的排列，但只算一个组合。  
+    如果输入n个字符，则这n个字符能构成长度为1,2,...,n的组合。在求n个字符的长度为m（1≤m≤n）的组合的时候，我们把这n个字符分成两部分:第一个字符和其余的所有字符。如果组合里包含第一个字符，则下一步在剩余的字符里选取m-1个字符；如果组合里不包含第一个字符，则下一步在剩余的n-1个符里选取m个字符。也就是说，我们可以把求n个字符组成长度为m的组合的问题分解成两个子问题，分别求n-1个字符中长度为m-1的组合，以及求n-1个字符中长度为m的组合。这两个子问题都可以用递归的方式解决。</cite>
 
-**相关题目**  
-输入一个含有8个数字的数组，判断有没有可能把这8个数字分别放到正方体的8个顶点上，使得正方体上三组相对的面上的4个顶点的和都相等。  
-*这相当于先得到a1到a8这8个数字的所有排列，然后判断有没有某一个排列符合题目给定的条件，即a1+a2+a3+a4=a5+a6+a7+a8, a1+a3+a5+a7=a2+a4+a6+a8, a1+a2+a5+a6=a3+a4+a7+a8*
-{: .notice--info }
+!!! info "相关题目"
+    输入一个含有8个数字的数组，判断有没有可能把这8个数字分别放到正方体的8个顶点上，使得正方体上三组相对的面上的4个顶点的和都相等。  
+    *这相当于先得到a1到a8这8个数字的所有排列，然后判断有没有某一个排列符合题目给定的条件，即a1+a2+a3+a4=a5+a6+a7+a8, a1+a3+a5+a7=a2+a4+a6+a8, a1+a2+a5+a6=a3+a4+a7+a8*  
+    ![把8个数字放到正方体的8个顶点上](/assets/images/leetcode/ci_38_expand.png)  
+    <small>把8个数字放到正方体的8个顶点上</small>
 
-<figure style="width: 33%" class="align-center">
-    <img src="/assets/images/leetcode/ci_38_expand.png" />
-    <figcaption>把8个数字放到正方体的8个顶点上</figcaption>
-</figure>  
+!!! info "相关题目"
+    在8x8的国际象棋上摆放8个皇后，使其不能相互攻击，即任意两个皇后不得处在同一行、同一列或者同一条对角线上。图中的每个黑色格子表示一个皇后，这就是一种符合条件的摆放方法。请问总共有多少种符合条件的摆法？   
+    *由于8个皇后的任意两个不能处在同一行，那么肯定是每一个皇后占据一行。于是我们可以定义一个数组ColumnIndex\[8\]，数组中第i个数字表示位于第i行的皇后的列号。先把数组ColumnIndex的8个数字分别用0~7初始化，然后对数组ColumnIndex进行全排列。因为我们用不同的数字初始化数组，所以任意两个皇后肯定不同列。只需判断每一个排列对应的8个皇后是不是在同一条对角线上，也就是对于数组的两个下标i和j，是否有i-j=ColumnIndex\[i\]-ColumnIndex\[j\]或者j-i=ColumnIndex\[i\]-ColumnIndex\[i\]*  
+    ![8皇后问题](/assets/images/leetcode/ci_38_expand2.png)  
+    <small>8皇后问题</small>
 
-**相关题目**  
-在8x8的国际象棋上摆放8个皇后，使其不能相互攻击，即任意两个皇后不得处在同一行、同一列或者同一条对角线上。图中的每个黑色格子表示一个皇后，这就是一种符合条件的摆放方法。请问总共有多少种符合条件的摆法？   
-*由于8个皇后的任意两个不能处在同一行，那么肯定是每一个皇后占据一行。于是我们可以定义一个数组ColumnIndex\[8\]，数组中第i个数字表示位于第i行的皇后的列号。先把数组ColumnIndex的8个数字分别用0~7初始化，然后对数组ColumnIndex进行全排列。因为我们用不同的数字初始化数组，所以任意两个皇后肯定不同列。只需判断每一个排列对应的8个皇后是不是在同一条对角线上，也就是对于数组的两个下标i和j，是否有i-j=ColumnIndex\[i\]-ColumnIndex\[j\]或者j-i=ColumnIndex\[i\]-ColumnIndex\[i\]*
-{: .notice--info }
-
-<figure style="width: 33%" class="align-center">
-    <img src="/assets/images/leetcode/ci_38_expand2.png" />
-    <figcaption>8皇后问题</figcaption>
-</figure>  
-
-**举一反三**  
-如果题目是按照一定要求摆放若干个数字，则可以先求出这些数字的所有排列，然后一一判断每个排列是不是满足题目的要求。
-{: .notice--info }
+!!! info "举一反三"
+    如果题目是按照一定要求摆放若干个数字，则可以先求出这些数字的所有排列，然后一一判断每个排列是不是满足题目的要求。

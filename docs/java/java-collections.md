@@ -454,7 +454,7 @@ Vector有如下特点：
 | **Vector** | 数组，线程安全版本的ArrayList |  | v可空 | 有序 | 线程安全 |
 
 注意，非线程安全的集合可以通过`Collections`的`synchronizedCollection` 、 `synchronizedSet` 、 `synchronizedList` 、 `synchronizedMap`等方法转换成线程安全的集合。其原理就是对每个操作都在同步代码块中执行。
-{: .notice--success }
+
 
 <figure style="width: 100%" class="align-center">
     <img src="/assets/images/java/java-collections-uml.png">

@@ -1,55 +1,32 @@
 ---
 title: "LeetCode(6)"
-excerpt: "LeetCode51-60总结"
-categories:
-  - Algorithm
-tags:
-  - LeetCode
-  - Greedy
-  - Backtracking
-  - Array
-  - Dynamic Programming
-  - Sort
-  - String
-  - Math
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-05-30T19:51:37+08:00
 ---
-
-<script type="text/javascript" async
-  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
 
 ## 51. N-Queens
 
-[Backtracking](/tags/#backtracking){: .tag } 
+- Backtracking 
 
-The *n*-queens puzzle is the problem of placing *n* queens on an *n*×*n* chessboard such that no two queens attack each other.  
-
-<figure style="width: 33%" class="align-center">
-    <img src="/assets/images/leetcode/question_51_8-queens.png">
-</figure>
-
-Given an integer *n*, return all distinct solutions to the *n*-queens puzzle.  
-
-Each solution contains a distinct board configuration of the *n*-queens' placement, where `'Q'` and `'.'` both indicate a queen and an empty space respectively. 
+> The *n*-queens puzzle is the problem of placing *n* queens on an *n*×*n* chessboard such that no two queens attack each other.  
+> ![](/assets/images/leetcode/question_51_8-queens.png)  
+> 
+> Given an integer *n*, return all distinct solutions to the *n*-queens puzzle.  
+> 
+> Each solution contains a distinct board configuration of the *n*-queens' placement, where `'Q'` and `'.'` both indicate a queen and an empty space respectively. 
 
 **Example:**
 
-**Input**: 4  
-**Output**: [  
-&emsp;[".&emsp;Q&emsp;.&emsp;.",  // Solution 1  
-&emsp;&emsp;".&emsp;.&emsp;.&emsp;Q",  
-&emsp;&emsp;"Q&emsp;.&emsp;.&emsp;.",  
-&emsp;&emsp;".&emsp;.&emsp;Q&emsp;."],  
-&emsp;[".&emsp;.&emsp;Q&emsp;.",  // Solution 2  
-&emsp;&emsp;"Q&emsp;.&emsp;.&emsp;.",  
-&emsp;&emsp;".&emsp;.&emsp;.&emsp;Q",  
-&emsp;".&emsp;Q&emsp;.&emsp;."]  
-]  
-**Explanation**: There exist two distinct solutions to the 4-queens puzzle as shown above.
-{: .notice }
+> **Input**: 4  
+> **Output**: [  
+> &emsp;[".&emsp;Q&emsp;.&emsp;.",  // Solution 1  
+> &emsp;&emsp;".&emsp;.&emsp;.&emsp;Q",  
+> &emsp;&emsp;"Q&emsp;.&emsp;.&emsp;.",  
+> &emsp;&emsp;".&emsp;.&emsp;Q&emsp;."],  
+> &emsp;[".&emsp;.&emsp;Q&emsp;.",  // Solution 2  
+> &emsp;&emsp;"Q&emsp;.&emsp;.&emsp;.",  
+> &emsp;&emsp;".&emsp;.&emsp;.&emsp;Q",  
+> &emsp;".&emsp;Q&emsp;.&emsp;."]  
+> ]  
+> **Explanation**: There exist two distinct solutions to the 4-queens puzzle as shown above.
 
 **Solution**  
 
@@ -92,34 +69,30 @@ class Solution {
 
 ## 52. N-Queens II
 
-[Backtracking](/tags/#backtracking){: .tag } 
+- Backtracking 
 
-The *n*-queens puzzle is the problem of placing *n* queens on an *n*×*n* chessboard such that no two queens attack each other.  
-
-<figure style="width: 33%" class="align-center">
-    <img src="/assets/images/leetcode/question_51_8-queens.png">
-</figure>
-
-Given an integer *n*, return all distinct solutions to the *n*-queens puzzle.  
-
-Each solution contains a distinct board configuration of the *n*-queens' placement, where `'Q'` and `'.'` both indicate a queen and an empty space respectively. 
+> The *n*-queens puzzle is the problem of placing *n* queens on an *n*×*n* chessboard such that no two queens attack each other.  
+> ![](/assets/images/leetcode/question_51_8-queens.png)  
+> 
+> Given an integer *n*, return all distinct solutions to the *n*-queens puzzle.  
+> 
+> Each solution contains a distinct board configuration of the *n*-queens' placement, where `'Q'` and `'.'` both indicate a queen and an empty space respectively. 
 
 **Example:**
 
-**Input**: 4  
-**Output**: 2  
-**Explanation**: There are two distinct solutions to the 4-queens puzzle as shown below.  
-[  
-&emsp;[".&emsp;Q&emsp;.&emsp;.",  // Solution 1  
-&emsp;&emsp;".&emsp;.&emsp;.&emsp;Q",  
-&emsp;&emsp;"Q&emsp;.&emsp;.&emsp;.",  
-&emsp;&emsp;".&emsp;.&emsp;Q&emsp;."],  
-&emsp;[".&emsp;.&emsp;Q&emsp;.",  // Solution 2  
-&emsp;&emsp;"Q&emsp;.&emsp;.&emsp;.",  
-&emsp;&emsp;".&emsp;.&emsp;.&emsp;Q",  
-&emsp;".&emsp;Q&emsp;.&emsp;."]  
-]
-{: .notice }
+> **Input**: 4  
+> **Output**: 2  
+> **Explanation**: There are two distinct solutions to the 4-queens puzzle as shown below.  
+> [  
+> &emsp;[".&emsp;Q&emsp;.&emsp;.",  // Solution 1  
+> &emsp;&emsp;".&emsp;.&emsp;.&emsp;Q",  
+> &emsp;&emsp;"Q&emsp;.&emsp;.&emsp;.",  
+> &emsp;&emsp;".&emsp;.&emsp;Q&emsp;."],  
+> &emsp;[".&emsp;.&emsp;Q&emsp;.",  // Solution 2  
+> &emsp;&emsp;"Q&emsp;.&emsp;.&emsp;.",  
+> &emsp;&emsp;".&emsp;.&emsp;.&emsp;Q",  
+> &emsp;".&emsp;Q&emsp;.&emsp;."]  
+> ]
 
 **Solution**  
 
@@ -153,21 +126,21 @@ class Solution {
 
 ## 53. Maximum Subarray
 
-[Array](/tags/#array){: .tag } [Dynamic Programming](/tags/#dynamic-programming){: .tag } 
+- Array 
+- Dynamic Programming 
 
-Given an integer array `nums`, find the contiguous subarray (containing at least one number) which has the largest sum and return its sum.
+> Given an integer array `nums`, find the contiguous subarray (containing at least one number) which has the largest sum and return its sum.
 
 **Example:**
 
-**Input:** [-2,1,-3,4,-1,2,1,-5,4],  
-**Output:** 6  
-**Explanation:** [4,-1,2,1] has the largest sum = 6.
-{: .notice }
+> **Input:** [-2,1,-3,4,-1,2,1,-5,4],  
+> **Output:** 6  
+> **Explanation:** [4,-1,2,1] has the largest sum = 6.
 
 **Follow up:**  
-If you have figured out the $$O(n)$$ solution, try coding another solution using the divide and conquer approach, which is more subtle.
+If you have figured out the $O(n)$ solution, try coding another solution using the divide and conquer approach, which is more subtle.
 
-此题同[CI-42-连续子数组的最大和](/algorithm/code_interviews_5/#14-42%E8%BF%9E%E7%BB%AD%E5%AD%90%E6%95%B0%E7%BB%84%E7%9A%84%E6%9C%80%E5%A4%A7%E5%92%8C)
+此题同[CI-42-连续子数组的最大和](/leetcode/code_interviews_5/#14-42)
 
 **Solution** 
 
@@ -197,34 +170,31 @@ class Solution {
 
 ## 54. Spiral Matrix
 
-[Array](/tags/#array){: .tag } 
+- Array 
 
-Given a matrix of `m` x `n` elements (`m` rows, `n` columns), return all elements of the matrix in spiral order.
+> Given a matrix of `m` x `n` elements (`m` rows, `n` columns), return all elements of the matrix in spiral order.
 
 **Example 1:**
 
-**Input:**  
-[  
-&emsp;&emsp;[ 1, 2, 3 ],  
-&emsp;&emsp;[ 4, 5, 6 ],  
-&emsp;&emsp;[ 7, 8, 9 ]  
-]  
-**Output:** [1,2,3,6,9,8,7,4,5]  
-{: .notice }
-
+> **Input:**  
+> [  
+> &emsp;&emsp;[ 1, 2, 3 ],  
+> &emsp;&emsp;[ 4, 5, 6 ],  
+> &emsp;&emsp;[ 7, 8, 9 ]  
+> ]  
+> **Output:** [1,2,3,6,9,8,7,4,5]  
 
 **Example 2:**
 
-**Input:**  
-[  
-&emsp;&emsp;[1, 2, 3, 4],  
-&emsp;&emsp;[5, 6, 7, 8],  
-&emsp;&emsp;[9,10,11,12]  
-]  
-**Output:** [1,2,3,4,8,12,11,10,9,5,6,7]
-{: .notice }
+> **Input:**  
+> [  
+> &emsp;&emsp;[1, 2, 3, 4],  
+> &emsp;&emsp;[5, 6, 7, 8],  
+> &emsp;&emsp;[9,10,11,12]  
+> ]  
+> **Output:** [1,2,3,4,8,12,11,10,9,5,6,7]
 
-此题同[CI-29-顺时针打印矩阵](/algorithm/code_interviews_4/#13-29%E9%A1%BA%E6%97%B6%E9%92%88%E6%89%93%E5%8D%B0%E7%9F%A9%E9%98%B5)  
+此题同[CI-29-顺时针打印矩阵](/leetcode/code_interviews_4/#13-29)  
 
 **Solution**  
 
@@ -282,33 +252,30 @@ class Solution {
 
 ## 55. Jump Game
 
-[Greedy](/tags/#greedy){: .tag } 
+- Greedy 
 
-Given an array of non-negative integers, you are initially positioned at the first index of the array.
-
-Each element in the array represents your maximum jump length at that position.
-
-Determine if you are able to reach the last index.
+> Given an array of non-negative integers, you are initially positioned at the first index of the array.
+> 
+> Each element in the array represents your maximum jump length at that position.
+> 
+> Determine if you are able to reach the last index.
 
 **Example 1:**
 
-Input: [2,3,1,1,4]  
-Output: true  
-Explanation: Jump 1 step from index 0 to 1, then 3 steps to the last index.  
-{: .notice }
+> Input: [2,3,1,1,4]  
+> Output: true  
+> Explanation: Jump 1 step from index 0 to 1, then 3 steps to the last index.  
 
 **Example 2:**
 
-Input: [3,2,1,0,4]  
-Output: false  
-Explanation: You will always arrive at index 3 no matter what. Its maximum
-             jump length is 0, which makes it impossible to reach the last index.  
-{: .notice }
+> Input: [3,2,1,0,4]  
+> Output: false  
+> Explanation: You will always arrive at index 3 no matter what. Its maximum jump length is 0, which makes it impossible to reach the last index.  
 
 **Solution**  
 
 本题最好的解法是贪婪算法，从最右边开始，能到达终点的点就是最新的终点，这样一直判断完整个数组，最后判断最后一个终点是不是0即可。  
-时间复杂度为$$O(n)$$，空间复杂度为$$O(1)$$。  
+时间复杂度为$O(n)$，空间复杂度为$O(1)$。  
 
 > 一个疑问是，如果确定了一个点是最新的终点，那么一旦无法从开始跳到该点，是否有回溯的可能。  
 > 答案是没有必要回溯，因为假设存在这个一个点P，位于最新的终点与终点之间。如果位于最新终点之前的点可以到达点P，那么肯定可以到达最新的终点。所以，回溯在本题是没有必要的，本题只是求存不存在路径。
@@ -332,23 +299,22 @@ class Solution {
 
 ## 56. Merge Intervals
 
-[Array](/tags/#array){: .tag } [Sort](/tags/#sort){: .tag } 
+- Array 
+- Sort 
 
-Given a collection of intervals, merge all overlapping intervals.
+> Given a collection of intervals, merge all overlapping intervals.
 
 **Example 1:**
 
-**Input:** [[1,3],[2,6],[8,10],[15,18]]  
-**Output:** [[1,6],[8,10],[15,18]]  
-**Explanation:** Since intervals [1,3] and [2,6] overlaps, merge them into [1,6].
-{: .notice }
+> **Input:** [[1,3],[2,6],[8,10],[15,18]]  
+> **Output:** [[1,6],[8,10],[15,18]]  
+> **Explanation:** Since intervals [1,3] and [2,6] overlaps, merge them into [1,6].
 
 **Example 2:**
 
-**Input:** [[1,4],[4,5]]  
-**Output:** [[1,5]]  
-**Explanation:** Intervals [1,4] and [4,5] are considered overlapping.
-{: .notice }
+> **Input:** [[1,4],[4,5]]  
+> **Output:** [[1,5]]  
+> **Explanation:** Intervals [1,4] and [4,5] are considered overlapping.
 
 **Solution**
 
@@ -356,7 +322,7 @@ Given a collection of intervals, merge all overlapping intervals.
 
 先排序，排完序后可以两两之间进行比较：如果可以merge，那么更新较后者的值；若是最后一个，或者不可以merge，前者就是结果之一。
 
-时间主要在排序上，所以时间复杂度为$$O(nlogn)$$。  
+时间主要在排序上，所以时间复杂度为$O(nlogn)$。  
 Runtime 36ms，beats 41.79%
 
 ```java
@@ -389,10 +355,9 @@ class Solution {
 由于数据事先没有经过排序，所以判断任意两个区间是否可以merge时，注意交换一下前后循序。  
 Runtime 1ms，beats 100%，真是amazing！！
 
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/leetcode/question_56.png">
-    <figcaption>判断任意两个区间可不可以merge</figcaption>
-</figure>
+![判断任意两个区间可不可以merge](/assets/images/leetcode/question_56.png)
+
+<small>判断任意两个区间可不可以merge</small>
 
 判断区间可不可以merge时，先固定住一条线条，然后看另外一条线条在什么位置满足条件。我们发现，有些情况是一样的，比如上图中的1与6，3与4一样，所以实际上只需要判断1、2、4、5即可。
 
@@ -431,29 +396,28 @@ class Solution {
 
 ## 57. Insert Interval
 
-[Array](/tags/#array){: .tag } [Sort](/tags/#sort){: .tag } 
+- Array 
+- Sort 
 
-Given a set of *non-overlapping* intervals, insert a new interval into the intervals (merge if necessary).
-
-You may assume that the intervals were initially sorted according to their start times.
+> Given a set of *non-overlapping* intervals, insert a new interval into the intervals (merge if necessary).
+> 
+> You may assume that the intervals were initially sorted according to their start times.
 
 **Example 1:**
 
-**Input:** intervals = [[1,3],[6,9]], newInterval = [2,5]  
-**Output:** [[1,5],[6,9]]
-{: .notice }
+> **Input:** intervals = [[1,3],[6,9]], newInterval = [2,5]  
+> **Output:** [[1,5],[6,9]]
 
 **Example 2:**
 
-**Input:** intervals = [[1,2],[3,5],[6,7],[8,10],[12,16]], newInterval = [4,8]  
-**Output:** [[1,2],[3,10],[12,16]]  
-**Explanation:** Because the new interval [4,8] overlaps with [3,5],[6,7],[8,10].  
-{: .notice }
+> **Input:** intervals = [[1,2],[3,5],[6,7],[8,10],[12,16]], newInterval = [4,8]  
+> **Output:** [[1,2],[3,10],[12,16]]  
+> **Explanation:** Because the new interval [4,8] overlaps with [3,5],[6,7],[8,10].  
 
 **Solution**
 
 该题的需要我们插入一个区间，然后合并可以合并的区间。所以我们先将原来的区间和需要插入的区间合并成为一个新的区间，然后问题就转化为上一题了。  
-需要注意的是，输入的区间是有序的，所以我们在合并成为新区间时，采用插入排序的思路，在$$O(n)$$的时间内完成新区间的合并和生成，且完成也是有序的。  
+需要注意的是，输入的区间是有序的，所以我们在合并成为新区间时，采用插入排序的思路，在$O(n)$的时间内完成新区间的合并和生成，且完成也是有序的。  
 既然目前数组是有序的，所以我们采用上一题的解法1的思路：对有序的数组可以两两之间进行比较：如果可以merge，那么更新较后者的值；若是最后一个，或者不可以merge，前者就是结果之一。
 
 Runtime 2ms，beats 75.79%
@@ -505,19 +469,18 @@ class Solution {
 
 ## 58. Length of Last Word
 
-[String](/tags/#string){: .tag }
+- String
 
-Given a string *s* consists of upper/lower-case alphabets and empty space characters `' '`, return the length of last word in the string.
-
-If the last word does not exist, return 0.
+> Given a string *s* consists of upper/lower-case alphabets and empty space characters `' '`, return the length of last word in the string.
+> 
+> If the last word does not exist, return 0.
 
 **Note:** A word is defined as a character sequence consists of non-space characters only.
 
 **Example:**
 
-**Input:** "Hello World"  
-**Output:** 5  
-{: .notice }
+> **Input:** "Hello World"  
+> **Output:** 5  
 
 **Solution**
 
@@ -555,24 +518,23 @@ class Solution {
 
 ## 59. Spiral Matrix II
 
-[Array](/tags/#array){: .tag }
+- Array
 
-Given a positive integer *n*, generate a square matrix filled with elements from 1 to $$n^2$$ in spiral order.
+> Given a positive integer *n*, generate a square matrix filled with elements from 1 to $n^2$ in spiral order.
 
 **Example:**
 
-**Input:** 3  
-**Output:**  
-[  
-&emsp;&emsp;[ 1, 2, 3 ],  
-&emsp;&emsp;[ 8, 9, 4 ],  
-&emsp;&emsp;[ 7, 6, 5 ]  
-]
-{: .notice }
+> **Input:** 3  
+> **Output:**  
+> [  
+> &emsp;&emsp;[ 1, 2, 3 ],  
+> &emsp;&emsp;[ 8, 9, 4 ],  
+> &emsp;&emsp;[ 7, 6, 5 ]  
+> ]
 
 **Solution**
 
-此题可以使用[54-Spiral Matrix](/algorithm/leetcode51-60/#54-spiral-matrix)的思路——每打印一条边都会缩小范围，问题不难解决。
+此题可以使用[LC-54-Spiral Matrix](#54-spiral-matrix)的思路——每打印一条边都会缩小范围，问题不难解决。
 
 Runtime 0ms
 
@@ -623,20 +585,20 @@ class Solution {
 
 ## 60. Permutation Sequence
 
-[Math](/tags/#math){: .tag }
+- Math
 
-The set `[1,2,3,...,n]` contains a total of *n*! unique permutations.
-
-By listing and labeling all of the permutations in order, we get the following sequence for *n* = 3:
-
-1. `"123"`
-2. `"132"`
-3. `"213"`
-4. `"231"`
-5. `"312"`
-6. `"321"`
-
-Given *n* and *k*, return the $$k^{th}$$ permutation sequence.
+> The set `[1,2,3,...,n]` contains a total of *n*! unique permutations.
+> 
+> By listing and labeling all of the permutations in order, we get the following sequence for *n* = 3:
+> 
+> 1. `"123"`
+> 2. `"132"`
+> 3. `"213"`
+> 4. `"231"`
+> 5. `"312"`
+> 6. `"321"`
+> 
+> Given *n* and *k*, return the $k^{th}$ permutation sequence.
 
 **Note:**
 
@@ -645,15 +607,13 @@ Given *n* and *k*, return the $$k^{th}$$ permutation sequence.
 
 **Example 1:**
 
-**Input:** n = 3, k = 3  
-**Output:** "213"
-{: .notice }
+> **Input:** n = 3, k = 3  
+> **Output:** "213"
 
 **Example 2:**
 
-**Input:** n = 4, k = 9  
-**Output:** "2314"
-{: .notice }
+> **Input:** n = 4, k = 9  
+> **Output:** "2314"
 
 **Solution**
 
@@ -670,13 +630,13 @@ Given *n* and *k*, return the $$k^{th}$$ permutation sequence.
 在举一个n = 4, k = 9时的例子，计算过程如下：
 
 1. n=4 k=9 `[1,2,3,4]`   
-   m=(n-1)!=3!=6 --> k∈(m * 1, m * 2] --> 取集合中的第**2**个元素——2
+   m=(n-1)!=3!=6 --> k∈(m * 1, m * 2] --> 取集合中的第 **2** 个元素——2
 2. n=3 k=k-(**2**-1)\*m=9-6=3 `[1,3,4]`   
-   m=(n-1)!=2!=2 --> k∈(m * 1, m * 2] --> 取集合中的第**2**个元素——3
+   m=(n-1)!=2!=2 --> k∈(m * 1, m * 2] --> 取集合中的第 **2** 个元素——3
 3. n=2 k=k-(**2**-1)\*m=3-2=1 `[1,4]`   
-   m=(n-1)!=1!=1 --> k∈(m * 0, m * 1] --> 取集合中的第**1**个元素——1
+   m=(n-1)!=1!=1 --> k∈(m * 0, m * 1] --> 取集合中的第 **1** 个元素——1
 4. n=1 k=k-(**1**-1)\*m=1-0=1 `[4]`  
-   m=(n-1)!=0!=1 --> k∈(m * 0, m * 1] --> 取集合中的第**1**个元素——4
+   m=(n-1)!=0!=1 --> k∈(m * 0, m * 1] --> 取集合中的第 **1** 个元素——4
 
 所以n = 4, k = 9时，结果就是`2314`。
 

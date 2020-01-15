@@ -1,50 +1,30 @@
 ---
 title: "LeetCode(7)"
-excerpt: "LeetCode61-70总结"
-categories:
-  - Algorithm
-tags:
-  - LeetCode
-  - Linked List
-  - Dynamic Programming
-  - String
-  - Array
-  - Math
-  - Binary Search 
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-06-10T16:25:12+08:00
 ---
-
-<script type="text/javascript" async
-  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
 
 ## 61. Rotate List
 
-[Linked List](/tags/#linked-list){: .tag } 
+- Linked List 
 
-Given a linked list, rotate the list to the right by *k* places, where *k* is non-negative.
+> Given a linked list, rotate the list to the right by *k* places, where *k* is non-negative.
 
 **Example 1:**
 
-**Input:** 1->2->3->4->5->NULL, k = 2  
-**Output:** 4->5->1->2->3->NULL  
-**Explanation:**  
-rotate 1 steps to the right: 5->1->2->3->4->NULL  
-rotate 2 steps to the right: 4->5->1->2->3->NULL
-{: .notice }
+> **Input:** 1->2->3->4->5->NULL, k = 2  
+> **Output:** 4->5->1->2->3->NULL  
+> **Explanation:**  
+> rotate 1 steps to the right: 5->1->2->3->4->NULL  
+> rotate 2 steps to the right: 4->5->1->2->3->NULL
 
 **Example 2:**
 
-**Input:** 0->1->2->NULL, k = 4  
-**Output:** 2->0->1->NULL  
-**Explanation:**  
-rotate 1 steps to the right: 2->0->1->NULL  
-rotate 2 steps to the right: 1->2->0->NULL  
-rotate 3 steps to the right: 0->1->2->NULL  
-rotate 4 steps to the right: 2->0->1->NULL
-{: .notice }
+> **Input:** 0->1->2->NULL, k = 4  
+> **Output:** 2->0->1->NULL  
+> **Explanation:**  
+> rotate 1 steps to the right: 2->0->1->NULL  
+> rotate 2 steps to the right: 1->2->0->NULL  
+> rotate 3 steps to the right: 0->1->2->NULL  
+> rotate 4 steps to the right: 2->0->1->NULL
 
 **Solution**  
 
@@ -93,42 +73,38 @@ class Solution {
 
 ## 62. Unique Paths
 
-[Dynamic Programming](/tags/#dynamic-programming){: .tag } 
+- Dynamic Programming 
 
-A robot is located at the top-left corner of a *m* x *n* grid (marked 'Start' in the diagram below).
-
-The robot can only move either down or right at any point in time. The robot is trying to reach the bottom-right corner of the grid (marked 'Finish' in the diagram below).
-
-How many possible unique paths are there?
-
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/leetcode/robot_maze.png">
-    <figcaption>Above is a 7 x 3 grid. How many possible unique paths are there?</figcaption>
-</figure>
+> A robot is located at the top-left corner of a *m* x *n* grid (marked 'Start' in the diagram below).
+> 
+> The robot can only move either down or right at any point in time. The robot is trying to reach the bottom-right corner of the grid (marked 'Finish' in the diagram below).
+> 
+> How many possible unique paths are there?
+> 
+> ![Above is a 7 x 3 grid. How many possible unique paths are there?](/assets/images/leetcode/robot_maze.png)  
+> <small>Above is a 7 x 3 grid. How many possible unique paths are there?</small>
 
 **Note:** *m* and *n* will be at most 100.
 
 **Example 1:**
 
-**Input:** m = 3, n = 2  
-**Output:** 3  
-**Explanation:**  
-From the top-left corner, there are a total of 3 ways to reach the bottom-right corner:  
-1.Right -> Right -> Down  
-2.Right -> Down -> Right  
-3.Down -> Right -> Right
-{: .notice }
+> **Input:** m = 3, n = 2  
+> **Output:** 3  
+> **Explanation:**  
+> From the top-left corner, there are a total of 3 ways to reach the bottom-right corner:  
+> 1.Right -> Right -> Down  
+> 2.Right -> Down -> Right  
+> 3.Down -> Right -> Right
 
 **Example 2:**
 
-**Input:** m = 7, n = 3  
-**Output:** 28
-{: .notice }
+> **Input:** m = 7, n = 3  
+> **Output:** 28
 
 **Solution**  
 
 经过分析，我们不难发现这实际上是一个递归问题。对于某个点来说，该点的值等于其右边和下边的解的和。  
-即：$$f(m, n)=f(m - 1, n) + f(m, n - 1)$$，而且问题具有对称性，也就是说$$f(m, n)=f(n, m)$$。  
+即：$f(m, n)=f(m - 1, n) + f(m, n - 1)$，而且问题具有对称性，也就是说$f(m, n)=f(n, m)$。  
 所以下面的代码中会将m、n中较大者命名为m，较小者命为n，这样如果有对称的解，可以直接利用。  
 最后，需要注意的是，在求解一个较大的m、n时会递归求出比子问题的解，我们可以使用static修饰的map保存起来，这样遇到子问题，就不需要重新计算。
 
@@ -168,38 +144,34 @@ class Solution {
 
 ## 63. Unique Paths II
 
-[Dynamic Programming](/tags/#dynamic-programming){: .tag } 
+- Dynamic Programming 
 
-A robot is located at the top-left corner of a *m* x *n* grid (marked 'Start' in the diagram below).
-
-The robot can only move either down or right at any point in time. The robot is trying to reach the bottom-right corner of the grid (marked 'Finish' in the diagram below).
-
-Now consider if some obstacles are added to the grids. How many unique paths would there be?
-
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/leetcode/robot_maze.png">
-    <figcaption>Above is a 7 x 3 grid. How many possible unique paths are there?</figcaption>
-</figure>
-
-An obstacle and empty space is marked as `1` and `0` respectively in the grid.
+> A robot is located at the top-left corner of a *m* x *n* grid (marked 'Start' in the diagram below).
+> 
+> The robot can only move either down or right at any point in time. The robot is trying to reach the bottom-right corner of the grid (marked 'Finish' in the diagram below).
+> 
+> Now consider if some obstacles are added to the grids. How many unique paths would there be?
+> 
+> ![Above is a 7 x 3 grid. How many possible unique paths are there?](/assets/images/leetcode/robot_maze.png)  
+> <small>Above is a 7 x 3 grid. How many possible unique paths are there?</small>  
+> An obstacle and empty space is marked as `1` and `0` respectively in the grid.
 
 **Note:** *m* and *n* will be at most 100.
 
 **Example 1:**
 
-**Input:**  
-[  
-&emsp;&emsp;[0,0,0],  
-&emsp;&emsp;[0,1,0],  
-&emsp;&emsp;[0,0,0]  
-]  
-**Output:** 2  
-**Explanation:**  
-There is one obstacle in the middle of the 3x3 grid above.  
-There are two ways to reach the bottom-right corner:  
-1.Right -> Right -> Down -> Down  
-2.Down -> Down -> Right -> Right
-{: .notice }
+> **Input:**  
+> [  
+> &emsp;&emsp;[0,0,0],  
+> &emsp;&emsp;[0,1,0],  
+> &emsp;&emsp;[0,0,0]  
+> ]  
+> **Output:** 2  
+> **Explanation:**  
+> There is one obstacle in the middle of the 3x3 grid above.  
+> There are two ways to reach the bottom-right corner:  
+> 1.Right -> Right -> Down -> Down  
+> 2.Down -> Down -> Right -> Right
 
 **Solution**  
 
@@ -243,29 +215,28 @@ class Solution {
 
 ## 64. Minimum Path Sum
 
-[Dynamic Programming](/tags/#dynamic-programming){: .tag } 
+- Dynamic Programming 
 
-Given a *m* x *n* grid filled with non-negative numbers, find a path from top left to bottom right which *minimizes* the sum of all numbers along its path.
+> Given a *m* x *n* grid filled with non-negative numbers, find a path from top left to bottom right which *minimizes* the sum of all numbers along its path.
 
 **Note:** You can only move either down or right at any point in time.
 
 **Example:**
 
-**Input:**  
-[  
-&emsp;&emsp;[1,3,1],  
-&emsp;&emsp;[1,5,1],  
-&emsp;&emsp;[4,2,1]  
-]  
-**Output:** 7  
-**Explanation:** Because the path 1→3→1→1→1 minimizes the sum.
-{: .notice }
+> **Input:**  
+> [  
+> &emsp;&emsp;[1,3,1],  
+> &emsp;&emsp;[1,5,1],  
+> &emsp;&emsp;[4,2,1]  
+> ]  
+> **Output:** 7  
+> **Explanation:** Because the path 1→3→1→1→1 minimizes the sum.
 
 **Solution**  
 
 这是一个典型的动态规划问题了。没啥好说的。
 
-此题类似于[CI-(47)礼物的最大价值](/algorithm/code_interviews_5/#19-47%E7%A4%BC%E7%89%A9%E7%9A%84%E6%9C%80%E5%A4%A7%E4%BB%B7%E5%80%BC)
+此题类似于[CI-(47)礼物的最大价值](/leetcode/code_interviews_5/#19-47)
 
 Runtime 2ms, beats 93.47%
 
@@ -298,26 +269,25 @@ class Solution {
 
 ## 65. Valid Number
 
-[String](/tags/#string){: .tag }
+- String
 
-Validate if a given string can be interpreted as a decimal number.
-
-Some examples:  
-"0" => true  
-" 0.1 " => true  
-"abc" => false  
-"1 a" => false  
-"2e10" => true  
-" -90e3   " => true  
-" 1e" => false  
-"e3" => false  
-" 6e-1" => true  
-" 99e2.5 " => false  
-"53.5e93" => true  
-" --6 " => false  
-"-+3" => false  
-"95a54e53" => false  
-{: .notice }
+> Validate if a given string can be interpreted as a decimal number.
+> 
+> Some examples:  
+> "0" => true  
+> " 0.1 " => true  
+> "abc" => false  
+> "1 a" => false  
+> "2e10" => true  
+> " -90e3   " => true  
+> " 1e" => false  
+> "e3" => false  
+> " 6e-1" => true  
+> " 99e2.5 " => false  
+> "53.5e93" => true  
+> " --6 " => false  
+> "-+3" => false  
+> "95a54e53" => false  
 
 **Note:** It is intended for the problem statement to be ambiguous. You should gather all requirements up front before implementing one. However, here is a list of characters that can be in a valid decimal number:
 
@@ -328,11 +298,11 @@ Some examples:
 
 Of course, the context of these characters also matters in the input.
 
-此题同[CI-20-表示数值的字符串](/algorithm/code_interviews_3/#15-20%E8%A1%A8%E7%A4%BA%E6%95%B0%E5%80%BC%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2)
+此题同[CI-20-表示数值的字符串](/leetcode/code_interviews_3/#15-20)
 
 **Solution**
 
-直接采用[CI-20-表示数值的字符串](/algorithm/code_interviews_3/#15-20%E8%A1%A8%E7%A4%BA%E6%95%B0%E5%80%BC%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2)的解法。不过需要注意的是，此处输入的字符串，头尾可能会有空格，需要处理下。
+直接采用[CI-20-表示数值的字符串](/leetcode/code_interviews_3/#15-20)的解法。不过需要注意的是，此处输入的字符串，头尾可能会有空格，需要处理下。
 
 ```java
 class Solution {
@@ -400,27 +370,25 @@ class Solution {
 
 ## 66. Plus One
 
-[Array](/tags/#array){: .tag }
+- Array
 
-Given a **non-empty** array of digits representing a non-negative integer, plus one to the integer.
-
-The digits are stored such that the most significant digit is at the head of the list, and each element in the array contain a single digit.
-
-You may assume the integer does not contain any leading zero, except the number 0 itself.
+> Given a **non-empty** array of digits representing a non-negative integer, plus one to the integer.
+> 
+> The digits are stored such that the most significant digit is at the head of the list, and each element in the array contain a single digit.
+> 
+> You may assume the integer does not contain any leading zero, except the number 0 itself.
 
 **Example 1:**
 
-**Input:** [1,2,3]  
-**Output:** [1,2,4]  
-**Explanation:** The array represents the integer 123.
-{: .notice }
+> **Input:** [1,2,3]  
+> **Output:** [1,2,4]  
+> **Explanation:** The array represents the integer 123.
 
 **Example 2:**
 
-**Input:** [4,3,2,1]  
-**Output:** [4,3,2,2]  
-**Explanation:** The array represents the integer 4321.
-{: .notice }
+> **Input:** [4,3,2,1]  
+> **Output:** [4,3,2,2]  
+> **Explanation:** The array represents the integer 4321.
 
 **Solution**
 
@@ -457,23 +425,21 @@ class Solution {
 
 ## 67. Add Binary
 
-[Math](/tags/#math){: .tag }
+- Math
 
-Given two binary strings, return their sum (also a binary string).
-
-The input strings are both **non-empty** and contains only characters `1` or `0`.
+> Given two binary strings, return their sum (also a binary string).
+> 
+> The input strings are both **non-empty** and contains only characters `1` or `0`.
 
 **Example 1:**
 
-**Input:** a = "11", b = "1"  
-**Output:** "100"
-{: .notice }
+> **Input:** a = "11", b = "1"  
+> **Output:** "100"
 
 **Example 2:**
 
-**Input:** a = "1010", b = "1011"   
-**Output:** "10101"
-{: .notice }
+> **Input:** a = "1010", b = "1011"   
+> **Output:** "10101"
 
 **Solution**
 
@@ -481,10 +447,10 @@ The input strings are both **non-empty** and contains only characters `1` or `0`
 
 Runtime 1ms
 
-**Tips:** char转int不需要强转，int转char是需要的。  
-char转int： `'9' - '0'`  
-int转char: `(char) (9 + '0')`
-{: .notice--primary }
+!!! tip
+    **Tips:** char转int不需要强转，int转char是需要的。  
+    char转int： `'9' - '0'`  
+    int转char: `(char) (9 + '0')`
 
 ```java
 class Solution {
@@ -532,15 +498,15 @@ class Solution {
 
 ## 68. Text Justification
 
-[String](/tags/#string){: .tag }
+- String
 
-Given an array of words and a width *maxWidth*, format the text such that each line has exactly *maxWidth* characters and is fully (left and right) justified.
-
-You should pack your words in a greedy approach; that is, pack as many words as you can in each line. Pad extra spaces `' '` when necessary so that each line has exactly *maxWidth* characters.
-
-Extra spaces between words should be distributed as evenly as possible. If the number of spaces on a line do not divide evenly between words, the empty slots on the left will be assigned more spaces than the slots on the right.
-
-For the last line of text, it should be left justified and no **extra** space is inserted between words.
+> Given an array of words and a width *maxWidth*, format the text such that each line has exactly *maxWidth* characters and is fully (left and right) justified.
+> 
+> You should pack your words in a greedy approach; that is, pack as many words as you can in each line. Pad extra spaces `' '` when necessary so that each line has exactly *maxWidth* characters.
+> 
+> Extra spaces between words should be distributed as evenly as possible. If the number of spaces on a line do not divide evenly between words, the empty slots on the left will be assigned more spaces than the slots on the right.
+> 
+> For the last line of text, it should be left justified and no **extra** space is inserted between words.
 
 **Note:**
 
@@ -550,46 +516,43 @@ For the last line of text, it should be left justified and no **extra** space is
 
 **Example 1:**
 
-**Input:**  
-words = ["This", "is", "an", "example", "of", "text", "justification."]  
-maxWidth = 16  
-**Output:**  
-[  
-&emsp;&emsp;&emsp;"This    is    an",  
-&emsp;&emsp;&emsp;"example  of text",  
-&emsp;&emsp;&emsp;"justification.  "  
-]
-{: .notice }
+> **Input:**  
+> words = ["This", "is", "an", "example", "of", "text", "justification."]  
+> maxWidth = 16  
+> **Output:**  
+> [  
+> &emsp;&emsp;&emsp;"This    is    an",  
+> &emsp;&emsp;&emsp;"example  of text",  
+> &emsp;&emsp;&emsp;"justification.  "  
+> ]
 
 **Example 2:**
 
-**Input:**  
-words = ["What","must","be","acknowledgment","shall","be"]  
-maxWidth = 16  
-**Output:**  
-[  
-&emsp;&emsp;&emsp;"What   must   be",  
-&emsp;&emsp;&emsp;"acknowledgment  ",  
-&emsp;&emsp;&emsp;"shall be        "  
-]  
-**Explanation:** Note that the last line is "shall be    " instead of "shall     be", because the last line must be left-justified instead of fully-justified. Note that the second line is also left-justified becase it contains only one word.  
-{: .notice }
+> **Input:**  
+> words = ["What","must","be","acknowledgment","shall","be"]  
+> maxWidth = 16  
+> **Output:**  
+> [  
+> &emsp;&emsp;&emsp;"What   must   be",  
+> &emsp;&emsp;&emsp;"acknowledgment  ",  
+> &emsp;&emsp;&emsp;"shall be        "  
+> ]  
+> **Explanation:** Note that the last line is "shall be    " instead of "shall     be", because the last line must be left-justified instead of fully-justified. Note that the second line is also left-justified becase it contains only one word.  
 
 **Example 3:**
 
-**Input:**  
-words = ["Science","is","what","we","understand","well","enough","to","explain", "to","a","computer.","Art","is","everything","else","we","do"]  
-maxWidth = 20  
-**Output:**  
-[  
-&emsp;&emsp;&emsp;"Science  is  what we",  
-&emsp;&emsp;&emsp;"understand      well",  
-&emsp;&emsp;&emsp;"enough to explain to",  
-&emsp;&emsp;&emsp;"a  computer.  Art is",  
-&emsp;&emsp;&emsp;"everything  else  we",  
-&emsp;&emsp;&emsp;"do                  "  
-]  
-{: .notice }
+> **Input:**  
+> words = ["Science","is","what","we","understand","well","enough","to","explain", "to","a","computer.","Art","is","everything","else","we","do"]  
+> maxWidth = 20  
+> **Output:**  
+> [  
+> &emsp;&emsp;&emsp;"Science  is  what we",  
+> &emsp;&emsp;&emsp;"understand      well",  
+> &emsp;&emsp;&emsp;"enough to explain to",  
+> &emsp;&emsp;&emsp;"a  computer.  Art is",  
+> &emsp;&emsp;&emsp;"everything  else  we",  
+> &emsp;&emsp;&emsp;"do                  "  
+> ]  
 
 **Solution**
 
@@ -665,26 +628,24 @@ class Solution {
 
 ## 69. Sqrt(x)
 
-[Binary Search](/tags/#binary-search){: .tag }
+- Binary Search
 
-Implement `int sqrt(int x)`.
-
-Compute and return the square root of *x*, where *x* is guaranteed to be a non-negative integer.
-
-Since the return type is an integer, the decimal digits are truncated and only the integer part of the result is returned.
+> Implement `int sqrt(int x)`.
+> 
+> Compute and return the square root of *x*, where *x* is guaranteed to be a non-negative integer.
+> 
+> Since the return type is an integer, the decimal digits are truncated and only the integer part of the result is returned.
 
 **Example 1:**
 
-**Input:** 4  
-**Output:** 2
-{: .notice }
+> **Input:** 4  
+> **Output:** 2
 
 **Example 2:**
 
-**Input:** 8  
-**Output:** 2  
-**Explanation:** The square root of 8 is 2.82842..., and since the decimal part is truncated, 2 is returned.
-{: .notice }
+> **Input:** 8  
+> **Output:** 2  
+> **Explanation:** The square root of 8 is 2.82842..., and since the decimal part is truncated, 2 is returned.
 
 **Solution**
 
@@ -716,32 +677,30 @@ class Solution {
 
 ## 70. Climbing Stairs
 
-[Dynamic Programming](/tags/#dynamic-programming){: .tag }
+-> Dynamic Programming
 
-You are climbing a stair case. It takes *n* steps to reach to the top.
-
-Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
+> You are climbing a stair case. It takes *n* steps to reach to the top.
+> 
+> Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
 
 **Note:** Given *n* will be a positive integer.
 
 **Example 1:**
 
-**Input:** 2  
-**Output:** 2  
-**Explanation:** There are two ways to climb to the top.  
-1.&emsp;1 step + 1 step  
-2.&emsp;2 steps
-{: .notice }
+> **Input:** 2  
+> **Output:** 2  
+> **Explanation:** There are two ways to climb to the top.  
+> 1.&emsp;1 step + 1 step  
+> 2.&emsp;2 steps
 
 **Example 2:**
 
-**Input:** 3  
-**Output:** 3  
-**Explanation:** There are three ways to climb to the top.  
-1.&emsp;1 step + 1 step + 1 step  
-2.&emsp;1 step + 2 steps  
-3.&emsp;2 steps + 1 step
-{: .notice }
+> **Input:** 3  
+> **Output:** 3  
+> **Explanation:** There are three ways to climb to the top.  
+> 1.&emsp;1 step + 1 step + 1 step  
+> 2.&emsp;1 step + 2 steps  
+> 3.&emsp;2 steps + 1 step
 
 **Solution**
 

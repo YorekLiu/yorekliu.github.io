@@ -1,46 +1,30 @@
 ---
 title: "LeetCode(12)"
-excerpt: "LeetCode111-120总结"
-categories:
-  - Algorithm
-tags:
-  - LeetCode
-  - Tree
-  - Depth-first Search
-  - Breadth-first Search
-  - Dynamic Programming
-  - Array
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-08-19T17:32:32+08:00
 ---
-
-<script type="text/javascript" async
-  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
 
 ## 111. Minimum Depth of Binary Tree
 
-[Tree](/tags/#tree){: .tag } [Depth-first Search](/tags/#depth-first-search){: .tag } [Breadth-first Search](/tags/#breadth-first-search){: .tag } 
+- Tree 
+- Depth-first Search 
+- Breadth-first Search 
 
-Given a binary tree, find its minimum depth.
-
-The minimum depth is the number of nodes along the shortest path from the root node down to the nearest leaf node.
+> Given a binary tree, find its minimum depth.
+> 
+> The minimum depth is the number of nodes along the shortest path from the root node down to the nearest leaf node.
 
 **Note:** A leaf is a node with no children.
 
 **Example:**
 
-Given binary tree `[3,9,20,null,null,15,7]`,
-
-<img src="/assets/images/leetcode/question_105_example.png" style="border: none">
-{: .notice }
-
-return its minimum depth = 2.
+> Given binary tree `[3,9,20,null,null,15,7]`,
+> 
+> <img src="/assets/images/leetcode/question_105_example.png" style="border: none">
+> 
+> return its minimum depth = 2.
 
 **Solution**  
 
-此题思路同求二叉树的深度，[LC-104-Maximum Depth of Binary Tree](/algorithm/leetcode101-110/#104--maximum-depth-of-binary-tree)。
+此题思路同求二叉树的深度，[LC-104-Maximum Depth of Binary Tree](/leetcode/leetcode101-110/#104-maximum-depth-of-binary-tree)。
 
 Runtime 0 ms
 
@@ -69,24 +53,23 @@ class Solution {
 
 ## 112. Path Sum
 
-[Tree](/tags/#tree){: .tag } [Depth-first Search](/tags/#depth-first-search){: .tag } 
+- Tree 
+- Depth-first Search 
 
-Given a binary tree and a sum, determine if the tree has a root-to-leaf path such that adding up all the values along the path equals the given sum.
+> Given a binary tree and a sum, determine if the tree has a root-to-leaf path such that adding up all the values along the path equals the given sum.
 
 **Note:** A leaf is a node with no children.
 
 **Example:**
 
-Given the below binary tree and `sum = 22`,
-
-<img src="/assets/images/leetcode/question_112_example.png" style="border: none">
-{: .notice }
-
-return true, as there exist a root-to-leaf path `5->4->11->2` which sum is 22.
+> Given the below binary tree and `sum = 22`,
+> 
+> <img src="/assets/images/leetcode/question_112_example.png" style="border: none">
+> 
+> 
+> return true, as there exist a root-to-leaf path `5->4->11->2` which sum is 22.
 
 **Solution**  
-
-
 
 Runtime 0 ms
 
@@ -129,26 +112,26 @@ class Solution {
 
 ## 113. Path Sum II
 
-[Tree](/tags/#tree){: .tag } [Depth-first Search](/tags/#depth-first-search){: .tag } 
+- Tree 
+- Depth-first Search 
 
-Given a binary tree and a sum, find all root-to-leaf paths where each path's sum equals the given sum.
+> Given a binary tree and a sum, find all root-to-leaf paths where each path's sum equals the given sum.
 
 **Note:** A leaf is a node with no children.
 
 **Example:**
 
-Given the below binary tree and `sum = 22`,
-
-<img src="/assets/images/leetcode/question_113_example.png" style="border: none">
-{: .notice }
-
-Return:
-
-[  
-&nbsp;&nbsp;&nbsp;&nbsp;[5,4,11,2],  
-&nbsp;&nbsp;&nbsp;&nbsp;[5,8,4,5]  
-]
-{: .notice}
+> Given the below binary tree and `sum = 22`,
+> 
+> <img src="/assets/images/leetcode/question_113_example.png" style="border: none">
+> 
+> 
+> Return:
+> 
+> [  
+> &nbsp;&nbsp;&nbsp;&nbsp;[5,4,11,2],  
+> &nbsp;&nbsp;&nbsp;&nbsp;[5,8,4,5]  
+> ]
 
 **Solution**  
 
@@ -201,19 +184,20 @@ class Solution {
 
 ## 114. Flatten Binary Tree to Linked List
 
-[Tree](/tags/#tree){: .tag } [Depth-first Search](/tags/#depth-first-search){: .tag } 
+- Tree 
+- Depth-first Search 
 
-Given a binary tree, flatten it to a linked list in-place.
+> Given a binary tree, flatten it to a linked list in-place.
+> 
+> For example, given the following tree:
+> 
+> <img src="/assets/images/leetcode/question_114_example_1.png" style="border: none">
+> 
+> 
+> The flattened tree should look like:
+> 
+> <img src="/assets/images/leetcode/question_114_example_2.png" style="border: none">
 
-For example, given the following tree:
-
-<img src="/assets/images/leetcode/question_114_example_1.png" style="border: none">
-{: .notice }
-
-The flattened tree should look like:
-
-<img src="/assets/images/leetcode/question_114_example_2.png" style="border: none">
-{: .notice }
 
 **Solution**  
 
@@ -253,52 +237,53 @@ class Solution {
 
 ## 115. Distinct Subsequences
 
-[String](/tags/#string){: .tag } [Dynamic Programming](/tags/#dynamic-programming){: .tag } 
+- String 
+- Dynamic Programming 
 
-Given a string **S** and a string **T**, count the number of distinct subsequences of **S** which equals **T**.
-
-A subsequence of a string is a new string which is formed from the original string by deleting some (can be none) of the characters without disturbing the relative positions of the remaining characters. (ie, `"ACE"` is a subsequence of `"ABCDE"` while `"AEC"` is not).
+> Given a string **S** and a string **T**, count the number of distinct subsequences of **S** which equals **T**.
+> 
+> A subsequence of a string is a new string which is formed from the original string by deleting some (can be none) of the characters without disturbing the relative positions of the remaining characters. (ie, `"ACE"` is a subsequence of `"ABCDE"` while `"AEC"` is not).
 
 **Example 1:**
 
-**Input:** S = "rabbbit", T = "rabbit"  
-**Output:** 3  
-**Explanation:**  
-As shown below, there are 3 ways you can generate "rabbit" from S.  
-(The caret symbol ^ means the chosen letters)  
-rabbbit  
-^^^^ ^^  
-rabbbit  
-^^ ^^^^  
-rabbbit  
-^^^ ^^^
-{: .notice }
+> **Input:** S = "rabbbit", T = "rabbit"  
+> **Output:** 3  
+> **Explanation:**  
+> As shown below, there are 3 ways you can generate "rabbit" from S.  
+> (The caret symbol ^ means the chosen letters)  
+> rabbbit  
+> ^^^^ ^^  
+> rabbbit  
+> ^^ ^^^^  
+> rabbbit  
+> ^^^ ^^^
 
 **Example 2:**
 
-**Input:** S = "babgbag", T = "bag"  
-**Output:** 5  
-**Explanation:**  
-As shown below, there are 5 ways you can generate "bag" from S.  
-(The caret symbol ^ means the chosen letters)  
-babgbag  
-^^ ^  
-babgbag  
-^^    ^  
-babgbag  
-^    ^^  
-babgbag  
-  ^  ^^  
-babgbag  
-    ^^^  
-{: .notice }
+> **Input:** S = "babgbag", T = "bag"  
+> **Output:** 5  
+> **Explanation:**  
+> As shown below, there are 5 ways you can generate "bag" from S.  
+> (The caret symbol ^ means the chosen letters)  
+> babgbag  
+> ^^ ^  
+> babgbag  
+> ^^    ^  
+> babgbag  
+> ^    ^^  
+> babgbag  
+>   ^  ^^  
+> babgbag  
+>     ^^^  
 
 **Solution**  
 
 两个字符串问题，解法要不是HashTable + Two Pointers，要不就是Dynamic Programming。很显然，本次使用动态规划是没有错的。  
 通过[上面两个示例的动态规划过程](/assets/images/leetcode/question_115_solution.png)，可以得到下面的表达式：
 
-$$dp(i,j)=\begin{cases} dp(i - 1,j - 1) + dp(i, j - 1) & T[i] = S[j] \\ dp(i, j - 1) & T[i] \neq S[j] \end{cases}$$
+$$
+dp(i,j)=\begin{cases} dp(i - 1,j - 1) + dp(i, j - 1) & T[i] = S[j] \\ dp(i, j - 1) & T[i] \neq S[j] \end{cases}
+$$
 
 解释如下：
 1. 如果当前比较的两个字符不相等，即`T[i] != S[j]`，那么当前的结果为`T[0...i]`与`S[0...j-1]`的结果，即`dp(i, j - 1)`
@@ -353,34 +338,31 @@ class Solution {
 
 ## 116. Populating Next Right Pointers in Each Node
 
-[Tree](/tags/#tree){: .tag } [Depth-first Search](/tags/#depth-first-search){: .tag } 
+- Tree 
+- Depth-first Search 
 
-You are given a **perfect binary tree** where all leaves are on the same level, and every parent has two children. The binary tree has the following definition:
-
-```c
-struct Node {
-  int val;
-  Node *left;
-  Node *right;
-  Node *next;
-}
-```
-
-Populate each next pointer to point to its next right node. If there is no next right node, the next pointer should be set to `NULL`.
-
-Initially, all next pointers are set to `NULL`.
+> You are given a **perfect binary tree** where all leaves are on the same level, and every parent has two children. The binary tree has the following definition:
+> 
+> ```c
+> struct Node {
+>   int val;
+>   Node *left;
+>   Node *right;
+>   Node *next;
+> }
+> ```
+> 
+> Populate each next pointer to point to its next right node. If there is no next right node, the next pointer should be set to `NULL`.
+> 
+> Initially, all next pointers are set to `NULL`.
 
 **Example:**
 
-<figure style="width: 80%" class="align-center">
-    <img src="/assets/images/leetcode/question_116_example.png" style="border: none">
-</figure>
+![](/assets/images/leetcode/question_116_example.png)
 
-**Input:** {"$id":"1","left":{"$id":"2","left":{"$id":"3","left":null,"next":null,"right":null,"val":4},"next":null,"right":{"$id":"4","left":null,"next":null,"right":null,"val":5},"val":2},"next":null,"right":{"$id":"5","left":{"$id":"6","left":null,"next":null,"right":null,"val":6},"next":null,"right":{"$id":"7","left":null,"next":null,"right":null,"val":7},"val":3},"val":1}  
-**Output:** {"$id":"1","left":{"$id":"2","left":{"$id":"3","left":null,"next":{"$id":"4","left":null,"next":{"$id":"5","left":null,"next":{"$id":"6","left":null,"next":null,"right":null,"val":7},"right":null,"val":6},"right":null,"val":5},"right":null,"val":4},"next":{"$id":"7","left":{"$ref":"5"},"next":null,"right":{"$ref":"6"},"val":3},"right":{"$ref":"4"},"val":2},"next":null,"right":{"$ref":"7"},"val":1}  
-**Explanation:** Given the above perfect binary tree (Figure A), your function should populate each next pointer to point to its next right node, just like in Figure B.
-{: .notice }
-
+> **Input:** {"\$id":"1","left":{"\$id":"2","left":{"\$id":"3","left":null,"next":null,"right":null,"val":4},"next":null,"right":{"\$id":"4","left":null,"next":null,"right":null,"val":5},"val":2},"next":null,"right":{"\$id":"5","left":{"\$id":"6","left":null,"next":null,"right":null,"val":6},"next":null,"right":{"\$id":"7","left":null,"next":null,"right":null,"val":7},"val":3},"val":1}  
+> **Output:** {"\$id":"1","left":{"\$id":"2","left":{"\$id":"3","left":null,"next":{"\$id":"4","left":null,"next":{"\$id":"5","left":null,"next":{"\$id":"6","left":null,"next":null,"right":null,"val":7},"right":null,"val":6},"right":null,"val":5},"right":null,"val":4},"next":{"\$id":"7","left":{"\$ref":"5"},"next":null,"right":{"\$ref":"6"},"val":3},"right":{"\$ref":"4"},"val":2},"next":null,"right":{"\$ref":"7"},"val":1}  
+> **Explanation:** Given the above perfect binary tree (Figure A), your function should populate each next pointer to point to its next right node, just like in Figure B.
 
 **Note:**
 
@@ -392,11 +374,10 @@ Initially, all next pointers are set to `NULL`.
 此题如果没有要求O(1)的空间复杂度的话，是可以使用队列来完成的，这就变成了一个树的层序遍历算法。然而，本题不使用这种方式，下面的进阶题使用树的层序遍历算法来求解。  
 回到本题，我们想一下，如果该层的右指针已经全部确定完毕，如何确定下一层的呢？
 
-<figure style="width: 30%" class="align-center">
-    <img src="/assets/images/leetcode/question_116_solution_1.png">
-</figure>
+![](/assets/images/leetcode/question_116_solution_1.png)
 
 如上图所示，我们只需要
+
 1. 先将当前节点的左节点的next指针指向当前节点的右节点
 2. 如果当前节点有next节点，再将当前节点的右节点的next指针指向当前节点的next节点的左节点
 3. 当前节点指向当前节点的next节点，如此迭代即可完成下一层
@@ -445,34 +426,31 @@ class Solution {
 
 ## 117. Populating Next Right Pointers in Each Node II
 
-[Tree](/tags/#tree){: .tag } [Depth-first Search](/tags/#depth-first-search){: .tag } 
+- Tree 
+- Depth-first Search 
 
-You are given a **perfect binary tree** where all leaves are on the same level, and every parent has two children. The binary tree has the following definition:
-
-```c
-struct Node {
-  int val;
-  Node *left;
-  Node *right;
-  Node *next;
-}
-```
-
-Populate each next pointer to point to its next right node. If there is no next right node, the next pointer should be set to `NULL`.
-
-Initially, all next pointers are set to `NULL`.
+> You are given a **perfect binary tree** where all leaves are on the same level, and every parent has two children. The binary tree has the following definition:
+> 
+> ```c
+> struct Node {
+>   int val;
+>   Node *left;
+>   Node *right;
+>   Node *next;
+> }
+> ```
+> 
+> Populate each next pointer to point to its next right node. If there is no next right node, the next pointer should be set to `NULL`.
+> 
+> Initially, all next pointers are set to `NULL`.
 
 **Example:**
 
-<figure style="width: 80%" class="align-center">
-    <img src="/assets/images/leetcode/question_117_example.png" style="border: none">
-</figure>
+![](/assets/images/leetcode/question_117_example.png)
 
-**Input:** {"$id":"1","left":{"$id":"2","left":{"$id":"3","left":null,"next":null,"right":null,"val":4},"next":null,"right":{"$id":"4","left":null,"next":null,"right":null,"val":5},"val":2},"next":null,"right":{"$id":"5","left":null,"next":null,"right":{"$id":"6","left":null,"next":null,"right":null,"val":7},"val":3},"val":1}  
-**Output:** {"$id":"1","left":{"$id":"2","left":{"$id":"3","left":null,"next":{"$id":"4","left":null,"next":{"$id":"5","left":null,"next":null,"right":null,"val":7},"right":null,"val":5},"right":null,"val":4},"next":{"$id":"6","left":null,"next":null,"right":{"$ref":"5"},"val":3},"right":{"$ref":"4"},"val":2},"next":null,"right":{"$ref":"6"},"val":1}  
-**Explanation:** Given the above binary tree (Figure A), your function should populate each next pointer to point to its next right node, just like in Figure B.
-{: .notice }
-
+> **Input:** {"\$id":"1","left":{"\$id":"2","left":{"\$id":"3","left":null,"next":null,"right":null,"val":4},"next":null,"right":{"\$id":"4","left":null,"next":null,"right":null,"val":5},"val":2},"next":null,"right":{"\$id":"5","left":null,"next":null,"right":{"\$id":"6","left":null,"next":null,"right":null,"val":7},"val":3},"val":1}  
+> **Output:** {"\$id":"1","left":{"\$id":"2","left":{"\$id":"3","left":null,"next":{"\$id":"4","left":null,"next":{"\$id":"5","left":null,"next":null,"right":null,"val":7},"right":null,"val":5},"right":null,"val":4},"next":{"\$id":"6","left":null,"next":null,"right":{"\$ref":"5"},"val":3},"right":{"\$ref":"4"},"val":2},"next":null,"right":{"\$ref":"6"},"val":1}  
+> **Explanation:** Given the above binary tree (Figure A), your function should populate each next pointer to point to its next right node, just like in Figure B.
 
 **Note:**
 
@@ -546,27 +524,24 @@ class Solution {
 
 ## 118. Pascal's Triangle
 
-[Array](/tags/#array){: .tag } 
+- Array 
 
-Given a non-negative integer *numRows*, generate the first *numRows* of Pascal's triangle.
-
-<figure style="width: 30%" class="align-center">
-    <img src="/assets/images/leetcode/PascalTriangleAnimated2.gif" style="border: none">
-    <figcaption>In Pascal's triangle, each number is the sum of the two numbers directly above it.</figcaption>
-</figure>
+> Given a non-negative integer *numRows*, generate the first *numRows* of Pascal's triangle.  
+> ![In Pascal's triangle, each number is the sum of the two numbers directly above it.](/assets/images/leetcode/PascalTriangleAnimated2.gif)  
+> <small>In Pascal's triangle, each number is the sum of the two numbers directly above it.</small>
 
 **Example:**
 
-**Input:** 5  
-**Output:**  
-[  
-&emsp;&emsp;&emsp;&emsp;&emsp;[1],  
-&emsp;&emsp;&emsp;&emsp;[1,1],  
-&emsp;&emsp;&emsp;[1,2,1],  
-&emsp;&emsp;[1,3,3,1],  
-&emsp;[1,4,6,4,1]  
-]  
-{: .notice }
+> **Input:** 5  
+> **Output:**  
+> [  
+> &emsp;&emsp;&emsp;&emsp;&emsp;[1],  
+> &emsp;&emsp;&emsp;&emsp;[1,1],  
+> &emsp;&emsp;&emsp;[1,2,1],  
+> &emsp;&emsp;[1,3,3,1],  
+> &emsp;[1,4,6,4,1]  
+> ]  
+
 
 **Solution**  
 
@@ -601,22 +576,18 @@ class Solution {
 
 ## 119. Pascal's Triangle II
 
-[Array](/tags/#array){: .tag } 
+- Array 
 
-Given a non-negative index *k* where *k* ≤ 33, return the $$k^{th}$$ index row of the Pascal's triangle.
-
-Note that the row index starts from 0.
-
-<figure style="width: 30%" class="align-center">
-    <img src="/assets/images/leetcode/PascalTriangleAnimated2.gif" style="border: none">
-    <figcaption>In Pascal's triangle, each number is the sum of the two numbers directly above it.</figcaption>
-</figure>
+> Given a non-negative index *k* where *k* ≤ 33, return the $k^{th}$ index row of the Pascal's triangle.
+> 
+> Note that the row index starts from 0.  
+> ![In Pascal's triangle, each number is the sum of the two numbers directly above it.](/assets/images/leetcode/PascalTriangleAnimated2.gif)  
+> <small>In Pascal's triangle, each number is the sum of the two numbers directly above it.</small>
 
 **Example:**
 
-**Input:** 3  
-**Output:** [1,3,3,1]  
-{: .notice }
+> **Input:** 3  
+> **Output:** [1,3,3,1]  
 
 **Follow up:**
 
@@ -657,21 +628,21 @@ class Solution {
 
 ## 120. Triangle
 
-[Array](/tags/#array){: .tag } [Dynamic Programming](/tags/#dynamic-programming){: .tag } 
+- Array 
+- Dynamic Programming 
 
-Given a triangle, find the minimum path sum from top to bottom. Each step you may move to adjacent numbers on the row below.
-
-For example, given the following triangle
-
-[  
-&emsp;&emsp;&emsp;&emsp;&emsp;[**2**],  
-&emsp;&emsp;&emsp;&emsp;[**3**,4],  
-&emsp;&emsp;&emsp;[6,**5**,7],  
-&emsp;&emsp;[4,1,**8**,3]  
-]
-{: .notice }
-
-The minimum path sum from top to bottom is `11` (i.e., **2** + **3** + **5** + **1** = 11).
+> Given a triangle, find the minimum path sum from top to bottom. Each step you may move to adjacent numbers on the row below.
+> 
+> For example, given the following triangle
+> 
+> [  
+> &emsp;&emsp;&emsp;&emsp;&emsp;[**2**],  
+> &emsp;&emsp;&emsp;&emsp;[**3**,4],  
+> &emsp;&emsp;&emsp;[6,**5**,7],  
+> &emsp;&emsp;[4,1,**8**,3]  
+> ]
+> 
+> The minimum path sum from top to bottom is `11` (i.e., **2** + **3** + **5** + **1** = 11).
 
 **Note:**
 

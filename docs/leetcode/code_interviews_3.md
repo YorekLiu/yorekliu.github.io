@@ -1,21 +1,6 @@
 ---
 title: "高质量的代码"
-excerpt: "剑指Offer笔记2——高质量的代码 16-26"
-categories:
-  - Algorithm
-tags:
-  - Linked List
-  - Tree
-  - String
-  - Dynamic Programming
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-01-08T18:24:26+08:00
 ---
-
-<script type="text/javascript" async
-  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
 
 规范性、完整性、鲁棒性。
 
@@ -25,9 +10,9 @@ last_modified_at: 2019-01-08T18:24:26+08:00
   通常我们可以从功能测试、边界测试和负面测试3个方面设计测试用例
 
 - 3种错误处理方式  
- 1. 函数返回值  
- 2. 设置全局变量  
- 3. 抛异常  
+    1. 函数返回值  
+    2. 设置全局变量  
+    3. 抛异常  
 
  下表是上述3种错误处理方式的优缺点：
 
@@ -39,10 +24,9 @@ last_modified_at: 2019-01-08T18:24:26+08:00
 
 ### 1.1 (16)数值的整数次方
 
-实现函数double Power(double base, int exponent)，求base的exponent次方。不得使用库函数，同时不需要考虑大数问题。
-{: .notice }
+> 实现函数double Power(double base, int exponent)，求base的exponent次方。不得使用库函数，同时不需要考虑大数问题。
 
-与[LeetCode-50-Pow(x, n)](/algorithm/leetcode41-50/#50-powx-n)类似。 不过LeetCode上需要注意n的溢出问题。
+与[LC-50-Pow(x, n)](/leetcode/leetcode41-50/#50-powx-n)类似。 不过LeetCode上需要注意n的溢出问题。
 
 此题看起来简单，但却有一些情况需要考虑到。  
 首先需要考虑到指数为0或负数的情况。当指数为负数时，可以先对指数求绝对值，算出结果之后再取倒数。在求倒数的时候，如果底数是0怎么办，如何告诉函数的调用者出现了这种错误。  
@@ -84,9 +68,11 @@ private double powerInner(double base, long exponent) {
 **全面且高效的解法**  
 如果输入的指数为32，我们需要在循环中做32次乘法。但我们可以考虑换一种思路：利用如下公式求a的n次方：
 
-$$a^n=\begin{cases} a^{n/2} \cdot a^{n/2}, & n为偶数 \\ a^{(n-1)/2} \cdot a^{(n-1)/2} \cdot a, & n为奇数 \end{cases}$$
+$$
+a^n=\begin{cases} a^{n/2} \cdot a^{n/2}, & n为偶数 \\ a^{(n-1)/2} \cdot a^{(n-1)/2} \cdot a, & n为奇数 \end{cases}
+$$
 
-我们在介绍用$$O$$(log$$n$$)时间求斐波那契数列时讨论过这个公式，这个公式很容易通过递归实现。新的`powerInner`方法如下所示：
+我们在介绍用$O(logn)$时间求斐波那契数列时讨论过这个公式，这个公式很容易通过递归实现。新的`powerInner`方法如下所示：
 
 ```java
 private double powerInner(double base, long exponent) {
@@ -110,8 +96,7 @@ private double powerInner(double base, long exponent) {
 
 ### 1.2 (17)打印1到最大的n位数
 
-输入数字n，按顺序打印出从1最大的n位十进制数。比如输入3，则打印出1、2、3一直到最大的3位数即999。
-{: .notice }
+> 输入数字n，按顺序打印出从1最大的n位十进制数。比如输入3，则打印出1、2、3一直到最大的3位数即999。
 
 当输入的n很大时，我们求最大的n位数是不是用int或者long都会溢出。也就是说我们需要考虑大数问题。我们需要使用字符串模拟数字加法的解法。
 
@@ -217,28 +202,25 @@ private void print1ToMaxOfNDigits_2_Recursively(char[] number, int length, int i
 }
 ```
 
-**相关题目**  
-定义一个函数，在该函数中可以实现任意两个整数的加法。  
-<cite>由于没有限定输入两个数的大小范围，我们也要把它当做大数问题来处理。在前面的代码的第一种思路中，实现了在字符串表示的数字上加1的功能，我们可以参考这种思路实现两个数字的相加功能。另外还有一个需要注意的问题：如果输入的数字中有负数，那么我们该怎么处理？</cite>
-{: .notice--info }
+!!! info "相关题目"
+    定义一个函数，在该函数中可以实现任意两个整数的加法。  
+    <cite>由于没有限定输入两个数的大小范围，我们也要把它当做大数问题来处理。在前面的代码的第一种思路中，实现了在字符串表示的数字上加1的功能，我们可以参考这种思路实现两个数字的相加功能。另外还有一个需要注意的问题：如果输入的数字中有负数，那么我们该怎么处理？</cite>
 
-**面试小提示**  
-如果面试题是关于n位的整数并且没有限定n的取值范围，或者输入任意大小的整数，那么这道题目很有可能是需要考虑大数问题的。字符串是一种简单、有效地表示大数的方法。
-{: .notice--info }
+!!! info "面试小提示"
+    如果面试题是关于n位的整数并且没有限定n的取值范围，或者输入任意大小的整数，那么这道题目很有可能是需要考虑大数问题的。字符串是一种简单、有效地表示大数的方法。
 
 ### 1.3 (18)删除链表的节点
 
 #### 1.3.1 在O(1)时间删除链表结点
 
-给定单向链表的头指针和一个结点指针，定义一个函数在O(1)时间删除该结点。
-{: .notice }
+> 给定单向链表的头指针和一个结点指针，定义一个函数在O(1)时间删除该结点。
 
 常规的做法需要从头开始顺序查找，得到将要被删除的节点的前一个节点。  
 但是，在一般情况下，我们可以很方便地得到要删除节点的下一个节点。如果我们把下一个节点的内容复制到需要删除的节点上覆盖原有的内容，在把下一个节点删除，那就相当于把当前需要删除的节点删除了。  
 这个思路有一个问题：如果要删除的节点位于链表的尾部，那么它就没有下一个节点，这时仍然需要从头开始遍历，得到该节点的前序节点，然后完成删除操作。  
 最后需要注意的是，如果链表中只有一个节点，而我们又需要删除链表的头结点，那么此时我们在删除节点后，还需要链表的头结点设置为null。  
 
-总的时间复杂度是$$[(n-1) \times O(1)+O(n)]/n$$，结果还是$$O(1)$$。但是这基于一个假设，要删除的节点的确在链表中。
+总的时间复杂度是$[(n-1) \times O(1)+O(n)]/n$，结果还是$O(1)$。但是这基于一个假设，要删除的节点的确在链表中。
 
 ```java
 private ListNode deleteNode(ListNode head, ListNode toBeDeleted) {
@@ -268,13 +250,11 @@ private ListNode deleteNode(ListNode head, ListNode toBeDeleted) {
 
 #### 1.3.2 删除链表中重复的结点
 
-在一个排序的链表中，如何删除重复的结点？例如，在图3.4（a）中重复结点被删除之后，链表如图3.4（b）所示。
-{: .notice }
+> 在一个排序的链表中，如何删除重复的结点？例如，在图3.4（a）中重复结点被删除之后，链表如图3.4（b）所示。
 
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/leetcode/ci_list_node_18_2.png" />
-    <figcaption>删除链表中重复的节点</figcaption>
-</figure>
+![删除链表中重复的节点](/assets/images/leetcode/ci_list_node_18_2.png)
+
+<small>删除链表中重复的节点</small>
 
 注：(a)一个有7个节点的链表：1、2、3、3、4、4、5；(b)当重复的节点被删除之后，链表中只剩下3个节点。
 
@@ -315,18 +295,18 @@ private ListNode deleteDuplication(ListNode head) {
 
 ### 1.4 (19)正则表达式匹配
 
-请实现一个函数用来匹配包含‘.’和‘\*’的正则表达式。模式中的字符‘.’表示任意一个字符，而‘\*’表示它前面的字符可以出现任意次（含0次）。在本题中，匹配是指字符串的所有字符匹配整个模式。例如，字符串“aaa”与模式“a.a”和“ab*\ac\*a”匹配，但与“aa.a”及“ab\*a”均不匹配。
-{: .notice }
+> 请实现一个函数用来匹配包含‘.’和‘\*’的正则表达式。模式中的字符‘.’表示任意一个字符，而‘\*’表示它前面的字符可以出现任意次（含0次）。在本题中，匹配是指字符串的所有字符匹配整个模式。例如，字符串“aaa”与模式“a.a”和“ab\*ac\*a”匹配，但与“aa.a”及“ab\*a”均不匹配。
 
-代码同[LeetCode-10-Regular Expression Matching](/algorithm/leetcode1-10/#10-regular-expression-matching)。
+代码同[LC-10-Regular Expression Matching](/leetcode/leetcode1-10/#10-regular-expression-matching)。
 
 在输入参数有效的情况下，先检查模式中第二个字符是不是'\*'。  
+
 - 若不是，那么本次只需要比较字符串中第一个字符和模式中的第一个字符是否相匹配。若匹配，那么字符串和模式都向后移动一个字符，然后匹配剩余的字符串和模式。若不匹配，直接返回false。  
 - 若是'\*',那么有两种匹配方式：
- 1. "aab"、"c\*a\*b"方式  
-   此时在模式上向后移动两个字符即可。  
- 2. "aaa"、"a\*a"方式  
-   此时如果第一个字符可以匹配，则在字符串上向后移动一个字符，模式保持不变即可。
+    1. "aab"、"c\*a\*b"方式  
+      此时在模式上向后移动两个字符即可。  
+    2. "aaa"、"a\*a"方式  
+      此时如果第一个字符可以匹配，则在字符串上向后移动一个字符，模式保持不变即可。
 
 代码Copy如下：
 ```java
@@ -348,13 +328,12 @@ class Solution {
 
 ### 1.5 (20)表示数值的字符串
 
-请实现一个函数用来判断字符串是否表示数值（包括整数和小数）。例如，字符串“+100”、“5e2”、“-123”、“3.1416”及“-1E-16”都表示数值，但“12e”、“1a3.14”、“1.2.3”、“+-5”及“12e+5.4”都不是。
-{: .notice }
+> 请实现一个函数用来判断字符串是否表示数值（包括整数和小数）。例如，字符串“+100”、“5e2”、“-123”、“3.1416”及“-1E-16”都表示数值，但“12e”、“1a3.14”、“1.2.3”、“+-5”及“12e+5.4”都不是。
 
-此题和[LC-65-Valid Number](/algorithm/leetcode61-70/#65-valid-number)相识
+此题和[LC-65-Valid Number](/leetcode/leetcode61-70/#65-valid-number)相识
 
 表示数值的字符串遵循模式A[.[B]][e|EC]或者.B[e|EC]，其中A为数值的整数部分，B紧跟着小数点为数值的小数部分，C紧跟着e或者E，为数值的指数部分。在小数里可能没有数值的整数部分。例如，小数.123等于0.123。因此A部分不是必须的。如果一个数没有整数部分，那么它的小数部分不能为空。  
-上述A和C都是可能以+或者-开头的0~9的数位串；B也是0~9的数位串，但前面不能有正负号。  
+上述A和C都是可能以+或者-开头的0\~9的数位串；B也是0\~9的数位串，但前面不能有正负号。  
 以表示数值的字符串"123.45e+6"为例，"123"就是A，"45"就是B，"+6"就是C。
 
 ```java
@@ -416,8 +395,7 @@ private boolean scanUnsignedInteger(char[] str) {
 
 ### 1.6 (21)调整数组顺序使奇数位于偶数前面
 
-输入一个整数数组，实现一个函数来调整该数组中数字的顺序，使得所有奇数位于数组的前半部分，所有偶数位于数组的后半部分。
-{: .notice }
+> 输入一个整数数组，实现一个函数来调整该数组中数字的顺序，使得所有奇数位于数组的前半部分，所有偶数位于数组的后半部分。
 
 **解法一：完成基本功能**  
 
@@ -504,7 +482,7 @@ private class IsEvenFunction implements Function<Integer, Boolean> {
 
 ## 2. 代码的鲁棒性  
 
-鲁棒是英文*Robust*的音译，也翻译成健壮性。所谓鲁棒性是指程序能够判断输入是否合乎规范要求，并对不符合要求的输入予以合理的处理。  
+鲁棒是英文 *Robust* 的音译，也翻译成健壮性。所谓鲁棒性是指程序能够判断输入是否合乎规范要求，并对不符合要求的输入予以合理的处理。  
 容错性是鲁棒性的一个重要体现。  
 提高代码的鲁棒性的有效途径是进行防御性编程。防御性编程是一种编程习惯，是指预见在什么地方可能会出现问题，并为这些可能出现的问题制定处理方式。  
 在面试时，最简单也最实用的防御性编程就是在函数入口添加代码以验证用户输入是否符合要求。  
@@ -512,10 +490,9 @@ private class IsEvenFunction implements Function<Integer, Boolean> {
 
 ### 2.1 (22)链表中倒数第k个结点
 
-输入一个链表，输出该链表中倒数第k个结点。为了符合大多数人的习惯，本题从1开始计数，即链表的尾结点是倒数第1个结点。例如一个链表有6个结点，从头结点开始它们的值依次是1、2、3、4、5、6。这个链表的倒数第3个结点是值为4的结点。
-{: .notice }
+> 输入一个链表，输出该链表中倒数第k个结点。为了符合大多数人的习惯，本题从1开始计数，即链表的尾结点是倒数第1个结点。例如一个链表有6个结点，从头结点开始它们的值依次是1、2、3、4、5、6。这个链表的倒数第3个结点是值为4的结点。
 
-该题同[LeetCode-19-Remove Nth Node From End of List](/algorithm/leetcode11-20/#19-remove-nth-node-from-end-of-list)
+该题同[LC-19-Remove Nth Node From End of List](/leetcode/leetcode11-20/#19-remove-nth-node-from-end-of-list)
 
 代码Copy如下：
 
@@ -546,23 +523,19 @@ private ListNode findKthToTail(ListNode pListHead, int k) {
 }
 ```
 
-**相关题目**  
-求链表的中间节点。如果链表中的节点总数为奇数，则返回中间节点；如果节点总数是偶数，则返回中间两个节点的任意一个。为了解决这个问题，我们也可以定义两个指针，同时从链表的头结点出发，一个指针一次走一步，另一个指针一次走两步。当走得快的指针走到链表的末尾时，走得慢的指针正好在链表的中间。
-{: .notice--info }
+!!! info "相关题目"
+    求链表的中间节点。如果链表中的节点总数为奇数，则返回中间节点；如果节点总数是偶数，则返回中间两个节点的任意一个。为了解决这个问题，我们也可以定义两个指针，同时从链表的头结点出发，一个指针一次走一步，另一个指针一次走两步。当走得快的指针走到链表的末尾时，走得慢的指针正好在链表的中间。
 
-**举一反三**  
-当我们用一个指针遍历链表不能解决问题的时候，可以尝试用两个指针遍历链表。可以让其中一个指针遍历的速度快一些（比如一次在链表上走两步），或者让它先在链表上走若干步。
-{: .notice--info }
+!!! info "举一反三"
+    当我们用一个指针遍历链表不能解决问题的时候，可以尝试用两个指针遍历链表。可以让其中一个指针遍历的速度快一些（比如一次在链表上走两步），或者让它先在链表上走若干步。
 
 ### 2.2 (23)链表中环的入口结点
 
-一个链表中包含环，如何找出环的入口结点？例如，在图3.8的链表中，环的入口结点是结点3。
-{: .notice }
+> 一个链表中包含环，如何找出环的入口结点？例如，在图3.8的链表中，环的入口结点是结点3。
 
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/leetcode/ci_list_node_23.png" />
-    <figcaption>节点3是链表中环的入口节点</figcaption>
-</figure>
+![节点3是链表中环的入口节点](/assets/images/leetcode/ci_list_node_23.png)
+
+<small>节点3是链表中环的入口节点</small>
 
 解决这个问题的第一步是如何确定一个链表中包含环。第二步是如何找到环的入口。
 
@@ -633,8 +606,7 @@ private ListNode meetingNode(ListNode head) {
 
 ### 2.3 (24)反转链表
 
-定义一个函数，输入一个链表的头结点，反转该链表并输出反转后链表的头结点。
-{: .notice }
+> 定义一个函数，输入一个链表的头结点，反转该链表并输出反转后链表的头结点。
 
 ```java
 private ListNode reverseList(ListNode head) {
@@ -662,9 +634,8 @@ private ListNode reverseList(ListNode head) {
 - 输入的链表只有一个节点
 - 输入的链表有多个节点
 
-**本题扩展**  
-用递归实现同样的反转链表的功能。
-{: .notice--info }
+!!! info "本题扩展"
+    用递归实现同样的反转链表的功能。
 
 ```java
 private ListNode reverseList(ListNode head) {
@@ -683,15 +654,13 @@ private ListNode reverseList(ListNode head) {
 
 ### 2.4 (25)合并两个排序的链表
 
-输入两个递增排序的链表，合并这两个链表并使新链表中的结点仍然是按照递增排序的。例如输入图中的链表1和链表2，则合并之后的升序链表如链表3所示。
-{: .notice }
+> 输入两个递增排序的链表，合并这两个链表并使新链表中的结点仍然是按照递增排序的。例如输入图中的链表1和链表2，则合并之后的升序链表如链表3所示。
 
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/leetcode/ci_list_node_25.png" />
-    <figcaption>合并两个链表排序的过程</figcaption>
-</figure>
+![合并两个链表排序的过程](/assets/images/leetcode/ci_list_node_25.png)
 
-此题同[LeetCode-21-Merge Two Sorted Lists](/algorithm/leetcode21-30/#21-merge-two-sorted-lists)。  
+<small>合并两个链表排序的过程</small>
+
+此题同[LC-21-Merge Two Sorted Lists](/leetcode/leetcode21-30/#21-merge-two-sorted-lists)。  
 
 注意操作列表最好不要直接操作入参列表，所以合并的时候会创建一些节点。  
 
@@ -728,15 +697,13 @@ class Solution {
 
 ### 2.5 (26)树的子结构
 
-输入两棵二叉树A和B，判断B是不是A的子结构。
-{: .notice }
+> 输入两棵二叉树A和B，判断B是不是A的子结构。
 
 例如图中的两颗二叉树，由于A中有一部分子树的结构和B是一样的，因此B是A的子结构。  
 
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/leetcode/ci_tree_26.png" />
-    <figcaption>两颗二叉树A和B，右边的树B是左边的树A的子结构</figcaption>
-</figure>
+![两颗二叉树A和B，右边的树B是左边的树A的子结构](/assets/images/leetcode/ci_tree_26.png)
+
+<small>两颗二叉树A和B，右边的树B是左边的树A的子结构</small>
 
 要查找树A中是否存在和树B结构一样的子树，我们可以分为两步：
 
@@ -778,6 +745,5 @@ private boolean doesTree1HasTree2(BinaryTreeNode root1, BinaryTreeNode root2) {
 }
 ```
 
-**小提示**  
-与二叉树相关的代码有大量的指针操作，在每次使用指针的时候，我们都要问自己这个指针有没有可能是null，如果是null则该怎么处理。  
-{: .notice--info }
+!!! tip
+    与二叉树相关的代码有大量的指针操作，在每次使用指针的时候，我们都要问自己这个指针有没有可能是null，如果是null则该怎么处理。  

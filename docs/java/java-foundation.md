@@ -41,7 +41,7 @@ OOP三大基本特性
 ## 3. Java中4种引用类型
 
 [《深入理解Java虚拟机(第二版)》3.2.3节 再谈引用](/jvm/java-gc/#323-%E5%86%8D%E8%B0%88%E5%BC%95%E7%94%A8)
-{: .notice--info }
+
 
 在JDK1.2之后，Java对引用的概念进行了扩充，将引用分为强引用(Strong Reference)、软引用(Soft Reference)、弱引用(Weak Reference)、虚引用(Phantom Reference)4种，这4种引用强度依次逐渐减弱。  
 
@@ -205,7 +205,6 @@ Java中的IO和NIO的区别
 比如自增操作（x++）看上去类似一个单独操作，实际上它是一个由[读取－修改－写入]操作序列组成的组合操作，必须以原子方式执行，而`volatile`不能提供必须的原子特性。实现正确的操作，应该使x的值在操作期间保持线程安全，而`volatile`变量无法实现这点
 
 线程安全是指在多线程访问同一代码的时候，不会出现不确定的结果
-{: .notice--success }
 
 然而，Java提供了`java.util.concurrent.atomic.*`包下的变量或引用，让变量或对象的操作具有原子性，在高并发的情况下，依然能保持获取到最新修改的值，常见的有`AtomicBoolean`、`AtomicReference`等
 
@@ -373,7 +372,7 @@ public static void disableShiftMode(BottomNavigationView view) {
 在作者撰写该文章时，英文官网对于进程的重要性分类只有以上这四种，与中文官网的五种不同。英文官网中把中文官网里面的**后台进程**和**空进程**合并到了**缓存进程**中。  
 疑是中文版本没有及时更新：[进程生命周期](https://developer.android.com/guide/components/processes-and-threads.html#Lifecycle)，注意查看时在最下面把语言调整为中文，英文语言时这段内容是不可见的。  
 <cite>[进程保活——进程优先级](/android/week16-keep-app-alive/#%E8%BF%9B%E7%A8%8B%E4%BC%98%E5%85%88%E7%BA%A7)</cite>
-{: .notice--info }
+
 
 ---
 
