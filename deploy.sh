@@ -1,10 +1,18 @@
+git checkout mkdocs
+
+rm -rf site
+
 mkdocs build
 
-echo ">>>>>>> build success"
+echo ">>>>>>> build in mkdocs branch success"
 
 git checkout master
 
-rm -rf docs/ mkdocs.yml serve.sh deploy.sh
+echo ">>>>>>> git branch"
+
+git branch
+
+rm -rf docs/ mkdocs.yml serve.sh
 
 echo ">>>>>>> copy site to root .."
 cp -a site/* .
