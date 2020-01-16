@@ -1,13 +1,5 @@
 ---
 title: "外观模式(Facade)"
-excerpt: "要求一个子系统的外部与其内部的通信必须通过一个统一的对象进行。Facade模式提供一个高层次的接口，使得子系统更易于使用"
-categories:
-  - Design Patterns
-tags:
-  - Facade
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-06-13T18:49:19+08:00
 ---
 
 ## 1. 定义及使用场景
@@ -15,6 +7,7 @@ last_modified_at: 2018-06-13T18:49:19+08:00
 要求一个子系统的外部与其内部的通信必须通过一个统一的对象进行。Facade模式提供一个高层次的接口，使得子系统更易于使用。
 
 使用场景  
+
 - 为一个复杂子系统提供一个简单接口。子系统往往因为不断演化而变得越来越复杂，甚至可能被替换。大多数模式使用时都会产生更多、更小的类，在这使子系统更具可重用性的同时也更容易对子系统进行定制、修改，这种易变性使得隐藏子系统的具体实现变得尤为重要。Facade可以提供一个简单统一的接口，对外隐藏子系统的具体实现、隔离变化。
 - 当你需要构建一个层次结构的子系统时，使用Facade模式定义子系统中每层的入口点。如果子系统之间是相互依赖的，你可以让它们仅通过Facade接口进行通信，从而简化了它们之间的依赖关心。
 
@@ -22,10 +15,8 @@ last_modified_at: 2018-06-13T18:49:19+08:00
 
 ## 2. UML图
 
-<figure style="width: 66%" class="align-center">
-  <img src="/assets/images/design-pattern/facade.png">
-  <figcaption>外观模式UML图</figcaption>
-</figure>
+![外观模式UML图](/assets/images/design-pattern/facade.png)  
+<small>外观模式UML图</small>
 
 - Facade  
   系统对外的统一接口，系统内部系统地工作

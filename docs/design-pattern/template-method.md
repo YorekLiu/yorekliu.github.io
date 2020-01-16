@@ -1,13 +1,5 @@
 ---
 title: "模版方法模式(Template method)"
-excerpt: "定义一个操作中算法的框架，而将一些步骤延迟到子类中，使得子类可以不改变一个算法的结构即可重新定义该算法的某些特定步骤"
-categories:
-  - Design Patterns
-tags:
-  - Template method
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-06-14T19:49:19+08:00
 ---
 
 ## 1. 定义及使用场景
@@ -15,6 +7,7 @@ last_modified_at: 2018-06-14T19:49:19+08:00
 **定义一个操作中算法的框架，而将一些步骤延迟到子类中，使得子类可以不改变一个算法的结构即可重新定义该算法的某些特定步骤**
 
 使用场景  
+
 - 多个子类有公有方法，而且逻辑基本相同时
 - 重要、复杂的算法，可以把核心算法设计为模版方法，周边的相关细节功能则由各个子类实现
 - 重构时，模板方法模式是一个经常使用的模式，把相同的代码抽取到父类中，然后通过钩子函数约束其行为
@@ -25,10 +18,8 @@ last_modified_at: 2018-06-14T19:49:19+08:00
 
 ## 2. UML图
 
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/design-pattern/template-method.png">
-    <figcaption>模版方法模式UML图</figcaption>
-</figure>
+![模版方法模式UML图](/assets/images/design-pattern/template-method.png)  
+<small>模版方法模式UML图</small>
 
 - AbsTemplate  
   抽象类，定义了一套算法框架
@@ -113,6 +104,6 @@ fun main(args: Array<String>) {
 
 ## 4. 源码中的例子
 
-在Android中，AsyncTask是比较常用的一个类型，这个类就使用了模板方法模式。关于AsyncTask更详细的分析，请参考[Android线程与线程池——AsyncTask](/android/Android%E7%BA%BF%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B%E6%B1%A0/#21-asynctask)，我们这里只分析在该类中使用的模板方法模式。在使用AsyncTask时，我们都知道把耗时的方法放在`doInBackground(Params...params)`中，在`doInBackground`之前，如果还想做一些类似初始化的操作，可以把实现写在`onPreExecute`方法中，当`doInBackground`方法执行完成后，会执行`onPostExecute`方法，而我们只需要构建AsyncTask对象，然后执行`execute`方法即可。我们可以看到，它整个执行过程其实是一个框架，具体的实现都需要子类来完成，而且它执行的算法框架是固定的，调用`execute`后会依次执行`onPreExecute`、`doInBackground`、`onPostExecute`。
+在Android中，AsyncTask是比较常用的一个类型，这个类就使用了模板方法模式。关于AsyncTask更详细的分析，请参考[Android线程与线程池——AsyncTask](/android/framework/Android%E7%BA%BF%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B%E6%B1%A0/#21-asynctask)，我们这里只分析在该类中使用的模板方法模式。在使用AsyncTask时，我们都知道把耗时的方法放在`doInBackground(Params...params)`中，在`doInBackground`之前，如果还想做一些类似初始化的操作，可以把实现写在`onPreExecute`方法中，当`doInBackground`方法执行完成后，会执行`onPostExecute`方法，而我们只需要构建AsyncTask对象，然后执行`execute`方法即可。我们可以看到，它整个执行过程其实是一个框架，具体的实现都需要子类来完成，而且它执行的算法框架是固定的，调用`execute`后会依次执行`onPreExecute`、`doInBackground`、`onPostExecute`。
 
 另外一个典型例子就是Activity的生命周期方法了，Activity从启动到显示到窗口中会经历如下过程：`onCreate`、`onStart`、`onResume`，这就是一个典型的Activity启动流程，也是一个模板方法的运用。

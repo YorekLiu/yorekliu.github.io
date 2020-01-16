@@ -1,39 +1,23 @@
 ---
 title: "易混淆的设计模式"
-excerpt: "本章会简单分析那些容易混淆的模式"
-categories:
-  - Design Patterns
-tags:
-  - Simple factory
-  - Factory method
-  - Abstract factory
-  - Proxy
-  - Decorator
-  - Bridge
-  - Facade
-  - Mediator
-  - Strategy
-  - State
-  - Command
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-06-19T17:13:00+08:00
 ---
 
 ## 1. 简单工厂、工厂方法、抽象工厂模式的区别
 
 > 相关链接  
-> [工厂方法模式(Factory method)](/design%20patterns/factory-method/)  
-> [抽象工厂模式(Abstract factory)](/design%20patterns/abstract-factory/)
+> [工厂方法模式(Factory method)](/design-pattern/factory-method/)  
+> [抽象工厂模式(Abstract factory)](/design-pattern/abstract-factory/)
 
 这三个设计模式都是工厂模式，但是它们的侧重点和运用场景不同。
 
 首先，我们列出它们的定义：
+
 1. 简单工厂模式：又称为静态方法工厂模式，是由一个工厂对象决定创建哪一个产品类的实例。
 2. 工厂方法模式：创建一个用户创建对象的接口，让子类决定实例化哪个类。工厂方法使一个类的初始化延迟到其子类。
 3. 抽象工厂模式：为创建一组相关或者是相互依赖的对象提供一个接口，而不需要指定它们的具体类。
 
-我们可以提炼一下它们的**核心定义**
+我们可以提炼一下它们的 **核心定义**
+
 1. 简单工厂模式：**一个工厂方法创建不同类型的对象**
 2. 工厂方法模式：**一个具体的工厂类负责创建一个具体对象类型**
 3. 抽象工厂模式：**一个具体的工厂类负责创建一系列相关的对象**
@@ -43,19 +27,17 @@ last_modified_at: 2018-06-19T17:13:00+08:00
 
 下面是这三种模式的UML图
 
-<figure class="third align-center">
-    <img src="/assets/images/design-pattern/simple-factory.png">
-    <img src="/assets/images/design-pattern/factory-method.png">
-    <img src="/assets/images/design-pattern/abstract-factory.png">
-    <figcaption>简单工厂模式、工厂方法模式、抽象工厂模式UML图</figcaption>
-</figure>
+![简单工厂模式、工厂方法模式、抽象工厂模式UML图](/assets/images/design-pattern/simple-factory.png)  
+![简单工厂模式、工厂方法模式、抽象工厂模式UML图](/assets/images/design-pattern/factory-method.png)  
+![简单工厂模式、工厂方法模式、抽象工厂模式UML图](/assets/images/design-pattern/abstract-factory.png)  
+<small>简单工厂模式、工厂方法模式、抽象工厂模式UML图</small>
 
 ## 2.  代理、装饰、桥接模式
 
 > 相关链接  
-> [代理模式(Proxy)](/design%20patterns/proxy/)  
-> [装饰模式(Decorator)](/design%20patterns/decorator/)  
-> [桥接模式(Bridge)](/design%20patterns/bridge/)
+> [代理模式(Proxy)](/design-pattern/proxy/)  
+> [装饰模式(Decorator)](/design-pattern/decorator/)  
+> [桥接模式(Bridge)](/design-pattern/bridge/)
 
 在结构型设计模式中，结构相似且比较容易混淆的模式有代理、装饰、桥接模式。首先，我们还是列出它们的定义以及UML图。
 
@@ -65,38 +47,35 @@ last_modified_at: 2018-06-19T17:13:00+08:00
 
 三种模式的UML图如下：
 
-<figure class="third align-center">
-    <img src="/assets/images/design-pattern/proxy.png">
-    <img src="/assets/images/design-pattern/decorator.png">
-    <img src="/assets/images/design-pattern/bridge.png">
-    <figcaption>代理模式、装饰模式、桥接模式UML图</figcaption>
-</figure>
+![代理模式、装饰模式、桥接模式UML图](/assets/images/design-pattern/proxy.png)  
+![代理模式、装饰模式、桥接模式UML图](/assets/images/design-pattern/decorator.png)  
+![代理模式、装饰模式、桥接模式UML图](/assets/images/design-pattern/bridge.png)  
+<small>代理模式、装饰模式、桥接模式UML图</small>
 
-> **代理模式**侧重于修改、控制对象的执行过程，也就是隐藏了对被代理对象的一些逻辑控制。  
-> **装饰模式**就是动态地加强目标对象的某些功能，避免为了某个功能而创建一个子类。  
+> **代理模式** 侧重于修改、控制对象的执行过程，也就是隐藏了对被代理对象的一些逻辑控制。  
+> **装饰模式** 就是动态地加强目标对象的某些功能，避免为了某个功能而创建一个子类。  
 > 装饰模式与代理模式的共同点都是增强功能。但是代理的特点是添加逻辑控制，而装饰则是动态地添加功能。  
-> **桥接模式**的作用于代理、装饰截然不同，它主要是为了应对某个类族有多个变化维度导致子类类型急剧增多的场景。通过桥接模式将多个变化维度隔离开，使得它们可以独立变化，最后通过组合使它们应对多维变化，减少子类的数量和复杂度。
+> **桥接模式** 的作用于代理、装饰截然不同，它主要是为了应对某个类族有多个变化维度导致子类类型急剧增多的场景。通过桥接模式将多个变化维度隔离开，使得它们可以独立变化，最后通过组合使它们应对多维变化，减少子类的数量和复杂度。
 
 ## 3. 外观模式与中介模式
 
 > 相关链接  
-> [外观模式(Facade)](/design%20patterns/facade/)  
-> [中介者模式(Mediator)](/design%20patterns/mediator/)  
+> [外观模式(Facade)](/design-pattern/facade/)  
+> [中介者模式(Mediator)](/design-pattern/mediator/)  
 
 外观模式在我们日常开发中肯定会遇到。因为各种SDK的设计思想基本上都是通过外观模式封装一个高层接口，用户通过这个高层接口完成各种各样的功能。  
 中介模式与外观模式有些类似，但是它侧重于同级类型之间的交互，通过中介对象使多个对象之间的依赖关系变为多对1。
 
 其定义：
+
 1. 外观模式：要求一个子系统的外部与其内部的通信必须通过一个统一的对象进行。Facade模式提供一个高层次的接口，使得子系统更易于使用
 2. 中介模式：中介者模式包装了一系列对象相互作用的方式，使得这些对象不必相互明显作用。从而使它们松散耦合
 
 两者的UML图如下
 
-<figure class="half align-center">
-    <img src="/assets/images/design-pattern/facade.png">
-    <img src="/assets/images/design-pattern/mediator.png">
-    <figcaption>外观模式、中介模式UML图</figcaption>
-</figure>
+![外观模式、中介模式UML图](/assets/images/design-pattern/facade.png)  
+![外观模式、中介模式UML图](/assets/images/design-pattern/mediator.png)  
+<small>外观模式、中介模式UML图</small>
 
 其实从上述的模式定义中我们就能够很清晰地发现它们的区别，外观模式重点是对外封装统一的高层接口，便于用户使用。  
 而中介模式则是避免多个互相协作的对象直接引用，它们之间的交互是通过一个中介对象进行，从而使得它们耦合松散，能够易于应对变化。
@@ -104,18 +83,17 @@ last_modified_at: 2018-06-19T17:13:00+08:00
 ## 4. 策略与状态模式、命令模式
 
 我们先看它们的定义
+
 1. 策略模式：定义一组算法，将每个算法都封装起来，并且使它们之间可以互换
 2. 状态模式：当一个对象内在状态改变时允许改变其行为，这个对象看起来像改变了其类
 3. 命令模式：将一个请求封装成一个对象，从而让你使用不同的请求把客户端参数化，对请求排队或记录请求日志，可以提供命令的撤销和恢复功能
 
 其UML图如下所示
 
-<figure class="third align-center">
-    <img src="/assets/images/design-pattern/strategy.png">
-    <img src="/assets/images/design-pattern/state.png">
-    <img src="/assets/images/design-pattern/command.png">
-    <figcaption>策略模式、状态模式、命令模式UML图</figcaption>
-</figure>
+![策略模式、状态模式、命令模式UML图](/assets/images/design-pattern/strategy.png)  
+![策略模式、状态模式、命令模式UML图](/assets/images/design-pattern/state.png)  
+![策略模式、状态模式、命令模式UML图](/assets/images/design-pattern/command.png)  
+<small>策略模式、状态模式、命令模式UML图</small>
 
 我们先看看策略与状态模式，它们的类图居然是一样的。虽然它们类型接口一样，但是它们的本质不一样。  
 策略模式重在整个算法的替换，也就是策略替换。  

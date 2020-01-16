@@ -1,13 +1,5 @@
 ---
 title: "适配器模式(Adapter)"
-excerpt: "适配器模式把一个类的接口变换成客户端所期待的另一个接口，从而使原本因接口不匹配而无法工作的两个类能够在一起工作"
-categories:
-  - Design Patterns
-tags:
-  - Adapter
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-06-13T15:49:19+08:00
 ---
 
 ## 1. 定义及使用场景
@@ -25,11 +17,9 @@ last_modified_at: 2018-06-13T15:49:19+08:00
 
 ## 2. UML图
 
-<figure style="width: 100%" class="half align-center">
-    <img src="/assets/images/design-pattern/class-adapter.png">
-    <img src="/assets/images/design-pattern/object-adapter.png">
-    <figcaption>类适配器与对象适配器</figcaption>
-</figure>
+![类适配器与对象适配器](/assets/images/design-pattern/class-adapter.png)  
+![类适配器与对象适配器](/assets/images/design-pattern/object-adapter.png)  
+<small>类适配器与对象适配器</small>
 
 ## 3. 举个例子
 做一个简单的220V to 5V的充电器

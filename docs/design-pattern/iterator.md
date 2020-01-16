@@ -1,13 +1,5 @@
 ---
 title: "迭代器模式(Iterator)"
-excerpt: "提供一种方法顺序访问一个容器对象的各个元素，而又不需要暴露该对象的内部表示"
-categories:
-  - Design Patterns
-tags:
-  - Iterator
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-06-14T18:49:19+08:00
 ---
 
 ## 1. 定义及使用场景
@@ -15,16 +7,15 @@ last_modified_at: 2018-06-14T18:49:19+08:00
 **提供一种方法顺序访问一个容器对象的各个元素，而又不需要暴露该对象的内部表示**
 
 使用场景  
+
 - 遍历一个容器对象时
 
 当你需要访问一个聚集对象，而且不管这些对象是什么，都需要遍历的时候，你就应该考虑使用迭代器模式。当需要对聚集有多种方式遍历时，可以考虑使用迭代器模式。为遍历不同的聚集结构提供如开始、下一个、是否结束、当前哪一项等统一的接口。
 
 ## 2. UML图
 
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/design-pattern/iterator.png">
-    <figcaption>迭代器模式UML图</figcaption>
-</figure>
+![迭代器模式UML图](/assets/images/design-pattern/iterator.png)  
+<small>迭代器模式UML图</small>
 
 - Iterator  
   迭代器接口。迭代器接口负责定义、访问和遍历元素的接口

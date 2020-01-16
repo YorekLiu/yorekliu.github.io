@@ -1,13 +1,5 @@
 ---
 title: "享元模式(Flyweight)"
-excerpt: "使用享元对象可有效地支持大量的细粒度的对象"
-categories:
-  - Design Patterns
-tags:
-  - Flyweight
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-06-13T17:49:19+08:00
 ---
 
 ## 1. 定义及使用场景
@@ -15,16 +7,15 @@ last_modified_at: 2018-06-13T17:49:19+08:00
 **使用享元对象可有效地支持大量的细粒度的对象**
 
 使用场景  
+
 - 系统中存在大量的相似对象
 - 细粒度的对象都具备较接近的外部状态，而且内部状态与环境无关，也就是说对象没有特定身份。
 - 需要缓冲池的场景
 
 ## 2. UML图
 
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/design-pattern/flyweight.png">
-    <figcaption>享元模式UML图</figcaption>
-</figure>
+![享元模式UML图](/assets/images/design-pattern/flyweight.png)  
+<small>享元模式UML图</small>
 
 - Flyweight  
   享元对象抽象类或者接口

@@ -1,13 +1,5 @@
 ---
 title: "建造者模式(Builder)"
-excerpt: "将一个复杂对象的构建与它的表示分离，使得同样的构建过程可以创建不同的表示"
-categories:
-  - Design Patterns
-tags:
-  - Builder
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-06-12T15:49:19+08:00
 ---
 
 ## 1. 定义及使用场景
@@ -23,10 +15,8 @@ last_modified_at: 2018-06-12T15:49:19+08:00
 
 ## 2. UML图
 
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/design-pattern/builder.png">
-    <figcaption>Builder模式UML图</figcaption>
-</figure>
+![Builder模式UML图](/assets/images/design-pattern/builder.png)  
+<small>Builder模式UML图</small>
 
 - Product  
   产品类——产品的抽象类

@@ -1,13 +1,5 @@
 ---
 title: "原型模式(Prototype)"
-excerpt: "用原型实例指定创建对象的种类，并通过拷贝这些原型创建新的对象"
-categories:
-  - Design Patterns
-tags:
-  - Prototype
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-06-12T14:49:19+08:00
 ---
 
 ## 1. 定义及使用场景
@@ -16,6 +8,7 @@ last_modified_at: 2018-06-12T14:49:19+08:00
 原型模式其实就是从一个对象再创建另外一个可定制的对象，而不需知道任何创建的细节。
 
 使用场景：
+
 1. 类初始化需要消耗非常多的资源，这个资源包括数据、硬件资源等，通过原型拷贝避免这些消耗
 2. 原型模式是在内存中二进制流的拷贝，要比直接new一个对象性能好很多，特别是要在一个循环体内产生大量的对象时，原型模式可以更好滴体现其优点
 3. 一个对象需要提供给其他对象访问，而且各个调用者可能需要修改其值时，可以考虑使用原型模式拷贝多个对象供调用者使用，即保护性拷贝
@@ -26,10 +19,8 @@ last_modified_at: 2018-06-12T14:49:19+08:00
 
 ## 2. UML图
 
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/design-pattern/prototype.png">
-    <figcaption>原型模式UML图</figcaption>
-</figure>
+![原型模式UML图](/assets/images/design-pattern/prototype.png)  
+<small>原型模式UML图</small>
 
 - Client  
   客户端角色

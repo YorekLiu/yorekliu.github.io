@@ -1,13 +1,5 @@
 ---
 title: "备忘录模式(Memento)"
-excerpt: "在不破环封闭的前提下，捕获一个对象的内在状态，并在该对象之外保存这个状态。这样，以后就可将该对象恢复到原先保存的状态"
-categories:
-  - Design Patterns
-tags:
-  - Memento
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-06-14T17:49:19+08:00
 ---
 
 ## 1. 定义及使用场景
@@ -15,6 +7,7 @@ last_modified_at: 2018-06-14T17:49:19+08:00
 **在不破环封闭的前提下，捕获一个对象的内在状态，并在该对象之外保存这个状态。这样，以后就可将该对象恢复到原先保存的状态**
 
 使用场景  
+
 - 需要保存一个对象在某个时刻的状态或部分状态
 - 如果用一个接口来让其他对象得到这些状态，将会暴露对象的实现细节并破坏对象的封装性，一个对象不希望外界直接访问其内部状态，通过中间对象可以间接访问其内部状态
 
@@ -25,10 +18,8 @@ Memento模式比较适用于功能比较复杂的，但需要维护和记录属�
 
 ## 2. UML图
 
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/design-pattern/memento.png">
-    <figcaption>备忘录模式</figcaption>
-</figure>
+![备忘录模式UML图](/assets/images/design-pattern/memento.png)  
+<small>备忘录模式UML图</small>
 
 - Originator  
   负责创建一个备忘录，可以记录、恢复自身的内部状态。同时还可以根据需要决定Memento存储自身哪些内部状态

@@ -1,13 +1,5 @@
 ---
 title: "桥接模式(Bridge)"
-excerpt: "将抽象部分与实现部分分离，使它们都可以独立地进行变化"
-categories:
-  - Design Patterns
-tags:
-  - Bridge
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-06-13T19:49:19+08:00
 ---
 
 ## 1. 定义及使用场景
@@ -33,10 +25,8 @@ last_modified_at: 2018-06-13T19:49:19+08:00
 
 ## 2. UML图
 
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/design-pattern/bridge.png">
-    <figcaption>桥接模式UML图</figcaption>
-</figure>
+![桥接模式UML图](/assets/images/design-pattern/bridge.png)  
+<small>桥接模式UML图</small>
 
 - Abstraction  
   抽象部分  
@@ -129,9 +119,6 @@ API2.circle at 5.0:7.0 radius 11.274999999999999
 
 那么在framework内部的源码实现中，比较典型的是Window与WindowManager之间的关系：
 
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/design-pattern/bridge-pattern-in-window.png" style="border: none">
-    <figcaption>桥接模式UML图</figcaption>
-</figure>
+![bridge-pattern-in-window](/assets/images/design-pattern/bridge-pattern-in-window.png)  
 
 如上图所示，在framework中Window和PhoneWindow构成窗口的抽象部分，其中Window类为该抽象部分的抽象接口，PhoneWindow为抽象部分具体的实现及扩展。而WindowManager则为实现部分的基类，WindowManagerImpl为实现部分具体的逻辑实现，其使用WindowManagerGlobal通过IWindowManager接口与WindowManagerService（也就是我们常说的WMS）进行交互，并由WMS完成具体的窗口管理工作。

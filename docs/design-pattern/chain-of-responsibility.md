@@ -1,13 +1,5 @@
 ---
 title: "责任链模式(Chain of responsibility)"
-excerpt: "使多个对象都有机会处理请求，从而避免了请求的发送者和接受者之间的耦合关系，将这些对象连成一条链，并沿着这条链传递该请求，一直到有对象处理它为止"
-categories:
-  - Design Patterns
-tags:
-  - Chain of responsibility
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-06-14T13:49:19+08:00
 ---
 
 ## 1. 定义及使用场景
@@ -15,6 +7,7 @@ last_modified_at: 2018-06-14T13:49:19+08:00
 **使多个对象都有机会处理请求，从而避免了请求的发送者和接受者之间的耦合关系，将这些对象连成一条链，并沿着这条链传递该请求，一直到有对象处理它为止**
 
 使用场景  
+
 - 多个对象可以处理同一请求，但具体由哪个对象处理则在运行时动态决定。
 - 在请求处理者不明确的情况下向多个对象中的一个提交一个请求
 - 需要动态指定一组对象处理请求
@@ -24,10 +17,8 @@ last_modified_at: 2018-06-14T13:49:19+08:00
 
 ## 2. UML图
 
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/design-pattern/chain-of-responsibility.png">
-    <figcaption>责任链模式UML图</figcaption>
-</figure>
+![责任链模式UML图](/assets/images/design-pattern/chain-of-responsibility.png)  
+<small>责任链模式UML图</small>
 
 - Handler  
   抽象处理者角色，声明一个请求处理的方法，并在其中保持一个对下一个处理节点Handler对象的引用

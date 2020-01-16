@@ -1,13 +1,5 @@
 ---
 title: "命令模式(Command)"
-excerpt: "将一个请求封装成一个对象，从而让用户使用不同的请求把客户端参数化；对请求排队或者记录请求日志，以及支持可撤销的操作"
-categories:
-  - Design Patterns
-tags:
-  - Command
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-06-15T11:49:19+08:00
 ---
 
 ## 1. 定义及使用场景
@@ -15,6 +7,7 @@ last_modified_at: 2018-06-15T11:49:19+08:00
 **将一个请求封装成一个对象，从而让用户使用不同的请求把客户端参数化；对请求排队或者记录请求日志，以及支持可撤销的操作**
 
 使用场景  
+
 - 需要抽象出待执行的行动，然后以参数的形式提供出来——类似于过程设计中的回调机制，而命令模式正是回调机制的一个面向对象的代替品。
 - 在不同的时刻指定、排列和执行请求，一个命令对象可以有与初始请求无关的生存期
 - 需要支持取消操作
@@ -23,10 +16,8 @@ last_modified_at: 2018-06-15T11:49:19+08:00
 
 ## 2. UML图
 
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/design-pattern/command.png">
-    <figcaption>命令模式UML图</figcaption>
-</figure>
+![命令模式UML图](/assets/images/design-pattern/command.png)  
+<small>命令模式UML图</small>
 
 - Receiver  
   接受者。负责具体实施或执行一个请求

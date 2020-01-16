@@ -1,13 +1,5 @@
 ---
 title: "深入理解Java虚拟机"
-excerpt: "深入理解Java虚拟机目录"
-categories:
-  - jvm
-tags:
-  - content
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-03-10T21:14:20+08:00
 ---
 
 第二部分

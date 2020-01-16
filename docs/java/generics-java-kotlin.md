@@ -1,17 +1,5 @@
 ---
 title: "Java&Kotlin在泛型方面的区别"
-excerpt: "Java&Kotlin中泛型在对象、方法、参数上的用法，extends、super等各个方面的区别、泛型的类型擦除"
-categories:
-  - Java
-tags:
-  - Kotlin
-  - Java
-  - Generics
-header:
-  overlay_image: /assets/images/android/java-vs-kotlin.png
-  overlay_filter: rgba(126, 202, 286, 0.6)
-classes: wide
-last_modified_at: 2019-08-21T14:26:27+08:00
 ---
 
 本文主要内容为Java、Kotlin在泛型方面的语法对比，另外还会介绍extends、super关键词以及通配符、泛型擦除等。
@@ -129,10 +117,8 @@ extends、super与通配符 `?` 搭配可以造成不同的效果。
 
 怎么理解上面的这段话呢？我们以Number为例，下面是要用到的继承关系图，注意图中的extends、super关键词的范围。
 
-<figure style="width: 50%" class="align-center">
-    <img src="/assets/images/android/generics-wildcard.png" style="border: none">
-    <figcaption>Number的部分继承关系</figcaption>
-</figure>
+![Number的部分继承关系](/assets/images/android/generics-wildcard.png)  
+<small>Number的部分继承关系</small>
 
 在`List<? extends Number>`中，泛型的具体类型在运行时只能是一个特定的，该类型是Number或者Number的子类都可以，但是由于不确定是哪个具体的类，所以不能添加任何对象，因为添加的对象可能不兼容。比如说，当里面存放的是Float时，我们动态的添加Integer，这是不允许的。同时，从其中读取数据，数据的类型肯定是Number类型的。
 

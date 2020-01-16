@@ -1,27 +1,5 @@
 ---
 title: "面向对象的六大原则"
-excerpt: "遵循面向对象的六大原则，是我们走向灵活软件之路所迈出的第一步"
-categories:
-  - Design Patterns
-tags:
-  - content
-  - Principle
-  - Single Responsibility Principle
-  - SRP
-  - Open Close Principle
-  - OCP
-  - Liskov Substitution Principle
-  - LSP
-  - Dependence Inversion Principle
-  - DIP
-  - Interface Segregation Principle
-  - ISP
-  - Law of Demeter
-  - LoD
-  - Principle of Least Knowledge
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-06-12T12:49:19+08:00
 ---
 
 ## 1. 单一职责原则

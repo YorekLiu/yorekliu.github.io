@@ -1,13 +1,5 @@
 ---
 title: "组合模式(Composite)"
-excerpt: '将对象组合成树形结构以表示"部分-整体"的层次结构，使得用户对单个对象和组合对象的使用具有一致性'
-categories:
-  - Design Patterns
-tags:
-  - Composite
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-06-13T14:49:19+08:00
 ---
 
 ## 1. 定义及使用场景
@@ -15,10 +7,12 @@ last_modified_at: 2018-06-13T14:49:19+08:00
 **将对象组合成树形结构以表示"部分-整体"的层次结构，使得用户对单个对象和组合对象的使用具有一致性**
 
 使用场景：
+
 - 表示对象的部分-整体层次结构时
 - 从一个整体中能够独立出部分模块或功能的场景
 
 > 组合模式分为两种：透明的组合模式与安全的组合模式  
+> 
 > - 透明的组合模式中，不管是叶子结点还是枝干节点都有相同的结构，因此必须在叶子节点的节点处理方法中进行判断。所以就不够安全了。  
 > - 安全的组合模式中，Component接口不声明叶子结点不具备的方法，而是在Composite声明所有用来管理子类对象的方法。由于不够透明，所以叶子结点和枝干节点将不具有相同的接口，客户端的调用需要做对应的判断，带来了不便。
 
@@ -28,10 +22,8 @@ last_modified_at: 2018-06-13T14:49:19+08:00
 
 ## 2. UML图
 
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/design-pattern/composite.png">
-    <figcaption>组合模式UML图</figcaption>
-</figure>
+![组合模式UML图](/assets/images/design-pattern/composite.png)  
+<small>组合模式UML图</small>
 
 - Component  
   抽象根节点，为组合中的对象声明接口。

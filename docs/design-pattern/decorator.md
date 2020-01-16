@@ -1,14 +1,5 @@
 ---
 title: "装饰模式(Decorator)"
-excerpt: "动态地给一个对象添加一些额外的职责，就增加功能来说，装饰模式相比生成子类更加灵活"
-categories:
-  - Design Patterns
-tags:
-  - Decorator
-  - Wrapper
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-06-13T16:49:19+08:00
 ---
 
 ## 1. 定义及使用场景
@@ -26,10 +17,8 @@ last_modified_at: 2018-06-13T16:49:19+08:00
 
 ## 2. UML图
 
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/design-pattern/decorator.png">
-    <figcaption>装饰模式UML图</figcaption>
-</figure>
+![装饰模式UML图](/assets/images/design-pattern/decorator.png)  
+<small>装饰模式UML图</small>
 
 - Component  
   抽象组件，可以是一个接口或抽象类，其充当的是就是被装饰的原始对象。
@@ -153,4 +142,4 @@ public class ContextWrapper extends Context {
 }
 ```
 
-在上面的构造方法中，实际上传入的Context对象是`ContextImpl`类型，想了解更多，可以参考[四大组件启动过程](/android/%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/)。
+在上面的构造方法中，实际上传入的Context对象是`ContextImpl`类型，想了解更多，可以参考[四大组件启动过程](/android/framework/%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/)。

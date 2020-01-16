@@ -1,13 +1,5 @@
 ---
 title: "观察者模式(Observer)"
-excerpt: "定义对象间的一种一对多的依赖关系，使得每当一个对象改变状态，则所有依赖于它的对象都会得到通知并被自动更新"
-categories:
-  - Design Patterns
-tags:
-  - Observer
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-06-14T16:49:19+08:00
 ---
 
 ## 1. 定义及使用场景
@@ -15,16 +7,15 @@ last_modified_at: 2018-06-14T16:49:19+08:00
 **定义对象间的一种一对多的依赖关系，使得每当一个对象改变状态，则所有依赖于它的对象都会得到通知并被自动更新**
 
 使用场景  
+
 - 关联行为场景，需要注意的是，关联行为是可以拆分的，而不是“组合关系”。(也就是可以自由的注册、注销)
 - 事件多级出发场景
 - 跨系统的消息交换场景，如消息队列，事件总线的处理机制
 
 ## 2. UML图
 
-<figure style="width: 66%" class="align-center">
-  <img src="/assets/images/design-pattern/observer.png">
-  <figcaption>观察者模式UML图</figcaption>
-</figure>
+![观察者模式UML图](/assets/images/design-pattern/observer.png)  
+<small>观察者模式UML图</small>
 
 - Subject  
   抽象主题，被观察者(Observable)

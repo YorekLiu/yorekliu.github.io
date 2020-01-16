@@ -1,25 +1,5 @@
 ---
 title: "Java集合总结"
-excerpt: "HashMap、HashSet、HashTable、LinkedHashMap、LinkedHashSet、ArrayList、LinkedList、ConcurrentHashMap等集合的特点以及异同"
-categories:
-  - Java
-tags:
-  - HashMap
-  - HashSet
-  - HashTable
-  - LinkedHashMap
-  - LinkedHashSet
-  - ConcurrentHashMap
-  - TreeMap
-  - TreeSet
-  - ArrayList
-  - LinkedList
-  - Vector
-  - Comparable
-  - Comparator
-toc: true
-toc_label: "目录"
-last_modified_at: 2019-08-23T15:34:07+08:00
 ---
 
 本文就是Java常见集合的一些总结，包括HashMap、HashSet、HashTable、LinkedHashMap、LinkedHashSet、ArrayList、LinkedList、ConcurrentHashMap等。
@@ -173,7 +153,7 @@ LinkedHashMap底层使用哈希表与双向链表来保存所有元素，它维�
 - 按插入顺序的链表：在LinkedHashMap调用get方法后，输出的顺序和输入时的相同，这就是按插入顺序的链表，默认是按插入顺序排序
 - 按访问顺序的链表：在LinkedHashMap调用get方法后，会将这次访问的元素移至链表尾部，不断访问可以形成按访问顺序排序的链表。简单的说，按最近最少访问的元素进行排序（类似LRU算法），链表头就是最近最少访问的元素。
 
-LinkedHashMap在其父类的`put`方法中会调用`afterNodeAccess(e)`方法；且重写了`get`、`getOrDefault`方法中，在方法中，如果`accessOrder`字段为true，会调用`afterNodeAccess(e)`方法。这样，就会将访问的节点e移动至链表的末尾。关于这个的应用，可以参考Glide中的LruCache的实现，[Glide v4 源码解析（三）——深入探究Glide缓存机制——memoryCache介绍](/android/glide3/#2-memorycache%E4%BB%8B%E7%BB%8D)
+LinkedHashMap在其父类的`put`方法中会调用`afterNodeAccess(e)`方法；且重写了`get`、`getOrDefault`方法中，在方法中，如果`accessOrder`字段为true，会调用`afterNodeAccess(e)`方法。这样，就会将访问的节点e移动至链表的末尾。关于这个的应用，可以参考Glide中的LruCache的实现，[Glide v4 源码解析（三）——深入探究Glide缓存机制——memoryCache介绍](/android/3rd-library/glide3/#2-memorycache)
 
 LinkedHashMap有序的原因，是因为节点除了带next指针之外，还额外有before、after指针；next指针用在桶中，before、after
 则用来统筹集合中所有元素的顺序。
@@ -439,8 +419,9 @@ Vector有如下特点：
 
 <figcaption>常见数据结构的对比总结</figcaption>
 
-|  | 底层数据结构 | k唯一性 | k、v可空性 | 有序性 | 是否线程安全 |
-| - | --------- | -------------- | ---- | ----------- |
+
+|   | 底层数据结构 | k唯一性 | k、v可空性 | 有序性 | 是否线程安全 |
+| - | --------- | -------------- | ---- | ----------- | -- |
 | **HashMap** | (JDK 7)数组+单链表，链表插入顺序为头插法<br />(JDK 8)数组+单链表+红黑树，链表插入顺序为尾插法<br />当链表的长度大于8时转换为红黑树；<br />在resize过程中，如果红黑树的长度小于等于6，则会还原为单链表 | 唯一 | k、v均可空；<br />但只允许一条k为空 | 无序 | 非线程安全 |
 | **LinkedHashMap** | 继承至HashMap，唯一不同的是用带next的双向链表取代了单链表 | 唯一 | k、v均可空；<br />但只允许一条k为空 | 有序，分为插入顺序（默认）和访问顺序；由双向链表保存 | 非线程安全 |
 | **TreeMap** | 红黑树 | 唯一 | k不可为空，v可为空 | 有序 | 非线程安全 |
@@ -455,8 +436,5 @@ Vector有如下特点：
 
 注意，非线程安全的集合可以通过`Collections`的`synchronizedCollection` 、 `synchronizedSet` 、 `synchronizedList` 、 `synchronizedMap`等方法转换成线程安全的集合。其原理就是对每个操作都在同步代码块中执行。
 
-
-<figure style="width: 100%" class="align-center">
-    <img src="/assets/images/java/java-collections-uml.png">
-    <figcaption>常见数据结构的类关系</figcaption>
-</figure>
+![常见数据结构的类关系](/assets/images/java/java-collections-uml.png)
+<small>常见数据结构的类关系</small>

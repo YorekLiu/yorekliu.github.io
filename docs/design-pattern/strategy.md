@@ -1,13 +1,5 @@
 ---
 title: "策略模式(Strategy)"
-excerpt: "策略模式定义了一系列的算法，并将每个算法封装起来，而且使他们还可以相互替换。策略模式让算法独立于使用它的客户而独立变化"
-categories:
-  - Design Patterns
-tags:
-  - Strategy
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-06-14T11:49:19+08:00
 ---
 
 ## 1. 定义及使用场景
@@ -21,10 +13,8 @@ last_modified_at: 2018-06-14T11:49:19+08:00
 
 ## 2. UML图
 
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/design-pattern/strategy.png">
-    <figcaption>图片宽度为显示区域的一半、有描边</figcaption>
-</figure>
+![策略模式UML图](/assets/images/design-pattern/strategy.png)  
+<small>策略模式UML图</small>
 
 - Context  
   用来操作策略的环境
@@ -88,11 +78,11 @@ Total due: 2.0
 Total due: 5.5
 ```
 
-**Follow Up:**  
-**在基本的策略模式中，选择所用具体实现的职责由客户端对象承担，并转给策略模式的Context对象。**这本身并没有解除客户端需要选择判断的压力，可以将策略模式与简单工厂模式相结合，将策略的创建移到简单工厂中，这使得客户端与具体的策略彻底分离。
+!!! note "Follow Up:"
+    **在基本的策略模式中，选择所用具体实现的职责由客户端对象承担，并转给策略模式的Context对象。** 这本身并没有解除客户端需要选择判断的压力，可以将策略模式与简单工厂模式相结合，将策略的创建移到简单工厂中，这使得客户端与具体的策略彻底分离。
 
 ## 4. 源码中的例子
 
 Android动画框架中的插值器就是典型的策略模式的体现。它的作用是根据时间流逝的百分比来计算出当前属性值改变的百分比，系统预置的有线性插值器（`LinearInterpolator`）用于匀速动画；加速减速插值器（`AccelerateDecelerateInterpolator`）用于起始时动画加速，结尾时动画减速；减速插值器（`DecelerateInterpolator`）用于随着时间的推移动画越来越慢，即减速动画。这些插值器就是策略模型的典型运用。
 
-详情可参考[Android动画——理解插值器和估值器](/android/Android%E5%8A%A8%E7%94%BB/#3-%E7%90%86%E8%A7%A3%E6%8F%92%E5%80%BC%E5%99%A8%E5%92%8C%E4%BC%B0%E5%80%BC%E5%99%A8)
+详情可参考[Android动画——理解插值器和估值器](/android/framework/Android动画/#3)

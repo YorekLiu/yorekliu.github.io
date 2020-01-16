@@ -1,13 +1,5 @@
 ---
 title: "中介者模式(Mediator)"
-excerpt: "中介者模式包装了一系列对象相互作用的方式，使得这些对象不必相互明显作用。从而使它们松散耦合。当某些对象之间的作用发生改变时，不会立即影响其他的一些对象之间的作用。保证这些作用可以彼此独立的变化。中介者模式将多对多的相互作用转化为一对多的相互作用。中介者模式将对象的行为和协作抽象化，把对象在小尺度的行为上与其他对象的相互作用分开处理"
-categories:
-  - Design Patterns
-tags:
-  - Mediator
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-06-14T21:49:19+08:00
 ---
 
 ## 1. 定义及使用场景
@@ -22,10 +14,8 @@ last_modified_at: 2018-06-14T21:49:19+08:00
 
 ## 2. UML图
 
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/design-pattern/mediator.png">
-    <figcaption>中介者模式</figcaption>
-</figure>
+![中介者模式UML图](/assets/images/design-pattern/mediator.png)  
+<small>中介者模式UML图</small>
 
 - Mediator  
   抽象中介者角色，定义了同事对象到中介者对象的接口，一般以抽象类的方式实现

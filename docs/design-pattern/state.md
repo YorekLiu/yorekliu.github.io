@@ -1,19 +1,12 @@
 ---
 title: "状态模式(State)"
-excerpt: "当一个对象内在状态改变时允许改变其行为，这个对象看起来就像是改变了其类"
-categories:
-  - Design Patterns
-tags:
-  - State
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-06-14T12:49:19+08:00
 ---
 
 ## 1. 定义及使用场景
 当一个对象内在状态改变时允许改变其行为，这个对象看起来就像是改变了其类
 
 使用场景  
+
 - 一个对象的行为取决于它的状态，并且它必须在运行时根据状态改变它的行为
 - 代码中包含大量与对象状态有关的条件语句。例如，一个操作中含有庞大的多分支语句，且这些分支依赖于该对象的状态
 
@@ -21,10 +14,8 @@ last_modified_at: 2018-06-14T12:49:19+08:00
 
 ## 2. UML图
 
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/design-pattern/state.png">
-    <figcaption>状态模式UML图</figcaption>
-</figure>
+![状态模式UML图](/assets/images/design-pattern/state.png)  
+<small>状态模式UML图</small>
 
 - Context  
   用来操作策略的环境

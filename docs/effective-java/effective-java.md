@@ -1,16 +1,11 @@
 ---
 title: "Effective Java概述"
-excerpt: "Effective Java中文版第二版笔记"
-categories:
-  - Effective Java
-tags:
-  - content
-last_modified_at: 2018-07-16T22:49:25+08:00
 ---
 
 本书主要内容共有10个章共78条规则，每章都涉及软件设计的一个主要方面。且每个条目之间都有一定程度的独立性，这些条目将会互相之间交叉引用。  
 
 **本书中大多数规则都源于少数几条基本规则：**
+
 1. 清晰性和简洁性最为重要：模块的用户永远也不应该被模块的行为所迷惑
 2. 模块要尽可能的小，但不要太小「本书中所使用的属于*模块*，是指任何可重用的软件组件，从单个的方法到包含多个包的复杂系统，都可以是一个模块」
 3. 代码应该被重用，而不是被复制
@@ -19,33 +14,33 @@ last_modified_at: 2018-07-16T22:49:25+08:00
 
 ### 以下是本文的目录结构
 
-**[1. 创建和销毁对象](/effective%20java/chapter1/)**  
-&emsp;[1. 考虑使用静态工厂方法替代构造器](/effective%20java/chapter1/#第一条考虑使用静态工厂方法替代构造器)  
-&emsp;[2. 遇到多个构造器参数时考虑使用建造者模式](/effective%20java/chapter1/#第二条遇到多个构造器参数时考虑使用建造者模式)  
-&emsp;[3. 使用私有构造器或者枚举类型强化Singleton属性](/effective%20java/chapter1/#第三条使用私有构造器或者枚举类型强化singleton属性)  
-&emsp;[4. 通过私有构造器强化不可实例化的能力](/effective%20java/chapter1/#第四条通过私有构造器强化不可实例化的能力)  
-&emsp;[5. 避免创建不必要的对象](/effective%20java/chapter1/#第五条避免创建不必要的对象)  
-&emsp;[6. 消除过期对象的引用](/effective%20java/chapter1/#第六条消除过期对象的引用)  
-&emsp;[7. 避免使用终结方法](/effective%20java/chapter1/#第七条避免使用终结方法)  
+**[1. 创建和销毁对象](/effective-java/chapter1/)**  
+&emsp;[1. 考虑使用静态工厂方法替代构造器](/effective-java/chapter1/#_1)  
+&emsp;[2. 遇到多个构造器参数时考虑使用建造者模式](/effective-java/chapter1/#_2)  
+&emsp;[3. 使用私有构造器或者枚举类型强化Singleton属性](/effective-java/chapter1/#singleton)  
+&emsp;[4. 通过私有构造器强化不可实例化的能力](/effective-java/chapter1/#_3)  
+&emsp;[5. 避免创建不必要的对象](/effective-java/chapter1/#_4)  
+&emsp;[6. 消除过期对象的引用](/effective-java/chapter1/#_5)  
+&emsp;[7. 避免使用终结方法](/effective-java/chapter1/#_6)  
 
-**[2. 对所有对象都通用的方法](/effective%20java/chapter2/)**  
-&emsp;[8. 覆盖equals时请遵守通用约定](/effective%20java/chapter2/#第八条覆盖equals时请遵守通用约定)  
-&emsp;[9. 覆盖equals时总要覆盖hashCode](/effective%20java/chapter2/#第九条覆盖equals时总要覆盖hashcode)  
-&emsp;[10. 始终要覆盖toString](/effective%20java/chapter2/#第十条始终要覆盖tostring)  
-&emsp;[11. 谨慎地覆盖clone](/effective%20java/chapter2/#第十一条谨慎地覆盖clone)  
-&emsp;[12. 考虑实现Comparable接口](/effective%20java/chapter2/#第十二条考虑实现comparable接口)
+**[2. 对所有对象都通用的方法](/effective-java/chapter2/)**  
+&emsp;[8. 覆盖equals时请遵守通用约定](/effective-java/chapter2/#equals)  
+&emsp;[9. 覆盖equals时总要覆盖hashCode](/effective-java/chapter2/#equalshashcode)  
+&emsp;[10. 始终要覆盖toString](/effective-java/chapter2/#tostring)  
+&emsp;[11. 谨慎地覆盖clone](/effective-java/chapter2/#clone)  
+&emsp;[12. 考虑实现Comparable接口](/effective-java/chapter2/#comparable)
 
-**[3. 类和接口](/effective%20java/chapter3/)**  
-&emsp;[13. 使类和成员的可访问性最小化](/effective%20java/chapter3/#第十三条使类和成员的可访问性最小化)  
-&emsp;[14. 在公有类中使用访问方法而非公有域](/effective%20java/chapter3/#第十四条在公有类中使用访问方法而非公有域)  
-&emsp;[15. 使可变性最小化](/effective%20java/chapter3/#第十五条使可变性最小化)  
-&emsp;[16. 复合优先于继承](/effective%20java/chapter3/#第十六条复合优先于继承)  
-&emsp;[17. 要么为继承设计，并提供文档说明；要么就禁止继承](/effective%20java/chapter3/#第十七条要么为继承设计并提供文档说明要么就禁止继承)  
-&emsp;[18. 接口优先于抽象类](/effective%20java/chapter3/#第十八条接口优先于抽象类)  
-&emsp;[19. 接口只用于定义类型](/effective%20java/chapter3/#第十九条接口只用于定义类型)  
-&emsp;[20. 类层次优先于标签类](/effective%20java/chapter3/#第二十条类层次优先于标签类)  
-&emsp;[21. 用函数对象表示策略](/effective%20java/chapter3/#第二十一条用函数对象表示策略)  
-&emsp;[22. 优先考虑静态成员类](/effective%20java/chapter3/#第二十二条优先考虑静态成员类)
+**[3. 类和接口](/effective-java/chapter3/)**  
+&emsp;[13. 使类和成员的可访问性最小化](/effective-java/chapter3/#第十三条使类和成员的可访问性最小化)  
+&emsp;[14. 在公有类中使用访问方法而非公有域](/effective-java/chapter3/#第十四条在公有类中使用访问方法而非公有域)  
+&emsp;[15. 使可变性最小化](/effective-java/chapter3/#第十五条使可变性最小化)  
+&emsp;[16. 复合优先于继承](/effective-java/chapter3/#第十六条复合优先于继承)  
+&emsp;[17. 要么为继承设计，并提供文档说明；要么就禁止继承](/effective-java/chapter3/#第十七条要么为继承设计并提供文档说明要么就禁止继承)  
+&emsp;[18. 接口优先于抽象类](/effective-java/chapter3/#第十八条接口优先于抽象类)  
+&emsp;[19. 接口只用于定义类型](/effective-java/chapter3/#第十九条接口只用于定义类型)  
+&emsp;[20. 类层次优先于标签类](/effective-java/chapter3/#第二十条类层次优先于标签类)  
+&emsp;[21. 用函数对象表示策略](/effective-java/chapter3/#第二十一条用函数对象表示策略)  
+&emsp;[22. 优先考虑静态成员类](/effective-java/chapter3/#第二十二条优先考虑静态成员类)
 
 **4. 泛型**  
 &emsp;23. 不要在新代码中使用原生态类型  

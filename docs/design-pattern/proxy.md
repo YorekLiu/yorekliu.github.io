@@ -1,36 +1,27 @@
 ---
 title: "代理模式(Proxy)"
-excerpt: "为其他对象提供一种代理以控制对这个对象的访问"
-categories:
-  - Design Patterns
-tags:
-  - Proxy
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-06-13T13:49:19+08:00
 ---
 
 ## 1. 定义及使用场景
 为其他对象提供一种代理以控制对这个对象的访问
 
-使用场景：
+使用场景：  
 当无法或不想直接访问某个对象或访问某个对象存在困难时可以通过一个代理对象来间接访问，为了保证客户端使用的透明性，委托对象与代理对象需要实现相同的接口。
 
 > 代理模式大致可以分为静态代理与动态代理两种。  
-> Java提供了便捷的动态代理接口InvocationHandler，实现该接口需要重写其调用方法invoke。
-> 按照适用范围又可以分为四种：
-> 1. **远程代理(Remote Proxy)**：为某个对象在不同的内存地址空间提供局部代理，使系统可以在Server部分的实现隐藏，以便Client可以不必考虑Server的存在。
+> Java提供了便捷的动态代理接口InvocationHandler，实现该接口需要重写其调用方法invoke。  
+> 按照适用范围又可以分为四种：  
+>  
+> 1. **远程代理(Remote Proxy)**：为某个对象在不同的内存地址空间提供局部代理，使系统可以在Server部分的实现隐藏，以便Client可以不必考虑Server的存在。  
 > 2. **虚拟代理(Virtual Proxy)**：使用一个代理对象表示一个十分耗资源的对象并在真正需要时才创建。  
 >    比如打开一个很大的网页，该网页包含很多文字和图片，为了最快的打开网页，刚开始加载的只是文字，图片却一张一张地下载后才能看到。那些为打开的图片框，就是通过虚拟代理来替代了真实的图片，此时代理存储了真实图片的路径和尺寸。
-> 3. **保护代理(Protection Proxy)**：用来控制真实对象访问时的权限。
+> 3. **保护代理(Protection Proxy)**：用来控制真实对象访问时的权限。  
 > 4. **智能引用(Smart Preference)**：当调用真实的对象时，代理处理另外一些事。
 
 ## 2. UML图
 
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/design-pattern/proxy.png">
-    <figcaption>代理模式UML图</figcaption>
-</figure>
+![代理模式UML图](/assets/images/design-pattern/proxy.png)  
+<small>代理模式UML图</small>
 
 - Subject  
   抽象主题类。主要职责是声明真实主题与代理的共同接口方法，该类既可以是一个抽象类也可以是一个接口。
@@ -223,4 +214,4 @@ public interface IBookManager extends android.os.IInterface {
 }
 ```
 
-更多相关知识可以参考[IPC机制——Binder](/android/IPC%E6%9C%BA%E5%88%B6/#33-binder)
+更多相关知识可以参考[IPC机制——Binder](/android/framework/IPC机制/#33-binder)

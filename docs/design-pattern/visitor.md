@@ -1,13 +1,5 @@
 ---
 title: "访问者模式(Visitor)"
-excerpt: "封装一些作用与某种数据结构中各元素的操作，它可以在不改变这个数据结构的前提下定义作用于这些元素的新的操作"
-categories:
-  - Design Patterns
-tags:
-  - Visitor
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-06-14T20:49:19+08:00
 ---
 
 ## 1. 定义及使用场景
@@ -15,15 +7,14 @@ last_modified_at: 2018-06-14T20:49:19+08:00
 **封装一些作用与某种数据结构中各元素的操作，它可以在不改变这个数据结构的前提下定义作用于这些元素的新的操作。**
 
 使用场景
+
 - 对象结构比较稳定，但经常需要在此对象结构上定义新的操作
 - 需要对一个对象结构中的对象进行很多不同的并且不想管的操作，而需要避免这些操作“污染”这些对象的类，也不希望在增加新操作的时候修改这些类。
 
 ## 2. UML图
 
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/design-pattern/visitor.png">
-    <figcaption>访问者模式UML图</figcaption>
-</figure>
+![访问者模式UML图](/assets/images/design-pattern/visitor.png)  
+<small>访问者模式UML图</small>
 
 - Visitor  
   它定义了对每一个元素(Element)访问的行为，它的参数就是可以访问的元素，它的方法个数理论上来讲与元素个数是一样的。因此，访问者模式要求元素的类族要稳定，如果经常添加、移除元素类，必然会导致频繁的修改Visitor接口，如果出现这种情况，则说明不适合使用访问者模式。

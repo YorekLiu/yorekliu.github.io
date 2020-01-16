@@ -1,28 +1,18 @@
 ---
 title: "抽象工厂模式(Abstract factory)"
-excerpt: "为创建一组相关或者是相互依赖的对象提供一个接口，而不需要指定它们的具体类"
-categories:
-  - Design Patterns
-tags:
-  - Abstract factory
-toc: true
-toc_label: "目录"
-last_modified_at: 2018-06-12T16:49:19+08:00
 ---
 
 ## 1. 定义及使用场景
 
 **为创建一组相关或者是相互依赖的对象提供一个接口，而不需要指定它们的具体类。**
 
-使用场景：
+使用场景：  
 一个对象族有相同的约束时可以使用抽象工厂模式。比如，Android、iOS、Window Phone下都有拨号软件和短信软件，两者都属于软件的范畴，但是，它们所在的操作系统平台不一样，即便是同一家公司出品的软件，其代码的实现逻辑也是不同的，这时候就可以考虑使用抽象工厂模式来产生Android、iOS、Window Phone下的拨号软件和短信软件。
 
 ## 2. UML图
 
-<figure style="width: 66%" class="align-center">
-    <img src="/assets/images/design-pattern/abstract-factory.png">
-    <figcaption>抽象工厂方法模式UML图</figcaption>
-</figure>
+![抽象工厂方法模式UML图](/assets/images/design-pattern/abstract-factory.png)  
+<small>抽象工厂方法模式UML图</small>
 
 ## 3. 举个例子
 
