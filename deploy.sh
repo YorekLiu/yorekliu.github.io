@@ -1,33 +1,51 @@
-git checkout mkdocs
+#!/bin/bash
+        
+doCommit() {
+    git checkout mkdocs
 
-rm -rf site
+    rm -rf site
 
-mkdocs build
+    mkdocs build
 
-echo ">>>>>>> build in mkdocs branch success"
+    echo ">>>>>>> build in mkdocs branch success"
 
-git checkout master
+    git checkout master
 
-echo ">>>>>>> git branch"
+    echo ">>>>>>> git branch"
 
-git branch
+    git branch
 
-rm -rf docs/ mkdocs.yml serve.sh
+    rm -rf docs/ mkdocs.yml serve.sh
 
-echo ">>>>>>> copy site to root .."
-cp -a site/* .
-echo ">>>>>>> copy site to root success"
+    echo ">>>>>>> copy site to root .."
+    cp -a site/* .
+    echo ">>>>>>> copy site to root success"
 
-git add .
+    git add .
 
-echo ">>>>>>> ready commit in master"
-echo ">>>>>>> exec git status ."
+    echo ">>>>>>> ready commit in master"
+    echo ">>>>>>> exec git status ."
 
-git status .
+    git status .
 
-echo ">>>>>>> exec commit"
-git commit -m 'deploy from mkdocs'
+    echo ">>>>>>> exec commit"
+    git commit -m 'deploy from mkdocs'
 
-git push 
+    git push 
 
-git checkout mkdocs
+    git checkout mkdocs
+}
+
+read -r -p "Are you sure to deploy? [Y/N] " input
+
+case $input in
+    [Yy][Ee][Ss]|[Yy])
+        doCommit
+        ;;
+    
+    [Nn][Oo]|[Nn])
+        ;;
+        
+    *)
+        ;;
+esac
