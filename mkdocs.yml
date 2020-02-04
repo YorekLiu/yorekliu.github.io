@@ -239,3 +239,5 @@ nav:
       - java/generics-java-kotlin.md
       - java/java-collections.md
       - java/java-foundation.md
+    - Refactoring:
+      - refactoring/refactoring.md

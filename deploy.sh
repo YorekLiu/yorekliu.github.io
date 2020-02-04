@@ -34,6 +34,8 @@ doCommit() {
     git push 
 
     git checkout mkdocs
+
+    rm -rf site/
 }
 
 read -r -p "Are you sure to deploy? [Y/N] " input
