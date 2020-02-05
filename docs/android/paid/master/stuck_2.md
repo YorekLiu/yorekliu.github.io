@@ -39,3 +39,114 @@ title: "06 | 卡顿优化（下）：如何监控应用卡顿？"
 既然这样，那我们能否直接利用 Android Runtime 函数调用的回调事件，做一个自定义的 Traceview++ 呢？  
 答案是可以的，但是需要使用 Inline Hook 技术。我们可以实现类似 Nanoscope 先写内存的方案，但考虑到兼容性问题，这套方案并没有用到线上。  
 对于大体量的应用，稳定性是第一考虑因素。那如果在编译过程插桩，兼容性问题肯定是 OK 的。上一讲讲到 systrace 可以通过插桩自动生成 Trace Tag，我们一样也可以在函数入口和出口加入耗时监控的代码，但是需要考虑的细节有很多。
+
+- **避免方法数暴增**。在函数的入口和出口应该插入相同的函数，在编译时提前给代码中每个方法分配一个独立的 ID 作为参数。
+- **过滤简单的函数**。过滤一些类似直接 return、i++ 这样的简单函数，并且支持黑名单配置。对一些调用非常频繁的函数，需要添加到黑名单中来降低整个方案对性能的损耗。
+    ![](/assets/images/android/master/stuck_xxxx.png)
+
+基于性能的考虑，线上只会监控主线程的耗时。微信的 Matrix 使用的就是这个方案，因为做了大量的优化，所以最终安装包体积只增大 1～2%，平均帧率下降也在 2 帧以内。虽然插桩方案对性能的影响总体还可以接受，但只会在灰度包使用。
+
+插桩方案看起来美好，它也有自己的短板，那就是只能监控应用内自身的函数耗时，无法监控系统的函数调用，整个堆栈看起来好像“缺失了”一部分。
+
+#### 3. Profilo
+
+2018 年 3 月，Facebook 开源了一个叫[Profilo](https://github.com/facebookincubator/profilo)的库，它收集了各大方案的优点，令我眼前一亮。具体来说有以下几点：
+
+**第一，集成 atrace 功能**。ftrace 所有性能埋点数据都会通过 trace_marker 文件写入内核缓冲区，Profilo 通过 PLT Hook 拦截了写入操作，选择部分关心的事件做分析。这样所有 systrace 的探针我们都可以拿到，例如四大组件生命周期、锁等待时间、类校验、GC 时间等。
+
+**不过大部分的 atrace 事件都比较笼统，从事件“B|pid|activityStart”，我们并不知道具体是哪个 Activity 的创建**。同样我们可以统计 GC 相关事件的耗时，但是也不知道为什么发生了这次 GC。
+
+![stuck_profilo](/assets/images/android/master/stuck_profilo.jpg)
+
+**第二，快速获取 Java 堆栈。很多同学有一个误区，觉得在某个线程不断地获取主线程堆栈是不耗时的。但是事实上获取堆栈的代价是巨大的，它要暂停主线程的运行。**
+
+Profilo 的实现非常精妙，它实现类似 Native 崩溃捕捉的方式快速获取 Java 堆栈，通过间隔发送 SIGPROF 信号，整个过程如下图所示。
+
+![stuck_profilo_principle](/assets/images/android/master/stuck_profilo_principle.jpg)
+
+Signal Handler 捕获到信号后，拿取到当前正在执行的 Thread，通过 Thread 对象可以获取当前线程的 ManagedStack，ManagedStack 是一个单链表，它保存了当前的 ShadowFrame 或者 QuickFrame 栈指针，先依次遍历 ManagedStack 链表，然后遍历其内部的 ShadowFrame 或者 QuickFrame 还原一个可读的调用栈，从而 unwind 出当前的 Java 堆栈。通过这种方式，可以实现线程一边继续跑步，我们还可以帮它做检查，而且耗时基本忽略不计。代码可以参照：[Profilo::unwind](https://github.com/facebookincubator/profilo/blob/master/cpp/profiler/unwindc/android_712/arm/unwinder.h)和[StackVisitor::WalkStack](http://androidxref.com/7.1.1_r6/xref/art/runtime/stack.cc#772)。
+
+不用插桩、性能基本没有影响、捕捉信息还全，那 Profilo 不就是完美的化身吗？当然由于它利用了大量的黑科技，兼容性是需要注意的问题。它内部实现有大量函数的 Hook，unwind 也需要强依赖 Android Runtime 实现。Facebook 已经将 Profilo 投入到线上使用，但由于目前 Profilo 快速获取堆栈功能依然不支持 Android 8.0 和 Android 9.0，鉴于稳定性问题，建议采取抽样部分用户的方式来开启该功能。
+
+**先小结一下，不管我们使用哪种卡顿监控方法，最后我们都可以得到卡顿时的堆栈和当时 CPU 运行的一些信息。大部分的卡顿问题都比较好定位，例如主线程执行一个耗时任务、读一个非常大的文件或者是执行网络请求等。**
+
+### 其他监控
+
+除了主线程的耗时过长之外，我们还有哪些卡顿问题需要关注呢？
+
+Android Vitals 是 Google Play 官方的性能监控服务，涉及卡顿相关的监控有 ANR、启动、帧率三个。尤其是 ANR 监控，我们应该经常的来看看，主要是 Google 自己是有权限可以准确监控和上报 ANR。对于启动和帧率，Android Vitals 只是上报了应用的区间分布，但是不能归纳出问题。
+
+这也是我们做性能优化时比较迷惑的一点，即使发现整体的帧率比过去降低了 5 帧，也并不知道是哪里造成的，还是要花很大的力气去做二次排查。
+
+![stuck_vitals](/assets/images/android/master/stuck_vitals.png)
+
+能不能做到跟崩溃、卡顿一样，直接给我一个堆栈，告诉我就是因为这里写的不好导致帧率下降了 5 帧。退一步说，如果做不到直接告诉我堆栈，能不能告诉我是因为聊天这个页面导致的帧率下降，让我缩小二次排查的范围。
+
+#### 1. 帧率
+
+业界都使用 Choreographer 来监控应用的帧率。跟卡顿不同的是，需要排除掉页面没有操作的情况，我们应该只在 **界面存在绘制** 的时候才做统计。
+
+那么如何监听界面是否存在绘制行为呢？可以通过 addOnDrawListener 实现。
+
+```java
+getWindow().getDecorView().getViewTreeObserver().addOnDrawListener
+```
+
+我们经常用平均帧率来衡量界面流畅度，但事实上电影的帧率才 24 帧，用户对于应用的平均帧率是 40 帧还是 50 帧并不一定可以感受出来。对于用户来说，感觉最明显的是连续丢帧情况，Android Vitals 将连续丢帧超过 700 毫秒定义为冻帧，也就是连续丢帧 42 帧以上。
+
+因此，我们可以统计更有价值的冻帧率。**冻帧率就是计算发生冻帧时间在所有时间的占比**。出现丢帧的时候，我们可以获取当前的页面信息、View 信息和操作路径上报后台，降低二次排查的难度。
+
+正如下图一样，我们还可以按照 Activity、Fragment 或者某个操作定义场景，通过细化不同场景的平均帧率和冻帧率，进一步细化问题排查的范围。
+
+![stuck_frame_frozen](/assets/images/android/master/stuck_frame_frozen.png)
+
+#### 2. 生命周期监控
+
+Activity、Service、Receiver 组件生命周期的耗时和调用次数也是我们重点关注的性能问题。例如 Activity 的 onCreate() 不应该超过 1 秒，不然会影响用户看到页面的时间。Service 和 Receiver 虽然是后台组件，不过它们生命周期也是占用主线程的，也是我们需要关注的问题。
+
+对于组件生命周期我们应该采用更严格地监控，可以全量上报。在后台我们可以看到各个组件各个生命周期的启动时间和启动次数。
+
+![stuck_lifecycle](/assets/images/android/master/stuck_lifecycle.png)
+
+有一次我们发现有两个 Service 的启动次数是其他的 10 倍，经过排查发现是因为频繁的互相拉起导致。Receiver 也是这样，而且它们都需要经过 System Server。曾经有一个日志上报模块通过 Broadcast 来做跨进程通信，每秒发送几千次请求，导致系统 System Server 卡死。所以说每个组件各个生命周期的调用次数也是非常有参考价值的指标。
+
+除了四大组件的生命周期，我们还需要监控各个进程生命周期的启动次数和耗时。通过下面的数据，我们可以看出某些进程是否频繁地拉起。
+
+![stuck_process](/assets/images/android/master/stuck_process.png)
+
+对于生命周期的监控实现，我们可以利用插件化技术 Hook 的方式。但是 Android P 之后，我还是不太推荐你使用这种方式。我更推荐使用编译时插桩的方式，**后面我会讲到 Aspect、ASM 和 ReDex 三种插桩技术的实现，敬请期待**。
+
+#### 3. 线程监控
+
+Java 线程管理是很多应用非常头痛的事情，应用启动过程就已经创建了几十上百个线程。而且大部分的线程都没有经过线程池管理，都在自由自在地狂奔着。
+
+另外一方面某些线程优先级或者活跃度比较高，占用了过多的 CPU。这会降低主线程 UI 响应能力，我们需要特别针对这些线程做重点的优化。
+
+对于 Java 线程，总的来说我会监控以下两点。
+
+- 线程数量。需要监控线程数量的多少，以及创建线程的方式。例如有没有使用我们特有的线程池，这块可以通过 got hook 线程的 nativeCreate() 函数。主要用于进行线程收敛，也就是减少线程数量。
+
+- 线程时间。监控线程的用户时间 utime、系统时间 stime 和优先级。主要是看哪些线程 utime+stime 时间比较多，占用了过多的 CPU。**正如上一期“每课一练”所提到的，可能有一些线程因为生命周期很短导致很难发现，这里我们需要结合线程创建监控**。
+
+![stuck_thread](/assets/images/android/master/stuck_thread.png)
+
+**看到这里可能有同学会比较困惑，卡顿优化的主题就是监控吗？导致卡顿的原因会有很多，比如函数非常耗时、I/O 非常慢、线程间的竞争或者锁等。其实很多时候卡顿问题并不难解决，相较解决来说，更困难的是如何快速发现这些卡顿点，以及通过更多的辅助信息找到真正的卡顿原因。**
+
+就跟在本地使用各种卡顿分析工具一样，卡顿优化的难点在于如何把它们移植到线上，以最少的性能代价获得更加丰富的卡顿信息。当然某些卡顿问题可能是 I/O、存储或者网络引发的，后面会还有专门的内容来讲这些问题的优化方法。
+
+### 总结
+
+今天我们学习了卡顿监控的几种方法。随着技术的深入，我们发现了旧方案的一些缺点，通过不断地迭代和演进，寻找更好的方案。
+
+Facebook 的 Profilo 实现了快速获取 Java 堆栈，其实它参考的是 JVM 的 AsyncGetCallTrace 思路，然后适配 Android Runtime 的实现。systrace 使用的是 Linux 的 ftrace，Simpleperf 参考了 Linux 的 perf 工具。还是熟悉的配方，还是熟悉的味道，我们很多创新性的东西，其实还是基于 Java 和 Linux 十年前的产物。
+
+还是回到我在专栏开篇词说过的，切记不要浮躁，多了解和学习一些底层的技术，对我们的成长会有很大帮助。日常开发中我们也不能只满足于完成需求就可以了，在实现上应该学会多去思考内存、卡顿这些影响性能的点，我们比别人多想一些、多做一些，自己的进步自然也会更快一些。
+
+### 课后练习
+
+我在上一期中提到过 Linux 的 ftrace 机制，而 systrace 正是利用这个系统机制实现的。而 Profilo 更是通过一些黑科技，实现了一个可以用于线上的“systrace”。那它究竟是怎么实现的呢？
+
+通过今天这个[Sample](https://github.com/AndroidAdvanceWithGeektime/Chapter06)，你可以学习到它的实现思路。当你对这些底层机制足够熟悉的时候，可能就不局限在本地使用，而是可以将它们搬到线上了。当然，为了能更好地理解这个 Sample，可能你还需要补充一些 ftrace 和 atrace 相关的背景知识。你会发现这些的确都是 Linux 十年前的一些知识，但时至今日它们依然非常有用。
+
+1. [ftrace 简介](https://www.ibm.com/developerworks/cn/linux/l-cn-ftrace/index.html)、[ftrace 使用（上）](https://www.ibm.com/developerworks/cn/linux/l-cn-ftrace1/index.html)、[frace 使用（下）](https://www.ibm.com/developerworks/cn/linux/l-cn-ftrace2/index.html)。
+2. [atrace 介绍](http://source.android.com/devices/tech/debug/ftrace)、[atrace 实现](http://android.googlesource.com/platform/frameworks/native/+/master/cmds/atrace/atrace.cpp)。
