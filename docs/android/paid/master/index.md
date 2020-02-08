@@ -13,7 +13,7 @@ title: "Android开发高手课"
 6. [卡顿优化（下）：如何监控应用卡顿？](/android/paid/master/stuck_2)
 7. [卡顿优化：卡顿现场与卡顿分析](/android/paid/master/stuck_3)
 8. [启动优化（上）：从启动过程看启动速度优化](/android/paid/master/start_1)
-9. 启动优化（下）：优化启动速度的进阶方法
+9. [启动优化（下）：优化启动速度的进阶方法](/android/paid/master/start_2)
 10. I/O优化（上）：开发工程师必备的I/O优化知识
 11. I/O优化（中）：不同I/O方式的使用场景是什么？
 12. I/O优化（下）：如何监控线上I/O操作？
