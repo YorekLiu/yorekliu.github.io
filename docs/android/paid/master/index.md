@@ -19,10 +19,10 @@ title: "Android开发高手课"
 12. [I/O优化（下）：如何监控线上I/O操作？](/android/paid/master/io_3)
 13. [存储优化（上）：常见的数据存储方法有哪些？](/android/paid/master/storage_1)
 14. [存储优化（中）：如何优化数据存储？](/android/paid/master/storage_2)
-15. 存储优化（下）：数据库SQLite的使用和优化
-16. 网络优化（上）：移动开发工程师必备的网络优化知识
-17. 网络优化（中）：复杂多变的移动网络该如何优化？
-18. 网络优化（下）：大数据下网络该如何监控？
+15. [存储优化（下）：数据库SQLite的使用和优化](/android/paid/master/storage_3)
+16. [网络优化（上）：移动开发工程师必备的网络优化知识](/android/paid/master/network_1)
+17. [网络优化（中）：复杂多变的移动网络该如何优化？](/android/paid/master/network_2)
+18. [网络优化（下）：大数据下网络该如何监控？](/android/paid/master/network_3)
 19. 耗电优化（上）：从电量优化的演进看耗电分析
 20. 耗电优化（下）：耗电的优化方法与线上监控
 21. UI 优化（上）：UI 渲染的几个关键概念

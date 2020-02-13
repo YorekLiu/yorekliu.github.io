@@ -153,6 +153,10 @@ nav:
         - android/paid/master/io_3.md
         - android/paid/master/storage_1.md
         - android/paid/master/storage_2.md
+        - android/paid/master/storage_3.md
+        - android/paid/master/network_1.md
+        - android/paid/master/network_2.md
+        - android/paid/master/network_3.md
     - 日常记录:
       - android/other/android_alias.md
       - android/other/Android-Development-Tool.md
@@ -195,6 +199,7 @@ nav:
     - leetcode/code_interviews_4.md
     - leetcode/code_interviews_5.md
     - leetcode/code_interviews_6.md
+    - leetcode/array.md
     - leetcode/leetcode1-10.md
     - leetcode/leetcode11-20.md
     - leetcode/leetcode21-30.md
@@ -239,6 +244,7 @@ nav:
       - effective-java/effective-java.md
       - effective-java/chapter1.md
       - effective-java/chapter2.md
+      - effective-java/chapter3.md
     - JVM:
       - jvm/jvm-content.md
       - jvm/java-memory-area-oom.md

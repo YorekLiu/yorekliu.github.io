@@ -31,16 +31,16 @@ title: "Effective Java概述"
 &emsp;[12. 考虑实现Comparable接口](/effective-java/chapter2/#comparable)
 
 **[3. 类和接口](/effective-java/chapter3/)**  
-&emsp;[13. 使类和成员的可访问性最小化](/effective-java/chapter3/#第十三条使类和成员的可访问性最小化)  
-&emsp;[14. 在公有类中使用访问方法而非公有域](/effective-java/chapter3/#第十四条在公有类中使用访问方法而非公有域)  
-&emsp;[15. 使可变性最小化](/effective-java/chapter3/#第十五条使可变性最小化)  
-&emsp;[16. 复合优先于继承](/effective-java/chapter3/#第十六条复合优先于继承)  
-&emsp;[17. 要么为继承设计，并提供文档说明；要么就禁止继承](/effective-java/chapter3/#第十七条要么为继承设计并提供文档说明要么就禁止继承)  
-&emsp;[18. 接口优先于抽象类](/effective-java/chapter3/#第十八条接口优先于抽象类)  
-&emsp;[19. 接口只用于定义类型](/effective-java/chapter3/#第十九条接口只用于定义类型)  
-&emsp;[20. 类层次优先于标签类](/effective-java/chapter3/#第二十条类层次优先于标签类)  
-&emsp;[21. 用函数对象表示策略](/effective-java/chapter3/#第二十一条用函数对象表示策略)  
-&emsp;[22. 优先考虑静态成员类](/effective-java/chapter3/#第二十二条优先考虑静态成员类)
+&emsp;[13. 使类和成员的可访问性最小化](/effective-java/chapter3/#_1)  
+&emsp;[14. 在公有类中使用访问方法而非公有域](/effective-java/chapter3/#_2)  
+&emsp;[15. 使可变性最小化](/effective-java/chapter3/#_3)  
+&emsp;[16. 复合优先于继承](/effective-java/chapter3/#_4)  
+&emsp;[17. 要么为继承设计，并提供文档说明；要么就禁止继承](/effective-java/chapter3/#_5)  
+&emsp;[18. 接口优先于抽象类](/effective-java/chapter3/#_6)  
+&emsp;[19. 接口只用于定义类型](/effective-java/chapter3/#_7)  
+&emsp;[20. 类层次优先于标签类](/effective-java/chapter3/#_8)  
+&emsp;[21. 用函数对象表示策略](/effective-java/chapter3/#_9)  
+&emsp;[22. 优先考虑静态成员类](/effective-java/chapter3/#_10)
 
 **4. 泛型**  
 &emsp;23. 不要在新代码中使用原生态类型  
