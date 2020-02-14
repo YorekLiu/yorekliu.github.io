@@ -23,10 +23,10 @@ title: "Android开发高手课"
 16. [网络优化（上）：移动开发工程师必备的网络优化知识](/android/paid/master/network_1)
 17. [网络优化（中）：复杂多变的移动网络该如何优化？](/android/paid/master/network_2)
 18. [网络优化（下）：大数据下网络该如何监控？](/android/paid/master/network_3)
-19. 耗电优化（上）：从电量优化的演进看耗电分析
-20. 耗电优化（下）：耗电的优化方法与线上监控
-21. UI 优化（上）：UI 渲染的几个关键概念
-22. UI 优化（下）：如何优化 UI 渲染？
+19. [耗电优化（上）：从电量优化的演进看耗电分析](/android/paid/master/battery_1)
+20. [耗电优化（下）：耗电的优化方法与线上监控](/android/paid/master/battery_2)
+21. [UI 优化（上）：UI 渲染的几个关键概念](/android/paid/master/ui_1)
+22. [UI 优化（下）：如何优化 UI 渲染？](/android/paid/master/ui_2)
 23. 包体积优化（上）：如何减少安装包大小？
 24. 包体积优化（下）：资源优化的进阶实践
 25. 想成为Android高手，你需要先搞定这三个问题
