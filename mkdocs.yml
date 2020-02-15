@@ -161,6 +161,8 @@ nav:
         - android/paid/master/battery_2.md
         - android/paid/master/ui_1.md
         - android/paid/master/ui_2.md
+        - android/paid/master/package_1.md
+        - android/paid/master/package_2.md
     - 日常记录:
       - android/other/android_alias.md
       - android/other/Android-Development-Tool.md

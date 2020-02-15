@@ -27,8 +27,8 @@ title: "Android开发高手课"
 20. [耗电优化（下）：耗电的优化方法与线上监控](/android/paid/master/battery_2)
 21. [UI 优化（上）：UI 渲染的几个关键概念](/android/paid/master/ui_1)
 22. [UI 优化（下）：如何优化 UI 渲染？](/android/paid/master/ui_2)
-23. 包体积优化（上）：如何减少安装包大小？
-24. 包体积优化（下）：资源优化的进阶实践
+23. [包体积优化（上）：如何减少安装包大小？](/android/paid/master/package_1)
+24. [包体积优化（下）：资源优化的进阶实践]((/android/paid/master/package_2))
 25. 想成为Android高手，你需要先搞定这三个问题
 
 高效开发：
