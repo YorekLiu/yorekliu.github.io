@@ -107,7 +107,7 @@ println("A.getType() = ${object : A<Int>(){}.getType()}")
 A.getType() = class java.lang.Integer
 ```
 
-## extends、super通配符
+### extends、super通配符
 
 extends、super与通配符 `?` 搭配可以造成不同的效果。  
 
@@ -175,10 +175,30 @@ extends、super与通配符 `?` 搭配可以造成不同的效果。
 > Consumer Super 说的是当你的场景是消费者类型，需要存入资源以供消费时，我们建议使用 `super` 通配符，因为使用 `super `通配符的类型更适合存入资源。  
 > 但如果你既想存入，又想取出，那么你最好还是不要使用 `extends` 或 `super` 通配符。
 
-## 类型擦除
+### 类型擦除
 
 Java的泛型是伪泛型，这是因为Java在编译期间，所有的泛型信息都会被擦掉，正确理解泛型概念的首要前提是理解类型擦除。Java的泛型基本上都是在编译器这个层次上实现的，在生成的字节码中是不包含泛型中的类型信息的，使用泛型的时候加上类型参数，在编译器编译的时候会去掉，这个过程成为类型擦除。
 
 如在代码中定义`List<Object>`和`List<String>`等类型，在编译后都会变成`List`，JVM看到的只是`List`，而由泛型附加的类型信息对JVM是看不到的。Java编译器会在编译时尽可能的发现可能出错的地方，但是仍然无法在运行时刻出现的类型转换异常的情况，类型擦除也是Java的泛型与C++模板机制实现方式之间的重要区别。
 
 原始类型就是擦除去了泛型信息，最后在字节码中的类型变量的真正类型，无论何时定义一个泛型，相应的原始类型都会被自动提供，类型变量擦除，并使用其限定类型（无限定的变量用Object）替换。
+
+## 注解
+
+下面是使用Kotlin和Java编写同一个注解的例子：
+
+``` kotlin tab="kotlin"
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.FUNCTION)
+annotation class Post(
+    val domain: String = "default",
+    val path: String
+)
+```
+
+``` java tab="java"
+public @interface Post {
+    String domain()  default "default";
+    String path();
+}
+```
