@@ -28,14 +28,14 @@ title: "Android开发高手课"
 21. [UI 优化（上）：UI 渲染的几个关键概念](/android/paid/master/ui_1)
 22. [UI 优化（下）：如何优化 UI 渲染？](/android/paid/master/ui_2)
 23. [包体积优化（上）：如何减少安装包大小？](/android/paid/master/package_1)
-24. [包体积优化（下）：资源优化的进阶实践]((/android/paid/master/package_2))
+24. [包体积优化（下）：资源优化的进阶实践](/android/paid/master/package_2)
 25. 想成为Android高手，你需要先搞定这三个问题
 
 高效开发：
 
 26. 如何提升组织与个人的研发效能？
-27. 关于编译，你需要了解什么？
-28. 编译插桩的三种方法：AspectJ、ASM、ReDex
+27. [关于编译，你需要了解什么？](/android/paid/master/compile)
+28. [编译插桩的三种方法：AspectJ、ASM、ReDex](/android/paid/master/bytecode)
 29. 大数据与AI，如何高效地测试？
 30. 从每月到每天，如何给版本发布提速？
 31. 数据评估（上）：如何实现高可用的上报组件？
