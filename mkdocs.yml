@@ -257,6 +257,8 @@ nav:
       - jvm/jvm-content.md
       - jvm/java-memory-area-oom.md
       - jvm/java-gc.md
+      - jvm/class-struct.md
+      - jvm/load-class.md
     - Java:
       - java/generics-java-kotlin.md
       - java/java-collections.md
