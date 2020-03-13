@@ -12,7 +12,7 @@ title: "抽象工厂模式(Abstract factory)"
 ## 2. UML图
 
 ![抽象工厂方法模式UML图](/assets/images/design-pattern/abstract-factory.png)  
-<small>抽象工厂方法模式UML图</small>
+<center>抽象工厂方法模式UML图</center>
 
 ## 3. 举个例子
 

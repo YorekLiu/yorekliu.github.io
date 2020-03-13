@@ -14,7 +14,7 @@ title: "解释器模式(Interpreter)"
 ## 2. UML图
 
 ![解释器模式UML图](/assets/images/design-pattern/interpreter.png)  
-<small>解释器模式UML图</small>
+<center>解释器模式UML图</center>
 
 - AbstractExpression  
   抽象表达式。声明一个抽象的解释操作父类，并定义一个抽象的解释方法，其具体的实现在各个具体的子类解释器中完成

@@ -26,7 +26,7 @@ title: "桥接模式(Bridge)"
 ## 2. UML图
 
 ![桥接模式UML图](/assets/images/design-pattern/bridge.png)  
-<small>桥接模式UML图</small>
+<center>桥接模式UML图</center>
 
 - Abstraction  
   抽象部分  

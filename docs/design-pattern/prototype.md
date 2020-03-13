@@ -20,7 +20,7 @@ title: "原型模式(Prototype)"
 ## 2. UML图
 
 ![原型模式UML图](/assets/images/design-pattern/prototype.png)  
-<small>原型模式UML图</small>
+<center>原型模式UML图</center>
 
 - Client  
   客户端角色

@@ -19,7 +19,7 @@ Memento模式比较适用于功能比较复杂的，但需要维护和记录属�
 ## 2. UML图
 
 ![备忘录模式UML图](/assets/images/design-pattern/memento.png)  
-<small>备忘录模式UML图</small>
+<center>备忘录模式UML图</center>
 
 - Originator  
   负责创建一个备忘录，可以记录、恢复自身的内部状态。同时还可以根据需要决定Memento存储自身哪些内部状态

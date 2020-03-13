@@ -212,7 +212,7 @@ class Solution {
 > Given *n* non-negative integers representing the histogram's bar height where the width of each bar is 1, find the area of largest rectangle in the histogram.  
 > ![容器中数据被中间的一个或两个数据分隔成为两部分](/assets/images/leetcode/question_84_1.png)  
 > ![容器中数据被中间的一个或两个数据分隔成为两部分](/assets/images/leetcode/question_84_2.png)  
-> <small>1. Above is a histogram where width of each bar is 1, given height = `[2,1,5,6,2,3]`.<br />2. The largest rectangle is shown in the shaded area, which has area = `10` unit.</small>  
+> <center>1. Above is a histogram where width of each bar is 1, given height = `[2,1,5,6,2,3]`.<br />2. The largest rectangle is shown in the shaded area, which has area = `10` unit.</center>  
 
 **Example:**
 
@@ -227,7 +227,7 @@ class Solution {
 
 ![(lessFromRight[i] - lessFromLeft[i] - 1)的意义](/assets/images/leetcode/question_84_3.png)
 
-<small>(lessFromRight[i] - lessFromLeft[i] - 1)的意义</small>
+<center>(lessFromRight[i] - lessFromLeft[i] - 1)的意义</center>
 
 这样就容易理解为什么lessFromLeft[i]的默认值为-1，lessFromRight[i]的默认值为n了。
 

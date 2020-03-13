@@ -70,7 +70,7 @@ PorterDuff.Mode.DARKEN, PorterDuff.Mode.LIGHTEN
 <img src="/assets/images/android/src.png">
 <img src="/assets/images/android/dst.png">
 
-<small>Source image & Destination image</small>
+<center>Source image & Destination image</center>
 
 然后就是测试代码了：  
 
@@ -214,7 +214,7 @@ class PorterDuffActivity : AppCompatActivity() {
 
 测试结果如下：
 
-<small>KK到Q版本PorterDuff表现的异同</small>
+<center>KK到Q版本PorterDuff表现的异同</center>
 
 <table>
   <thead>

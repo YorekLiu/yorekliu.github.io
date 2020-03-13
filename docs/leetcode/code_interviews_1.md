@@ -570,7 +570,7 @@ private static void levelIterative(BinaryTreeNode node) {
     前序+中序、后序+中序、层序+中序都可以重建二叉树，但是前序+后序不行。
 
 ![一个二叉树例子](/assets/images/leetcode/ci_binary_tree_7.png)  
-<small>一个二叉树例子</small>
+<center>一个二叉树例子</center>
 
 算法思路是先根据前序序列找到根节点，然后在中序序列中找到该节点，其左边的就是树的左子树，右边就是右子树。
 
@@ -628,7 +628,7 @@ private BinaryTreeNode constructCore(
 下图中二叉树的中序遍历序列是{d, b, h, e, i, a, f, c, g}。
 
 ![一颗有9个节点的二叉树](/assets/images/leetcode/ci_binary_tree_8.png)  
-<small>一颗有9个节点的二叉树</small>
+<center>一颗有9个节点的二叉树</center>
 
 我们以上面这颗树为例分析如何找出二叉树的下一个节点。  
 
@@ -822,7 +822,7 @@ private long Fibonacci_Solution1(int n) {
 
 ![基于递归求斐波那契数列第10项的调用过程](/assets/images/leetcode/fibonacci_recursive.png)
 
-<small>基于递归求斐波那契数列第10项的调用过程</small>
+<center>基于递归求斐波那契数列第10项的调用过程</center>
 
 我们不难发现，在这棵树中有很多节点都是重复的，而且重复的节点数会随着n的增大而急剧增加。  
 该算法时间复杂度是O(2^n)  
@@ -926,7 +926,7 @@ private long Fibonacci_Solution3(int n) {
     我们可以用2x1的小矩形横着或者竖着去覆盖更大的矩形。请问用8个2x1的小矩形无重叠地覆盖一个2x8的大矩形有多少种覆盖方法。  
     $f(8)=f(7)+f(6)$  
     ![一个2x1的矩形和2x8的矩形](/assets/images/leetcode/fibonacci_relate_problem.png)  
-    <small>一个2x1的矩形和2x8的矩形</small>
+    <center>一个2x1的矩形和2x8的矩形</center>
 
 上面两个题目都是斐波那契数列的例子。
 

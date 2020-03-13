@@ -30,7 +30,7 @@ title: "易混淆的设计模式"
 ![简单工厂模式、工厂方法模式、抽象工厂模式UML图](/assets/images/design-pattern/simple-factory.png)  
 ![简单工厂模式、工厂方法模式、抽象工厂模式UML图](/assets/images/design-pattern/factory-method.png)  
 ![简单工厂模式、工厂方法模式、抽象工厂模式UML图](/assets/images/design-pattern/abstract-factory.png)  
-<small>简单工厂模式、工厂方法模式、抽象工厂模式UML图</small>
+<center>简单工厂模式、工厂方法模式、抽象工厂模式UML图</center>
 
 ## 2.  代理、装饰、桥接模式
 
@@ -50,7 +50,7 @@ title: "易混淆的设计模式"
 ![代理模式、装饰模式、桥接模式UML图](/assets/images/design-pattern/proxy.png)  
 ![代理模式、装饰模式、桥接模式UML图](/assets/images/design-pattern/decorator.png)  
 ![代理模式、装饰模式、桥接模式UML图](/assets/images/design-pattern/bridge.png)  
-<small>代理模式、装饰模式、桥接模式UML图</small>
+<center>代理模式、装饰模式、桥接模式UML图</center>
 
 > **代理模式** 侧重于修改、控制对象的执行过程，也就是隐藏了对被代理对象的一些逻辑控制。  
 > **装饰模式** 就是动态地加强目标对象的某些功能，避免为了某个功能而创建一个子类。  
@@ -75,7 +75,7 @@ title: "易混淆的设计模式"
 
 ![外观模式、中介模式UML图](/assets/images/design-pattern/facade.png)  
 ![外观模式、中介模式UML图](/assets/images/design-pattern/mediator.png)  
-<small>外观模式、中介模式UML图</small>
+<center>外观模式、中介模式UML图</center>
 
 其实从上述的模式定义中我们就能够很清晰地发现它们的区别，外观模式重点是对外封装统一的高层接口，便于用户使用。  
 而中介模式则是避免多个互相协作的对象直接引用，它们之间的交互是通过一个中介对象进行，从而使得它们耦合松散，能够易于应对变化。
@@ -93,7 +93,7 @@ title: "易混淆的设计模式"
 ![策略模式、状态模式、命令模式UML图](/assets/images/design-pattern/strategy.png)  
 ![策略模式、状态模式、命令模式UML图](/assets/images/design-pattern/state.png)  
 ![策略模式、状态模式、命令模式UML图](/assets/images/design-pattern/command.png)  
-<small>策略模式、状态模式、命令模式UML图</small>
+<center>策略模式、状态模式、命令模式UML图</center>
 
 我们先看看策略与状态模式，它们的类图居然是一样的。虽然它们类型接口一样，但是它们的本质不一样。  
 策略模式重在整个算法的替换，也就是策略替换。  

@@ -807,5 +807,5 @@ class NestedScrollingLinearLayout(
     <img src="/assets/images/android/nestedscrolling-demo-v1.gif">
     <img src="/assets/images/android/nestedscrolling-demo-v2.gif">
 
-    <small>NestedScrollingParent v1 & v2 实现效果</small>
+    <center>NestedScrollingParent v1 & v2 实现效果</center>
 </figure>

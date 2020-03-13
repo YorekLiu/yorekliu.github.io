@@ -15,7 +15,7 @@ title: "中介者模式(Mediator)"
 ## 2. UML图
 
 ![中介者模式UML图](/assets/images/design-pattern/mediator.png)  
-<small>中介者模式UML图</small>
+<center>中介者模式UML图</center>
 
 - Mediator  
   抽象中介者角色，定义了同事对象到中介者对象的接口，一般以抽象类的方式实现

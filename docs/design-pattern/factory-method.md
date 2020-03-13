@@ -18,7 +18,7 @@ title: "工厂方法模式(Factory method)"
 ## 2. UML图
 
 ![工厂方法模式UML图](/assets/images/design-pattern/factory-method.png)  
-<small>工厂方法模式UML图</small>
+<center>工厂方法模式UML图</center>
 
 ## 3. 举个例子
 我们需要组装各种一个牌子的几个款式的汽车，我们可以这样。

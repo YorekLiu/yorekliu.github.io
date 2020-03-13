@@ -15,7 +15,7 @@ title: "迭代器模式(Iterator)"
 ## 2. UML图
 
 ![迭代器模式UML图](/assets/images/design-pattern/iterator.png)  
-<small>迭代器模式UML图</small>
+<center>迭代器模式UML图</center>
 
 - Iterator  
   迭代器接口。迭代器接口负责定义、访问和遍历元素的接口

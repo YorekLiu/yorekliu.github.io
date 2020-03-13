@@ -677,7 +677,7 @@ private void unsubscribeByEventType(Object subscriber, Class<?> eventType) {
 > 也就是说，如果子进程内部调用了跨进程EventBus进行事件分发的话，会在两次IPC之后再由改子进程内部的EventBus进行触发。这两次IPC是：子进程向主进程Service发出消息，主进程Service接收到消息后向所有进程进行分发。
 
 ![跨进程EventBus](/assets/images/android/cross_process_eventbus.png)  
-<small>跨进程EventBus</small>
+<center>跨进程EventBus</center>
 
 ### 3.1 简单实现
 

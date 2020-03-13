@@ -464,7 +464,7 @@ class Solution {
 
 ![例1解题过程](/assets/images/leetcode/question_97_solution.png)
 
-<small>例1解题过程</small>
+<center>例1解题过程</center>
 
 Runtime 2 ms.
 

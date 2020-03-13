@@ -17,7 +17,7 @@ title: "命令模式(Command)"
 ## 2. UML图
 
 ![命令模式UML图](/assets/images/design-pattern/command.png)  
-<small>命令模式UML图</small>
+<center>命令模式UML图</center>
 
 - Receiver  
   接受者。负责具体实施或执行一个请求

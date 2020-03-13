@@ -19,7 +19,7 @@ title: "适配器模式(Adapter)"
 
 ![类适配器与对象适配器](/assets/images/design-pattern/class-adapter.png)  
 ![类适配器与对象适配器](/assets/images/design-pattern/object-adapter.png)  
-<small>类适配器与对象适配器</small>
+<center>类适配器与对象适配器</center>
 
 ## 3. 举个例子
 做一个简单的220V to 5V的充电器

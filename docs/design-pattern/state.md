@@ -15,7 +15,7 @@ title: "状态模式(State)"
 ## 2. UML图
 
 ![状态模式UML图](/assets/images/design-pattern/state.png)  
-<small>状态模式UML图</small>
+<center>状态模式UML图</center>
 
 - Context  
   用来操作策略的环境

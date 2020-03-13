@@ -16,7 +16,7 @@ title: "外观模式(Facade)"
 ## 2. UML图
 
 ![外观模式UML图](/assets/images/design-pattern/facade.png)  
-<small>外观模式UML图</small>
+<center>外观模式UML图</center>
 
 - Facade  
   系统对外的统一接口，系统内部系统地工作

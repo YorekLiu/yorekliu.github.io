@@ -19,7 +19,7 @@ title: "模版方法模式(Template method)"
 ## 2. UML图
 
 ![模版方法模式UML图](/assets/images/design-pattern/template-method.png)  
-<small>模版方法模式UML图</small>
+<center>模版方法模式UML图</center>
 
 - AbsTemplate  
   抽象类，定义了一套算法框架

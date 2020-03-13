@@ -14,7 +14,7 @@ title: "策略模式(Strategy)"
 ## 2. UML图
 
 ![策略模式UML图](/assets/images/design-pattern/strategy.png)  
-<small>策略模式UML图</small>
+<center>策略模式UML图</center>
 
 - Context  
   用来操作策略的环境

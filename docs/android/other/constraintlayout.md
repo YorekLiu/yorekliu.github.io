@@ -20,7 +20,7 @@ ConstraintLayout最基本的相对定位功能都足以替代RelativeLayout，�
 
 ![图1 相对定位例子](/assets/images/android/constraintlayout-relative-position-example.png)
 
-<small>图1 相对定位例子</small>
+<center>图1 相对定位例子</center>
 
 xml代码如下：
 
@@ -36,7 +36,7 @@ xml代码如下：
 
 ![图2 相对定位约束](/assets/images/android/constraintlayout-relative-positioning-constraints.png)
 
-<small>图2 相对定位约束</small>
+<center>图2 相对定位约束</center>
 
 - `layout_constraintLeft_toLeftOf`
 - `layout_constraintLeft_toRightOf`
@@ -58,7 +58,7 @@ xml代码如下：
 
 ![图3 相对定位的margin](/assets/images/android/constraintlayout-relative-positioning-margin.png)
 
-<small>图3 相对定位的margin</small>
+<center>图3 相对定位的margin</center>
 
 如果设置了margin，它们将会作用于对应的约束上（图3），将边距强制作为为目标和源之间的空间。通常有如下属性：
 
@@ -108,7 +108,7 @@ xml代码如下：
     <img src="/assets/images/android/constraintlayout-margin-gone-example-2.png">
 </figure>
 
-<small>gone margin 对不同可见性的约束目标的作用</small>
+<center>gone margin 对不同可见性的约束目标的作用</center>
 
 ## 3. 居中和偏移(Bias)
 
@@ -128,7 +128,7 @@ ConstraintLayout一个有用的方面在于如何处理“不可能”的约束�
 
 ![图4 居中定位](/assets/images/android/constraintlayout-centering-positioning.png)
 
-<small>图4 居中定位</small>
+<center>图4 居中定位</center>
 
 值得一提的是，在这两个约束的前提下，如果上面的Button的`layout_width`不同，效果也不同。如下所示：
 
@@ -136,7 +136,7 @@ ConstraintLayout一个有用的方面在于如何处理“不可能”的约束�
 <img src="/assets/images/android/constraintlayout-center-match-parent.png">
 <img src="/assets/images/android/constraintlayout-center-0dp.png">
 
-<small>wrap content、match parent、0dp时的效果</small>
+<center>wrap content、match parent、0dp时的效果</center>
 
 
 ### 3.1 偏移(Bias)
@@ -150,7 +150,7 @@ ConstraintLayout一个有用的方面在于如何处理“不可能”的约束�
 
 ![图5 调整了bias的居中定位](/assets/images/android/constraintlayout-centering-positioning-bias.png)
 
-<small>图5 调整了bias的居中定位</small>
+<center>图5 调整了bias的居中定位</center>
 
 ```xml
 <android.support.constraint.ConstraintLayout ...> 
@@ -174,7 +174,7 @@ ConstraintLayout一个有用的方面在于如何处理“不可能”的约束�
 <img src="/assets/images/android/constraintlayout-circle1.png" style="border: none">
 <img src="/assets/images/android/constraintlayout-circle2.png" style="border: none">
     
-<small>图6 圆形定位</small>
+<center>图6 圆形定位</center>
 
 ```xml
 <Button android:id="@+id/buttonA" ... /> 
@@ -197,7 +197,7 @@ ConstraintLayout对标记为`View.GONE`的Widget有特定处理。
 
 ![图7 可见性行为](/assets/images/android/constraintlayout-visibility-behavior.png)
 
-<small>图7 可见性行为</small>
+<center>图7 可见性行为</center>
 
 这种特定的行为允许我们在构建布局时暂时将widget标记为GONE，而不会破坏布局（图7），这在进行简单的布局动画时尤其有用。 
 
@@ -228,7 +228,7 @@ widget的尺寸可以通过设置`android:layout_width`和`android:layout_height
 
 ![图8 尺寸约束](/assets/images/android/constraintlayoutdimension-match-constraints.png)
 
-<small>图8 尺寸约束</small>
+<center>图8 尺寸约束</center>
 
 **重要：** 对于包含在ConstraintLayout中的Widget来说，不建议使用`MATCH_PARENT`。可以通过使用`MATCH_CONSTRAINT`来定义类似的行为，其中相应的left/right或top/bottom约束被设置为“`parent`”。
 
@@ -269,7 +269,7 @@ widget的尺寸可以通过设置`android:layout_width`和`android:layout_height
 <img src="/assets/images/android/constraintlayout-constrainted-width-before.png" style="border: none">
 <img src="/assets/images/android/constraintlayout-constrainted-width-after.png" style="border: none">
 
-<small>约束width前 & 约束width后</small>
+<center>约束width前 & 约束width后</center>
 
 ### 6.4 MATCH_CONSTRAINT 尺寸（1.1新增）
 
@@ -348,7 +348,7 @@ widget的尺寸可以通过设置`android:layout_width`和`android:layout_height
 
 ![图9 链](/assets/images/android/constraintlayout-chains.png)
 
-<small>图9 链</small>
+<center>图9 链</center>
 
 <p>&nbsp;</p><font size="3"><b>链头 (Chain heads)</b></font>  
 
@@ -356,7 +356,7 @@ widget的尺寸可以通过设置`android:layout_width`和`android:layout_height
 
 ![图10 链头](/assets/images/android/constraintlayout-chains-head.png)
 
-<small>图10 链头</small>
+<center>图10 链头</center>
 
 水平链上最左边的widget就是链头；同理，竖直链上最上面的widget是链头。
 
@@ -373,7 +373,7 @@ If margins are specified on connections, they will be taken in account.  In the 
 - `CHAIN_SPREAD_INSIDE` - 和`CHAIN_SPREAD`类似，但链的两端不会展开，Flutter中MainAxisAlignment.spaceBetween的效果
 - `CHAIN_PACKED` - 链中的元素会挤在一起。bias属性会影响整体的位置。
     ![图11 链的样式](/assets/images/android/constraintlayout-chains-styles.png)
-    <small>图11 链的样式</small>
+    <center>图11 链的样式</center>
 
 **权重链**  
 

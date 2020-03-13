@@ -14,7 +14,7 @@ title: "访问者模式(Visitor)"
 ## 2. UML图
 
 ![访问者模式UML图](/assets/images/design-pattern/visitor.png)  
-<small>访问者模式UML图</small>
+<center>访问者模式UML图</center>
 
 - Visitor  
   它定义了对每一个元素(Element)访问的行为，它的参数就是可以访问的元素，它的方法个数理论上来讲与元素个数是一样的。因此，访问者模式要求元素的类族要稳定，如果经常添加、移除元素类，必然会导致频繁的修改Visitor接口，如果出现这种情况，则说明不适合使用访问者模式。

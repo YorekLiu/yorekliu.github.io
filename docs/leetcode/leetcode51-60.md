@@ -357,7 +357,7 @@ Runtime 1ms，beats 100%，真是amazing！！
 
 ![判断任意两个区间可不可以merge](/assets/images/leetcode/question_56.png)
 
-<small>判断任意两个区间可不可以merge</small>
+<center>判断任意两个区间可不可以merge</center>
 
 判断区间可不可以merge时，先固定住一条线条，然后看另外一条线条在什么位置满足条件。我们发现，有些情况是一样的，比如上图中的1与6，3与4一样，所以实际上只需要判断1、2、4、5即可。
 

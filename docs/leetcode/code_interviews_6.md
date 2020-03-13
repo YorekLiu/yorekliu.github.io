@@ -151,7 +151,7 @@ private int getNumberSameAsIndex(int[] data) {
 
 ![第三大节点是4](/assets/images/leetcode/ci_54.png)
 
-<small>第三大节点是4</small>
+<center>第三大节点是4</center>
 
 本题就是考察二叉树的中序遍历算法。  
 
@@ -940,7 +940,7 @@ private int add(int num1, int num2) {
 
 ![把数组B看成由一个矩阵来创建](/assets/images/leetcode/ci_66.png)
 
-<small>把数组B看成由一个矩阵来创建</small>
+<center>把数组B看成由一个矩阵来创建</center>
 
 不妨定义$C[i]=A[0] \times A[1] \times \cdots \times A[i-1]$，$D[i]=A[i+1] \times \cdots \times A[n-1]$。$C[i]$可以用自上而下的顺序计算出来，即$C[i]=C[i-1] \times A[i-1]$。类似的，$D[i]$也可以用自下而上的顺序计算出来，即$D[i]=D[i+1] \times A[i+1]$。
 

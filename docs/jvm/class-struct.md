@@ -19,7 +19,7 @@ title: "类文件结构"
 实现语言无关性的基础仍然是虚拟机和字节码存储格式。Java虚拟机不和包括Java在内的任何语言绑定，它只与“Class文件”这种特定的二进制文件格式所关联，Class文件中包含了Java虚拟机指令集和符号表以及若干其他辅助信息。基于安全方面的考虑，Java虚拟机规范要求在Class文件中使用许多强制性的语法和结构化约束，但任一门功能性语言都可以表示为一个能被Java虚拟机所接受的有效的Class文件。作为一个通用的、机器无关的执行平台，任何其他语言的实现者都可以将Java虚拟机作为语言的产品交付媒介。例如，使用Java编译器可以把Java代码编译为存储字节码的Class文件，使用JRuby等其他语言的编译器一样可以把程序代码编译成Class文件，虚拟机并不关心Class的来源是何种语言，如图6-1所示。
 
 ![jvm_lang](/assets/images/jvm/jvm_lang.jpeg)  
-<small>图6-1 Java虚拟机提供的语言无关性</small>
+<center>图6-1 Java虚拟机提供的语言无关性</center>
 
 Java语言中的各种变量、关键字和运算符号的语义最终都是由多条字节码命令组合而成的，因此字节码命令所能提供的语义描述能力肯定会比Java语言本身更加强大。因此，有一些Java语言本身无法有效支持的语言特性不代表字节码本身无法有效支持，这也为其他语言实现一些有别于Java的语言特性提供了基础。
 
@@ -40,7 +40,7 @@ Class文件是一组以8位字节为基础单位的二进制流，各个数据�
 
 表是由多个无符号数或者其他表作为数据项构成的复合数据类型，所有表都习惯性地以“_info”结尾。表用于描述有层次关系的复合结构的数据，整个Class文件本质上就是一张表，它由表6-1所示的数据项构成。
 
-<small>表6-1 Class文件格式</small>
+<center>表6-1 Class文件格式</center>
 ![jvm_class_file_structure](/assets/images/jvm/jvm_class_file_structure.jpeg)
 
 无论是无符号数还是表，当需要描述同一类型但数量不定的多个数据时，经常会使用一个前置的容量计数器加若干个连续的数据项的形式，这时称这一系列连续的某一类型的数据为某一类型的集合。
@@ -57,7 +57,7 @@ Class文件是一组以8位字节为基础单位的二进制流，各个数据�
 
 为了讲解方便，笔者准备了一段最简单的Java代码（见代码清单6-1），本章后面的内容都将以这段小程序使用JDK 1.6编译输出的Class文件为基础来进行讲解。
 
-<small>代码清单6-1 简单的Java代码</small>
+<center>代码清单6-1 简单的Java代码</center>
 
 ```java
 package org.fenixsoft.clazz;
@@ -74,11 +74,11 @@ public class TestClass {
 图6-2显示的是使用十六进制编辑器WinHex打开这个Class文件的结果，可以清楚地看见开头4个字节的十六进制表示是0xCAFEBABE，代表次版本号的第5个和第6个字节值为0x0000，而主版本号的值为0x0032，也即是十进制的50，该版本号说明这个文件是可以被JDK 1.6或以上版本虚拟机执行的Class文件。
 
 ![jvm_class_structure_demo](/assets/images/jvm/jvm_class_structure_demo.jpeg)  
-<small>图6-2 Java Class文件的结构</small>
+<center>图6-2 Java Class文件的结构</center>
 
 表6-2列出了从JDK 1.1到JDK 1.7，主流JDK版本编译器输出的默认和可支持的Class文件版本号。
 
-<small>表6-2 Class文件版本号</small>
+<center>表6-2 Class文件版本号</center>
 ![jvm_class_version](/assets/images/jvm/jvm_class_version.jpeg)
 
 ### 3.2 常量池
@@ -88,7 +88,7 @@ public class TestClass {
 由于常量池中常量的数量是不固定的，所以在常量池的入口需要放置一项u2类型的数据，代表常量池容量计数值（constant_pool_count）。与Java中语言习惯不一样的是，这个容量计数是从1而不是0开始的，如图6-3所示，常量池容量（偏移地址：0x00000008）为十六进制数0x0016，即十进制的22，这就代表常量池中有21项常量，索引值范围为1～21。在Class文件格式规范制定之时，设计者将第0项常量空出来是有特殊考虑的，这样做的目的在于满足后面某些指向常量池的索引值的数据在特定情况下需要表达“不引用任何一个常量池项目”的含义，这种情况就可以把索引值置为0来表示。Class文件结构中只有常量池的容量计数是从1开始，对于其他集合类型，包括接口索引集合、字段表集合、方法表集合等的容量计数都与一般习惯相同，是从0开始的。
 
 ![jvm_constant_pool](/assets/images/jvm/jvm_constant_pool.jpeg)  
-<small>图6-3 常量池结构</small>
+<center>图6-3 常量池结构</center>
 
 常量池中主要存放两大类常量：字面量（Literal）和符号引用（Symbolic References）。字面量比较接近于Java语言层面的常量概念，如文本字符串、声明为final的常量值等。而符号引用则属于编译原理方面的概念，包括了下面三类常量：
 
@@ -102,17 +102,17 @@ Java代码在进行Javac编译的时候，并不像C和C++那样有“连接”�
 
 这14种表都有一个共同的特点，就是表开始的第一位是一个u1类型的标志位（tag，取值见表6-3中标志列），代表当前这个常量属于哪种常量类型。这14种常量类型所代表的具体含义见表6-3。
 
-<small>表6-3 常量池的项目类型</small>  
+<center>表6-3 常量池的项目类型</center>  
 ![jvm_constant_pool_table](/assets/images/jvm/jvm_constant_pool_table.jpeg)
 
 之所以说常量池是最烦琐的数据，是因为这14种常量类型各自均有自己的结构。回头看看图6-3中常量池的第一项常量，它的标志位（偏移地址：0x0000000A）是0x07，查表6-3的标志列发现这个常量属于CONSTANT_Class_info类型，此类型的常量代表一个类或者接口的符号引用。CONSTANT_Class_info的结构比较简单，见表6-4。
 
-<small>表6-4 CONSTANT_Class_info型常量的结构</small>  
+<center>表6-4 CONSTANT_Class_info型常量的结构</center>  
 ![jvm_constant_class_info](/assets/images/jvm/jvm_constant_class_info.jpeg)
 
 tag是标志位，上面已经讲过了，它用于区分常量类型；name_index是一个索引值，它指向常量池中一个CONSTANT_Utf8_info类型常量，此常量代表了这个类（或者接口）的全限定名，这里name_index值（偏移地址：0x0000000B）为0x0002，也即是指向了常量池中的第二项常量。继续从图6-3中查找第二项常量，它的标志位（地址：0x0000000D）是0x01，查表6-3可知确实是一个CONSTANT_Utf8_info类型的常量。CONSTANT_Utf8_info类型的结构见表6-5。
 
-<small>表6-5 CONSTANT_Utf8_info型常量的结构</small>  
+<center>表6-5 CONSTANT_Utf8_info型常量的结构</center>  
 ![jvm_constant_utf8_info](/assets/images/jvm/jvm_constant_utf8_info.jpeg)
 
 length值说明了这个UTF-8编码的字符串长度是多少字节，它后面紧跟着的长度为length字节的连续数据是一个使用UTF-8缩略编码表示的字符串。UTF-8缩略编码与普通UTF-8编码的区别是：从'\u0001'到'\u007f'之间的字符（相当于1～127的ASCII码）的缩略编码使用一个字节表示，从'\u0080'到'\u07ff'之间的所有字符的缩略编码用两个字节表示，从'\u0800'到'\uffff'之间的所有字符的缩略编码就按照普通UTF-8编码规则使用三个字节表示。
@@ -122,11 +122,11 @@ length值说明了这个UTF-8编码的字符串长度是多少字节，它后面
 本例中这个字符串的length值（偏移地址：0x0000000E）为0x001D，也就是长29字节，往后29字节正好都在1～127的ASCII码范围以内，内容为“org/fenixsoft/clazz/TestClass”，有兴趣的读者可以自己逐个字节换算一下，换算结果如图6-4选中的部分所示。
 
 ![jvm_constant_utf8_demo](/assets/images/jvm/jvm_constant_utf8_demo.jpeg)  
-<small>图6-4 常量池UTF-8字符串结构</small>  
+<center>图6-4 常量池UTF-8字符串结构</center>  
 
 到此为止，我们分析了TestClass.class常量池中21个常量中的两个，其余的19个常量都可以通过类似的方法计算出来。为了避免计算过程占用过多的版面，后续的19个常量的计算过程可以借助计算机来帮我们完成。在JDK的bin目录中，Oracle公司已经为我们准备好一个专门用于分析Class文件字节码的工具：javap，代码清单6-2中列出了使用javap工具的-verbose参数输出的TestClass.class文件字节码内容（此清单中省略了常量池以外的信息）。前面我们曾经提到过，Class文件中还有很多数据项都要引用常量池中的常量，所以代码清单6-2中的内容在后续的讲解过程中还要经常使用到。
 
-<small>代码清单6-2 使用Javap命令输出常量表</small>  
+<center>代码清单6-2 使用Javap命令输出常量表</center>  
 
 ```shell
 C:>javap -verbose TestClass
@@ -163,20 +163,20 @@ public class org.fenixsoft.clazz.TestClass extends java.lang.Object
 
 这部分自动生成的常量的确没有在Java代码里面直接出现过，但它们会被后面即将讲到的字段表（field_info）、方法表（method_info）、属性表（attribute_info）引用到，它们会用来描述一些不方便使用“固定字节”进行表达的内容。譬如描述方法的返回值是什么？有几个参数？每个参数的类型是什么？因为Java中的“类”是无穷无尽的，无法通过简单的无符号字节来描述一个方法用到了什么类，因此在描述方法的这些信息时，需要引用常量表中的符号引用进行表达。这部分内容将在后面进一步阐述。最后，笔者将这14种常量项的结构定义总结为表6-6以供读者参考。
 
-<small>表6-6 常量池中的14种常量项的结构总表</small>  
+<center>表6-6 常量池中的14种常量项的结构总表</center>  
 ![jvm_constant_pool_item](/assets/images/jvm/jvm_constant_pool_item.jpeg)  
 
 ### 3.3 访问标志
 
 在常量池结束之后，紧接着的两个字节代表访问标志（access_flags），这个标志用于识别一些类或者接口层次的访问信息，包括：这个Class是类还是接口；是否定义为public类型；是否定义为abstract类型；如果是类的话，是否被声明为final等。具体的标志位以及标志的含义见表6-7。
 
-<small>表6-7 访问标志</small>  
+<center>表6-7 访问标志</center>  
 ![jvm_access_flag](/assets/images/jvm/jvm_access_flag.jpeg)  
 
 access_flags中一共有16个标志位可以使用，当前只定义了其中8个[^3]，没有使用到的标志位要求一律为0。以代码清单6-1中的代码为例，TestClass是一个普通Java类，不是接口、枚举或者注解，被public关键字修饰但没有被声明为final和abstract，并且它使用了JDK 1.2之后的编译器进行编译，因此它的ACC_PUBLIC、ACC_SUPER标志应当为真，而ACC_FINAL、ACC_INTERFACE、ACC_ABSTRACT、ACC_SYNTHETIC、ACC_ANNOTATION、ACC_ENUM这6个标志应当为假，因此它的access_flags的值应为：0x0001|0x0020=0x0021。从图6-5中可以看出，access_flags标志（偏移地址：0x000000EF）的确为0x0021。
 
 ![jvm_access_flag_demp](/assets/images/jvm/jvm_access_flag_demp.jpeg)  
-<small>图6-5 access_flags标志</small>  
+<center>图6-5 access_flags标志</center>  
 
 ### 3.4 类索引、父类索引与接口索引集合
 
@@ -187,14 +187,14 @@ access_flags中一共有16个标志位可以使用，当前只定义了其中8�
 对于接口索引集合，入口的第一项——u2类型的数据为接口计数器（interfaces_count），表示索引表的容量。如果该类没有实现任何接口，则该计数器值为0，后面接口的索引表不再占用任何字节。代码清单6-1中的代码的类索引、父类索引与接口表索引的内容如图6-7所示。
 
 ![jvm_look_up_name](/assets/images/jvm/jvm_look_up_name.jpeg)  
-<small>图6-6 类索引查找全限定名的过程</small>  
+<center>图6-6 类索引查找全限定名的过程</center>  
 
 ![jvm_look_up_name_demo](/assets/images/jvm/jvm_look_up_name_demo.jpeg)  
-<small>图6-7 类索引、父类索引、接口索引集合</small>  
+<center>图6-7 类索引、父类索引、接口索引集合</center>  
 
 从偏移地址0x000000F1开始的3个u2类型的值分别为0x0001、0x0003、0x0000，也就是类索引为1，父类索引为3，接口索引集合大小为0，查询前面代码清单6-2中javap命令计算出来的常量池，找出对应的类和父类的常量，结果如代码清单6-3所示。
 
-<small>代码清单6-3 部分常量池内容</small>  
+<center>代码清单6-3 部分常量池内容</center>  
 
 ```java
 const #1 = class        #2;             //org/fenixsoft/clazz/TestClass
@@ -207,12 +207,12 @@ const #4 = Asciz        java/lang/Object;
 
 字段表（field_info）用于描述接口或者类中声明的变量。字段（field）包括类级变量以及实例级变量，但不包括在方法内部声明的局部变量。我们可以想一想在Java中描述一个字段可以包含什么信息？可以包括的信息有：字段的作用域（public、private、protected修饰符）、是实例变量还是类变量（static修饰符）、可变性（final）、并发可见性（volatile修饰符，是否强制从主内存读写）、可否被序列化（transient修饰符）、字段数据类型（基本类型、对象、数组）、字段名称。上述这些信息中，各个修饰符都是布尔值，要么有某个修饰符，要么没有，很适合使用标志位来表示。而字段叫什么名字、字段被定义为什么数据类型，这些都是无法固定的，只能引用常量池中的常量来描述。表6-8中列出了字段表的最终格式。
 
-<small>表6-8 字段表结构</small>  
+<center>表6-8 字段表结构</center>  
 ![jvm_field_info](/assets/images/jvm/jvm_field_info.jpeg)  
 
 字段修饰符放在access_flags项目中，它与类中的access_flags项目是非常类似的，都是一个u2的数据类型，其中可以设置的标志位和含义见表6-9。
 
-<small>表6-9 字段访问标志</small>  
+<center>表6-9 字段访问标志</center>  
 ![jvm_field_access_flag_table](/assets/images/jvm/jvm_field_access_flag_table.jpeg)  
 
 很明显，在实际情况中，ACC_PUBLIC、ACC_PRIVATE、ACC_PROTECTED三个标志最多只能选择其一，ACC_FINAL、ACC_VOLATILE不能同时选择。接口之中的字段必须有ACC_PUBLIC、ACC_STATIC、ACC_FINAL标志，这些都是由Java本身的语言规则所决定的。
@@ -223,7 +223,7 @@ const #4 = Asciz        java/lang/Object;
 
 相对于全限定名和简单名称来说，方法和字段的描述符就要复杂一些。描述符的作用是用来描述字段的数据类型、方法的参数列表（包括数量、类型以及顺序）和返回值。根据描述符规则，基本数据类型（byte、char、double、float、int、long、short、boolean）以及代表无返回值的void类型[^4]都用一个大写字符来表示，而对象类型则用字符L加对象的全限定名来表示，详见表6-10。
 
-<small>表6-10 描述符标识字符含义</small>  
+<center>表6-10 描述符标识字符含义</center>  
 ![jvm_descriptor](/assets/images/jvm/jvm_descriptor.jpeg)  
 
 对于数组类型，每一维度将使用一个前置的“[”字符来描述，如一个定义为“java.lang. String[][]”类型的二维数组，将被记录为：“[[Ljava/lang/String;”，一个整型数组“int[]”将被记录为“[I”。
@@ -235,7 +235,7 @@ const #4 = Asciz        java/lang/Object;
 字段表都包含的固定数据项目到descriptor_index为止就结束了，不过在descriptor_index之后跟随着一个属性表集合用于存储一些额外的信息，字段都可以在属性表中描述零至多项的额外信息。对于本例中的字段m，它的属性表计数器为0，也就是没有需要额外描述的信息，但是，如果将字段m的声明改为“finalstatic int m=123;”，那就可能会存在一项名称为ConstantValue的属性，其值指向常量123。关于attribute_info的其他内容，将在6.3.7节介绍属性表的数据项目时再进一步讲解。
 
 ![jvm_field_into_structure](/assets/images/jvm/jvm_field_into_structure.jpeg)  
-<small>图6-8 字段表结构实例</small>  
+<center>图6-8 字段表结构实例</center>  
 
 字段表集合中不会列出从超类或者父接口中继承而来的字段，但有可能列出原本Java代码之中不存在的字段，譬如在内部类中为了保持对外部类的访问性，会自动添加指向外部类实例的字段。另外，在Java语言中字段是无法重载的，两个字段的数据类型、修饰符不管是否相同，都必须使用不一样的名称，但是对于字节码来讲，如果两个字段的描述符不一致，那字段重名就是合法的。
 
@@ -243,12 +243,12 @@ const #4 = Asciz        java/lang/Object;
 
 如果理解了上一节关于字段表的内容，那本节关于方法表的内容将会变得很简单。Class文件存储格式中对方法的描述与对字段的描述几乎采用了完全一致的方式，方法表的结构如同字段表一样，依次包括了访问标志（access_flags）、名称索引（name_index）、描述符索引（descriptor_index）、属性表集合（attributes）几项，见表6-11。这些数据项目的含义也非常类似，仅在访问标志和属性表集合的可选项中有所区别。
 
-<small>表6-11 方法表结构</small>  
+<center>表6-11 方法表结构</center>  
 ![jvm_method_table](/assets/images/jvm/jvm_method_table.jpeg)  
 
 因为volatile关键字和transient关键字不能修饰方法，所以方法表的访问标志中没有了ACC_VOLATILE标志和ACC_TRANSIENT标志。与之相对的，synchronized、native、strictfp和abstract关键字可以修饰方法，所以方法表的访问标志中增加了ACC_SYNCHRONIZED、ACC_NATIVE、ACC_STRICTFP和ACC_ABSTRACT标志。对于方法表，所有标志位及其取值可参见表6-12。
 
-<small>表6-12 方法访问标志</small>  
+<center>表6-12 方法访问标志</center>  
 ![jvm_method_access_flag_table](/assets/images/jvm/jvm_method_access_flag_table.jpeg)  
 
 行文至此，也许有的读者会产生疑问，方法的定义可以通过访问标志、名称索引、描述符索引表达清楚，但方法里面的代码去哪里了？方法里的Java代码，经过编译器编译成字节码指令后，存放在方法属性表集合中一个名为“Code”的属性里面，属性表作为Class文件格式中最具扩展性的一种数据项目，将在6.3.7节中详细讲解。
@@ -256,7 +256,7 @@ const #4 = Asciz        java/lang/Object;
 我们继续以代码清单6-1中的Class文件为例对方法表集合进行分析，如图6-9所示，方法表集合的入口地址为：0x00000101，第一个u2类型的数据（即是计数器容量）的值为0x0002，代表集合中有两个方法（这两个方法为编译器添加的实例构造器<init>和源码中的方法inc()）。第一个方法的访问标志值为0x001，也就是只有ACC_PUBLIC标志为真，名称索引值为0x0007，查代码清单6-2的常量池得方法名为“<init>”，描述符索引值为0x0008，对应常量为“()V”，属性表计数器attributes_count的值为0x0001就表示此方法的属性表集合有一项属性，属性名称索引为0x0009，对应常量为“Code”，说明此属性是方法的字节码描述。
 
 ![jvm_method_table_demo](/assets/images/jvm/jvm_method_table_demo.jpeg)  
-<small>图6-9 方法表结构实例</small>  
+<center>图6-9 方法表结构实例</center>  
 
 与字段表集合相对应的，如果父类方法在子类中没有被重写（Override），方法表集合中就不会出现来自父类的方法信息。但同样的，有可能会出现由编译器自动添加的方法，最典型的便是类构造器“<clinit>”方法和实例构造器“<init>”[^5]方法。
 
@@ -268,19 +268,19 @@ const #4 = Asciz        java/lang/Object;
 
 与Class文件中其他的数据项目要求严格的顺序、长度和内容不同，属性表集合的限制稍微宽松了一些，不再要求各个属性表具有严格顺序，并且只要不与已有属性名重复，任何人实现的编译器都可以向属性表中写入自己定义的属性信息，Java虚拟机运行时会忽略掉它不认识的属性。为了能正确解析Class文件，《Java虚拟机规范（第2版）》中预定义了9项虚拟机实现应当能识别的属性，而在最新的《Java虚拟机规范（Java SE 7）》版中，预定义属性已经增加到21项，具体内容见表6-13。下文中将对其中一些属性中的关键常用的部分进行讲解。
 
-<small>表6-13 虚拟机规范预定义的属性</small>  
+<center>表6-13 虚拟机规范预定义的属性</center>  
 ![jvm_attribute_info_defined](/assets/images/jvm/jvm_attribute_info_defined.jpeg)  
 
 对于每个属性，它的名称需要从常量池中引用一个CONSTANT_Utf8_info类型的常量来表示，而属性值的结构则是完全自定义的，只需要通过一个u4的长度属性去说明属性值所占用的位数即可。一个符合规则的属性表应该满足表6-14中所定义的结构。
 
-<small>表6-14 属性表结构</small>  
+<center>表6-14 属性表结构</center>  
 ![jvm_attribute_info_structure](/assets/images/jvm/jvm_attribute_info_structure.jpeg)  
 
 #### 1. Code属性
 
 Java程序方法体中的代码经过Javac编译器处理后，最终变为字节码指令存储在Code属性内。Code属性出现在方法表的属性集合之中，但并非所有的方法表都必须存在这个属性，譬如接口或者抽象类中的方法就不存在Code属性，如果方法表有Code属性存在，那么它的结构将如表6-15所示。
 
-<small>表6-15 Code属性表的结构</small>  
+<center>表6-15 Code属性表的结构</center>  
 ![jvm_code_attribute_info_table](/assets/images/jvm/jvm_code_attribute_info_table.jpeg)  
 
 attribute_name_index是一项指向CONSTANT_Utf8_info型常量的索引，常量值固定为“Code”，它代表了该属性的属性名称，attribute_length指示了属性值的长度，由于属性名称索引与属性长度一共为6字节，所以属性值的长度固定为整个属性表长度减去6个字节。
@@ -303,13 +303,13 @@ Code属性是Class文件中最重要的一个属性，如果把一个Java程序�
 4. 读入B1，查表得0xB1对应的指令为return，含义是返回此方法，并且返回值为void。这条指令执行后，当前方法结束。
 
 ![jvm_code_attribute_info_demo](/assets/images/jvm/jvm_code_attribute_info_demo.jpeg)  
-<small>图6-10 Code属性结构实例</small>  
+<center>图6-10 Code属性结构实例</center>  
 
 这段字节码虽然很短，但是至少可以看出它的执行过程中的数据交换、方法调用等操作都是基于栈（操作栈）的。我们可以初步猜测：Java虚拟机执行字节码是基于栈的体系结构。但是与一般基于堆栈的零字节指令又不太一样，某些指令（如invokespecial）后面还会带有参数，关于虚拟机字节码执行的讲解是后面两章的重点，我们不妨把这里的疑问放到第8章去解决。
 
 我们再次使用javap命令把此Class文件中的另外一个方法的字节码指令也计算出来，结果如代码清单6-4所示。
 
-<small>代码清单6-4 用javap命令计算字节码指令</small>
+<center>代码清单6-4 用javap命令计算字节码指令</center>
 
 ```java
 //原始Java代码
@@ -362,14 +362,14 @@ public int inc();
 
 异常表的格式如表6-16所示，它包含4个字段，这些字段的含义为：如果当字节码在第start_pc行[^7]到第end_pc行之间（不含第end_pc行）出现了类型为catch_type或者其子类的异常（catch_type为指向一个CONSTANT_Class_info型常量的索引），则转到第handler_pc行继续处理。当catch_type的值为0时，代表任意异常情况都需要转向到handler_pc处进行处理。
 
-<small>表6-16 属性表结构</small>  
+<center>表6-16 属性表结构</center>  
 ![jvm_exception_info_table](/assets/images/jvm/jvm_exception_info_table.jpeg)  
 
 异常表实际上是Java代码的一部分，编译器使用异常表而不是简单的跳转命令来实现Java异常及finally处理机制[^8]。
 
 代码清单6-5是一段演示异常表如何运作的例子，这段代码主要演示了在字节码层面中try-catch-finally是如何实现的。在阅读字节码之前，大家不妨先看看下面的Java源码，想一下这段代码的返回值在出现异常和不出现异常的情况下分别应该是多少？
 
-<small>代码清单6-5 异常表运作演示</small>  
+<center>代码清单6-5 异常表运作演示</center>  
 
 ```java
 //Java源码
@@ -436,7 +436,7 @@ public int inc();
 
 这里的Exceptions属性是在方法表中与Code属性平级的一项属性，读者不要与前面刚刚讲解完的异常表产生混淆。Exceptions属性的作用是列举出方法中可能抛出的受查异常（Checked Excepitons），也就是方法描述时在throws关键字后面列举的异常。它的结构见表6-17。
 
-<small>表6-17 属性表结构</small>  
+<center>表6-17 属性表结构</center>  
 ![jvm_exception_attr_info_table](/assets/images/jvm/jvm_exception_attr_info_table.jpeg)
 
 Exceptions属性中的number_of_exceptions项表示方法可能抛出number_of_exceptions种受查异常，每一种受查异常使用一个exception_index_table项表示，exception_index_table是一个指向常量池中CONSTANT_Class_info型常量的索引，代表了该受查异常的类型。
@@ -445,7 +445,7 @@ Exceptions属性中的number_of_exceptions项表示方法可能抛出number_of_e
 
 LineNumberTable属性用于描述Java源码行号与字节码行号（字节码的偏移量）之间的对应关系。它并不是运行时必需的属性，但默认会生成到Class文件之中，可以在Javac中分别使用-g:none或-g:lines选项来取消或要求生成这项信息。如果选择不生成LineNumberTable属性，对程序运行产生的最主要的影响就是当抛出异常时，堆栈中将不会显示出错的行号，并且在调试程序的时候，也无法按照源码行来设置断点。LineNumberTable属性的结构见表6-18。
 
-<small>表6-18 LineNumberTable属性结构</small>  
+<center>表6-18 LineNumberTable属性结构</center>  
 ![jvm_line_number_table](/assets/images/jvm/jvm_line_number_table.jpeg)
 
 line_number_table是一个数量为line_number_table_length、类型为line_number_info的集合，line_number_info表包括了start_pc和line_number两个u2类型的数据项，前者是字节码行号，后者是Java源码行号。
@@ -454,12 +454,12 @@ line_number_table是一个数量为line_number_table_length、类型为line_numb
 
 LocalVariableTable属性用于描述栈帧中局部变量表中的变量与Java源码中定义的变量之间的关系，它也不是运行时必需的属性，但默认会生成到Class文件之中，可以在Javac中分别使用-g:none或-g:vars选项来取消或要求生成这项信息。如果没有生成这项属性，最大的影响就是当其他人引用这个方法时，所有的参数名称都将会丢失，IDE将会使用诸如arg0、arg1之类的占位符代替原有的参数名，这对程序运行没有影响，但是会对代码编写带来较大不便，而且在调试期间无法根据参数名称从上下文中获得参数值。LocalVariableTable属性的结构见表6-19。
 
-<small>表6-19 LocalVariableTable属性结构</small>  
+<center>表6-19 LocalVariableTable属性结构</center>  
 ![jvm_local_var_table](/assets/images/jvm/jvm_local_var_table.jpeg)
 
 其中，local_variable_info项目代表了一个栈帧与源码中的局部变量的关联，结构见表6-20。
 
-<small>表6-20 local_variable_info项目结构</small>  
+<center>表6-20 local_variable_info项目结构</center>  
 ![jvm_local_var_info_table](/assets/images/jvm/jvm_local_var_info_table.jpeg)
 
 start_pc和length属性分别代表了这个局部变量的生命周期开始的字节码偏移量及其作用范围覆盖的长度，两者结合起来就是这个局部变量在字节码之中的作用域范围。
@@ -474,7 +474,7 @@ index是这个局部变量在栈帧局部变量表中Slot的位置。当这个�
 
 SourceFile属性用于记录生成这个Class文件的源码文件名称。这个属性也是可选的，可以分别使用Javac的-g:none或-g:source选项来关闭或要求生成这项信息。在Java中，对于大多数的类来说，类名和文件名是一致的，但是有一些特殊情况（如内部类）例外。如果不生成这项属性，当抛出异常时，堆栈中将不会显示出错代码所属的文件名。这个属性是一个定长的属性，其结构见表6-21。
 
-<small>表6-21 SourceFile属性结构</small>  
+<center>表6-21 SourceFile属性结构</center>  
 ![jvm_source_file_table](/assets/images/jvm/jvm_source_file_table.jpeg)
 
 sourcefile_index数据项是指向常量池中CONSTANT_Utf8_info型常量的索引，常量值是源码文件的文件名。
@@ -485,7 +485,7 @@ ConstantValue属性的作用是通知虚拟机自动为静态变量赋值。只�
 
 虽然有final关键字才更符合“ConstantValue”的语义，但虚拟机规范中并没有强制要求字段必须设置了ACC_FINAL标志，只要求了有ConstantValue属性的字段必须设置ACC_STATIC标志而已，对final关键字的要求是Javac编译器自己加入的限制。而对ConstantValue的属性值只能限于基本类型和String，不过笔者不认为这是什么限制，因为此属性的属性值只是一个常量池的索引号，由于Class文件格式的常量类型中只有与基本属性和字符串相对应的字面量，所以就算ConstantValue属性想支持别的类型也无能为力。ConstantValue属性的结构见表6-22。
 
-<small>表6-22 ConstantValue属性结构</small>  
+<center>表6-22 ConstantValue属性结构</center>  
 ![jvm_constant_value_table](/assets/images/jvm/jvm_constant_value_table.jpeg)
 
 从数据结构中可以看出，ConstantValue属性是一个定长属性，它的attribute_length数据项值必须固定为2。constantvalue_index数据项代表了常量池中一个字面量常量的引用，根据字段类型的不同，字面量可以是CONSTANT_Long_info、CONSTANT_Float_info、CONSTANT_Double_info、CONSTANT_Integer_info、CONSTANT_String_info常量中的一种。
@@ -494,12 +494,12 @@ ConstantValue属性的作用是通知虚拟机自动为静态变量赋值。只�
 
 InnerClasses属性用于记录内部类与宿主类之间的关联。如果一个类中定义了内部类，那编译器将会为它以及它所包含的内部类生成InnerClasses属性。该属性的结构见表6-23。
 
-<small>表6-23 InnerClasses属性结构</small>  
+<center>表6-23 InnerClasses属性结构</center>  
 ![jvm_inner_class_table](/assets/images/jvm/jvm_inner_class_table.jpeg)
 
 数据项number_of_classes代表需要记录多少个内部类信息，每一个内部类的信息都由一个inner_classes_info表进行描述。inner_classes_info表的结构见表6-24。
 
-<small>表6-24 inner_classes_info表的结构</small>  
+<center>表6-24 inner_classes_info表的结构</center>  
 ![jvm_inner_classes_table](/assets/images/jvm/jvm_inner_classes_table.jpeg)
 
 inner_class_info_index和outer_class_info_index都是指向常量池中CONSTANT_Class_info型常量的索引，分别代表了内部类和宿主类的符号引用。
@@ -508,7 +508,7 @@ inner_name_index是指向常量池中CONSTANT_Utf8_info型常量的索引，代�
 
 inner_class_access_flags是内部类的访问标志，类似于类的access_flags，它的取值范围见表6-25。
 
-<small>表6-25 inner_class_access_flags标志</small>  
+<center>表6-25 inner_class_access_flags标志</center>  
 ![inner_class_access_flags](/assets/images/jvm/jvm_inner_class_access_flags.jpeg)
 
 #### 8. Deprecated及Synthetic属性
@@ -521,7 +521,7 @@ Synthetic属性代表此字段或者方法并不是由Java源码直接产生的�
 
 Deprecated和Synthetic属性的结构非常简单，见表6-26。
 
-<small>表6-26 Deprecated及Synthetic属性的结构</small>  
+<center>表6-26 Deprecated及Synthetic属性的结构</center>  
 ![jvm_deprecated_synthetic_table](/assets/images/jvm/jvm_deprecated_synthetic_table.jpeg)
 
 其中attribute_length数据项的值必须为0x00000000，因为没有任何属性值需要设置。
@@ -534,7 +534,7 @@ StackMapTable属性在JDK 1.6发布后增加到了Class文件规范中，它是�
 
 StackMapTable属性中包含零至多个栈映射帧（Stack MapFrames），每个栈映射帧都显式或隐式地代表了一个字节码偏移量，用于表示该执行到该字节码时局部变量表和操作数栈的验证类型。类型检查验证器会通过检查目标方法的局部变量和操作数栈所需要的类型来确定一段字节码指令是否符合逻辑约束。StackMapTable属性的结构见表6-27。
 
-<small>表6-27 StackMapTable属性的结构</small>  
+<center>表6-27 StackMapTable属性的结构</center>  
 ![jvm_stack_map_table](/assets/images/jvm/jvm_stack_map_table.jpeg)
 
 《Java虚拟机规范（Java SE 7版）》明确规定：在版本号大于或等于50.0的Class文件中，如果方法的Code属性中没有附带StackMapTable属性，那就意味着它带有一个隐式的StackMap属性。这个StackMap属性的作用等同于number_of_entries值为0的StackMapTable属性。一个方法的Code属性最多只能有一个StackMapTable属性，否则将抛出ClassFormatError异常。
@@ -543,7 +543,7 @@ StackMapTable属性中包含零至多个栈映射帧（Stack MapFrames），每�
 
 Signature属性在JDK 1.5发布后增加到了Class文件规范之中，它是一个可选的定长属性，可以出现于类、属性表和方法表结构的属性表中。在JDK 1.5中大幅增强了Java语言的语法，在此之后，任何类、接口、初始化方法或成员的泛型签名如果包含了类型变量（Type Variables）或参数化类型（ParameterizedTypes），则Signature属性会为它记录泛型签名信息。之所以要专门使用这样一个属性去记录泛型类型，是因为Java语言的泛型采用的是擦除法实现的伪泛型，在字节码（Code属性）中，泛型信息编译（类型变量、参数化类型）之后都通通被擦除掉。使用擦除法的好处是实现简单（主要修改Javac编译器，虚拟机内部只做了很少的改动）、非常容易实现Backport，运行期也能够节省一些类型所占的内存空间。但坏处是运行期就无法像C#等有真泛型支持的语言那样，将泛型类型与用户定义的普通类型同等对待，例如运行期做反射时无法获得到泛型信息。Signature属性就是为了弥补这个缺陷而增设的，现在Java的反射API能够获取泛型类型，最终的数据来源也就是这个属性。关于Java泛型、Signature属性和类型擦除，在第10章介绍编译器优化的时候会通过一个具体的例子来讲解。Signature属性的结构见表6-28。
 
-<small>表6-28 Signature属性的结构</small>  
+<center>表6-28 Signature属性的结构</center>  
 ![jvm_signature](/assets/images/jvm/jvm_signature.jpeg)
 
 其中signature_index项的值必须是一个对常量池的有效索引。常量池在该索引处的项必须是CONSTANT_Utf8_info结构，表示类签名、方法类型签名或字段类型签名。如果当前的Signature属性是类文件的属性，则这个结构表示类签名，如果当前的Signature属性是方法表的属性，则这个结构表示方法类型签名，如果当前Signature属性是字段表的属性，则这个结构表示字段类型签名。
@@ -554,12 +554,12 @@ BootstrapMethods属性在JDK 1.7发布后增加到了Class文件规范之中，�
 
 目前的Javac暂时无法生成InvokeDynamic指令和BootstrapMethods属性，必须通过一些非常规的手段才能使用到它们，也许在不久的将来，等JSR-292更加成熟一些，这种状况就会改变。BootstrapMethods属性的结构见表6-29。
 
-<small>表6-29 BootstrapMethods属性的结构</small>  
+<center>表6-29 BootstrapMethods属性的结构</center>  
 ![jvm_bootstrap](/assets/images/jvm/jvm_bootstrap.jpeg)
 
 其中引用到的bootstrap_method结构见表6-30。
 
-<small>表6-30 bootstrap_method属性的结构</small>  
+<center>表6-30 bootstrap_method属性的结构</center>  
 ![jvm_bootstrap_method](/assets/images/jvm/jvm_bootstrap_method.jpeg)
 
 BootstrapMethods属性中，num_bootstrap_methods项的值给出了bootstrap_methods[]数组中的引导方法限定符的数量。而bootstrap_methods[]数组的每个成员包含了一个指向常量池CONSTANT_MethodHandle结构的索引值，它代表了一个引导方法，还包含了这个引导方法静态参数的序列（可能为空）。bootstrap_methods[]数组中的每个成员必须包含以下3项内容。
@@ -611,7 +611,7 @@ do {
 
 注意，从表6-31中可以看出，大部分的指令都没有支持整数类型byte、char和short，甚至没有任何指令支持boolean类型。编译器会在编译期或运行期将byte和short类型的数据带符号扩展（Sign-Extend）为相应的int类型数据，将boolean和char类型数据零位扩展（Zero-Extend）为相应的int类型数据。与之类似，在处理boolean、byte、short和char类型的数组时，也会转换为使用对应的int类型的字节码指令来处理。因此，大多数对于boolean、byte、short和char类型数据的操作，实际上都是使用相应的int类型作为运算类型（ComputationalType）。
 
-<small>表6-31 Java虚拟机指令集所支持的数据类型</small>  
+<center>表6-31 Java虚拟机指令集所支持的数据类型</center>  
 ![jvm_data_type_supported](/assets/images/jvm/jvm_data_type_supported.jpeg)
 
 在本章中，受篇幅所限，无法对字节码指令集中每条指令进行逐一讲解，但阅读字节码作为了解Java虚拟机的基础技能，是一项应当熟练掌握的能力。笔者将字节码操作按用途大致分为9类，按照分类来为读者概略介绍一下这些指令的用法。如果读者需要了解更详细的信息，可以参考阅读笔者翻译的《Java虚拟机规范（Java SE 7版）》的第6章。
@@ -740,7 +740,7 @@ Java虚拟机可以支持方法级的同步和方法内部一段指令序列的�
 
 同步一段指令集序列通常是由Java语言中的synchronized语句块来表示的，Java虚拟机的指令集中有monitorenter和monitorexit两条指令来支持synchronized关键字的语义，正确实现synchronized关键字需要Javac编译器与Java虚拟机两者共同协作支持，譬如代码清单6-6中所示的代码。
 
-<small>代码清单6-6 代码同步演示</small>  
+<center>代码清单6-6 代码同步演示</center>  
 
 ```java
 void onlyMe(Foo f) {

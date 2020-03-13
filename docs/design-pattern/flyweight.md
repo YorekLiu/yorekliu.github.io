@@ -15,7 +15,7 @@ title: "享元模式(Flyweight)"
 ## 2. UML图
 
 ![享元模式UML图](/assets/images/design-pattern/flyweight.png)  
-<small>享元模式UML图</small>
+<center>享元模式UML图</center>
 
 - Flyweight  
   享元对象抽象类或者接口

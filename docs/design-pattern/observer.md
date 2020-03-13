@@ -15,7 +15,7 @@ title: "观察者模式(Observer)"
 ## 2. UML图
 
 ![观察者模式UML图](/assets/images/design-pattern/observer.png)  
-<small>观察者模式UML图</small>
+<center>观察者模式UML图</center>
 
 - Subject  
   抽象主题，被观察者(Observable)

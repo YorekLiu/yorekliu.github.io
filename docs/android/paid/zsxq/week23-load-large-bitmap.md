@@ -20,10 +20,10 @@ title: "大尺寸图片加载问题"
 </figure>
 
 ![不使用inSampleSize时内存情况](/assets/images/android/load_image_no_sample.png)
-<small>不使用inSampleSize时内存情况</small>
+<center>不使用inSampleSize时内存情况</center>
 
 ![inSampleSize=4时内存情况](/assets/images/android/load_image_sample.png)
-<small>inSampleSize=4时内存情况</small>
+<center>inSampleSize=4时内存情况</center>
 
 不使用`inSampleSize`时，Bitmap占用Java堆内存为：37.4-5=32.4M  
 当`inSampleSize=4`时，占用内存理论上会变为原来的1/(4*4)=1/16，也就是32.4/16=2.025M，从图中差不多一致。

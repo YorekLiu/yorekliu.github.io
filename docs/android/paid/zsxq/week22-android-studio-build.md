@@ -150,7 +150,7 @@ android {
 下图显示了一个具有运行时依赖库的应用程序。在检查应用程序代码时，R8确定可以从`MainActivity.class`入口点抵达方法`foo()`、`faz()`和`bar()`。但是，我们的应用程序在运行时从不使用类`OkayApi.class`或其方法`baz()`，因此R8在压缩应用程序时会删除该代码。
 
 ![At compile-time, R8 builds a graph based on your project's combined keep rules to determine unreachable code.](/assets/images/android/tree-shaking.png)
-<small>At compile-time, R8 builds a graph based on your project's combined keep rules to determine unreachable code.</small>
+<center>At compile-time, R8 builds a graph based on your project's combined keep rules to determine unreachable code.</center>
 
 R8通过项目的R8配置文件中的`-keep`规则确定入口点。也就是说，keep 规则指定R8在压缩应用程序时不应丢弃的类，R8将这些类视为应用程序的可能入口点。Android Gradle插件和AAPT2会自动生成大多数应用项目所需的保留规则，例如activities、views和services。但是，如果我们需要用其他keep规则来自定义此默认行为，这也是支持的。
 

@@ -74,7 +74,7 @@ Android framework 中 Pull 解析用的比较多。
 线程的五种状态（新建、就绪、运行、阻塞、死亡）如下图所示：
 
 ![线程的五种状态](/assets/images/android/thread_status.png)   
-<small>线程的五种状态</small>
+<center>线程的五种状态</center>
 ---
 
 **2、如何停止一个线程**：

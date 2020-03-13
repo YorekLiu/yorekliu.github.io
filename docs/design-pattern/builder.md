@@ -16,7 +16,7 @@ title: "建造者模式(Builder)"
 ## 2. UML图
 
 ![Builder模式UML图](/assets/images/design-pattern/builder.png)  
-<small>Builder模式UML图</small>
+<center>Builder模式UML图</center>
 
 - Product  
   产品类——产品的抽象类

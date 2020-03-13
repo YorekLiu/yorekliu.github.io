@@ -437,4 +437,4 @@ Vector有如下特点：
 注意，非线程安全的集合可以通过`Collections`的`synchronizedCollection` 、 `synchronizedSet` 、 `synchronizedList` 、 `synchronizedMap`等方法转换成线程安全的集合。其原理就是对每个操作都在同步代码块中执行。
 
 ![常见数据结构的类关系](/assets/images/java/java-collections-uml.png)
-<small>常见数据结构的类关系</small>
+<center>常见数据结构的类关系</center>

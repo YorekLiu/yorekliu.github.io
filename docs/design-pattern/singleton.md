@@ -10,7 +10,7 @@ title: "单例模式(Singleton)"
 ## 2. UML图
 
 ![单例模式UML图](/assets/images/design-pattern/singleton.png)  
-<small>单例模式UML图</small>
+<center>单例模式UML图</center>
 
 实现单例模式的几个关键点：
 

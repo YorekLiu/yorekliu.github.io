@@ -254,7 +254,7 @@ private ListNode deleteNode(ListNode head, ListNode toBeDeleted) {
 
 ![删除链表中重复的节点](/assets/images/leetcode/ci_list_node_18_2.png)
 
-<small>删除链表中重复的节点</small>
+<center>删除链表中重复的节点</center>
 
 注：(a)一个有7个节点的链表：1、2、3、3、4、4、5；(b)当重复的节点被删除之后，链表中只剩下3个节点。
 
@@ -535,7 +535,7 @@ private ListNode findKthToTail(ListNode pListHead, int k) {
 
 ![节点3是链表中环的入口节点](/assets/images/leetcode/ci_list_node_23.png)
 
-<small>节点3是链表中环的入口节点</small>
+<center>节点3是链表中环的入口节点</center>
 
 解决这个问题的第一步是如何确定一个链表中包含环。第二步是如何找到环的入口。
 
@@ -658,7 +658,7 @@ private ListNode reverseList(ListNode head) {
 
 ![合并两个链表排序的过程](/assets/images/leetcode/ci_list_node_25.png)
 
-<small>合并两个链表排序的过程</small>
+<center>合并两个链表排序的过程</center>
 
 此题同[LC-21-Merge Two Sorted Lists](/leetcode/leetcode21-30/#21-merge-two-sorted-lists)。  
 
@@ -703,7 +703,7 @@ class Solution {
 
 ![两颗二叉树A和B，右边的树B是左边的树A的子结构](/assets/images/leetcode/ci_tree_26.png)
 
-<small>两颗二叉树A和B，右边的树B是左边的树A的子结构</small>
+<center>两颗二叉树A和B，右边的树B是左边的树A的子结构</center>
 
 要查找树A中是否存在和树B结构一样的子树，我们可以分为两步：
 

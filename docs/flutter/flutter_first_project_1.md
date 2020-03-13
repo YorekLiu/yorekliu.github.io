@@ -214,7 +214,7 @@ Row和Column都有mainAxisAlignment和crossAxisAlignment两个属性控制其子
 
 mainAxisAlignment和crossAxisAlignment有很多枚举值，表1举出了所有的枚举值以及对应的效果。
 
-<small>**Table 1.** MainAxisAlignment、MainAxisSize、CrossAxisAlignment的所有枚举值</small>  
+<center>**Table 1.** MainAxisAlignment、MainAxisSize、CrossAxisAlignment的所有枚举值</center>  
 
 | 枚举值 | 效果 |
 | :--- | :- |
@@ -239,14 +239,14 @@ mainAxisAlignment和crossAxisAlignment有很多枚举值，表1举出了所有�
 
 ![Column中MainAxisAlignment取start、end、center、spaceBetween、spaceAround、spaceEvenly值时的效果](/assets/images/flutter/column_main_axis_align.jpg)
 
-<small>Column中MainAxisAlignment取start、end、center、spaceBetween、spaceAround、spaceEvenly值时的效果</small>
+<center>Column中MainAxisAlignment取start、end、center、spaceBetween、spaceAround、spaceEvenly值时的效果</center>
 
 ![Column中MainAxisSize取min、max值时的效果](/assets/images/flutter/column_main_axis_size.png)
 
-<small>Column中MainAxisSize取min、max值时的效果</small>
+<center>Column中MainAxisSize取min、max值时的效果</center>
 
 ![Column中CrossAxisAlignment取start、end、center、stretch、baseline值时的效果](/assets/images/flutter/column_cross_axis_align.png)
 
-<small>Column中CrossAxisAlignment取start、end、center、stretch、baseline值时的效果</small>
+<center>Column中CrossAxisAlignment取start、end、center、stretch、baseline值时的效果</center>
 
 在下一章，我们将基于现有工程进行「年轻人的第一个Flutter程序」。Flutter, Ready？

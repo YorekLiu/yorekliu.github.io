@@ -528,7 +528,7 @@ class Solution {
 
 > Given a non-negative integer *numRows*, generate the first *numRows* of Pascal's triangle.  
 > ![In Pascal's triangle, each number is the sum of the two numbers directly above it.](/assets/images/leetcode/PascalTriangleAnimated2.gif)  
-> <small>In Pascal's triangle, each number is the sum of the two numbers directly above it.</small>
+> <center>In Pascal's triangle, each number is the sum of the two numbers directly above it.</center>
 
 **Example:**
 
@@ -582,7 +582,7 @@ class Solution {
 > 
 > Note that the row index starts from 0.  
 > ![In Pascal's triangle, each number is the sum of the two numbers directly above it.](/assets/images/leetcode/PascalTriangleAnimated2.gif)  
-> <small>In Pascal's triangle, each number is the sum of the two numbers directly above it.</small>
+> <center>In Pascal's triangle, each number is the sum of the two numbers directly above it.</center>
 
 **Example:**
 

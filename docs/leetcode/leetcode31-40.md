@@ -402,7 +402,7 @@ class Solution {
 > 2. Each column must contain the digits `1-9` without repetition.
 > 3. Each of the 9 `3x3` sub-boxes of the grid must contain the digits `1-9` without repetition.
 > ![A partially filled sudoku which is valid.](/assets/images/leetcode/question_36.png)  
-> <small>A partially filled sudoku which is valid.</small>
+> <center>A partially filled sudoku which is valid.</center>
 > 
 > The Sudoku board could be partially filled, where empty cells are filled with the character `'.'`.
 
@@ -541,9 +541,9 @@ HashTable的解法比较自然，HashSet的解法更加牛逼。但是runtime差
 > 2. Each column must contain the digits `1-9` without repetition.
 > 3. Each of the 9 `3x3` sub-boxes of the grid must contain the digits `1-9` without repetition.
 > ![A sudoku puzzle...](/assets/images/leetcode/question_37_1.png)  
-> <small>A sudoku puzzle...</small>  
+> <center>A sudoku puzzle...</center>  
 > ![...and its solution numbers marked in red.](/assets/images/leetcode/question_37_2.png)  
-> <small>...and its solution numbers marked in red.</small>  
+> <center>...and its solution numbers marked in red.</center>  
 
 **Note:**
 

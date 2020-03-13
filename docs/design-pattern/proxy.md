@@ -21,7 +21,7 @@ title: "代理模式(Proxy)"
 ## 2. UML图
 
 ![代理模式UML图](/assets/images/design-pattern/proxy.png)  
-<small>代理模式UML图</small>
+<center>代理模式UML图</center>
 
 - Subject  
   抽象主题类。主要职责是声明真实主题与代理的共同接口方法，该类既可以是一个抽象类也可以是一个接口。

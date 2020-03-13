@@ -12,7 +12,7 @@ title: "解决问题的思路"
 
 ![两颗互为镜像的二叉树](/assets/images/leetcode/ci_binary_tree_27.png)
 
-<small>两颗互为镜像的二叉树</small>
+<center>两颗互为镜像的二叉树</center>
 
 我们可以看出一棵树的镜像是这么生成的：先前序遍历这棵树的每个节点，如果遍历到的节点有子节点，就交换它的两个子节点。当交换完所有非叶节点的左、右子节点之后，就得到了树的镜像。  
 
@@ -82,7 +82,7 @@ public BinaryTreeNode mirrorIteratively(BinaryTreeNode root) {
 
 ![第一棵是对称的，另外两棵不是](/assets/images/leetcode/ci_binary_tree_28.png)
 
-<small>第一棵是对称的，另外两棵不是</small>
+<center>第一棵是对称的，另外两棵不是</center>
 
 我们可以先比较根节点，然后递归比较左子树的左节点与右子树的右节点、左子树的右节点与右子树的子节点。  
 
@@ -506,7 +506,7 @@ private void findPath(BinaryTreeNode root, int expectedSum, List<Integer> path) 
 
 ![一个含有5个节点的复杂链表](/assets/images/leetcode/ci_list_node_35.png)
 
-<small>一个含有5个节点的复杂链表</small>
+<center>一个含有5个节点的复杂链表</center>
 
 **解法一：笨方法**  
 
@@ -524,13 +524,13 @@ private void findPath(BinaryTreeNode root, int expectedSum, List<Integer> path) 
 
 ![复制复杂链表的第一步](/assets/images/leetcode/ci_list_node_35_1.png)
 
-<small>复制复杂链表的第一步</small>
+<center>复制复杂链表的第一步</center>
 
 第二步设置复制出来的节点的sibling。假设原始链表上的N的sibling指向节点S，那么其对应复制出来的N'是N的next指向的节点，同样S'也是S的next指向的节点。设置sibling之后的链表如图所示：
 
 ![复制复杂链表的第二步](/assets/images/leetcode/ci_list_node_35_2.png)
 
-<small>复制复杂链表的第二步</small>
+<center>复制复杂链表的第二步</center>
 
 *注：如果原始链表上的节点N的sibling指向S，则其复制节点N'的sibling指向S的复制节点S'。*
 
@@ -538,7 +538,7 @@ private void findPath(BinaryTreeNode root, int expectedSum, List<Integer> path) 
 
 ![复制复杂链表的第三步](/assets/images/leetcode/ci_list_node_35_3.png)
 
-<small>复制复杂链表的第三步</small>
+<center>复制复杂链表的第三步</center>
 
 *注：把第二步得到的链表拆分成为两个链表，奇数位置上的节点组成原始链表，偶数位置上的节点组成复制出来的节点。*
 
@@ -640,7 +640,7 @@ private static class ComplexListNode {
 
 ![一颗二叉搜索树及转换之后的排序双向链表](/assets/images/leetcode/ci_binary_tree_36.png)
 
-<small>一颗二叉搜索树及转换之后的排序双向链表</small>
+<center>一颗二叉搜索树及转换之后的排序双向链表</center>
 
 ```java
 private BinaryTreeNode last;
@@ -696,7 +696,7 @@ private void convertNode(BinaryTreeNode node) {
 
 ![一颗被序列化成字符串“1,2,4,$,$,$,3,5,$,$,6,$,$”的二叉树](/assets/images/leetcode/ci_binary_tree_37.png)
 
-<small>一颗被序列化成字符串“1,2,4,$,$,$,3,5,$,$,6,$,$”的二叉树</small>
+<center>一颗被序列化成字符串“1,2,4,$,$,$,3,5,$,$,6,$,$”的二叉树</center>
 
 ```java
 private String serialize(BinaryTreeNode root) {
@@ -792,13 +792,13 @@ private void permutationInner(char[] str, int begin) {
     输入一个含有8个数字的数组，判断有没有可能把这8个数字分别放到正方体的8个顶点上，使得正方体上三组相对的面上的4个顶点的和都相等。  
     *这相当于先得到a1到a8这8个数字的所有排列，然后判断有没有某一个排列符合题目给定的条件，即a1+a2+a3+a4=a5+a6+a7+a8, a1+a3+a5+a7=a2+a4+a6+a8, a1+a2+a5+a6=a3+a4+a7+a8*  
     ![把8个数字放到正方体的8个顶点上](/assets/images/leetcode/ci_38_expand.png)  
-    <small>把8个数字放到正方体的8个顶点上</small>
+    <center>把8个数字放到正方体的8个顶点上</center>
 
 !!! info "相关题目"
     在8x8的国际象棋上摆放8个皇后，使其不能相互攻击，即任意两个皇后不得处在同一行、同一列或者同一条对角线上。图中的每个黑色格子表示一个皇后，这就是一种符合条件的摆放方法。请问总共有多少种符合条件的摆法？   
     *由于8个皇后的任意两个不能处在同一行，那么肯定是每一个皇后占据一行。于是我们可以定义一个数组ColumnIndex\[8\]，数组中第i个数字表示位于第i行的皇后的列号。先把数组ColumnIndex的8个数字分别用0~7初始化，然后对数组ColumnIndex进行全排列。因为我们用不同的数字初始化数组，所以任意两个皇后肯定不同列。只需判断每一个排列对应的8个皇后是不是在同一条对角线上，也就是对于数组的两个下标i和j，是否有i-j=ColumnIndex\[i\]-ColumnIndex\[j\]或者j-i=ColumnIndex\[i\]-ColumnIndex\[i\]*  
     ![8皇后问题](/assets/images/leetcode/ci_38_expand2.png)  
-    <small>8皇后问题</small>
+    <center>8皇后问题</center>
 
 !!! info "举一反三"
     如果题目是按照一定要求摆放若干个数字，则可以先求出这些数字的所有排列，然后一一判断每个排列是不是满足题目的要求。

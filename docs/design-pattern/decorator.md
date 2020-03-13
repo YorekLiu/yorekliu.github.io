@@ -18,7 +18,7 @@ title: "装饰模式(Decorator)"
 ## 2. UML图
 
 ![装饰模式UML图](/assets/images/design-pattern/decorator.png)  
-<small>装饰模式UML图</small>
+<center>装饰模式UML图</center>
 
 - Component  
   抽象组件，可以是一个接口或抽象类，其充当的是就是被装饰的原始对象。

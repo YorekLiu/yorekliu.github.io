@@ -23,7 +23,7 @@ title: "组合模式(Composite)"
 ## 2. UML图
 
 ![组合模式UML图](/assets/images/design-pattern/composite.png)  
-<small>组合模式UML图</small>
+<center>组合模式UML图</center>
 
 - Component  
   抽象根节点，为组合中的对象声明接口。

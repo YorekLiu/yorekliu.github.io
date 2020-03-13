@@ -18,7 +18,7 @@ title: "责任链模式(Chain of responsibility)"
 ## 2. UML图
 
 ![责任链模式UML图](/assets/images/design-pattern/chain-of-responsibility.png)  
-<small>责任链模式UML图</small>
+<center>责任链模式UML图</center>
 
 - Handler  
   抽象处理者角色，声明一个请求处理的方法，并在其中保持一个对下一个处理节点Handler对象的引用

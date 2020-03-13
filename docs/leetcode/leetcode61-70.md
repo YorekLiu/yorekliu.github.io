@@ -82,7 +82,7 @@ class Solution {
 > How many possible unique paths are there?
 > 
 > ![Above is a 7 x 3 grid. How many possible unique paths are there?](/assets/images/leetcode/robot_maze.png)  
-> <small>Above is a 7 x 3 grid. How many possible unique paths are there?</small>
+> <center>Above is a 7 x 3 grid. How many possible unique paths are there?</center>
 
 **Note:** *m* and *n* will be at most 100.
 
@@ -153,7 +153,7 @@ class Solution {
 > Now consider if some obstacles are added to the grids. How many unique paths would there be?
 > 
 > ![Above is a 7 x 3 grid. How many possible unique paths are there?](/assets/images/leetcode/robot_maze.png)  
-> <small>Above is a 7 x 3 grid. How many possible unique paths are there?</small>  
+> <center>Above is a 7 x 3 grid. How many possible unique paths are there?</center>  
 > An obstacle and empty space is marked as `1` and `0` respectively in the grid.
 
 **Note:** *m* and *n* will be at most 100.
