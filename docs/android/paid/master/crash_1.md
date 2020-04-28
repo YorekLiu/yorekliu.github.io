@@ -42,3 +42,95 @@ ANR如何发现？
 
 根据应用的前后台状态，我们可以把异常退出分为前台异常退出和后台异常退出。“被系统杀死”是后台异常退出的主要原因，当然我们会更关注前台的异常退出的情况，这会跟 ANR、OOM 等异常情况有更大的关联。  
    通过异常率我们可以比较全面的评估应用的稳定性，对于线上监控还需要完善崩溃的报警机制。在微信我们可以做到 5 分钟级别的崩溃预警，确保能在第一时间发现线上重大问题，尽快决定是通过发版还是动态热修复解决问题。
+
+
+### 课后作业
+
+使用Breakpad捕获一个native崩溃。
+
+按照[Sample](https://github.com/AndroidAdvanceWithGeektime/Chapter01)的readme来，总体来说还是比较顺利的。除了minidump_stackwalk这一步。
+
+下面记录一下一些过程。
+
+1. 下载sample、import project，然后配置工程ndk。这样就可以编译成功了
+
+2. 点击crash按钮触发native crash
+
+3. 从手机中取出***.dmp文件，开始解析  
+    ```shell
+    adb pull /sdcard/crashDump .
+    ```
+
+4. 使用`minidump_stackwalk`工具生成堆栈跟踪log。注意sample中的`tools/mac/minidump_stackwalker`可能无法正常使用，查阅资料发现，android sdk里面有这个工具，且可以正常使用。  
+    sample中的工具无法正常解析：
+    ```shell
+    $ tools/mac/minidump_stackwalk ~/Downloads/crashDump/5f80da03-05ec-4dc0-229cd696-9f22b046.dmp > ~/Downloads/crash.txt
+    dyld: Symbol not found: __ZTTNSt7__cxx1118basic_stringstreamIcSt11char_traitsIcESaIcEEE
+      Referenced from: /Users/yorekliu/Code/Geek/Chapter01-master/tools/mac/./minidump_stackwalk
+      Expected in: /usr/lib/libstdc++.6.dylib
+     in /Users/yorekliu/Code/Geek/Chapter01-master/tools/mac/./minidump_stackwalk
+    [1]    4543 abort      ./minidump_stackwalk  > ~/Downloads/crash.txt
+    ```
+   
+    Android sdk中的工具可以解析出文件，虽然报了一大堆ERROR的日志：
+    ```shell
+    $ ~/Library/Android/sdk/lldb/3.1/bin/minidump_stackwalk 5f80da03-05ec-4dc0-229cd696-9f22b046.dmp > crash.txt
+    ```
+   
+5. 查看crash发生的线程以及位置和寄存器信息  
+    ```shell
+    $ head -20 crash.txt
+    
+    Operating system: Android
+                      0.0.0 Linux 4.9.200-gefe7b0929fbd-ab6216672 #0 SMP PREEMPT Tue Feb 18 22:08:24 UTC 2020 aarch64
+    CPU: arm64
+         8 CPUs
+    
+    Crash reason:  SIGSEGV
+    Crash address: 0x0
+    Process uptime: not available
+    
+    Thread 0 (crashed)              // crash发生的线程
+     0  libcrash-lib.so + 0x5e0     // crash位置和寄存器信息  
+         x0 = 0x0000007cf32c16c0    x1 = 0x0000007fc9ce82f4
+         x2 = 0x0000000000000001    x3 = 0x0000000003e103e1
+         x4 = 0x12c805a812c805a8    x5 = 0x0000007c6e0f288c
+         x6 = 0x0000000000000001    x7 = 0x000000000000206e
+         x8 = 0x0000000000000001    x9 = 0x0000000000000000
+        x10 = 0x0000000000430000   x11 = 0x0000007c00000000
+        x12 = 0x0000000000000030   x13 = 0x000000000775fb88
+        x14 = 0x0000000000000006   x15 = 0xffffffffffffffff
+        x16 = 0x0000007c061b7fe8   x17 = 0x0000007c061a75cc
+    ```
+
+6. 使用`addr2line`解析符号，可以查看到crash的位置：
+    ```shell
+    $ ~/Library/Android/sdk/ndk/16.1.4479499/toolchains/aarch64-linux-android-4.9/prebuilt/darwin-x86_64/bin/aarch64-linux-android-addr2line -f -C -e ~/Code/Geek/Chapter01-master/sample/build/intermediates/cmake/debug/obj/arm64-v8a/libcrash-lib.so 0x5e0
+    Crash()
+    /Users/yorekliu/Code/Geek/Chapter01-master/sample/.externalNativeBuild/cmake/debug/arm64-v8a/../../../../src/main/cpp/crash.cpp:10
+    ```
+   
+    或者
+    ```shell
+    $ ~/Library/Android/sdk/ndk/16.1.4479499/toolchains/aarch64-linux-android-4.9/prebuilt/darwin-x86_64/bin/aarch64-linux-android-addr2line -f -C -e ~/Code/Geek/Chapter01-master/sample/build/intermediates/transforms/mergeJniLibs/debug/0/lib/arm64-v8a/libcrash-lib.so 0x5e0 
+    Crash()
+    /Users/yorekliu/Code/Geek/Chapter01-master/sample/.externalNativeBuild/cmake/debug/arm64-v8a/../../../../src/main/cpp/crash.cpp:10
+    ```
+
+
+除了使用不知道怎么出现的`minidump_stackwalk`外，我们还可以从breakpad自行编译出`minidump_stackwalk`，过程如下：
+
+1. 下载breakpad的源码，在其`src/third_party`下clone linux-syscall-support的源码：
+    ```shell
+    ~/Code/Geek/breakpad/src/third_party$ git clone git clone https://chromium.googlesource.com/linux-syscall-support lss
+    ```  
+    当然上面这个lss我一直下载不下来，所以无奈之下copy了sample里面的内容。
+2. 按照breakpad的readme进行编译：
+    ```shell
+     ~/Code/Geek/breakpad$ ./configure && make
+     ~/Code/Geek/breakpad$ sudo make install 
+    ```
+3. 然后就可以在任意位置直接使用`minidump_stackwalk`了：
+    ```shell
+    minidump_stackwalk 5f80da03-05ec-4dc0-229cd696-9f22b046.dmp > crash.txt
+    ```
