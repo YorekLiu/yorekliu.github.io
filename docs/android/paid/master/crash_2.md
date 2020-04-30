@@ -65,5 +65,105 @@ title: "02 | 崩溃优化（下）：应用崩溃了，你应该如何去分析�
 **疑难问题：系统崩溃如何解决？**  
 
 查找可能的原因、尝试规避、Hook解决：95% 以上的崩溃都能解决或者规避，大部分的系统崩溃也是如此  
-比如，修复Daemons$FinalizerWatchdogDaemon超时导致的崩溃，反射将其父类的thread置为null，这样在`runInternal()`方法中判断`isRunning()`就会返回false，从而导致退出循环不再执行终结方法  
+比如课后作业中修复`TimeoutException`问题。
 > BugReport日志格式 https://blog.csdn.net/oatnehc/article/details/11284907  
+
+
+### 课后作业
+
+利用反射修复TimeoutException这个比较经典的疑难的系统崩溃问题。
+
+```java
+java.util.concurrent.TimeoutException: 
+         android.os.BinderProxy.finalize() timed out after 10 seconds
+at android.os.BinderProxy.destroy(Native Method)
+at android.os.BinderProxy.finalize(Binder.java:459)
+```
+
+原理：修复`Daemons$FinalizerWatchdogDaemon`超时导致的崩溃，反射将其父类的thread置为null，这样在`runInternal()`方法中判断`isRunning()`就会返回false，从而导致退出循环不再执行终结方法。
+
+代码：
+
+```java
+package com.dodola.watchdogkiller;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+import android.os.Build;
+import android.os.Debug;
+import android.util.Log;
+
+/**
+ * Created by dodola on 2018/12/3.
+ */
+public class WatchDogKiller {
+    private static final String TAG = "WatchDogKiller";
+    private static volatile boolean sWatchdogStopped = false;
+
+    public static boolean checkWatchDogAlive() {
+        final Class clazz;
+        try {
+            clazz = Class.forName("java.lang.Daemons$FinalizerWatchdogDaemon");
+            final Field field = clazz.getDeclaredField("INSTANCE");
+            field.setAccessible(true);
+            final Object watchdog = field.get(null);
+            Method isRunningMethod = clazz.getSuperclass().getDeclaredMethod("isRunning");
+            isRunningMethod.setAccessible(true);
+            boolean isRunning = (boolean) isRunningMethod.invoke(watchdog);
+            return isRunning;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
+    public static void stopWatchDog() {
+        // 建议在在debug包或者灰度包中不要stop，保留发现问题的能力。为了Sample效果，先注释
+        //if (!BuildConfig.DEBUG) {
+        //    return;
+        //}
+
+        // Android P 以后不能反射FinalizerWatchdogDaemon
+        if (Build.VERSION.SDK_INT >= 28) {
+            Log.w(TAG, "stopWatchDog, do not support after Android P, just return");
+            return;
+        }
+        if (sWatchdogStopped) {
+            Log.w(TAG, "stopWatchDog, already stopped, just return");
+            return;
+        }
+        sWatchdogStopped = true;
+        Log.w(TAG, "stopWatchDog, try to stop watchdog");
+
+        try {
+            final Class clazz = Class.forName("java.lang.Daemons$FinalizerWatchdogDaemon");
+            final Field field = clazz.getDeclaredField("INSTANCE");
+            field.setAccessible(true);
+            final Object watchdog = field.get(null);
+            try {
+                final Field thread = clazz.getSuperclass().getDeclaredField("thread");
+                thread.setAccessible(true);
+                thread.set(watchdog, null);
+            } catch (final Throwable t) {
+                Log.e(TAG, "stopWatchDog, set null occur error:" + t);
+
+                t.printStackTrace();
+                try {
+                    // 直接调用stop方法，在Android 6.0之前会有线程安全问题
+                    final Method method = clazz.getSuperclass().getDeclaredMethod("stop");
+                    method.setAccessible(true);
+                    method.invoke(watchdog);
+                } catch (final Throwable e) {
+                    Log.e(TAG, "stopWatchDog, stop occur error:" + t);
+                    t.printStackTrace();
+                }
+            }
+        } catch (final Throwable t) {
+            Log.e(TAG, "stopWatchDog, get object occur error:" + t);
+            t.printStackTrace();
+        }
+    }
+}
+```
