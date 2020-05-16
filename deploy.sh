@@ -11,10 +11,6 @@ doCommit() {
 
     git checkout master
 
-    echo ">>>>>>> git branch"
-
-    git branch
-
     rm -rf docs/ mkdocs.yml serve.sh
 
     echo ">>>>>>> copy site to root .."
