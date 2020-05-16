@@ -11,10 +11,11 @@ copyright: '&copy; 2020 Yorek'
 
 theme:
   name: 'material'
+  custom_dir: overrides
   static_templates:
     - 404.html
   palette:
-    primary: 'blue'
+    primary: 'white'
     accent: 'blue'
   font:
     text: Roboto
@@ -22,8 +23,7 @@ theme:
   language: 'zh'
   feature:
     tabs: true
-  logo:
-    icon: 'code'
+  logo: assets/images/favicon.ico
   favicon: assets/images/favicon.ico
 
 plugins:
@@ -39,6 +39,7 @@ extra:
     - type: 'email'
       link: 'lyytogether@gmail.com'
   disqus: 'yorekliu'
+  manifest: manifest.webmanifest
 
 markdown_extensions:
   - admonition
@@ -94,6 +95,7 @@ nav:
       - android/3rd-library/glide5.md
       - android/3rd-library/glide6.md
       - android/3rd-library/glide7.md
+      - android/3rd-library/migrate-to-glide.md
       - android/3rd-library/eventbus.md
       - android/3rd-library/leakcanary.md
       - android/3rd-library/permissiondispatcher.md

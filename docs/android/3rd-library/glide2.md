@@ -17,6 +17,7 @@ title: "Glide v4 源码解析（二）"
     - [Glide5——Glide内置的transform以及自定义BitmapTransformation](/android/3rd-library/glide5/)
     - [Glide6——Glide利用AppGlideModule、LibraryGlideModule更改默认配置、扩展Glide功能；GlideApp与Glide的区别在哪？](/android/3rd-library/glide6/)
     - [Glide7——利用OkHttp、自定义Drawable、自定义ViewTarget实现带进度的图片加载功能](/android/3rd-library/glide7/)
+    - [杂记：从Picasso迁移至Glide](/android/3rd-library/migrate-to-glide/)
 
 ---
 

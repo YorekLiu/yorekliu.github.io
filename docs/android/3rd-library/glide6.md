@@ -17,6 +17,7 @@ title: "Glide v4 源码解析（六）"
     - [Glide5——Glide内置的transform以及自定义BitmapTransformation](/android/3rd-library/glide5/)
     - [Glide6——Glide利用AppGlideModule、LibraryGlideModule更改默认配置、扩展Glide功能；GlideApp与Glide的区别在哪？](/android/3rd-library/glide6/)
     - [Glide7——利用OkHttp、自定义Drawable、自定义ViewTarget实现带进度的图片加载功能](/android/3rd-library/glide7/)
+    - [杂记：从Picasso迁移至Glide](/android/3rd-library/migrate-to-glide/)
 
 ---
 
@@ -831,7 +832,7 @@ public void onResponse(@NonNull Call call, @NonNull Response response) {
 
 `OkHttpStreamFetcher`的实现比`HttpUrlFetcher`简单多了，而且看起来也没有什么难度。
 
-我们删掉app后重新运行，让资源重新从网络获取。在源码打上断点后可以看到Threads中出现了一个`OkHttp http://cn.bing.com/...`的OkHttp线程，这就是OkHttp正在加载图片了。关于这OkHttp源码部分可以参考[OkHttp3](/android/3rd-library/okhttp/)。
+我们删掉app后重新运行，让资源重新从网络获取。在源码打上断点后可以看到Threads中出现了一个`OkHttp`的OkHttp线程，这就是OkHttp正在加载图片了。关于这OkHttp源码部分可以参考[OkHttp3](/android/3rd-library/okhttp/)。
 
 <figure style="width: 50%" class="align-center">
     <img src="/assets/images/android/glide-okhttp-integration.jpg">

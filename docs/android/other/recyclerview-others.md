@@ -126,8 +126,62 @@ mSmoothScroller.targetPosition = mLocationPos
 mLayoutManager.startSmoothScroll(mSmoothScroller)
 ```
 
+## 3. 控制总滑动时间
 
-## 3. 关闭dataset改变时的动画效果
+由于RecyclerView平滑滑动的时间会随着滑动距离的增长而增长，而如果距离过长，会导致需要滑几秒钟才能到达指定位置，这太慢了。有没有一个方式可以让RecylerView无论滑多长都只花指定的时间呢。
+
+办法肯定是有的，在经过一番搜索之后，锁定了`LinearSmoothScroller.calculateTimeForScrolling`方法。该方法的解释为： *Calculates the time it should take to scroll the given distance (in pixels)*。按照注释来说，我们只需要让该方法返回固定值就能达到效果了。
+
+但是经过试验，并没有达到想要的效果，原因在于该方法会被调用多次。因为RecyclerView在滑动时会边滑边计算，它也一下子无法确定要滑动的位置到底到哪，只好调用一次，先滑到这个位置，然后再调用下一次。每次调用该方法都是为了计算下10000个像素。  
+比如说，我们要滑52000个像素，该方法则会调用5次，分别传入10000、10000、10000、10000、10000、2000。所以，如果我们让该方法返回固定值，显然RecyclerView平滑滑动的时间还是会随着滑动距离的增长而增长。这达不到效果。
+
+然后我们第二次尝试，还是在该方法上做文章。虽然我们不知道到底会调用几次，但是我们设定一个总的时间，每次调用都返回剩下没有消耗的时间的一半，最后一次调用返回剩下的没有消耗的时间。这样虽然随着调用次数的增加，函数返回值会越来越小，这也就意味着RecyclerView会滑的越来越快，但是我们完成了功能，剩下的谁在乎呢。  
+还是拿52000个像素做例子，假设总时间设定为1000ms，那么函数返回值分别为500、250、125、62、31、31。但是这种方式，滑动体验不太友好，短距离滑动时非常慢，所以实际应用可能需要根据滑动的距离做一个判断，需不需要使用这种方式。
+
+为了达到更好的体验，我们在想还能不能优化一下。上面的这种方式，我们无法预知RecyclerView总的滑动距离，进而无法知道`LinearSmoothScroller.calculateTimeForScrolling`方法到底会被调用几次，所以只能一次分一半的时间。如果我们能计算出总得滑动距离，就可以按段分配时间了。  
+
+所以我们可以有第三种方法，提前是我们能计算出RecyclerView本次滑动的距离，代码如下：
+
+```kotlin
+object : LinearSmoothScroller(context) {
+    private val mTotalLongScrollTime = 600
+    private val mTotalShortScrollTime = 300
+    private var mPerCostTime = mTotalLongScrollTime
+
+    override fun onStart() {
+        super.onStart()
+        // 获取起点、终点的position
+        val currentPos = mLayoutManager.findFirstVisibleItemPosition()
+        val targetPos = targetPosition
+
+        // 计算x轴上的距离（实例代码中是横着的RecyclerView）
+        val distance = abs(mItemDecoration.getTotalX(recyclerView, currentPos) - mItemDecoration.getTotalX(recyclerView, targetPos))
+        // 获得滑动的段数
+        val ceil = ceil(distance.toFloat() / 10000).toInt()
+        // 如果段数为2段或以下，则每段耗时300ms，这样短距离滑动体验会好点
+        // 否则，每段的耗时为600ms/段数，整个滑动过程耗时为600m
+        mPerCostTime = if (ceil <= 2) {
+            mTotalShortScrollTime
+        } else {
+            mTotalLongScrollTime / ceil
+        }
+    }
+
+    override fun getHorizontalSnapPreference(): Int {
+        return SNAP_TO_START
+    }
+
+    override fun calculateTimeForScrolling(dx: Int): Int {
+        return mPerCostTime
+    }
+
+    override fun calculateTimeForDeceleration(dx: Int): Int {
+        return mPerCostTime
+    }
+}
+```
+
+## 4. 关闭dataset改变时的动画效果
 
 ```kotlin
 if (recyclerView.itemAnimator is SimpleItemAnimator) {
