@@ -2,852 +2,857 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
      <loc>https://blog.yorek.xyz/about-me/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/3rd-library/3rd-library-source-code/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/3rd-library/okhttp/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/3rd-library/retrofit/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/3rd-library/rxjava&rxandroid/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/3rd-library/glide1/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/3rd-library/glide2/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/3rd-library/glide3/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/3rd-library/glide4/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/3rd-library/glide5/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/3rd-library/glide6/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/3rd-library/glide7/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://blog.yorek.xyz/about-me/android/3rd-library/migrate-to-glide/</loc>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/3rd-library/eventbus/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/3rd-library/leakcanary/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/3rd-library/permissiondispatcher/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/framework/Android四大组件(1)/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/framework/Android四大组件(2)/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/framework/Android四大组件(3)/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/framework/Android四大组件(4)/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/framework/IPC机制/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/framework/View的事件体系/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/framework/View的绘制原理/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/framework/RemoteViews/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/framework/Drawable/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/framework/Android动画/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/framework/Window与WindowManager/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/framework/四大组件启动过程/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/framework/Android消息机制/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/framework/Android线程与线程池/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/framework/Bitmap的缓存与加载/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/framework/JNI与NDK/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/framework/性能优化/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/framework/binder1-mediaservice/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/framework/binder2/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/zsxq/zsxq_index/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/zsxq/week1-synchronized/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/zsxq/week2-service/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/zsxq/week3-activity/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/zsxq/week4-startActivityForResult/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/zsxq/week5-view/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/zsxq/week6-gradle/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/zsxq/week7-serialization/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/zsxq/week10-classloader/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/zsxq/week11-binder/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/zsxq/week12-retrofit-okhttp/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/zsxq/week14-jvm-gc/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/zsxq/week16-keep-app-alive/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/zsxq/week17-android-components/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/zsxq/week20-network-protocol/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/zsxq/week21-mvc&mvp&mvvm/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/zsxq/week22-android-studio-build/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/zsxq/week23-load-large-bitmap/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/crash_1/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/crash_2/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/memory_1/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/memory_2/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/stuck_1/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/stuck_2/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/stuck_3/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/start_1/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/start_2/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/io_1/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/io_2/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/io_3/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/storage_1/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/storage_2/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/storage_3/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/network_1/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/network_2/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/network_3/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/battery_1/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/battery_2/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/ui_1/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/ui_2/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/package_1/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/package_2/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/compile/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/paid/master/bytecode/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/android_alias/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/Android-Development-Tool/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/android-jenkins/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/FileProvider/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/Android判断导航栏高度/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/Android图片选择器/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/Android底部导航栏框架/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/Android搜索栏的实现/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/Android暂停音乐播放器的播放/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/Android滑动返回实践/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/Android程序反编译/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/Android通讯录快速读取/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/annotation/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/best_throttle_in_mvvm/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/constraintlayout/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/dagger2/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/FAB-Behavior/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/nestedscrolling/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/porterduff/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/recyclerview-cache/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/recyclerview-item-docoration/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/recyclerview-others/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/RecyclerView-Sort&Delete/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/runtime/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/RxJava/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/soft-keyboard-in-app/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/SystemProrities/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/腾讯X5内核入坑指南/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/android/other/琐碎知识点/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/flutter/flutter_first_project_1/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/flutter/flutter_first_project_2/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/flutter/flutter_first_project_3/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/flutter/flutter_first_project_4/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/leetcode/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/leetcode/code_interviews_1/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/leetcode/code_interviews_3/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/leetcode/code_interviews_4/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/leetcode/code_interviews_5/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/leetcode/code_interviews_6/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/leetcode/array/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/leetcode/leetcode1-10/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/leetcode/leetcode11-20/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/leetcode/leetcode21-30/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/leetcode/leetcode31-40/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/leetcode/leetcode41-50/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/leetcode/leetcode51-60/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/leetcode/leetcode61-70/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/leetcode/leetcode71-80/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/leetcode/leetcode81-90/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/leetcode/leetcode91-100/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/leetcode/leetcode101-110/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/leetcode/leetcode111-120/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/design-pattern/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/design-principle/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/singleton/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/builder/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/prototype/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/factory-method/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/abstract-factory/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/proxy/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/composite/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/adapter/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/decorator/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/flyweight/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/facade/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/bridge/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/strategy/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/state/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/chain-of-responsibility/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/interpreter/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/command/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/observer/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/memento/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/iterator/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/template-method/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/visitor/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/mediator/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/design-pattern/confusing-design-pattern/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/effective-java/effective-java/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/effective-java/chapter1/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/effective-java/chapter2/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/effective-java/chapter3/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/jvm/jvm-content/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/jvm/java-memory-area-oom/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/jvm/java-gc/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/jvm/class-struct/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/jvm/load-class/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/java/generics-java-kotlin/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/java/java-collections/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/java/java-foundation/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://blog.yorek.xyz/about-me/refactoring/refactoring/</loc>
-     <lastmod>2020-04-30</lastmod>
+     <lastmod>2020-05-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>
