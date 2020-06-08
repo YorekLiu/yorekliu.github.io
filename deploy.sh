@@ -7,6 +7,11 @@ doCommit() {
 
     mkdocs build
 
+    echo ">>>>>>> copying CNAME & README.md"
+    
+    cp README.md site/
+    cp CNAME site/
+
     echo ">>>>>>> build in mkdocs branch success"
 
     git checkout master
