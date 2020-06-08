@@ -1,4 +1,6 @@
 ---
-template: overrides/home.html
-title: Material for MkDocs
+title: Yorek's Blog
 ---
+
+# Yorek's Blog
+
