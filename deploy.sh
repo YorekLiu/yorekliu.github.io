@@ -22,7 +22,7 @@ doCommit() {
 
     rm -f $url_txt
 
-    cmd=`grep loc sitemap.xml  | awk -F ">" '{print $2}' | awk -F "<" '{print $1}'`
+    cmd=`grep loc site/sitemap.xml  | awk -F ">" '{print $2}' | awk -F "<" '{print $1}'`
 
     for line in $cmd; do
         echo $line >> $url_txt
