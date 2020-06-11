@@ -17,6 +17,7 @@ doCommit() {
 
     echo ">>>>>>> build in mkdocs branch success"
 
+    chmod +x push2baidu.sh
     ./push2baidu.sh
 
     git checkout master
