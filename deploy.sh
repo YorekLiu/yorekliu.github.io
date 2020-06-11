@@ -1,5 +1,7 @@
 #!/bin/bash
         
+baidu_verify=baidu_verify_Uu1IfDiteb.html
+
 doCommit() {
     git checkout mkdocs
 
@@ -11,6 +13,7 @@ doCommit() {
     
     cp README.md site/
     cp CNAME site/
+    cp $baidu_verify site/
 
     echo ">>>>>>> build in mkdocs branch success"
 
