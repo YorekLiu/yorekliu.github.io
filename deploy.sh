@@ -1,6 +1,7 @@
 #!/bin/bash
         
 baidu_verify=baidu_verify_Uu1IfDiteb.html
+url_txt=urls.txt
 
 doCommit() {
     git checkout mkdocs
@@ -17,8 +18,23 @@ doCommit() {
 
     echo ">>>>>>> build in mkdocs branch success"
 
-    chmod +x push2baidu.sh
-    ./push2baidu.sh
+    echo "push2baidu executing ..."
+
+    rm -f $url_txt
+
+    cmd=`grep loc sitemap.xml  | awk -F ">" '{print $2}' | awk -F "<" '{print $1}'`
+
+    for line in $cmd; do
+        echo $line >> $url_txt
+    done
+
+    echo "pushing urls to baidu"
+
+    curl -H 'Content-Type:text/plain' --data-binary "@$url_txt" "http://data.zz.baidu.com/urls?site=https://blog.yorek.xyz&token=XAt9QHfqMXWRRMoU"
+
+    echo "push completed."
+
+    rm -f $FILE
 
     git checkout master
 
