@@ -17,9 +17,11 @@ doCommit() {
 
     echo ">>>>>>> build in mkdocs branch success"
 
+    ./push2baidu.sh
+
     git checkout master
 
-    rm -rf docs/ mkdocs.yml serve.sh
+    rm -rf docs/ mkdocs.yml serve.sh push2baidu.sh
 
     echo ">>>>>>> copy site to root .."
     cp -a site/* .
