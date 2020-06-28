@@ -139,3 +139,31 @@ class Test {
 我讲到的大部分内容都是跟业务相关，业务的梳理和优化也是最快出成果的。不过这个过程我们要学会取舍，你可能遇到过，很多产品经理为了提升自己负责的模块的数据，总会逼迫开发做各种各样的预加载。但是大家都想快，最后的结果就是代码一团糟，肯定都快不起来。
 
 比如只有 1% 用户使用的功能，却让所有用户都做预加载。面对这种情况，我们要狠下心来，只留下那些真正不能删除的业务，或者通过场景化直接找到那 1% 的用户。跟产品经理 PK 可能不是那么容易，关键在于数据。**我们需要证明启动优化带来整体留存、转化的正向价值，是大于某个业务取消预加载带来的负面影响。**
+
+## 课后作业
+
+插桩的练习：
+
+[Chapter07](https://github.com/AndroidAdvanceWithGeektime/Chapter07)：利用systrace+函数插桩来排查卡顿。  
+[Chapter-ASM](https://github.com/AndroidAdvanceWithGeektime/Chapter-ASM)：插桩练习，注意利用"ASM Bytecode Outline"插件来帮助自己理解ASM。
+
+在Chapter-ASM例子中，我们通过插桩来看谁获取了IMEI权限：只需要在`ASMCode$TraceMethodAdapter#visitMethodInsn`方法中判断一下参数即可，下面是调用`getDeviceId`时的ASM参数：
+
+```
+className:com/sample/asm/MainActivity, method:getIMEI, owner:android/telephony/TelephonyManager, name:getDeviceId, desc:()Ljava/lang/String;
+```
+
+因此，代码可以如下：
+
+```java
+if (opcode == Opcodes.INVOKEVIRTUAL
+        && owner.equals("android/telephony/TelephonyManager")
+        && name.equals("getDeviceId")
+        && desc.equals("()Ljava/lang/String;")) {
+    // className:com/sample/asm/MainActivity, method:getIMEI, owner:android/telephony/TelephonyManager, name:getDeviceId, desc:()Ljava/lang/String;
+    mv.visitLdcInsn("asmcode");
+    mv.visitLdcInsn(String.format("called by %s.%s", className, methodName));
+    mv.visitMethodInsn(INVOKESTATIC, "android/util/Log", "e", "(Ljava/lang/String;Ljava/lang/String;)I", false);
+    mv.visitInsn(POP);
+}
+```

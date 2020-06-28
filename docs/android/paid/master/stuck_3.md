@@ -209,3 +209,231 @@ PV 卡顿率 = 发生过卡顿 PV / 启动采集 PV
 可能很多同学认为问题可以解决就算万事大吉了，但我并不这样认为。我们应该继续敲问自己，如果再出现类似的问题，我们是否也可以采用相同的方法去解决？这个方案的代价对用户会带来多大的影响，是否还有优化的空间？
 
 只有这样，才会出现文中的方案二和方案三，解决方案才会一直向前演进，做得越来越好。也只有这样，我们才能在追求卓越的过程中快速进步。
+
+## 课后作业
+
+本章的[Sample](http://github.com/AndroidAdvanceWithGeektime/Chapter06-plus)关于监控线程的创建。
+
+- [Android 线程的创建过程](https://www.jianshu.com/p/a26d11502ec8)
+- [java_lang_Thread.cc](http://androidxref.com/9.0.0_r3/xref/art/runtime/native/java_lang_Thread.cc#43)
+- [thread.cc](http://androidxref.com/9.0.0_r3/xref/art/runtime/thread.cc)
+- [编译脚本 Android.bp](http://androidxref.com/9.0.0_r3/xref/art/runtime/Android.bp)
+
+对于 PLT Hook 和 Inline Hook 的具体实现原理与差别，我在后面会详细讲到。这里我们可以把它们先隐藏掉，直接利用开源的实现即可。通过这个 Sample 我希望你可以学会通过分析源码，寻找合理的 Hook 函数与具体的 so 库。我相信当你熟悉这些方法之后，一定会惊喜地发现实现起来其实真的不难。
+
+---
+
+hook`libart.so`里面`pthread_create`函数，在触发函数时调用Java层的方法打印出Java栈。
+
+```java tab="MainActivity.java"
+public class MainActivity extends Activity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ThreadHook.enableThreadHook();
+                Toast.makeText(MainActivity.this, "开启成功", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        findViewById(R.id.newthread).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e("HOOOOOOOOK", "thread name:" + Thread.currentThread().getName());
+                        Log.e("HOOOOOOOOK", "thread id:" + Thread.currentThread().getId());
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Log.e("HOOOOOOOOK", "inner thread name:" + Thread.currentThread().getName());
+                                Log.e("HOOOOOOOOK", "inner thread id:" + Thread.currentThread().getId());
+
+                            }
+                        }).start();
+                    }
+                }).start();
+            }
+
+        });
+    }
+}
+```
+
+```java tab="ThreadHook.java"
+public final class ThreadHook {
+    static {
+        System.loadLibrary("threadhook");
+    }
+
+    private static boolean sHasHook = false;
+    private static boolean sHookFailed = false;
+
+
+    public static String getStack() {
+        return stackTraceToString(new Throwable().getStackTrace());
+    }
+
+    private static String stackTraceToString(final StackTraceElement[] arr) {
+        if (arr == null) {
+            return "";
+        }
+
+        StringBuffer sb = new StringBuffer();
+
+        for (StackTraceElement stackTraceElement : arr) {
+            String className = stackTraceElement.getClassName();
+            // remove unused stacks
+            if (className.contains("java.lang.Thread")) {
+                continue;
+            }
+
+            sb.append(stackTraceElement).append('\n');
+        }
+        return sb.toString();
+    }
+
+    public static void enableThreadHook() {
+        if (sHasHook) {
+            return;
+        }
+        sHasHook = true;
+        enableThreadHookNative();
+
+    }
+    
+    private static native void enableThreadHookNative();
+}
+```
+
+```cpp tab="threadHook.cpp"
+#include <jni.h>
+#include <string>
+
+#include <atomic>
+#include <dlfcn.h>
+#include <sys/mman.h>
+#include <unistd.h>
+#include <sstream>
+#include <android/log.h>
+#include <unordered_set>
+#include <fcntl.h>
+#include <sys/fcntl.h>
+#include <stdlib.h>
+#include <libgen.h>
+#include <syscall.h>
+#include "linker.h"
+#include "hooks.h"
+#include <pthread.h>
+
+#define  LOG_TAG    "HOOOOOOOOK"
+#define  ALOG(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
+
+std::atomic<bool> thread_hooked;
+
+static jclass kJavaClass;
+static jmethodID kMethodGetStack;
+static JavaVM *kJvm;
+
+
+char *jstringToChars(JNIEnv *env, jstring jstr) {
+    if (jstr == nullptr) {
+        return nullptr;
+    }
+
+    jboolean isCopy = JNI_FALSE;
+    const char *str = env->GetStringUTFChars(jstr, &isCopy);
+    char *ret = strdup(str);
+    env->ReleaseStringUTFChars(jstr, str);
+    return ret;
+}
+
+void printJavaStack() {
+    JNIEnv* jniEnv = NULL;
+    // JNIEnv 是绑定线程的，所以这里要重新取
+    kJvm->GetEnv((void**)&jniEnv, JNI_VERSION_1_6);
+    jstring java_stack = static_cast<jstring>(jniEnv->CallStaticObjectMethod(kJavaClass, kMethodGetStack));
+    if (NULL == java_stack) {
+        return;
+    }
+    char* stack = jstringToChars(jniEnv, java_stack);
+    ALOG("stack:%s", stack);
+    free(stack);
+
+    jniEnv->DeleteLocalRef(java_stack);
+}
+
+
+int pthread_create_hook(pthread_t* thread, const pthread_attr_t* attr,
+                            void* (*start_routine) (void *), void* arg) {
+    printJavaStack();
+    return CALL_PREV(pthread_create_hook, thread, attr, *start_routine, arg);
+}
+
+
+/**
+* plt hook libc 的 pthread_create 方法，第一个参数的含义为排除掉 libc.so
+*/
+void hookLoadedLibs() {
+    ALOG("hook_plt_method");
+    hook_plt_method("libart.so", "pthread_create", (hook_func) &pthread_create_hook);
+}
+
+
+void enableThreadHook() {
+    if (thread_hooked) {
+        return;
+    }
+    ALOG("enableThreadHook");
+
+    thread_hooked = true;
+    if (linker_initialize()) {
+        throw std::runtime_error("Could not initialize linker library");
+    }
+    hookLoadedLibs();
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_dodola_thread_ThreadHook_enableThreadHookNative(JNIEnv *env, jclass type) {
+
+    enableThreadHook();
+}
+
+static bool InitJniEnv(JavaVM *vm) {
+    kJvm = vm;
+    JNIEnv* env = NULL;
+    if (kJvm->GetEnv((void**)&env, JNI_VERSION_1_6) != JNI_OK){
+        ALOG("InitJniEnv GetEnv !JNI_OK");
+        return false;
+    }
+    kJavaClass = reinterpret_cast<jclass>(env->NewGlobalRef(env->FindClass("com/dodola/thread/ThreadHook")));
+    if (kJavaClass == NULL)  {
+        ALOG("InitJniEnv kJavaClass NULL");
+        return false;
+    }
+
+    kMethodGetStack = env->GetStaticMethodID(kJavaClass, "getStack", "()Ljava/lang/String;");
+    if (kMethodGetStack == NULL) {
+        ALOG("InitJniEnv kMethodGetStack NULL");
+        return false;
+    }
+    return true;
+}
+
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved){
+    ALOG("JNI_OnLoad");
+
+
+    if (!InitJniEnv(vm)) {
+        return -1;
+    }
+
+    return JNI_VERSION_1_6;
+}
+```
