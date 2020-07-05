@@ -88,6 +88,7 @@ nav:
       - android/3rd-library/okhttp.md
       - android/3rd-library/retrofit.md
       - android/3rd-library/rxjava&rxandroid.md
+      - android/other/RxJava.md
       - android/3rd-library/glide1.md
       - android/3rd-library/glide2.md
       - android/3rd-library/glide3.md
@@ -99,6 +100,36 @@ nav:
       - android/3rd-library/eventbus.md
       - android/3rd-library/leakcanary.md
       - android/3rd-library/permissiondispatcher.md
+      - android/other/constraintlayout.md
+      - android/other/dagger2.md
+    - Android开发高手课:
+      - android/paid/master/index.md
+      - android/paid/master/crash_1.md
+      - android/paid/master/crash_2.md
+      - android/paid/master/memory_1.md
+      - android/paid/master/memory_2.md
+      - android/paid/master/stuck_1.md
+      - android/paid/master/stuck_2.md
+      - android/paid/master/stuck_3.md
+      - android/paid/master/start_1.md
+      - android/paid/master/start_2.md
+      - android/paid/master/io_1.md
+      - android/paid/master/io_2.md
+      - android/paid/master/io_3.md
+      - android/paid/master/storage_1.md
+      - android/paid/master/storage_2.md
+      - android/paid/master/storage_3.md
+      - android/paid/master/network_1.md
+      - android/paid/master/network_2.md
+      - android/paid/master/network_3.md
+      - android/paid/master/battery_1.md
+      - android/paid/master/battery_2.md
+      - android/paid/master/ui_1.md
+      - android/paid/master/ui_2.md
+      - android/paid/master/package_1.md
+      - android/paid/master/package_2.md
+      - android/paid/master/compile.md
+      - android/paid/master/bytecode.md
     - Framework系列: 
       - android/framework/Android四大组件(1).md
       - android/framework/Android四大组件(2).md
@@ -139,38 +170,21 @@ nav:
         - android/paid/zsxq/week21-mvc&mvp&mvvm.md
         - android/paid/zsxq/week22-android-studio-build.md
         - android/paid/zsxq/week23-load-large-bitmap.md
-      - Android开发高手课:
-        - android/paid/master/index.md
-        - android/paid/master/crash_1.md
-        - android/paid/master/crash_2.md
-        - android/paid/master/memory_1.md
-        - android/paid/master/memory_2.md
-        - android/paid/master/stuck_1.md
-        - android/paid/master/stuck_2.md
-        - android/paid/master/stuck_3.md
-        - android/paid/master/start_1.md
-        - android/paid/master/start_2.md
-        - android/paid/master/io_1.md
-        - android/paid/master/io_2.md
-        - android/paid/master/io_3.md
-        - android/paid/master/storage_1.md
-        - android/paid/master/storage_2.md
-        - android/paid/master/storage_3.md
-        - android/paid/master/network_1.md
-        - android/paid/master/network_2.md
-        - android/paid/master/network_3.md
-        - android/paid/master/battery_1.md
-        - android/paid/master/battery_2.md
-        - android/paid/master/ui_1.md
-        - android/paid/master/ui_2.md
-        - android/paid/master/package_1.md
-        - android/paid/master/package_2.md
-        - android/paid/master/compile.md
-        - android/paid/master/bytecode.md
     - 日常记录:
+      - android/other/annotation.md
+      - android/other/best_throttle_in_mvvm.md
+      - android/other/android-jenkins.md
+      - android/other/SystemProrities.md
+      - android/other/recyclerview-cache.md
+      - android/other/recyclerview-item-docoration.md
+      - android/other/recyclerview-others.md
+      - android/other/RecyclerView-Sort&Delete.md
+      - android/other/FAB-Behavior.md
+      - android/other/nestedscrolling.md
+      - android/other/porterduff.md
+      - android/other/runtime.md
       - android/other/android_alias.md
       - android/other/Android-Development-Tool.md
-      - android/other/android-jenkins.md
       - android/other/FileProvider.md
       - android/other/Android判断导航栏高度.md
       - android/other/Android图片选择器.md
@@ -180,21 +194,7 @@ nav:
       - android/other/Android滑动返回实践.md
       - android/other/Android程序反编译.md
       - android/other/Android通讯录快速读取.md
-      - android/other/annotation.md
-      - android/other/best_throttle_in_mvvm.md
-      - android/other/constraintlayout.md
-      - android/other/dagger2.md
-      - android/other/FAB-Behavior.md
-      - android/other/nestedscrolling.md
-      - android/other/porterduff.md
-      - android/other/recyclerview-cache.md
-      - android/other/recyclerview-item-docoration.md
-      - android/other/recyclerview-others.md
-      - android/other/RecyclerView-Sort&Delete.md
-      - android/other/runtime.md
-      - android/other/RxJava.md
       - android/other/soft-keyboard-in-app.md
-      - android/other/SystemProrities.md
       - android/other/腾讯X5内核入坑指南.md
       - android/other/琐碎知识点.md
   - Flutter:

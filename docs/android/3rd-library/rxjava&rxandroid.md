@@ -1,5 +1,5 @@
 ---
-title: "RxJava2 & RxAndroid源码解析"
+title: "RxJava源码解析及使用实例"
 ---
 
 ???+ note "用过RxJava和RxAndroid吗？RxAndroid切换线程是怎么实现的呢？"
@@ -789,3 +789,175 @@ Thread("newThread()") {
     <img src="/assets/images/android/rxjava/rxjava_schedulers.png">
     <figcaption>RxJava线程转化关系图</figcaption>
 </figure>
+
+## 3. 使用实例
+
+距离上面内容发布已经很久了，其实RxJava看起来很棒，各种文档看着似乎也很明白。但是刚接触的人还是不知道一个功能用RxJava怎么写。
+
+这段时间我也用Rx写了一点功能，下面来点心得以及部分代码。
+
+RxJava的使用，使用的前提就是这个功能需要在多个线程中切来切去，在这个前提下，步骤越多，RxJava就越好使。
+
+### 3.1 剪切板检测关键词
+
+这个需求需要从剪切板检测口令，下面是流程
+
+1. 检查剪切板
+2. 判断是否符合口令的规则，若不是，结束流程
+3. 若是，清空剪切板
+4. 调用口令解析的服务
+5. 成功后，发送埋点，并解析数据，触发对应的跳转
+
+可以看到，上面的流程比较繁琐，但是RxJava可以写的很优雅：
+
+```kotlin
+Maybe.create<String> { emitter ->
+    // 在主线程中检查剪切板，否则可能会检测不到
+    val clipboard = ClipboardUtils.getClipboardText(TingApplication.getAppContext())
+    if (clipboard.isNullOrEmpty()) {
+        emitter.onComplete()
+    } else {
+        emitter.onSuccess(clipboard.toString())
+    }
+}.subscribeOn(AndroidSchedulers.mainThread())
+    // 剪切板是否符合规则，不符合的话不会调用onSuccess方法，所以下面的所有流程都不会走
+    .filter { it.startsWith("Xm") }
+    // 符合规则，则清空剪切板
+    .doOnSuccess { ClipboardUtils.clearClipboard(TingApplication.getAppContext()) }  
+    // 切换到IO线程，准备解析口令
+    .observeOn(Schedulers.io())
+    // 解析口令
+    .map { contentService.getShareBackFlow(it) }
+    // 解析口令成功后，发送数据埋点
+    .doOnSuccess { sendDataTracking(it) }
+    // 上面的都成功后，切换到主线程
+    .observeOn(AndroidSchedulers.mainThread())
+    // 从口令数据中解析出schema
+    .map { getITingKidFromLink(it) }
+    // 判断schema是否是客户端支持的schema
+    .filter { SchemaController.isITingKid(it) }
+    // 将schema回调到客户端进行处理
+    .doOnSuccess(linkConsumer)
+    .subscribe()
+```
+
+### 3.2 分享功能
+
+在分享功能中
+
+1. 微信分享的thumbData支持传入byte[]、drawable资源id以及url，后面两者需要我们自己加载一下数据，然后转换成byte[]格式
+2. 图片分享时支持传入Bitmap，但考虑到Bitmap过大会导致分享失败，所以可以写入到本地文件，然后传路径即可
+
+为了支持上面的这些功能，需要我们在分享的时候判断一下是否需要转换byte[]，是否需要写入Bitmap到本地文件。每次分享根据参数的不同，可能需要处理前者、后者或者两者。这时，RxJava也可以排上用场。
+
+```java
+private void realShareAfterModelHandled(String dest, int compressFlag) {
+    List<Single<String>> singleList = new ArrayList<>();
+
+    // thumbData是否需要转换成byte[]格式
+    if ((compressFlag & COMPRESS_FLAG_NORMAL_COVER) != 0) {
+        Single<String> thumbDataSingle = getBitmapFromUrlSingle(mShareModel.getThumbDataModel(), COMPRESS_FLAG_NORMAL_COVER)
+                .doOnSuccess(bytes -> mShareModel.setThumbData(bytes))
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(bytes -> TAG);
+        singleList.add(thumbDataSingle);
+    }
+    // 小程序专用的thumbData是否需要转换成byte[]格式
+    if ((compressFlag & COMPRESS_FLAG_BIG_COVER) != 0) {
+        Single<String> bigThumbDataSingle = getBitmapFromUrlSingle(mShareModel.getBigThumbDataModel(), COMPRESS_FLAG_BIG_COVER)
+                .doOnSuccess(bytes -> mShareModel.setBigThumbData(bytes))
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(bytes -> TAG);
+        singleList.add(bigThumbDataSingle);
+    }
+    // Bitmap是否需要写入本地文件
+    if ((compressFlag & COMPRESS_FLAG_SHARE_BITMAP) != 0) {
+        Single<String> shareBitmapSingle = getShareBitmapPathSingle()
+                .doOnSuccess(success -> mBitmapShareFilePath = ShareFileManager.getShareFile().getAbsolutePath())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(bytes -> TAG);
+        singleList.add(shareBitmapSingle);
+    }
+
+    // 将多个任务zip到一起，这样异步处理的loading框可以统一控制
+    if (!singleList.isEmpty()) {
+        Single.zip(singleList, strings -> strings)
+            .subscribe(new SingleObserver<Object>() {
+                @Override
+                public void onSubscribe(Disposable d) {
+                    if (mShareLoading != null) {
+                        mShareLoading.showLoading();
+                    }
+                }
+
+                @Override
+                public void onSuccess(Object t) {
+                    if (mShareLoading != null) {
+                        mShareLoading.hideLoading();
+                    }
+                    realShare(dest);
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    e.printStackTrace();
+                    if (mShareLoading != null) {
+                        mShareLoading.hideLoading();
+                    }
+                    mActivity.showToast("分享失败，请稍后尝试！");
+                }
+            });
+    } else {
+        Logger.d(TAG, "resultSingle is null");
+        mActivity.showToast("分享失败，请稍后尝试！");
+    }
+}
+
+private Single<byte[]> getBitmapFromUrlSingle(Object model, int compressType) {
+    return Single.create((SingleOnSubscribe<Bitmap>) emitter -> {
+        GlideRequest<Bitmap> request = getGlideRequest(model);
+
+        try {
+            // 在IO线程，同步加载图片
+            emitter.onSuccess(request.submit().get());
+        } catch (Exception e) {
+            emitter.onError(e);
+        }
+    }).subscribeOn(Schedulers.io())
+            // 切换到CPU线程，执行CPU忙的操作
+            .observeOn(Schedulers.computation())
+            .map(bitmap -> {
+                // 压缩图片，如果是小程序的图，控制在128kb以下，否则32kb
+                if (compressType == COMPRESS_FLAG_BIG_COVER) {
+                    return BitmapUtils.compressByQuality(bitmap, 128 * 1024, false);
+                } else {
+                    return BitmapUtils.bmpToByteArray(bitmap, 32);
+                }
+            });
+}
+
+private GlideRequest<Bitmap> getGlideRequest(Object model) {
+    if ((model instanceof String) || (model instanceof Integer)) {
+        return GlideApp.with(mActivity).asBitmap().load(model);
+    } else {
+        throw new IllegalArgumentException("model is neither a byte[], nor a String. Can't parse to a bitmap.");
+    }
+}
+
+private Single<Boolean> getShareBitmapPathSingle() {
+    return Single.create((SingleOnSubscribe<Boolean>) emitter -> {
+        // 在IO线程，写入Bitmap到本地文件
+        try {
+            File shareFile = ShareFileManager.getShareFile();
+            boolean success = BitmapUtils.writeBitmapToFile(mShareModel.getShareBitmapModel(), shareFile.getAbsolutePath());
+            if (success) {
+                emitter.onSuccess(true);
+            } else {
+                emitter.onError(new Throwable("write share image failed."));
+            }
+        } catch (Exception e) {
+            emitter.onError(e);
+        }
+    }).subscribeOn(Schedulers.io());
+}
+```
