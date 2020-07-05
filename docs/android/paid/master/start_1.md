@@ -156,14 +156,69 @@ className:com/sample/asm/MainActivity, method:getIMEI, owner:android/telephony/T
 因此，代码可以如下：
 
 ```java
-if (opcode == Opcodes.INVOKEVIRTUAL
-        && owner.equals("android/telephony/TelephonyManager")
-        && name.equals("getDeviceId")
-        && desc.equals("()Ljava/lang/String;")) {
-    // className:com/sample/asm/MainActivity, method:getIMEI, owner:android/telephony/TelephonyManager, name:getDeviceId, desc:()Ljava/lang/String;
-    mv.visitLdcInsn("asmcode");
-    mv.visitLdcInsn(String.format("called by %s.%s", className, methodName));
-    mv.visitMethodInsn(INVOKESTATIC, "android/util/Log", "e", "(Ljava/lang/String;Ljava/lang/String;)I", false);
-    mv.visitInsn(POP);
+public static class ImeiMethodAdapter extends AdviceAdapter {
+    private final String methodName;
+    private final String className;
+
+    public ImeiMethodAdapter(int api, MethodVisitor mv, int access, String name, String desc, String className) {
+        super(api, mv, access, name, desc);
+        this.className = className;
+        this.methodName = name;
+    }
+
+    @Override
+    public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
+        super.visitMethodInsn(opcode, owner, name, desc, itf);
+        if (opcode == Opcodes.INVOKEVIRTUAL
+                && owner.equals("android/telephony/TelephonyManager")
+                && name.equals("getDeviceId")
+                && desc.equals("()Ljava/lang/String;")) {
+            Log.e("asmcode", "called by %s.%s", className, methodName);
+        }
+    }
+}
+```
+
+> 注意，这里的日志实际上调用的是`System.out.println()`方法，在编译app时，可以在控制台看到输出，而不是在运行时在Logcat中查看。  
+> [ERROR][asmcode]called by com/sample/asm/MainActivity.getIMEI  
+> [INFO][ASM.ASMTraceTransform][transform] cost time: 1729ms
+
+
+为某个方法加上try-catch方法，比如`MainActivity`中的`mm`方法：
+
+```java
+public static class TryCatchMethodAdapter extends AdviceAdapter {
+    private final String methodName;
+    private final String className;
+    private final Label tryStart = new Label();
+    private final Label tryEnd = new Label();
+    private final Label catchStart = new Label();
+    private final Label catchEnd = new Label();
+
+    public TryCatchMethodAdapter(int api, MethodVisitor mv, int access, String name, String desc, String className) {
+        super(api, mv, access, name, desc);
+        this.methodName = name;
+        this.className = className;
+    }
+
+    @Override
+    protected void onMethodEnter() {
+        if (methodName.equals("mm") && className.equals("com/sample/asm/MainActivity")) {
+            mv.visitTryCatchBlock(tryStart, tryEnd, catchStart, "java/lang/Exception");
+            mv.visitLabel(tryStart);
+        }
+    }
+
+    @Override
+    protected void onMethodExit(int opcode) {
+        if (methodName.equals("mm") && className.equals("com/sample/asm/MainActivity")) {
+            mv.visitLabel(tryEnd);
+            mv.visitJumpInsn(GOTO, catchEnd);
+            mv.visitLabel(catchStart);
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Exception", "printStackTrace", "()V", false);
+            mv.visitInsn(Opcodes.RETURN);
+            mv.visitLabel(catchEnd);
+        }
+    }
 }
 ```

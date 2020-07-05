@@ -190,3 +190,19 @@ vmstat 的各个字段说明可以参考[《vmstat 监视内存使用情况》](
 今天我们学习 I/O 处理的整个流程，它包括应用程序、文件系统和磁盘三个部分。不过 I/O 这个话题真的很大，在课后需要花更多时间学习课后练习中的一些参考资料。
 
 LPDDR5、UFS 3.0 很快就要在 2019 年面世，有些同学会想，随着硬件越来越牛，我们根本就不需要去做优化了。但是一方面考虑到成本的问题，在嵌入式、IoT 等一些场景的设备硬件不会太好；另一方面，我们对应用体验的要求也越来越高，沉浸体验（VR）、人工智能（AI）等新功能对硬件的要求也越来越高。所以，应用优化是永恒的，只是在不同的场景下有不同的要求。
+
+## 课后作业
+
+关于I/O的参考资料。
+
+1. [磁盘 I/O 那些事](https://tech.meituan.com/about_desk_io.html)  
+   主要介绍文件系统
+2. [Linux 内核的文件 Cache 管理机制介绍](https://www.ibm.com/developerworks/cn/linux/l-cache/index.html)  
+   Buffer Cache、Page Cache
+3. [The Linux Kernel/Storage](https://en.wikibooks.org/wiki/The_Linux_Kernel/Storage)
+4. [选eMMC、UFS还是NVMe？ 手机ROM存储传输协议解析 ](https://www.sohu.com/a/196510603_616364)
+5. [聊聊 Linux IO](http://0xffffff.org/2017/05/01/41-linux-io/)  
+   从几个实际问题出发，推荐
+6. [采用 NAND Flash 设计存储设备的挑战在哪里?](https://blog.51cto.com/alanwu/1425566)
+
+“实践出真知”，你也可以尝试使用 strace 和 block_dump 来观察自己应用的 I/O 情况，不过有些实验会要求有 root 的机器。
