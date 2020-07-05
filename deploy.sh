@@ -34,7 +34,7 @@ doCommit() {
 
     echo "push completed."
 
-    rm -f $FILE
+    rm -f $url_txt
 
     git checkout master
 
