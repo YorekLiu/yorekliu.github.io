@@ -246,3 +246,7 @@ public String readConfig() {
 对于 Hook 方案的选择，在同等条件下我会优先选择 Java Hook 方案。但无论采用哪种 Hook 方案，我们都需要耐心地查看源码、分析调用流程，从而寻找可以利用的地方。
 
 一套监控方案是只用在实验室自动化测试，还是直接交给用户线上使用，这两者的要求是不同的，后者需要 99.9% 稳定性，还要具备不影响用户体验的高性能才可以上线。从实验室到线上，需要大量的灰度测试以及反复的优化迭代过程。
+
+## 课后作业
+
+微信的性能监控分析工具[Matrix](https://github.com/Tencent/matrix)终于开源了，接入[matrix-io-canary](https://github.com/Tencent/matrix/tree/master/matrix/matrix-android/matrix-io-canary)，看看自己App的I/O问题。

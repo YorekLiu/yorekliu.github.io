@@ -202,4 +202,327 @@ Battery-Metrics 只是提供了一系列的基础类，在实际使用中，接�
 
 ## 课后作业
 
-今天的课后练习是，按照文中的思路，使用 Java Hook 实现 Alarm、WakeLock 和 GPS 的耗电监控。具体的规则跟文中表格一致，请将完善后的代码通过 Pull requests 提交到Chapter19中。
+今天的课后练习是，按照文中的思路，使用 Java Hook 实现 Alarm、WakeLock 和 GPS 的耗电监控。具体的规则跟文中表格一致，请将完善后的代码通过 Pull requests 提交到[Chapter19](https://github.com/AndroidAdvanceWithGeektime/Chapter19/)中。
+
+练习中都可以通过hook替换上面三个Service中的远程代理Service，然后通过方法名过滤出来对应的操作。下面代码啊仅仅hook了相应的Service，并打印出了调用堆栈，其他统计信息需要进一步的实现：
+
+```xml tab="AndroidManifest.xml" hl_lines="6 7 8 23 24 25 26 27"
+<?xml version="1.0" encoding="utf-8"?>
+<manifest package="com.sample.battery"
+          xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 注意权限 -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true">
+        <activity
+                android:name="com.sample.battery.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <receiver android:name=".MainActivity$MyAlarmReceiver">
+            <intent-filter>
+                <action android:name="intent_alarm"/>
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>
+```
+
+```java tab="MainActivity.java"
+/**
+ * 本类都是一些Alarm、WakeLock、Location的使用
+ */
+public class MainActivity extends Activity {
+    public static Context sContext;
+
+    Handler handler = new Handler();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        sContext = getApplicationContext();
+        final Button hookAlarm = (Button) findViewById(R.id.hook_alarm);
+        hookAlarm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Hooker.hookAlarm(getApplicationContext());
+            }
+        });
+
+
+        final Button hookWakelock = (Button) findViewById(R.id.hook_wakelock);
+        hookWakelock.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Hooker.hookWakeLock(getApplicationContext());
+            }
+        });
+
+        final Button hookGPS = (Button) findViewById(R.id.hook_gps);
+        hookGPS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Hooker.hookLocation(getApplicationContext());
+            }
+        });
+
+        findViewById(R.id.btn_set_alarm).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setAlarm();
+            }
+        });
+        findViewById(R.id.btn_cancel_alarm).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cancelAlarm();
+            }
+        });
+
+        findViewById(R.id.btn_acquire_wakelock).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                acquireWakeLock();
+            }
+        });
+        findViewById(R.id.btn_release_wakelock).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                releaseWakeLock();
+            }
+        });
+
+        findViewById(R.id.btn_request_location).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestLocation();
+            }
+        });
+        findViewById(R.id.btn_remove_location).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                removeLocation();
+            }
+        });
+    }
+
+    private void setAlarm() {
+        AlarmManager alarmService = (AlarmManager) sContext.getSystemService(ALARM_SERVICE);
+        Intent alarmIntent = new Intent(sContext, MyAlarmReceiver.class).setAction("intent_alarm");
+        PendingIntent broadcast = PendingIntent.getBroadcast(sContext, 0, alarmIntent, 0);//通过广播接收
+        alarmService.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 2000, broadcast);//INTERVAL毫秒后触
+    }
+
+    private void cancelAlarm() {
+        AlarmManager alarmService = (AlarmManager) sContext.getSystemService(ALARM_SERVICE);
+        Intent alarmIntent = new Intent(sContext, MyAlarmReceiver.class).setAction("intent_alarm");
+        PendingIntent broadcast = PendingIntent.getBroadcast(sContext, 0, alarmIntent, 0);
+        alarmService.cancel(broadcast);
+    }
+
+    public static class MyAlarmReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("Yorek", "onReceive");
+        }
+    }
+
+    private PowerManager.WakeLock wakeLock;
+    private void acquireWakeLock() {
+        PowerManager powerManager = (PowerManager) sContext.getSystemService(POWER_SERVICE);
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.getClass().getName());//持有唤醒锁
+        wakeLock.setReferenceCounted(false);
+        wakeLock.acquire(60 * 1000); //亮屏60s
+    }
+
+    private void releaseWakeLock() {
+        if (wakeLock != null) {
+            wakeLock.release();
+        }
+    }
+
+    private LocationManager locationManager;
+    private void requestLocation() {
+        if (ContextCompat.checkSelfPermission(MainActivity.this, ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{ACCESS_FINE_LOCATION}, 100);
+        } else {
+            locationManager = (LocationManager) sContext.getSystemService(LOCATION_SERVICE);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 1, locationListener);
+        }
+    }
+
+    private void removeLocation() {
+        if (locationManager != null && locationListener != null) {
+            // 关闭程序时将监听器移除
+            locationManager.removeUpdates(locationListener);
+        }
+    }
+
+    private LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            Log.e("Yorek", "onLocationChanged >> " + location.toString());
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+            Log.e("Yorek", "onStatusChanged >> " + provider);
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            Log.e("Yorek", "onProviderEnabled >> " + provider);
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+            Log.e("Yorek", "onProviderDisabled >> " + provider);
+        }
+    };
+}
+```
+
+```java tab="Hooker.java"
+/**
+ * Hook响应的Service，并在对应的方法调用中打印堆栈
+ */
+public class Hooker {
+    public static void hookAlarm(Context context) {
+        Object alarmManager = context.getSystemService(Context.ALARM_SERVICE);
+        final String[] hookedMethodName = {"set", "remove"};
+        hookInner(alarmManager, hookedMethodName);
+    }
+
+    public static void hookWakeLock(Context context) {
+        Object powerManager = context.getSystemService(Context.POWER_SERVICE);
+        final String[] hookedMethodName = {"acquireWakeLock", "releaseWakeLock"};
+        hookInner(powerManager, hookedMethodName);
+    }
+
+    public static void hookLocation(Context context) {
+        Object powerManager = context.getSystemService(Context.LOCATION_SERVICE);
+        final String[] hookedMethodName = {"requestLocationUpdates", "removeUpdates"};
+        hookInner(powerManager, hookedMethodName);
+    }
+
+    private static void hookInner(Object object, final String[] hookedMethodName) {
+        ProxyHook.hook(object, "mService", new MethodCalledListener() {
+            @Override
+            public boolean handleMethod(Object object, Method method, Object[] args) {
+                String methodName = method.getName();
+                if (isMatch(hookedMethodName, methodName)) {
+                    StackTracePrinter.printStackTrace(methodName);
+                }
+                return false;
+            }
+        });
+    }
+
+
+    private static boolean isMatch(String[] methodNameList, String method) {
+        for (String str: methodNameList) {
+            if (method.equals(str)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+```
+
+```java tab="ProxyHook.java"
+public class ProxyHook {
+    public static void hook(Object object, String fieldName, MethodCalledListener methodCalledListener) {
+        Class<?> clazz = object.getClass();
+        try {
+            Field field = clazz.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            final Object oldService = field.get(object);
+            Object newService = Proxy.newProxyInstance(
+                oldService.getClass().getClassLoader(),
+                oldService.getClass().getInterfaces(),
+                new SystemInvocationHandler(oldService, methodCalledListener)
+            );
+            field.set(object, newService);
+            field.setAccessible(false);
+            Log.e("Yorek", "hook success");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("Yorek", "hook failed " + e.getMessage());
+        }
+    }
+}
+```
+
+```java tab="SystemInvocationHandler.java"
+class SystemInvocationHandler implements InvocationHandler {
+    private Object mOriginObject;
+    private MethodCalledListener mMethodCalledListener;
+
+    public SystemInvocationHandler(Object originObject, MethodCalledListener methodCalledListener) {
+        mOriginObject = originObject;
+        mMethodCalledListener = methodCalledListener;
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        if (mMethodCalledListener != null) {
+            boolean handled = mMethodCalledListener.handleMethod(mOriginObject, method, args);
+            if (handled) {
+                return null;
+            }
+        }
+        return method.invoke(mOriginObject, args);
+    }
+}
+```
+
+```java tab="MethodCalledListener.java"
+public interface MethodCalledListener {
+    boolean handleMethod(Object object, Method method, Object[] args);
+}
+```
+
+```java tab="StackTracePrinter.java"
+public class StackTracePrinter {
+    public static void printStackTrace(String methodName) {
+        Log.d("Yorek", stackTraceToString(methodName + " called\n", new Throwable().getStackTrace()));
+    }
+
+    private static String stackTraceToString(String methodName, final StackTraceElement[] arr) {
+        if (arr == null) {
+            return "";
+        }
+
+        StringBuffer sb = new StringBuffer(methodName);
+
+        for (StackTraceElement stackTraceElement : arr) {
+            String className = stackTraceElement.getClassName();
+            // remove unused stacks
+            if (className.contains(StackTracePrinter.class.getCanonicalName())) {
+                continue;
+            }
+
+            sb.append(stackTraceElement).append('\n');
+        }
+        return sb.toString();
+    }
+}
+```
+
+最后，做完上面的练习题，最后发现hook系统service真的不难，只不过上面的这些hook在Android高版本中都是灰名单了。

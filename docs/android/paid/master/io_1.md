@@ -196,7 +196,8 @@ LPDDR5、UFS 3.0 很快就要在 2019 年面世，有些同学会想，随着硬
 关于I/O的参考资料。
 
 1. [磁盘 I/O 那些事](https://tech.meituan.com/about_desk_io.html)  
-   主要介绍文件系统
+   主要介绍文件系统。“
+   写的时候可以采用追加写，来尽可能的将随机I/O变成顺序I/O，以此来降低寻址时间和旋转延时，从而最大限度的提高IOPS”
 2. [Linux 内核的文件 Cache 管理机制介绍](https://www.ibm.com/developerworks/cn/linux/l-cache/index.html)  
    Buffer Cache、Page Cache
 3. [The Linux Kernel/Storage](https://en.wikibooks.org/wiki/The_Linux_Kernel/Storage)
@@ -204,5 +205,6 @@ LPDDR5、UFS 3.0 很快就要在 2019 年面世，有些同学会想，随着硬
 5. [聊聊 Linux IO](http://0xffffff.org/2017/05/01/41-linux-io/)  
    从几个实际问题出发，推荐
 6. [采用 NAND Flash 设计存储设备的挑战在哪里?](https://blog.51cto.com/alanwu/1425566)
+   这里介绍NAND Flash的一些原理
 
 “实践出真知”，你也可以尝试使用 strace 和 block_dump 来观察自己应用的 I/O 情况，不过有些实验会要求有 root 的机器。
