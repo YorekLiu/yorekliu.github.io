@@ -280,3 +280,35 @@ Facebook 有一个 So 加载的开源库[SoLoader](https://github.com/facebook/S
 
 - strip debuginfo
 - 分包优化
+
+> 针对Demo中的实例，确实有不少效果。但是对公司产品的release包使用时，上述两个任务都没有达到效果，甚至包还增大了。
+
+回到练习本身，在按照README大体可以完成，但是其中会遇到一些问题：
+
+1. 安装redex后无法进行编译，原因是一些依赖包没有安装，可以参考redex的文档里面的[install教程](https://fbredex.com/docs/installation)，整个redex的安装流程如下：
+   ```shell
+   ## clone repo
+   git clone https://github.com/facebook/redex.git
+   cd redex
+
+   ## install dependencies, in MacOS
+   ## xcode command line tools
+   xcode-select --install
+   ## install brew
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+   ## install dependencies
+   brew install autoconf automake libtool python3
+   brew install boost jsoncpp
+
+   ## make & install
+   autoreconf -ivf && ./configure && make -j4
+   sudo make install
+   ```
+   其中编译耗时，在鄙人这台`MacBook Pro (13-inch, 2019, Two Thunderbolt 3 ports)`这台电脑上，大约耗时50分钟左右，大晚上编译实在是等不了，去睡觉的时候才编译好。
+
+2. 在使用redex进行优化时，按照README的命令会出错，找不到zipalign命令，应该与环境变量有关，一般我们的环境变量都是`$ANDROID_HOME`，这里需要`$ANDROID_SDK`，所以我们在前面指定`ANDROID_SDK=$ANDROID_HOME`即可，如下
+   ```shell
+   ANDROID_SDK=$ANDROID_HOM redex --sign -s ReDexSample/keystore/debug.keystore -a androiddebugkey -p android -c redex-test/stripdebuginfo.config -P ReDexSample/proguard-rules.pro  -o redex-test/strip_output.apk ReDexSample/build/outputs/apk/debug/ReDexSample-debug.apk
+   ```
+
+3. 此外，在使用redex进行优化时，还会遇到一个ANDROID_SDK相关的问题，提示`com/android/apksigner/ApkSignerTool has been compiled by a more recent version of the Java Runtime (class file version 53.0), this version of the Java Runtime only recognizes class file versions up to 52.0`，应该是sdk编译工具版本太高了，不兼容所致，卸载掉了build-tools里面的30+，保留到29的即可。

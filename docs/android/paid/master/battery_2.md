@@ -204,7 +204,7 @@ Battery-Metrics 只是提供了一系列的基础类，在实际使用中，接�
 
 今天的课后练习是，按照文中的思路，使用 Java Hook 实现 Alarm、WakeLock 和 GPS 的耗电监控。具体的规则跟文中表格一致，请将完善后的代码通过 Pull requests 提交到[Chapter19](https://github.com/AndroidAdvanceWithGeektime/Chapter19/)中。
 
-练习中都可以通过hook替换上面三个Service中的远程代理Service，然后通过方法名过滤出来对应的操作。下面代码啊仅仅hook了相应的Service，并打印出了调用堆栈，其他统计信息需要进一步的实现：
+练习中都可以通过hook替换上面三个Service中的远程代理Service，然后通过方法名过滤出来对应的操作。下面代码仅仅hook了相应的Service，并打印出了调用堆栈，其他统计信息需要进一步的实现：
 
 ```xml tab="AndroidManifest.xml" hl_lines="6 7 8 23 24 25 26 27"
 <?xml version="1.0" encoding="utf-8"?>

@@ -202,4 +202,5 @@ Android 渲染架构非常庞大，而且演进得也非常快。如果你还有
 - 官方文档：[Android 图形架构](https://source.android.com/devices/graphics)
 - 浏览器渲染：[一颗像素的诞生](https://mp.weixin.qq.com/s/QoFrdmxdRJG5ETQp5Ua3-A)
 - [Android 屏幕绘制机制及硬件加速](https://blog.csdn.net/qian520ao/article/details/81144167)
+  推荐
 - [Android 性能优化之渲染篇](http://hukai.me/android-performance-render/)
