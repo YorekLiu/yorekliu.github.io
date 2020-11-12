@@ -33,7 +33,8 @@ title: "微信APM Matrix解析"
 
 ## 1. Trace Canary
 
-> [Matrix Wiki - TraceCanary](https://github.com/Tencent/matrix/wiki/Matrix-Android-TraceCanary)
+!!! tip "Wiki"  
+    [Matrix Wiki - TraceCanary](https://github.com/Tencent/matrix/wiki/Matrix-Android-TraceCanary)
 
 TraceCanary分为帧率监控、慢方法监控、ANR监控以及启动耗时这4个功能。  
 那么，为什么这些功能会统一在Trace模块下呢，这是因为分析卡顿、分析慢方法以及ANR具体发生在哪个位置，耗时如何，确实是需要插桩去trace每个函数的调用的。
@@ -85,7 +86,14 @@ ANR的监控更加简单了，在主线程中一般认为超过5s就会发生ANR
 
 ## 2. I/O Canary
 
-TODO
+!!! tip "Wiki"  
+    [Matrix Wiki - IOCanary](https://github.com/Tencent/matrix/wiki/Matrix-Android-IOCanary)
+
+IOCanary分为四个检测场景：**主线程I/O、读写Buffer过小、重复读、Closeable泄漏监控**。关于I/O监控的相关内容可以查看[如何监控线上I/O操作](/android/paid/master/io_3/#_1)以及上面matrix wiki中的相关部分。
+
+上面四个场景中，前面三个可以采用native hook的方式收集I/O信息，在`close`操作时计算并上报。后者可以借`StrictMode`的东风，这是Android系统底层自带的监控，通过简单的hook可以将`CloseGuard#reporter`替换成自己的实现，然后在其`report`函数中完成上报即可。
+
+真正的源码分析请移步：[Matrix-IOCanary解析](/android/3rd-library/matrix-io)
 
 ## 3. Resource Canary
 
