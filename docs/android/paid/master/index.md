@@ -46,7 +46,7 @@ title: "Android开发高手课"
 架构演进：
 
 35. 聊聊重构：优秀的架构都是演进而来的
-36. Native Hook 技术，天使还是魔鬼？
+36. [Native Hook 技术，天使还是魔鬼？](/android/paid/master/native_hook)
 37. 跨平台开发的现状与应用
 38. 移动开发新大陆：工作三年半，移动开发转型手游开发
 39. 移动开发新大陆：Android音视频开发

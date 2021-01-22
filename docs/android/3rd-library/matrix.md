@@ -34,7 +34,7 @@ title: "微信APM Matrix解析"
 ## 1. Trace Canary
 
 !!! tip "Wiki"  
-    [Matrix Wiki - TraceCanary](https://github.com/Tencent/matrix/wiki/Matrix-Android-TraceCanary)
+    [Matrix - TraceCanary](https://github.com/Tencent/matrix/wiki/Matrix-Android-TraceCanary)
 
 TraceCanary分为帧率监控、慢方法监控、ANR监控以及启动耗时这4个功能。  
 那么，为什么这些功能会统一在Trace模块下呢，这是因为分析卡顿、分析慢方法以及ANR具体发生在哪个位置，耗时如何，确实是需要插桩去trace每个函数的调用的。
@@ -80,25 +80,133 @@ ANR的监控更加简单了，在主线程中一般认为超过5s就会发生ANR
  .                         |<-----warmCost---->|
 ```
 
-真正的源码分析请移步：[Matrix-TraceCanary解析](/android/3rd-library/matrix-trace)
+源码分析请移步：[Matrix-TraceCanary解析](/android/3rd-library/matrix-trace)
 
 > 通过`UIThreadMonitor`还可以写出更多好玩的东西，比如后台渲染的检测，获取引发后台渲染的堆栈信息还是可以通过`AppMethodBeat`来实行。
 
 ## 2. I/O Canary
 
 !!! tip "Wiki"  
-    [Matrix Wiki - IOCanary](https://github.com/Tencent/matrix/wiki/Matrix-Android-IOCanary)
+    [Matrix - IOCanary](https://github.com/Tencent/matrix/wiki/Matrix-Android-IOCanary)
 
 IOCanary分为四个检测场景：**主线程I/O、读写Buffer过小、重复读、Closeable泄漏监控**。关于I/O监控的相关内容可以查看[如何监控线上I/O操作](/android/paid/master/io_3/#_1)以及上面matrix wiki中的相关部分。
 
 上面四个场景中，前面三个可以采用native hook的方式收集I/O信息，在`close`操作时计算并上报。后者可以借`StrictMode`的东风，这是Android系统底层自带的监控，通过简单的hook可以将`CloseGuard#reporter`替换成自己的实现，然后在其`report`函数中完成上报即可。
 
-真正的源码分析请移步：[Matrix-IOCanary解析](/android/3rd-library/matrix-io)
+源码分析请移步：[Matrix-IOCanary解析](/android/3rd-library/matrix-io)
 
 ## 3. Resource Canary
 
-TODO
+!!! tip "Wiki"  
+    [Matrix - ResourceCanary](https://github.com/Tencent/matrix/wiki/Matrix-Android-ResourceCanary)  
+    [Matrix - ApkChecker](https://github.com/Tencent/matrix/wiki/Matrix-Android-ApkChecker)  
+
+Resource Canary包含常见的内存泄漏监控、重复创建的冗余的Bitmap监控等；还包括了Activity泄漏的兜底方案`ActivityLeakFixer`。该方案会包含了输入法导致的泄露的hook fix以及泄漏后回收所有View。当然，后者并不是重点。
+
+内存泄漏引用链的检测与重复Bitmap检测都需要通过分析dump出的hprof文件，因此 **什么时机dump** 是一个好问题。这里Matrix在原有LeakCanary实现的基础上进行了一些优化，详见[细节与改进 - 减少误报](https://github.com/Tencent/matrix/wiki/Matrix-Android-ResourceCanary#%E5%87%8F%E5%B0%91%E8%AF%AF%E6%8A%A5)，具体体现如下：
+
+- 增加一个一定能被回收的“哨兵”对象，用来确认系统确实进行了GC
+- 直接通过WeakReference.get()来判断对象是否已被回收，避免因延迟导致误判
+- 若发现某个Activity无法被回收，再重复判断3次，且要求从该Activity被记录起有2个以上的Activity被创建才认为是泄漏，以防在判断时该Activity被局部变量持有导致误判
+- 对已判断为泄漏的Activity，记录其类名，避免重复提示该Activity已泄漏
+
+因为dump出的hprof文件通常比较大，因此直接拿原始文件进行上报，一方面会消耗大量带宽资源，另一方面服务端将Hprof文件长期存档时也会占用服务器的存储空间。这是不可取的，因此我们需要 **裁剪Hprof**。裁剪的算法有那么几种，使用爱奇艺native hook框架xHook的实现的美团的Probe（需要裁掉的部分直接不写入到hprof中）以及Java实现的裁剪（生成后再裁剪，例如LeakCanary）等。  
+裁剪的数据也类似，以Matrix中为例，Matrix只保留了“部分字符串数据和Bitmap的buffer数组”，其他的字符串数据以及所有的数组都可以直接剔除。——[细节与改进 - 裁剪Hprof](prof文件中buffer区存放了所有对象的数据，包括字符串数据、所有的数组等，而我们的分析过程却只需要用到部分字符串数据和Bitmap的buffer数组，其余的buffer数据都可以直接剔除，这样处理之后的Hprof文件通常能比原始文件小1/10以上。)
+
+拿到客户端上报的裁剪后的Hprof文件后，服务端可以对文件进行后续的内存泄漏检测以及 **重复Bitmap检测**，这里说说后者。  
+> 这个功能Android Monitor已经有完整实现了，原理简单粗暴——把所有未被回收的Bitmap的数据buffer取出来，然后先对比所有长度为1的buffer，找出相同的，记录所属的Bitmap对象；再对比所有长度为2的、长度为3的buffer……直到把所有buffer都比对完，这样就记录下了所有冗余的Bitmap对象了，接着再套用LeakCanary获取引用链的逻辑把这些Bitmap对象到GC Root的最短强引用链找出来即可。  
+> 这部分代码位于matrix-resource-canary-analyzer中，可以部署到服务端。
+
+Resource Canary中除了上面功能之外，还有一个`matrix-apk-canary`的jar包，此工具可以针对apk文件进行分析检测。此jar包功能强大，详细说明如链接[Matrix-Android-ApkChecker](https://github.com/Tencent/matrix/wiki/Matrix-Android-ApkChecker)。
+
+最后，Resource Canary还提供了一个重要的功能：**自动移除没有用到的资源**。在第一节Trace Canary中，我们说到了插桩，这里插桩是通过Gradle Plugin + ASM实现的。在该Plugin中还有另外一个Task：`RemoveUnusedResourcesTask`。  
+这里所谓的UnusedResources是依靠于上面的ApkChecker中检测。`RemoveUnusedResourcesTask`将原app包zip格式读取到内存，然后过滤掉不需要的res/文件，并同样过滤处理resources.arsc文件，完毕将shrink后的app写回磁盘中。并进行签名，同步修改R.txt文件等。
+
+源码分析请移步：[Matrix-ResourceCanary解析](/android/3rd-library/matrix-resource)
 
 ## 4. SQLite Lint
 
-TODO
+!!! tip "Wiki"  
+    [Matrix - SQLiteLint](https://github.com/Tencent/matrix/wiki/Matrix-Android-SQLiteLint)  
+
+SQLiteLint的作用在于在上线前就进行SQLite使用质量的检测，运用一些 **最佳实践的规则** 来在App运行时对SQL语句、执行序列、表信息等进行分析检测，从而发现潜在的、可疑的SQLite使用问题。
+
+检测流程如下：
+
+1. 收集APP运行时的sql执行信息
+    包括执行语句、创建的表信息等。其中表相关信息可以通过pragma命令得到。对于执行语句，有两种情况：  
+    1. DB框架提供了回调接口。比如微信使用的是WCDB，很容易就可以通过MMDataBase.setSQLiteTrace 注册回调拿到这些信息。  
+    2. 若使用Android默认的DB框架，SQLiteLint提供了一种无侵入的获取到执行的sql语句及耗时等信息的方式。通过hook的技巧，向SQLite3 C层的api `sqlite3_profile`方法注册回调，也能拿到分析所需的信息，从而无需开发者额外的打点统计代码。
+2. 预处理  
+    包括生成对应的sql语法树，生成不带实参的sql，判断是否select*语句等，为后面的分析做准备。预处理和后面的算法调度都在一个单独的处理线程。
+3. 调度具体检测算法执行  
+    checker就是各种检测算法，也支持扩展。并且检测算法都是以C++实现，方便支持多平台。而调度的时机包括：最近未分析sql语句调度，抽样调度，初始化调度，每条sql语句调度。
+4. 发布问题  
+    上报问题或者弹框提示。  
+
+这里的问题有几个：  
+1. 第一是执行过程的第一点，**如何获取到执行的sql语句以及耗时**，上面也提到了，对于Android默认的DB框架，matrix采取了Java hook打开开关的方式，这在Android 10及以上就不能生效了。所以，可以考虑native hook，做好适配。  
+2. 第二个问题，**预处理** 阶段，这里使用了SQLite里面的lemon库解析原始的sql语句。[The Lemon Parser Generator](https://sqlite.org/src/doc/trunk/doc/lemon.html)。  
+3. 第三个问题，根据 **最佳实践规则** 整理出来的检查算法有哪些？  
+
+ | 检测算法 | 功能 | 调度时机 | 简要原理 |  
+ | ------- | --- | ------- | ------ |  
+ | explain_query_plan_checker | 检测索引使用的问题 | 最近未分析sql语句调度（kUncheckedSql） | 执行`explain query plan ${sql}`，建立分析树并结合sql语法的语法树，进行检测分析 |  
+ | avoid_select_all_checker | 检测select * 问题 | 最近未分析sql语句调度（kUncheckedSql） | 预处理阶段判断有没有*，检测时读取对应字段即可 |  
+ | without_rowid_better_checker | 检测建议使用without rowid特性 | 初始化调度（kAfterInit） | 通过`select name, sql from sqlite_master where type='table'`拿到创建表的sql语句（without rowid）；通过`PRAGMA table_info($tablename$)`拿到表的column属性。结合一定的规则进行判断 |  
+ | avoid_auto_increment_checker | 检测Autoincrement问题 | 初始化调度（kAfterInit） | 在创建表的语句中判断有没有关键词autoincrement即可 |  
+ | prepared_statement_better_checker | 检测建议使用prepared statement | 采样，每30条SQL时执行（kSample） | 分析历史SQL队列，判断同一个表达式执行在指定间隔时间内执行的次数超没超过指定的间隔次数 |  
+ | redundant_index_checker | 检测冗余索引问题 | 最近未分析sql语句调度（kUncheckedSql） | 通过`PRAGMA index_list(“$tablename$”)`拿到表的索引；通过`PRAGMA index_info($indexname$)`拿到索引的详细信息。检查冗余索引 |  
+
+上面这些checker在官方WIKI上都有一些介绍，这里不在赘述了。  
+
+下面是上面涉及到的SQL语法：
+
+#### 4.1 SQLiteLint用到的SQL
+
+1. `explain query plan ${sql}`  
+
+    > explain query plan SELECT * FROM t_asset WHERE id=1;  
+    > 
+    > | id | parent | notused | detail |
+    > | -- | ------ | ------- | ------ |
+    > | 2  |  0     |  0      | SEARCH TABLE t_asset USING INTEGER PRIMARY KEY (rowid=?) |
+
+2. `select name, sql from sqlite_master where type='table'`
+
+    > select name, sql from sqlite_master where type='table'
+    > 
+    > | name | sql |
+    > | -- | ------ |
+    > | t_asset | CREATE TABLE "t_asset" (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT NOT NULL, icon TEXT NOT NULL, currency TEXT NOT NULL, asset_category_id INTEGER NOT NULL, \`system\` INTEGER NOT NULL DEFAULT 1) |
+
+3. `PRAGMA table_info($tablename$)`
+
+    > PRAGMA table_info(t_asset)
+    > 
+    > | cid | name | type | notnull | dift_value | pk |
+    > | -- | ------ | --- | ------- | ---------- | -- |
+    > | 0 | id | INTEGER | 1 |  | 1 |
+    > | 1 | name | TEXT | 1	|  | 0 |
+    > | 2 | icon | TEXT | 1 |  | 0 |
+    > | 3 | currency | TEXT | 1 |  | 0 |
+    > | 4 | asset_category_id | INTEGER | 1 |  | 0 |
+    > | 5 | system | INTEGER | 1 | 1 | 0 |
+
+4. `PRAGMA index_list($tablename$)`
+
+    > PRAGMA index_list(t_asset)
+    > 
+    > | seq | name | unique | origin | partial |
+    > | -- | ------ | --- | ------- | ---------- |
+    > | 0 | index_t | 0 | c | 0 |
+
+5. `PRAGMA index_info($indexname$)`
+
+    > PRAGMA index_info(index_t)
+    > 
+    > | seqno | cid | name |
+    > | -- | ------ | --- |
+    > | 0 | 4 | asset_category_id |
+
+源码分析请移步：[Matrix-SQLiteLint解析](/android/3rd-library/matrix-sqlitelint)

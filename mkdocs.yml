@@ -88,6 +88,8 @@ nav:
       - android/3rd-library/matrix.md
       - android/3rd-library/matrix-trace.md
       - android/3rd-library/matrix-io.md
+      - android/3rd-library/matrix-resource.md
+      - android/3rd-library/matrix-sqlitelint.md
       - android/3rd-library/okhttp.md
       - android/3rd-library/retrofit.md
       - android/3rd-library/rxjava&rxandroid.md
@@ -133,6 +135,7 @@ nav:
       - android/paid/master/package_2.md
       - android/paid/master/compile.md
       - android/paid/master/bytecode.md
+      - android/paid/master/native_hook.md
     - Framework系列: 
       - android/framework/Android四大组件(1).md
       - android/framework/Android四大组件(2).md
