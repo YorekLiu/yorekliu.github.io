@@ -1,5 +1,8 @@
 ---
 title: Yorek's Blog
+hide:
+  - navigation # Hide navigation
+  - toc        # Hide table of contents
 ---
 
 # Yorek's Blog

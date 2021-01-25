@@ -82,7 +82,6 @@ google_analytics:
 
 # Page tree
 nav:
-  - Home: index.md
   - Android:
     - 三方库源码解析: 
       - android/3rd-library/3rd-library-source-code.md
