@@ -24,7 +24,7 @@
 
 2. FAQ
 
-若出现如下报错：
+**若出现如下报错**：
 
 ```
 Config value: 'plugins'. Error: The "git-revision-date-localized" plugin is not installed
@@ -32,12 +32,13 @@ Config value: 'plugins'. Error: The "git-revision-date-localized" plugin is not 
 请查阅对应repo上面的安装介绍[https://github.com/timvink/mkdocs-git-revision-date-localized-plugin](https://github.com/timvink/mkdocs-git-revision-date-localized-plugin)  
 目前来看，安装即可`mkdocs-git-revision-date-localized-plugin`即可  
 
+**下面的问题同样是插件问题**：
 ```
 Config value: 'plugins'. Error: The "minify" plugin is not installed
 ```
 执行`pip install mkdocs-minify-plugin`安装插件
 
-执行`mkdocs serve`时出错：
+**执行`mkdocs serve`时出错**：
 ```
 ERROR   -  Error reading page 'android\3rd-library\glide1.md': 'NoneType' object has no attribute 'end'
 ...
@@ -52,7 +53,7 @@ pip uninstall markdown
 pip install -v markdown==3.2.1
 ```
 
-下面命令是常用的pip命令：
+**下面命令是常用的pip命令：**
 
 ```shell
 ## 列出所有安装的包
