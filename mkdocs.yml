@@ -7,13 +7,10 @@ site_url: 'https://blog.yorek.xyz/about-me'
 # repo_url: 'https://github.com/YorekLiu/yorekliu.github.io'
 edit_uri: ""
 
-copyright: '&copy; 2020 Yorek'
+copyright: '&copy; 2021 Yorek'
 
 theme:
   name: 'material'
-  custom_dir: overrides
-  static_templates:
-    - 404.html
   palette:
     primary: 'white'
     accent: 'blue'
@@ -21,10 +18,13 @@ theme:
     text: Roboto
     code: Roboto Mono
   language: 'zh'
-  feature:
-    tabs: true
-  logo: assets/images/favicon.ico
-  favicon: assets/images/favicon.ico
+  features:
+    - navigation.tabs
+    - navigation.instant
+  logo: assets/images/favicon.webp
+  icon:
+    repo: material/github
+  favicon: assets/images/favicon.webp
 
 plugins:
   - search
@@ -32,12 +32,13 @@ plugins:
   - minify:
       minify_html: true
 
+# Customization
 extra:
   social:
-    - type: 'github'
-      link: 'https://github.com/YorekLiu'
-    - type: 'email'
-      link: 'lyytogether@gmail.com'
+    - icon: material/github
+      link: https://github.com/YorekLiu
+    - icon: material/email
+      link: lyytogether@gmail.com
   disqus: 'yorekliu'
   manifest: manifest.webmanifest
 
