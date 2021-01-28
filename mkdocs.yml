@@ -27,7 +27,8 @@ theme:
   favicon: assets/images/favicon.webp
 
 plugins:
-  - search
+  - search:
+      prebuild_index: true
   - git-revision-date-localized
   - minify:
       minify_html: true
@@ -60,6 +61,9 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:pymdownx.emoji.twemoji
       emoji_generator: !!python/name:pymdownx.emoji.to_svg
+  - pymdownx.highlight:
+      linenums: true
+      linenums_style: pymdownx.inline
   - pymdownx.inlinehilite
   - pymdownx.keys
   - pymdownx.magiclink:
