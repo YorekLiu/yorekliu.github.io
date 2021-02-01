@@ -2,6 +2,9 @@
 title: "01 | 崩溃优化（上）：关于“崩溃”那些事儿"
 ---
 
+!!! note "极客时间——[Android开发高手课](https://time.geekbang.org/column/intro/142)"
+    本博客上的这些内容全是CV自[Android开发高手课](https://time.geekbang.org/column/intro/142)的原始内容，外加Sample的个人练习小结。若CV这个行动让您感到不适，请移步即可。  
+
 **Android 的两种崩溃**  
 
 *UncaughtExceptionHandler捕获Java异常，BreakPad捕获Native异常*  

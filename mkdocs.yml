@@ -1,7 +1,7 @@
 site_name: Yorek's
 site_description: 'An Android Developer.'
 site_author: 'Yorek Liu'
-site_url: 'https://blog.yorek.xyz/about-me'
+site_url: 'https://blog.yorek.xyz'
 
 # repo_name: 'YorekLiu/yorekliu.github.io'
 # repo_url: 'https://github.com/YorekLiu/yorekliu.github.io'
@@ -160,26 +160,6 @@ nav:
       - android/framework/性能优化.md
       - android/framework/binder1-mediaservice.md
       - android/framework/binder2.md
-    - 付费知识归档:
-      - 某圈问题索引:
-        - android/paid/zsxq/zsxq_index.md
-        - android/paid/zsxq/week1-synchronized.md
-        - android/paid/zsxq/week2-service.md
-        - android/paid/zsxq/week3-activity.md
-        - android/paid/zsxq/week4-startActivityForResult.md
-        - android/paid/zsxq/week5-view.md
-        - android/paid/zsxq/week6-gradle.md
-        - android/paid/zsxq/week7-serialization.md
-        - android/paid/zsxq/week10-classloader.md
-        - android/paid/zsxq/week11-binder.md
-        - android/paid/zsxq/week12-retrofit-okhttp.md
-        - android/paid/zsxq/week14-jvm-gc.md
-        - android/paid/zsxq/week16-keep-app-alive.md
-        - android/paid/zsxq/week17-android-components.md
-        - android/paid/zsxq/week20-network-protocol.md
-        - android/paid/zsxq/week21-mvc&mvp&mvvm.md
-        - android/paid/zsxq/week22-android-studio-build.md
-        - android/paid/zsxq/week23-load-large-bitmap.md
     - 日常记录:
       - android/other/annotation.md
       - android/other/best_throttle_in_mvvm.md
@@ -207,6 +187,26 @@ nav:
       - android/other/soft-keyboard-in-app.md
       - android/other/腾讯X5内核入坑指南.md
       - android/other/琐碎知识点.md
+    - 其他:
+      - 某些问题索引:
+        - android/paid/zsxq/zsxq_index.md
+        - android/paid/zsxq/week1-synchronized.md
+        - android/paid/zsxq/week2-service.md
+        - android/paid/zsxq/week3-activity.md
+        - android/paid/zsxq/week4-startActivityForResult.md
+        - android/paid/zsxq/week5-view.md
+        - android/paid/zsxq/week6-gradle.md
+        - android/paid/zsxq/week7-serialization.md
+        - android/paid/zsxq/week10-classloader.md
+        - android/paid/zsxq/week11-binder.md
+        - android/paid/zsxq/week12-retrofit-okhttp.md
+        - android/paid/zsxq/week14-jvm-gc.md
+        - android/paid/zsxq/week16-keep-app-alive.md
+        - android/paid/zsxq/week17-android-components.md
+        - android/paid/zsxq/week20-network-protocol.md
+        - android/paid/zsxq/week21-mvc&mvp&mvvm.md
+        - android/paid/zsxq/week22-android-studio-build.md
+        - android/paid/zsxq/week23-load-large-bitmap.md
   - Flutter:
     - flutter/flutter_first_project_1.md
     - flutter/flutter_first_project_2.md

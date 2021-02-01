@@ -2,6 +2,9 @@
 title: "22 | 包体积优化（上）：如何减少安装包大小？"
 ---
 
+!!! note "极客时间——[Android开发高手课](https://time.geekbang.org/column/intro/142)"
+    本博客上的这些内容全是CV自[Android开发高手课](https://time.geekbang.org/column/intro/142)的原始内容，外加Sample的个人练习小结。若CV这个行动让您感到不适，请移步即可。  
+
 曾经在 15 年的时候，我在 WeMobileDev 公众号就写过一篇文章[《Android 安装包相关知识汇总》](https://mp.weixin.qq.com/s/QRIy_apwqAaL2pM8a_lRUQ)，也开源了一个不少同学都使用过的资源混淆工具[AndResGuard](https://mp.weixin.qq.com/s/6YUJlGmhf1-Q-5KMvZ_8_Q)。
 
 现在再看看这篇 4 年前的文章，就像看到了 4 年前的自己，感触颇多啊。几年过去了，网上随意一搜都有大量安装包优化的文章，那还有哪些“高深”的珍藏秘笈值得分享呢？

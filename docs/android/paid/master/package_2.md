@@ -2,6 +2,9 @@
 title: "23 | 包体积优化（下）：资源优化的进阶实践"
 ---
 
+!!! note "极客时间——[Android开发高手课](https://time.geekbang.org/column/intro/142)"
+    本博客上的这些内容全是CV自[Android开发高手课](https://time.geekbang.org/column/intro/142)的原始内容，外加Sample的个人练习小结。若CV这个行动让您感到不适，请移步即可。  
+
 上一期我们聊了 Dex 与 Native Library 的优化，是不是还有点意犹未尽的感觉呢？那安装包还有哪些可以优化的地方呢？
 
 ![package_2_1](/assets/images/android/master/package_2_1.png)

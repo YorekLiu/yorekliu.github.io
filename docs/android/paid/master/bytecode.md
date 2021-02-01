@@ -2,6 +2,9 @@
 title: "27 | 编译插桩的三种方法：AspectJ、ASM、ReDex"
 ---
 
+!!! note "极客时间——[Android开发高手课](https://time.geekbang.org/column/intro/142)"
+    本博客上的这些内容全是CV自[Android开发高手课](https://time.geekbang.org/column/intro/142)的原始内容，外加Sample的个人练习小结。若CV这个行动让您感到不适，请移步即可。  
+
 只要简单回顾一下前面课程的内容你就会发现，在启动耗时分析、网络监控、耗电监控中已经不止一次用到编译插桩的技术了。那什么是编译插桩呢？顾名思义，所谓的编译插桩就是在代码编译期间修改已有的代码或者生成新代码。
 
 ![bytecode_1](/assets/images/android/master/bytecode_1.png)

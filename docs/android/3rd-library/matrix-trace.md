@@ -499,6 +499,161 @@ private void dispatchBegin() {
 
 ### 2.2 LooperMonitor
 
+`LooperMonitor`的主要作用就是在Message执行前后回调出对应的方法。其实现原理是通过设置`Looper#mLogging`这个字段，让Message在执行前后打印出日志，然后根据日志的特点来判断是开始执行还是执行结束。可以看下`Looper#loop`方法的代码片段：
+
+**<small>android/os/Looper.java</small>**
+
+```java
+public static void loop() {
+    ...
+    for (;;) {
+        Message msg = queue.next(); // might block
+        ...
+        // This must be in a local variable, in case a UI event sets the logger
+        final Printer logging = me.mLogging;
+        if (logging != null) {
+            logging.println(">>>>> Dispatching to " + msg.target + " " +
+                    msg.callback + ": " + msg.what);
+        }
+        ...
+        try {
+            msg.target.dispatchMessage(msg);
+            ...
+        } finally {
+            ...
+        }
+        ...
+        if (logging != null) {
+            logging.println("<<<<< Finished to " + msg.target + " " + msg.callback);
+        }
+        ...
+    }
+}
+```
+
+下面看看`LooperMonitor`的初始化相关的代码。  
+首先LooperMonitor是一个饥汉单例的实现，其作用对象是主线程的Looper。  
+在LooperMonitor创建之后，首先调用`resetPrinter`方法保存原始的printer，然后使用LooperPrinter来装饰原始的printer并设置到Looper中，这样我们判断print的日志就知道Message的执行起始。  
+最后，向MessageQueue中添加了一个`IdleHandler`，在对应的`queueIdle`方法中会周期性（60s）的调用`resetPrinter`方法来保证Looper中的printer对象是我们自定义的`LooperPrinter`。
+
+**<small>/matrix/matrix-android/matrix-trace-canary/src/main/java/com/tencent/matrix/trace/core/LooperMonitor.java</small>**
+
+```java
+public class LooperMonitor implements MessageQueue.IdleHandler {
+    ...
+    private static final LooperMonitor mainMonitor = new LooperMonitor();
+
+    public LooperMonitor(Looper looper) {
+        Objects.requireNonNull(looper);
+        this.looper = looper;
+        resetPrinter();
+        addIdleHandler(looper);
+    }
+
+    private LooperMonitor() {
+        this(Looper.getMainLooper());
+    }
+
+    private static boolean isReflectLoggingError = false;
+
+    private synchronized void resetPrinter() {
+        Printer originPrinter = null;
+        try {
+            if (!isReflectLoggingError) {
+                originPrinter = ReflectUtils.get(looper.getClass(), "mLogging", looper);
+                if (originPrinter == printer && null != printer) {
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            isReflectLoggingError = true;
+            Log.e(TAG, "[resetPrinter] %s", e);
+        }
+
+        if (null != printer) {
+            MatrixLog.w(TAG, "maybe thread:%s printer[%s] was replace other[%s]!",
+                    looper.getThread().getName(), printer, originPrinter);
+        }
+        looper.setMessageLogging(printer = new LooperPrinter(originPrinter));
+        if (null != originPrinter) {
+            MatrixLog.i(TAG, "reset printer, originPrinter[%s] in %s", originPrinter, looper.getThread().getName());
+        }
+    }
+
+    private synchronized void addIdleHandler(Looper looper) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            looper.getQueue().addIdleHandler(this);
+        } else {
+            try {
+                MessageQueue queue = ReflectUtils.get(looper.getClass(), "mQueue", looper);
+                queue.addIdleHandler(this);
+            } catch (Exception e) {
+                Log.e(TAG, "[removeIdleHandler] %s", e);
+            }
+        }
+    }
+    ...
+}
+```
+
+下面我们来到了`LooperPrinter`对象，直接看其`println`方法的实现，我们可以发现直接判断起始字符为不为`>`就可以知道是`onDispatchStart`还是`onDispatchEnd`：
+
+**<small>matrix/matrix-android/matrix-trace-canary/src/main/java/com/tencent/matrix/trace/core/LooperMonitor.java</small>**
+
+```java
+class LooperPrinter implements Printer {
+    public Printer origin;
+    boolean isHasChecked = false;
+    boolean isValid = false;
+
+    LooperPrinter(Printer printer) {
+        this.origin = printer;
+    }
+
+    @Override
+    public void println(String x) {
+        if (null != origin) {
+            origin.println(x);
+            if (origin == this) {
+                throw new RuntimeException(TAG + " origin == this");
+            }
+        }
+
+        if (!isHasChecked) {
+            isValid = x.charAt(0) == '>' || x.charAt(0) == '<';
+            isHasChecked = true;
+            if (!isValid) {
+                MatrixLog.e(TAG, "[println] Printer is inValid! x:%s", x);
+            }
+        }
+
+        if (isValid) {
+            dispatch(x.charAt(0) == '>', x);
+        }
+
+    }
+}
+
+private void dispatch(boolean isBegin, String log) {
+
+    for (LooperDispatchListener listener : listeners) {
+        if (listener.isValid()) {
+            if (isBegin) {
+                if (!listener.isHasDispatchStart) {
+                    listener.onDispatchStart(log);
+                }
+            } else {
+                if (listener.isHasDispatchStart) {
+                    listener.onDispatchEnd(log);
+                }
+            }
+        } else if (!isBegin && listener.isHasDispatchStart) {
+            listener.dispatchEnd();
+        }
+    }
+}
+```
+
 ## 3. AppMethodBeat以及其Plugin
 
 ## 4. 各种Tracer

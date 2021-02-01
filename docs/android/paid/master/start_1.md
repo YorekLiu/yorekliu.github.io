@@ -2,6 +2,9 @@
 title: "07 | 启动优化（上）：从启动过程看启动速度优化"
 ---
 
+!!! note "极客时间——[Android开发高手课](https://time.geekbang.org/column/intro/142)"
+    本博客上的这些内容全是CV自[Android开发高手课](https://time.geekbang.org/column/intro/142)的原始内容，外加Sample的个人练习小结。若CV这个行动让您感到不适，请移步即可。  
+
 启动过程究竟会出现哪些问题？我们应该怎么去优化和监控应用的启动速度呢？今天我们一起来看看这些问题该如何解决。
 
 ## 启动分析
