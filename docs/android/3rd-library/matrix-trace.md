@@ -654,6 +654,218 @@ private void dispatch(boolean isBegin, String log) {
 }
 ```
 
-## 3. AppMethodBeat以及其Plugin
+## 3. AppMethodBeat
+
+???+ note "关于Plugin"
+    Matrix master分支的插件（0.6.5版本）代码不支持R8以及AGP4.x。在feature分支有一个`upgrade-agp-4.1-wip`分支对此做了支持。但是不影响我们对其原理的分析解读。  
+    但是这部分源码颇费笔墨，所以另开一章进行解读。
+
+AppMethodBeat会被Plugin在编译时进行调用，调用位置为Java方法的出入口以及`Activity#onWindowFocusChange`，Plugin会在这些位置分别调用其`i(int methodId)`、`o(int methodId)`以及`at`方法。  
+对于`i/o`方法里面的参数`methodId`，Plugin在插桩时会为每一个函数生成一个唯一的id，保证通过这个id可以找到对应的方法，methodId可以在编译文件`app/build/outputs/mapping/debug/methodMapping.txt`中得到。  
+> 下面是methodMapping文件中的示例：
+> 1,1,sample.tencent.matrix.trace.TestTraceFragmentActivity <init> ()V
+> 2,1,sample.tencent.matrix.trace.TestFpsActivity <init> ()V  
+> 上面分别表示：methodId,accessFlag,className methodName [desc]
+
+插桩过程中会过滤一些不需要插桩的函数，结果输出在`app/build/outputs/mapping/debug/methodMapping.txt`中，其格式为`className methodName [desc]`。
+
+插桩的这部分源码在`matrix/matrix-android/matrix-gradle-plugin/src/main/java/com/tencent/matrix/trace/MethodTracer.java`中，后面在解读Matrix Plugin时会进行详细说明。BTW，其实插桩插件流程总体可以分为两步：第一步收集工程中的class以及jar包中的class，在插桩完毕后进行回写，这一步都比较通用；第二步就是调用ASM进行插桩，这一部分才与需求相关。
+
+`AppMethodBeat#i`、``AppMethodBeat#o`会将函数调用的i/o标志、methodId以及时间存到`sBuffer = new long[100 * 10000]`数组中，这个数组消耗内存约为8bytes * 100 * 10000 = 800_0000bytes = 7812.5kb = 7.629394531mb。这部分内存消耗还是有点大的，是一个副作用吧。
+
+我们说到，后面各种Tracer都是分析这个`sBuffer`数组来得到的函数调用堆栈，那么这个数组里面保存的数据有怎么样的格式呢？  
+
+编译期已经对全局的函数进行插桩，在运行期间每个函数的执行前后都会调用 `AppMethodBeat.i/o` 的方法，如果是在主线程中执行，则在函数的执行前后获取当前距离 MethodBeat 模块初始化的时间 offset（为了压缩数据，存进一个long类型变量中），并将当前执行的是 AppMethodBeat i或者o、mehtod id 及时间 offset，存放到一个 long 类型变量中，记录到一个预先初始化好的数组 long[] 中 index 的位置（预先分配记录数据的 buffer 长度为 100w，内存占用约 7.6M）。数据存储如下图[^1]：
+
+![matrix_app_method_beat_sbuffer](/assets/images/android/matrix_app_method_beat_sbuffer.jpg)
+
+`AppMethodBeat.i/o`主要干的就是上面的这个事儿；在`AppMethodBeat.at`方法中，会在Activity#onWindowFocusChange时调用`IAppMethodBeatListener#onActivityFocused`方法。
+
+小结一下，Matrix会在编译时对函数进行插桩，这样在运行期间每个函数的执行前后都会调用 AppMethodBeat.i/o 的方法，这些方法的调用记录会被数组保存起来，供后面各种Tracer进行函数调用堆栈分析。并且会在Activity#onWindowFocusChange处插入 AppMethodBeat.at 方法，当Activity获得焦点时调用回调通知外部。
 
 ## 4. 各种Tracer
+
+### 4.1 帧率监控FrameTracer
+
+FrameTracer的实现依赖与`UIThreadMonitor`中抛出来的`LooperObserver#doFrame`回调。该回调的方法声明如下：
+
+**<small>matrix/matrix-android/matrix-trace-canary/src/main/java/com/tencent/matrix/trace/listeners/LooperObserver.java</small>**
+
+```java
+public void doFrame(String focusedActivityName, long start, long end, long frameCostMs, long inputCostNs, long animationCostNs, long traversalCostNs)
+```
+
+各个参数解释如下：
+
+- focusedActivityName  
+  正在显示的Activity名称
+- start  
+  Message执行前的时间
+- end  
+  Message执行完毕，调用`LooperObserver#doFrame`时的时间
+- frameCostMs  
+  如果调用执行`dispatchEnd`时，`dispatchBegin`执行过了，那么该值为上面的`end-start`的值；否则为0
+- inputCostNs、animationCostNs、traversalCostNs  
+  执行三种CallbackQueue的耗时
+
+
+下面我们看看`FrameTracer`是如何通过这些值计算出帧率信息的，直接看override的`doFrame`方法：
+
+**<small>matrix/matrix-android/matrix-trace-canary/src/main/java/com/tencent/matrix/trace/tracer/FrameTracer.java</small>**
+
+```java
+@Override
+public void doFrame(String focusedActivityName, long start, long end, long frameCostMs, long inputCostNs, long animationCostNs, long traversalCostNs) {
+    if (isForeground()) {
+        notifyListener(focusedActivityName, end - start, frameCostMs, frameCostMs >= 0);
+    }
+}
+
+private void notifyListener(final String visibleScene, final long taskCostMs, final long frameCostMs, final boolean isContainsFrame) {
+    long start = System.currentTimeMillis();
+    try {
+        synchronized (listeners) {
+            for (final IDoFrameListener listener : listeners) {
+                if (config.isDevEnv()) {
+                    listener.time = SystemClock.uptimeMillis();
+                }
+                final int dropFrame = (int) (taskCostMs / frameIntervalMs);
+
+                listener.doFrameSync(visibleScene, taskCostMs, frameCostMs, dropFrame, isContainsFrame);
+                if (null != listener.getExecutor()) {
+                    listener.getExecutor().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.doFrameAsync(visibleScene, taskCostMs, frameCostMs, dropFrame, isContainsFrame);
+                        }
+                    });
+                }
+                if (config.isDevEnv()) {
+                    listener.time = SystemClock.uptimeMillis() - listener.time;
+                    MatrixLog.d(TAG, "[notifyListener] cost:%sms listener:%s", listener.time, listener);
+                }
+            }
+        }
+    } finally {
+        long cost = System.currentTimeMillis() - start;
+        if (config.isDebug() && cost > frameIntervalMs) {
+            MatrixLog.w(TAG, "[notifyListener] warm! maybe do heavy work in doFrameSync! size:%s cost:%sms", listeners.size(), cost);
+        }
+    }
+}
+```
+
+在`FrameTracer#doFrame`中会在App处于 **前台** 的状态下调用`notifyListener`方法，注意这里的`taskCostMs`参数值为end-start，实际上这个参数的值应该与`frameCostMs`的值一致。  
+在`notifyListener`方法中，首先通过`taskCostMs / frameIntervalMs`来计算此次执行丢的帧数，记为`dropFrame`。也就是说单次Message的执行耗时不超过16ms，则不会产生丢帧。最后调用`IDoFrameListener#doFrameSync`以及`IDoFrameListener#doFrameAsync`执行lisetner的同步方法以及异步方法。
+
+在有了上面计算出来的`dropFrame`之后，我们在后面就不太需要`taskCostMs`以及`frameCostMs`这两个值了。我们把注意力放到其他几个参数中去，有了这几个参数（visibleScene、dropFrame、isContainsFrame），后面就可以进行帧率的上报以及实时帧率的显示。
+
+先看看帧率上报的部分代码。在`FrameTracer`构造的时候，Matrix向其中添加了一个`FPSCollector`这个实现了`IDoFrameListener`接口的类，用来进行帧率的收集以及上报。
+
+**<small>matrix/matrix-android/matrix-trace-canary/src/main/java/com/tencent/matrix/trace/tracer/FrameTracer.java</small>**
+
+```java
+private class FPSCollector extends IDoFrameListener {
+
+    private Handler frameHandler = new Handler(MatrixHandlerThread.getDefaultHandlerThread().getLooper());
+
+    Executor executor = new Executor() {
+        @Override
+        public void execute(Runnable command) {
+            frameHandler.post(command);
+        }
+    };
+
+    private HashMap<String, FrameCollectItem> map = new HashMap<>();
+
+    @Override
+    public Executor getExecutor() {
+        return executor;
+    }
+
+    @Override
+    public void doFrameAsync(String visibleScene, long taskCost, long frameCostMs, int droppedFrames, boolean isContainsFrame) {
+        super.doFrameAsync(visibleScene, taskCost, frameCostMs, droppedFrames, isContainsFrame);
+        if (Utils.isEmpty(visibleScene)) {
+            return;
+        }
+
+        FrameCollectItem item = map.get(visibleScene);
+        if (null == item) {
+            item = new FrameCollectItem(visibleScene);
+            map.put(visibleScene, item);
+        }
+
+        item.collect(droppedFrames, isContainsFrame);
+
+        if (item.sumFrameCost >= timeSliceMs) { // report
+            map.remove(visibleScene);
+            item.report();
+        }
+    }
+}
+```
+
+`FPSCollector`以页面为key，记录每个页面的帧情况。首先调用`FrameCollectItem.collect`收集帧率信息。然后当页面累计事件`sumFrameCost`超过一定阈值（默认10s）时，进行上报。
+
+然后我们看看重点的`FrameCollectItem#collect`方法：
+
+```java
+void collect(int droppedFrames, boolean isContainsFrame) {
+    long frameIntervalCost = UIThreadMonitor.getMonitor().getFrameIntervalNanos();
+    sumFrameCost += (droppedFrames + 1) * frameIntervalCost / Constants.TIME_MILLIS_TO_NANO;
+    sumDroppedFrames += droppedFrames;
+    sumFrame++;
+    if (!isContainsFrame) {
+        sumTaskFrame++;
+    }
+
+    if (droppedFrames >= frozenThreshold) {
+        dropLevel[DropStatus.DROPPED_FROZEN.index]++;
+        dropSum[DropStatus.DROPPED_FROZEN.index] += droppedFrames;
+    } else if (droppedFrames >= highThreshold) {
+        dropLevel[DropStatus.DROPPED_HIGH.index]++;
+        dropSum[DropStatus.DROPPED_HIGH.index] += droppedFrames;
+    } else if (droppedFrames >= middleThreshold) {
+        dropLevel[DropStatus.DROPPED_MIDDLE.index]++;
+        dropSum[DropStatus.DROPPED_MIDDLE.index] += droppedFrames;
+    } else if (droppedFrames >= normalThreshold) {
+        dropLevel[DropStatus.DROPPED_NORMAL.index]++;
+        dropSum[DropStatus.DROPPED_NORMAL.index] += droppedFrames;
+    } else {
+        dropLevel[DropStatus.DROPPED_BEST.index]++;
+        dropSum[DropStatus.DROPPED_BEST.index] += (droppedFrames < 0 ? 0 : droppedFrames);
+    }
+}
+```
+
+`sumFrameCost`记录的是累计的帧耗时。`sumDroppedFrames`记录的是累计丢帧数。`sumFrame`是累计帧数。在记录这些数之后，按照丢帧的数值，记录到对应的丢帧状态数组中。在记录完毕之后，会在适当的时间被调用`report`方法进行上报，上报的代码就不是重点了。
+
+上面就是`TrameTracer`中帧率上报的代码分析，除开具体的计算部分之外，其他代码非常简明扼要。但就是计算部分的代码，我始终觉得有很大的bug。  
+
+???+ question "isContainsFrame始终为true"
+    我们回到`UIThreadMonitor#dispatchEnd`中调用`LooperObserver#doFrame`的位置，我们假设前面提到的`isBelongFrame`始终为false的bug已经解决了，再看`isBelongFrame ? end - start : 0`这段代码，这段代码的值肯定始终是`>= 0`的。然后我们看`FrameTracer#doFrame`中的对于isContainsFrame参数的计算：`frameCostMs >= 0`，毫无疑问，该值也是恒真的。  
+    这就导致在`FrameCollectItem#collect`中`sumTaskFrame`始终不能自增，导致在report时`dropTaskFrameSum`始终为0。
+
+???+ question "sumFrameCost计算真的合理吗"
+    我们说到`sumFrameCost`是统计的累计帧耗时，那么当`isContainsFrame`为false时，也就是执行其他Message时，`sumFrameCost`也会累积？  
+    比如我们在demo中直接在主Handler循环delay 1ms执行自己，那么最终也会由`UIThreadMonitor`捕获到该Message并最后传到`FrameCollectItem#collect`中。尽管没有触发任何UI操作，但还是按照frame的message进行统计了。  
+    我们可以执行下面代码，发现很快就触发了上报。
+    ```java
+    final Handler handler = new Handler();
+    handler.postDelayed(new Runnable() {
+        @Override
+        public void run() {
+            handler.postDelayed(this, 1);
+        }
+    }, 1);
+    ```
+    感觉这里先看看是不是`isContainsFrame`，然后在累加比较合适。
+
+
+
+
+
+
+
+[^1]: [Matrix-Android-TraceCanary#实现细节](https://github.com/Tencent/matrix/wiki/Matrix-Android-TraceCanary#%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82)
