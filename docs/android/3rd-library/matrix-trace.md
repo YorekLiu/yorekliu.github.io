@@ -220,9 +220,11 @@ TracePlugin的功能完全体现在了四大Tracer中，`UIThreadMonitor`、`App
 ### 2.1 UIThreadMonitor
 
 !!! note "一句话简述UIThreadMonitor"
-    通过设置Looper中的printer，来判断Message的执行起始时间。然后hook Choreographer中的input animation traversal回调数组，向其中添加Runnable来获取每个操作的耗时。最后将这些数据抛出给各个Tracer作为判断的依据。
+    通过设置Looper中的printer，来判断Message的执行起止时间。然后hook Choreographer中的input animation traversal回调数组，向其中添加Runnable来获取每个操作的耗时。最后将这些数据抛出给各个Tracer作为判断的依据。
 
-获取线程中每个Message的执行起始是在Matrix中是`LooperMonitor`类来实现的，`UIThreadMonitor`向该类注册一个回调，由此在对应回调中进行对应的操作。`LooperMonitor`的实现原理我们下一节在谈，目前我们知道它干了啥就行。我们接着看`UIThreadMonitor#init`方法：
+获取线程中每个Message的执行起止时间是在Matrix中是`LooperMonitor`类来实现的，`UIThreadMonitor`向该类注册一个回调，由此在对应回调中进行对应的操作。  
+
+`LooperMonitor`的实现原理我们下一节在谈，目前我们知道它干了啥就行。我们接着看`UIThreadMonitor#init`方法：
 
 **<small>matrix/matrix-android/matrix-trace-canary/src/main/java/com/tencent/matrix/trace/core/UIThreadMonitor.java</small>**
 
@@ -277,7 +279,7 @@ public void init(TraceConfig config) {
 `UIThreadMonitor#init`方法主要干了两件事：
 
 1. 反射获取`Choreographer`中`CALLBACK_INPUT`、`CALLBACK_ANIMATION`、`CALLBACK_TRAVERSAL`三种类型的`CallbackQueue`的`addCallbackLocked`方法的句柄。
-2. 向`LooperMonitor`注册Message执行开始的回调、执行结束的回调。这里的Message是指主线程中发生的所有Message，包括App自己的以及Framework中的。
+2. 向`LooperMonitor`注册Message执行开始的回调、执行结束的回调。这里的Message是指主线程中发生的所有Message，包括App自己的以及Framework中的，`Choreographer`中的自然也可以捕获到。
 
 下面看看`UIThreadMonitor#start`方法，在里面初始化了需要检测的三种CallbackQueue的各种记录数组：
 
@@ -309,6 +311,7 @@ public synchronized void onStart() {
 在`UIThreadMonitor#onStart`方法中，最后调用`addFrameCallback`方法将一个Runnable（自己）插到了INPUT类型的CallbackQueue的头部。CallbackQueue是一个单链表组织起来的队列，里面按照时间从小到大进行组织，详细代码可以查看[Choreographer#CallbackQueue](https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/view/Choreographer.java;l=1005;drc=master;bpv=0;bpt=1)。
 
 下面我们接着看一下`addFrameCallback`的实现，这里首先会判断某种type类型的callback是否已经添加，UIThreadMonitor是否已经启动等等检查，然后根据type取得需要invoke的方法句柄，然后调用该方法并设置callbackExist标志位。  
+
 在第26行中我们注意到对入参`isAddHeader`做出的值转换——`!isAddHeader ? SystemClock.uptimeMillis() : -1`：也就是说如果isAddHeader为true，这里的值就是-1，会在CallbackQueue执行时首先执行（系统内部不会将这里的time设置为一个负值，所以无论何时，这里都将会是第一个执行的）；否则的话，传的是当前的时间戳，会根据值插入到单链表队列中。
 
 **<small>matrix/matrix-android/matrix-trace-canary/src/main/java/com/tencent/matrix/trace/core/UIThreadMonitor.java</small>**
@@ -349,11 +352,11 @@ private synchronized void addFrameCallback(int type, Runnable callback, boolean 
 }
 ```
 
-上面就是`onStart`方法干的事情，归根结底就是向Choreograpger注册了一个回调，这样下次Vsync信号来到时，就会触发这个callback。  
+上面就是`onStart`方法干的事情，归根结底就是向Choreograpger注册了一个回调（即UIThreadMonitor自身），这样下次Vsync信号来到时，就会触发这个callback（`UIThreadMonitor#run`方法）。  
 
 然后我们看看`UIThreadMonitor#run`里面的代码，这里面涉及到三个新的方法：
 
-1. doFrameBegin：设置`isBelongFrame`标志位为true
+1. doFrameBegin：设置`isBelongFrame`标志位为true，这标志着当前Frame已经被纳入了统计
 2. doQueueBegin：更新对应type的queueStatus标志位为DO_QUEUE_BEGIN，并用queueCost[type]记下此时的时间
 3. doQueueEnd：更新对应type的queueStatus标志位为DO_QUEUE_END，并用当前时间减去queueCost[type]的时间，这个时间为当前frame执行时此type的CallbackQueue执行的总耗时，记为queueCost[type]
 
@@ -395,7 +398,8 @@ public void run() {
 }
 ```
 
-**那，为什么这里没有调用`doQueueEnd(CALLBACK_TRAVERSAL)`呢**。我们研究`Choreographer`发现，在CALLBACK_TRAVERSAL之后还有一个CALLBACK_COMMIT，我们向这个队列添加一个callback就可以在合理的位置调用`doQueueEnd(CALLBACK_TRAVERSAL)`了。 **但是很不幸，CALLBACK_COMMIT在Android 6.0及以后才会有。**  
+**那，为什么这里没有调用`doQueueEnd(CALLBACK_TRAVERSAL)`呢**。我们研究`Choreographer`发现，在CALLBACK_TRAVERSAL之后还有一个CALLBACK_COMMIT，我们向CALLBACK_COMMIT这个队列添加一个callback就可以在合理的位置调用`doQueueEnd(CALLBACK_TRAVERSAL)`了。 **但是很不幸，CALLBACK_COMMIT在Android 6.0及以后才会有。**  
+
 为了兼容更早的版本，我们得想出其他办法：还记得上面提到的`LooperMonitor`吗，我们提到过`LooperMonitor`可以捕获到Message的执行的起始。Choreographer中的Vsync信号触发各种callback也是通过Android的消息机制来实现的，且该Message在执行完各种CallbackQueue就结束了，某种程度上来说，以Message的执行结束时间作CALLBACK_TRAVERSAL的结束时间也是可以的。
 
 所以我们接着就来到了`UIThreadMonitor#dispatchEnd`方法：
@@ -464,9 +468,9 @@ private void doFrameEnd(long token) {
 }
 ```
 
-!!! warning "bug"
+!!! error "bug"
     **值得注意的是，这里有个bug，** 当isBelongFrame为true时，会闭合frame的监控，也就是`doFrameEnd`干的事儿。但是在该方法的最后，将isBelongFrame复位为false了。所以通知`LooperObserver#doFrame`以及`LooperObserver#dispatchEnd`中涉及到的值，实际上都是false。  
-    在实际应用时，我们应该注意下，去修复这个问题。
+    在实际应用时，我们应该注意下，去修复这个问题。博主目前注意到，matrix在hotfix/0.6.x分支上已经修复了这个问题。
 
 说完了`UIThreadMonitor#dispatchEnd`方法，我们也顺便说说与之匹配的孪生方法`UIThreadMonitor#dispatchBegin`：
 
@@ -494,7 +498,7 @@ private void dispatchBegin() {
 至此，`UIThreadMonitor`的解析已经完毕，我们可以小结一下其作用：
 
 1. 在主线程中Message执行开始时，调用`LooperObserver#dispatchBegin(long beginMs, long cpuBeginMs, long token)`通知外部
-2. 在主线程每一帧渲染结束时，调用`LooperObserver#doFrame(String focusedActivityName, long start, long end, long frameCostMs, long inputCostNs, long animationCostNs, long traversalCostNs)`通知外部
+2. 在主线程中每个Message执行结束时，调用`LooperObserver#doFrame(String focusedActivityName, long start, long end, long frameCostMs, long inputCostNs, long animationCostNs, long traversalCostNs)`通知外部。在参数中，可以以frameCostMs的值反推isBelongFrame值。
 3. 在主线程中Message执行完毕时，调用`LooperObserver#dispatchEnd(long beginMs, long cpuBeginMs, long endMs, long cpuEndMs, long token, boolean isBelongFrame)`通知外部
 
 ### 2.2 LooperMonitor
@@ -671,23 +675,23 @@ AppMethodBeat会被Plugin在编译时进行调用，调用位置为Java方法的
 
 插桩的这部分源码在`matrix/matrix-android/matrix-gradle-plugin/src/main/java/com/tencent/matrix/trace/MethodTracer.java`中，后面在解读Matrix Plugin时会进行详细说明。BTW，其实插桩插件流程总体可以分为两步：第一步收集工程中的class以及jar包中的class，在插桩完毕后进行回写，这一步都比较通用；第二步就是调用ASM进行插桩，这一部分才与需求相关。
 
-`AppMethodBeat#i`、``AppMethodBeat#o`会将函数调用的i/o标志、methodId以及时间存到`sBuffer = new long[100 * 10000]`数组中，这个数组消耗内存约为8bytes * 100 * 10000 = 800_0000bytes = 7812.5kb = 7.629394531mb。这部分内存消耗还是有点大的，是一个副作用吧。
+`AppMethodBeat#i`、`AppMethodBeat#o`会将函数调用的i/o标志、methodId以及时间存到`sBuffer = new long[100 * 10000]`数组中，这个数组消耗内存约为8bytes * 100 * 10000 = 800_0000bytes = 7812.5kb = 7.629394531mb。这部分 **内存消耗还是有点大的，是一个副作用吧**。
 
 我们说到，后面各种Tracer都是分析这个`sBuffer`数组来得到的函数调用堆栈，那么这个数组里面保存的数据有怎么样的格式呢？  
 
-编译期已经对全局的函数进行插桩，在运行期间每个函数的执行前后都会调用 `AppMethodBeat.i/o` 的方法，如果是在主线程中执行，则在函数的执行前后获取当前距离 MethodBeat 模块初始化的时间 offset（为了压缩数据，存进一个long类型变量中），并将当前执行的是 AppMethodBeat i或者o、mehtod id 及时间 offset，存放到一个 long 类型变量中，记录到一个预先初始化好的数组 long[] 中 index 的位置（预先分配记录数据的 buffer 长度为 100w，内存占用约 7.6M）。数据存储如下图[^1]：
+Matrix在编译期会对全局的函数进行插桩，在运行期间每个函数的执行前后都会调用 `AppMethodBeat.i/o` 的方法，如果是在主线程中执行，则在函数的执行前后获取当前距离 MethodBeat 模块初始化的时间 offset（为了压缩数据，存进一个long类型变量中），并将当前执行的是 AppMethodBeat i或者o、mehtod id 及时间 offset，存放到一个 long 类型变量中，记录到一个预先初始化好的数组 long[] 中 index 的位置（预先分配记录数据的 buffer 长度为 100w，内存占用约 7.6M）。数据存储如下图[^1]：
 
 ![matrix_app_method_beat_sbuffer](/assets/images/android/matrix_app_method_beat_sbuffer.jpg)
 
 `AppMethodBeat.i/o`主要干的就是上面的这个事儿；在`AppMethodBeat.at`方法中，会在Activity#onWindowFocusChange时调用`IAppMethodBeatListener#onActivityFocused`方法。
 
-小结一下，Matrix会在编译时对函数进行插桩，这样在运行期间每个函数的执行前后都会调用 AppMethodBeat.i/o 的方法，这些方法的调用记录会被数组保存起来，供后面各种Tracer进行函数调用堆栈分析。并且会在Activity#onWindowFocusChange处插入 AppMethodBeat.at 方法，当Activity获得焦点时调用回调通知外部。
+**小结一下，Matrix会在编译时对函数进行插桩，这样在运行期间每个函数的执行前后都会调用 AppMethodBeat.i/o 的方法，这些方法的调用记录会被数组保存起来，供后面各种Tracer进行函数调用堆栈分析。并且会在Activity#onWindowFocusChange处插入 AppMethodBeat.at 方法，当Activity获得焦点时调用回调通知外部。**
 
 ## 4. 各种Tracer
 
 ### 4.1 帧率监控FrameTracer
 
-FrameTracer的实现依赖与`UIThreadMonitor`中抛出来的`LooperObserver#doFrame`回调。该回调的方法声明如下：
+FrameTracer的实现依赖于`UIThreadMonitor`中抛出来的`LooperObserver#doFrame`回调。该回调的方法声明如下：
 
 **<small>matrix/matrix-android/matrix-trace-canary/src/main/java/com/tencent/matrix/trace/listeners/LooperObserver.java</small>**
 
@@ -704,7 +708,7 @@ public void doFrame(String focusedActivityName, long start, long end, long frame
 - end  
   Message执行完毕，调用`LooperObserver#doFrame`时的时间
 - frameCostMs  
-  如果调用执行`dispatchEnd`时，`dispatchBegin`执行过了，那么该值为上面的`end-start`的值；否则为0
+  如果调用执行`dispatchEnd`时，`UIThreadMonitor#run`执行过了，那么该值为上面的`end-start`的值；否则为0
 - inputCostNs、animationCostNs、traversalCostNs  
   执行三种CallbackQueue的耗时
 
@@ -845,7 +849,8 @@ void collect(int droppedFrames, boolean isContainsFrame) {
 
 ???+ question "isContainsFrame始终为true"
     我们回到`UIThreadMonitor#dispatchEnd`中调用`LooperObserver#doFrame`的位置，我们假设前面提到的`isBelongFrame`始终为false的bug已经解决了，再看`isBelongFrame ? end - start : 0`这段代码，这段代码的值肯定始终是`>= 0`的。然后我们看`FrameTracer#doFrame`中的对于isContainsFrame参数的计算：`frameCostMs >= 0`，毫无疑问，该值也是恒真的。  
-    这就导致在`FrameCollectItem#collect`中`sumTaskFrame`始终不能自增，导致在report时`dropTaskFrameSum`始终为0。
+    这就导致在`FrameCollectItem#collect`中`sumTaskFrame`始终不能自增，导致在report时`dropTaskFrameSum`始终为0。  
+    **matrix目前在hotfix/0.6.x分支上修复了一部分bug，上面这个bug也修复过了。此外，该分支上额外还发现了battery、memory、thread等部分的文件夹。按照官方的说法，这些内容还不是很稳定，不过后续有需要还是可以参考下。**
 
 ???+ question "sumFrameCost计算真的合理吗"
     我们说到`sumFrameCost`是统计的累计帧耗时，那么当`isContainsFrame`为false时，也就是执行其他Message时，`sumFrameCost`也会累积？  
@@ -862,10 +867,447 @@ void collect(int droppedFrames, boolean isContainsFrame) {
     ```
     感觉这里先看看是不是`isContainsFrame`，然后在累加比较合适。
 
+???+ tip "开箱即用"
+    matrix-trace-canary中有一个`FrameDecorator`的类，可以悬浮窗展示实时帧率，开箱即用，无需自己写逻辑。其底层实现与FrameTracer类似。
+
+### 4.2 慢方法监控EvilMethodTracer
+
+与FrameTracer类似，EvilMethodTracer的实现也依赖于`UIThreadMonitor`中抛出来的`LooperObserver`接口里面的`dispatchBegin`、`doFrame`、`dispatchEnd`三个方法。  
+
+在`dispatchBegin`方法中，记录下`AppMethodBeat`中目前的`index`，记为start；  
+在`dispatchEnd`中，读取目前`AppMethodBeat`中目前的`index`，记为end。这两者中间的数据则为这段时间内执行的方法的入栈、出栈信息。当这个Message执行时间超过指定的阈值（默认700ms）时，认为可能发生了慢方法，此时会进行进一步的分析。  
+至于`doFrame`中记录的数据，没有啥具体的用处，这是在最后打印了log而已。
+
+代码和部分解释如下：
+
+**<small>matrix/matrix-android/matrix-trace-canary/src/main/java/com/tencent/matrix/trace/tracer/EvilMethodTracer.java</small>**
+
+```java
+@Override
+public void dispatchBegin(long beginMs, long cpuBeginMs, long token) {
+    super.dispatchBegin(beginMs, cpuBeginMs, token);
+    // 记录起始index
+    indexRecord = AppMethodBeat.getInstance().maskIndex("EvilMethodTracer#dispatchBegin");
+}
+
+@Override
+public void doFrame(String focusedActivityName, long start, long end, long frameCostMs, long inputCostNs, long animationCostNs, long traversalCostNs) {
+    queueTypeCosts[0] = inputCostNs;
+    queueTypeCosts[1] = animationCostNs;
+    queueTypeCosts[2] = traversalCostNs;
+}
+
+@Override
+public void dispatchEnd(long beginMs, long cpuBeginMs, long endMs, long cpuEndMs, long token, boolean isBelongFrame) {
+    super.dispatchEnd(beginMs, cpuBeginMs, endMs, cpuEndMs, token, isBelongFrame);
+    long start = config.isDevEnv() ? System.currentTimeMillis() : 0;
+    try {
+        // 若Message执行总耗时超过了阈值
+        long dispatchCost = endMs - beginMs;
+        if (dispatchCost >= evilThresholdMs) {
+            // 则解析出这段时间内函数的调用堆栈
+            long[] data = AppMethodBeat.getInstance().copyData(indexRecord);
+            long[] queueCosts = new long[3];
+            System.arraycopy(queueTypeCosts, 0, queueCosts, 0, 3);
+            String scene = AppMethodBeat.getVisibleScene();
+            // 在子线程进行分析上报
+            MatrixHandlerThread.getDefaultHandler().post(new AnalyseTask(isForeground(), scene, data, queueCosts, cpuEndMs - cpuBeginMs, endMs - beginMs, endMs));
+        }
+    } finally {
+        // 释放IndexRecord
+        indexRecord.release();
+        if (config.isDevEnv()) {
+            String usage = Utils.calculateCpuUsage(cpuEndMs - cpuBeginMs, endMs - beginMs);
+            MatrixLog.v(TAG, "[dispatchEnd] token:%s cost:%sms cpu:%sms usage:%s innerCost:%s",
+                    token, endMs - beginMs, cpuEndMs - cpuBeginMs, usage, System.currentTimeMillis() - start);
+        }
+    }
+}
+```
+
+下面我们看看`AnalyseTask`是如何分析并上报的：
+
+```java
+private class AnalyseTask implements Runnable {
+    ...
+
+    void analyse() {
+
+        // process
+        // 获取进程的priority以及nice，原理是读取/proc/<pid>/stat中的数据
+        int[] processStat = Utils.getProcessPriority(Process.myPid());
+        // 计算出cpu使用率
+        String usage = Utils.calculateCpuUsage(cpuCost, cost);
+        LinkedList<MethodItem> stack = new LinkedList();
+        if (data.length > 0) {
+            // 将原始long[]数组合并成为MethodItem类型的List
+            // 第3个参数(isStrict)与第4个参数(endTime)成对，若isStrict为true，则处理原始数据时会从第一个METHOD_ID_DISPATCH开始
+            // 同时，若处理完毕后还有部分i数据没有匹配的o，则将endTime作为o的时间合并到List中
+            TraceDataUtils.structuredDataToStack(data, stack, true, endMs);
+            TraceDataUtils.trimStack(stack, Constants.TARGET_EVIL_METHOD_STACK, new TraceDataUtils.IStructuredDataFilter() {
+                // 处理过程中需要被丢弃的条件
+                @Override
+                public boolean isFilter(long during, int filterCount) {
+                    return during < filterCount * Constants.TIME_UPDATE_CYCLE_MS;
+                }
+
+                // 最多保留的item条数
+                @Override
+                public int getFilterMaxCount() {
+                    return Constants.FILTER_STACK_MAX_COUNT;
+                }
+
+                // 最后处理完毕后，还是超过了maxCount，则调用此方法进行兜底
+                @Override
+                public void fallback(List<MethodItem> stack, int size) {
+                    MatrixLog.w(TAG, "[fallback] size:%s targetSize:%s stack:%s", size, Constants.TARGET_EVIL_METHOD_STACK, stack);
+                    Iterator iterator = stack.listIterator(Math.min(size, Constants.TARGET_EVIL_METHOD_STACK));
+                    while (iterator.hasNext()) {
+                        iterator.next();
+                        iterator.remove();
+                    }
+                }
+            });
+        }
 
 
+        StringBuilder reportBuilder = new StringBuilder();
+        StringBuilder logcatBuilder = new StringBuilder();
+        long stackCost = Math.max(cost, TraceDataUtils.stackToString(stack, reportBuilder, logcatBuilder));
+        String stackKey = TraceDataUtils.getTreeKey(stack, stackCost);
+
+        MatrixLog.w(TAG, "%s", printEvil(scene, processStat, isForeground, logcatBuilder, stack.size(), stackKey, usage, queueCost[0], queueCost[1], queueCost[2], cost)); // for logcat
+
+        // report
+        try {
+            ...
+        } catch (JSONException e) {
+            MatrixLog.e(TAG, "[JSONException error: %s", e);
+        }
+
+    }
+
+    @Override
+    public void run() {
+        analyse();
+    }
+
+    ...
+}
+```
 
 
+`AnalyseTask`中比较耗脑的就是原始数据`sBuffer`如何进行整合以及裁剪，如何生成能够代表卡顿的key，方便进行聚合。这部分在Matrix-Wiki中也有一点介绍。摘抄如下：
+
+> **堆栈聚类问题**： 如果将收集的原始数据进行上报，数据量很大而且后台很难聚类有问题的堆栈，所以在上报之前需要对采集的数据进行简单的整合及裁剪，并分析出一个能代表卡顿堆栈的 key，方便后台聚合。
+> 
+> 通过遍历采集的 buffer ，相邻 i 与 o 为一次完整函数执行，计算出一个调用树及每个函数执行耗时，并对每一级中的一些相同执行函数做聚合，最后通过一个简单策略，分析出主要耗时的那一级函数，作为代表卡顿堆栈的key。
+> ![matrix_stack](/assets/images/android/matrix_stack.webp)
+
+
+### 4.3 ANR监控AnrTracer
+
+在ANR监控中，若发生了ANR，则需要解析这段时间内的调用堆栈。这部分逻辑与上面慢方法监控EvilMethodTracer基本一致。  
+
+**下面考虑ANR如何进行判定**。我们在Message执行开始时抛出一个定时任务，若该任务执行到了，则可以认为发生了ANR。若该任务在Message执行完毕之后被主动清除了，则说明没有ANR发生。这种思想与系统ANR的判定有相似之处。
+
+**<small>matrix/matrix-android/matrix-trace-canary/src/main/java/com/tencent/matrix/trace/tracer/AnrTracer.java</small>**
+
+```java
+@Override
+public void dispatchBegin(long beginMs, long cpuBeginMs, long token) {
+    super.dispatchBegin(beginMs, cpuBeginMs, token);
+    anrTask = new AnrHandleTask(AppMethodBeat.getInstance().maskIndex("AnrTracer#dispatchBegin"), token);
+    if (traceConfig.isDevEnv()) {
+        MatrixLog.v(TAG, "* [dispatchBegin] token:%s index:%s", token, anrTask.beginRecord.index);
+    }
+    // 抛炸弹
+    anrHandler.postDelayed(anrTask, Constants.DEFAULT_ANR - (SystemClock.uptimeMillis() - token));
+}
+
+@Override
+public void doFrame(String focusedActivityName, long start, long end, long frameCostMs, long inputCost, long animationCost, long traversalCost) {
+    if (traceConfig.isDevEnv()) {
+        MatrixLog.v(TAG, "--> [doFrame] activityName:%s frameCost:%sms [%s:%s:%s]ns", focusedActivityName, frameCostMs, inputCost, animationCost, traversalCost);
+    }
+}
+
+@Override
+public void dispatchEnd(long beginMs, long cpuBeginMs, long endMs, long cpuEndMs, long token, boolean isBelongFrame) {
+    super.dispatchEnd(beginMs, cpuBeginMs, endMs, cpuEndMs, token, isBelongFrame);
+    if (traceConfig.isDevEnv()) {
+        MatrixLog.v(TAG, "[dispatchEnd] token:%s cost:%sms cpu:%sms usage:%s",
+                token, endMs - beginMs, cpuEndMs - cpuBeginMs, Utils.calculateCpuUsage(cpuEndMs - cpuBeginMs, endMs - beginMs));
+    }
+    // 拆炸弹
+    if (null != anrTask) {
+        anrTask.getBeginRecord().release();
+        anrHandler.removeCallbacks(anrTask);
+    }
+}
+```
+
+
+### 4.4 启动耗时StartUpTracer
+
+启动监控涉及到的类有点多，但是思想不复杂。下面是`StartUpTracer`文件的注释，这里反映出了Matrix方案的启动耗时的思路：
+
+```java
+firstMethod.i       LAUNCH_ACTIVITY   onWindowFocusChange   LAUNCH_ACTIVITY    onWindowFocusChange
+^                         ^                   ^                     ^                  ^
+|                         |                   |                     |                  |
+|---------app---------|---|---firstActivity---|---------...---------|---careActivity---|
+|<--applicationCost-->|
+|<--------------firstScreenCost-------------->|
+|<---------------------------------------coldCost------------------------------------->|
+.                         |<-----warmCost---->|
+```
+
+简述如下：
+
+之前插件在编译器为 `Activity#onWindowFocusChanged` 织入 `AppMethodBeat.at` 方法，这样可以获取每个 Activity 的 `onWindowFocusChanged` 回调时间。  
+然后在第一个 `AppMethodBeat.i` 方法调用时，记录此时的时间作为进程 zygote 后的时间；hook ActivityThread 中的 mH 中的 Callback ，通过检查第一个 Activity 或 Service 或 Receiver 的 what，以此时的时间作为 Application 创建结束时间，该时间与上面的时间之差记为 **Application创建耗时**。  
+在第一个 Activity 的 `onWindowFocusChange` 回调时，此时的时间减去 zygote 时间即为 **首屏启动耗时** ；  
+第二个 Activity 的 `onWindowFocusChange` 回调时，时间减去 zygote 的时间即为 **整个冷启动的时间**。
+
+我们顺着上面的这个线理一下代码，首先是`AppMethBeat.i`方法里面的相关代码。
+
+**<small>matrix/matrix-android/matrix-trace-canary/src/main/java/com/tencent/matrix/trace/core/AppMethodBeat.java</small>**
+
+```java
+public static void i(int methodId) {
+
+    if (status <= STATUS_STOPPED) {
+        return;
+    }
+    if (methodId >= METHOD_ID_MAX) {
+        return;
+    }
+
+    if (status == STATUS_DEFAULT) {
+        synchronized (statusLock) {
+            if (status == STATUS_DEFAULT) {
+                realExecute();
+                status = STATUS_READY;
+            }
+        }
+    }
+    ...
+}
+```
+
+`status`默认状态是`STATUS_DEFAULT`，因此第一次执行`AppMethodBeat#i`方法肯定会执行到`realExecute()`方法，这里面相当于就是初始化`AppMethodBeat`以及执行其他的一些操作了。
+
+```java hl_lines="20 21"
+private static void realExecute() {
+    MatrixLog.i(TAG, "[realExecute] timestamp:%s", System.currentTimeMillis());
+
+    sCurrentDiffTime = SystemClock.uptimeMillis() - sDiffTime;
+
+    sHandler.removeCallbacksAndMessages(null);
+    sHandler.postDelayed(sUpdateDiffTimeRunnable, Constants.TIME_UPDATE_CYCLE_MS);
+    sHandler.postDelayed(checkStartExpiredRunnable = new Runnable() {
+        @Override
+        public void run() {
+            synchronized (statusLock) {
+                MatrixLog.i(TAG, "[startExpired] timestamp:%s status:%s", System.currentTimeMillis(), status);
+                if (status == STATUS_DEFAULT || status == STATUS_READY) {
+                    status = STATUS_EXPIRED_START;
+                }
+            }
+        }
+    }, Constants.DEFAULT_RELEASE_BUFFER_DELAY);
+
+    // hook mH，为StartUpTracer提供支持
+    ActivityThreadHacker.hackSysHandlerCallback();
+    LooperMonitor.register(looperMonitorListener);
+}
+```
+
+我们关注一下`ActivityThreadHacker.hackSysHandlerCallback()`这个方法，这里面 hook 了 mH 的 mCallback，这样可以 Application 初始化结束的时间。
+
+**<small>matrix/matrix-android/matrix-trace-canary/src/main/java/com/tencent/matrix/trace/hacker/ActivityThreadHacker.java</small>**
+
+```java hl_lines="3 4 5 6 7 8 36 37 38 39 40 41 42"
+public class ActivityThreadHacker {
+    private static final String TAG = "Matrix.ActivityThreadHacker";
+    // 进程启动的时间
+    private static long sApplicationCreateBeginTime = 0L;
+    // 四大组件首次执行到的时间
+    private static long sApplicationCreateEndTime = 0L;
+    // Activity最后一次launch的时间
+    private static long sLastLaunchActivityTime = 0L;
+    public static AppMethodBeat.IndexRecord sLastLaunchActivityMethodIndex = new AppMethodBeat.IndexRecord();
+    public static AppMethodBeat.IndexRecord sApplicationCreateBeginMethodIndex = new AppMethodBeat.IndexRecord();
+    public static int sApplicationCreateScene = -100;
+
+    public static void hackSysHandlerCallback() {
+        try {
+            sApplicationCreateBeginTime = SystemClock.uptimeMillis();
+            sApplicationCreateBeginMethodIndex = AppMethodBeat.getInstance().maskIndex("ApplicationCreateBeginMethodIndex");
+            Class<?> forName = Class.forName("android.app.ActivityThread");
+            Field field = forName.getDeclaredField("sCurrentActivityThread");
+            field.setAccessible(true);
+            Object activityThreadValue = field.get(forName);
+            Field mH = forName.getDeclaredField("mH");
+            mH.setAccessible(true);
+            Object handler = mH.get(activityThreadValue);
+            Class<?> handlerClass = handler.getClass().getSuperclass();
+            Field callbackField = handlerClass.getDeclaredField("mCallback");
+            callbackField.setAccessible(true);
+            Handler.Callback originalCallback = (Handler.Callback) callbackField.get(handler);
+            HackCallback callback = new HackCallback(originalCallback);
+            callbackField.set(handler, callback);
+            MatrixLog.i(TAG, "hook system handler completed. start:%s SDK_INT:%s", sApplicationCreateBeginTime, Build.VERSION.SDK_INT);
+        } catch (Exception e) {
+            MatrixLog.e(TAG, "hook system handler err! %s", e.getCause().toString());
+        }
+    }
+
+    public static long getApplicationCost() {
+        return ActivityThreadHacker.sApplicationCreateEndTime - ActivityThreadHacker.sApplicationCreateBeginTime;
+    }
+
+    public static long getEggBrokenTime() {
+        return ActivityThreadHacker.sApplicationCreateBeginTime;
+    }
+
+    public static long getLastLaunchActivityTime() {
+        return ActivityThreadHacker.sLastLaunchActivityTime;
+    }
+
+
+    private final static class HackCallback implements Handler.Callback {
+        private static final int LAUNCH_ACTIVITY = 100;
+        private static final int CREATE_SERVICE = 114;
+        private static final int RECEIVER = 113;
+        public static final int EXECUTE_TRANSACTION = 159; // for Android 9.0
+        private static boolean isCreated = false;
+        private static int hasPrint = 10;
+
+        private final Handler.Callback mOriginalCallback;
+
+        HackCallback(Handler.Callback callback) {
+            this.mOriginalCallback = callback;
+        }
+
+        @Override
+        public boolean handleMessage(Message msg) {
+
+            if (!AppMethodBeat.isRealTrace()) {
+                return null != mOriginalCallback && mOriginalCallback.handleMessage(msg);
+            }
+
+            boolean isLaunchActivity = isLaunchActivity(msg);
+            if (hasPrint > 0) {
+                MatrixLog.i(TAG, "[handleMessage] msg.what:%s begin:%s isLaunchActivity:%s", msg.what, SystemClock.uptimeMillis(), isLaunchActivity);
+                hasPrint--;
+            }
+            if (isLaunchActivity) {
+                ActivityThreadHacker.sLastLaunchActivityTime = SystemClock.uptimeMillis();
+                ActivityThreadHacker.sLastLaunchActivityMethodIndex = AppMethodBeat.getInstance().maskIndex("LastLaunchActivityMethodIndex");
+            }
+
+            if (!isCreated) {
+                if (isLaunchActivity || msg.what == CREATE_SERVICE || msg.what == RECEIVER) { // todo for provider
+                    ActivityThreadHacker.sApplicationCreateEndTime = SystemClock.uptimeMillis();
+                    ActivityThreadHacker.sApplicationCreateScene = msg.what;
+                    isCreated = true;
+                }
+            }
+
+            return null != mOriginalCallback && mOriginalCallback.handleMessage(msg);
+        }
+
+        private Method method = null;
+
+        private boolean isLaunchActivity(Message msg) {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O_MR1) {
+                if (msg.what == EXECUTE_TRANSACTION && msg.obj != null) {
+                    try {
+                        if (null == method) {
+                            Class clazz = Class.forName("android.app.servertransaction.ClientTransaction");
+                            method = clazz.getDeclaredMethod("getCallbacks");
+                            method.setAccessible(true);
+                        }
+                        List list = (List) method.invoke(msg.obj);
+                        if (!list.isEmpty()) {
+                            return list.get(0).getClass().getName().endsWith(".LaunchActivityItem");
+                        }
+                    } catch (Exception e) {
+                        MatrixLog.e(TAG, "[isLaunchActivity] %s", e);
+                    }
+                }
+                return msg.what == LAUNCH_ACTIVITY;
+            } else {
+                return msg.what == LAUNCH_ACTIVITY;
+            }
+        }
+    }
+}
+```
+
+上面这个类里面的代码比较简单，没有过度分析的必要。有关StartUpTracer相关的代码都用高亮标注了一下。在计算出Application初始化的起始时间点后，我们继续看看`StartUpTracer#onActivityFocused`里面的代码：
+
+**<small>matrix/matrix/matrix-android/matrix-trace-canary/src/main/java/com/tencent/matrix/trace/tracer/StartupTracer.java</small>**
+
+```java
+@Override
+public void onActivityFocused(String activity) {
+    // 若coldCost为初始值0，则说明这段代码从来没有运行过，那么认为是冷启动
+    if (isColdStartup()) {
+        // 若firstScreenCost为初始值0，则说明这是第一个获取焦点的Activity，记录时间差为首屏启动耗时
+        if (firstScreenCost == 0) {
+            this.firstScreenCost = uptimeMillis() - ActivityThreadHacker.getEggBrokenTime();
+        }
+        // 若已经展示过了首屏Activity，则此Activity是真正的MainActivity，记录此时时间差为冷启动耗时
+        if (hasShowSplashActivity) {
+            coldCost = uptimeMillis() - ActivityThreadHacker.getEggBrokenTime();
+        } else {
+            // 若还没有展示过首屏Activity
+            if (splashActivities.contains(activity)) {
+                // 且声明的首屏Activity列表中包含此Activity，则设置标志位
+                hasShowSplashActivity = true;
+            } else if (splashActivities.isEmpty()) {
+                // 声明的首屏Activity列表为空，则整个冷启动耗时就为首屏启动耗时
+                MatrixLog.i(TAG, "default splash activity[%s]", activity);
+                coldCost = firstScreenCost;
+            } else {
+                MatrixLog.w(TAG, "pass this activity[%s] at duration of start up! splashActivities=%s", activity, splashActivities);
+            }
+        }
+        // 分析冷启动耗时
+        if (coldCost > 0) {
+            analyse(ActivityThreadHacker.getApplicationCost(), firstScreenCost, coldCost, false);
+        }
+
+    } else if (isWarmStartUp()) {
+        // 是否是温启动，这里isWarmStartUp标志位还依赖于监听ActivityLifecycleCallbacks，这里代码没有贴出来
+        // 温启动时间是当前时间减去最后一次 launch Activity 的时间
+        isWarmStartUp = false;
+        long warmCost = uptimeMillis() - ActivityThreadHacker.getLastLaunchActivityTime();
+        if (warmCost > 0) {
+            analyse(ActivityThreadHacker.getApplicationCost(), firstScreenCost, warmCost, true);
+        }
+    }
+
+}
+
+private boolean isColdStartup() {
+    return coldCost == 0;
+}
+
+private boolean isWarmStartUp() {
+    return isWarmStartUp;
+}
+```
+
+主要流程都在上面的代码中了，关键代码也有注释。至于`analyse`这个分析上报逻辑里面的部分，就是启动时间达到了阈值，则复制出函数调用堆栈并且分析的过程。这部分逻辑也与上面几个Tracer一直，这里不做过多分析。
+
+???+ warning "Matrix方案的实用性"
+    Matrix的方案适用于多Activity的架构，不适用于单Activity多Fragment的架构。对于后者，在使用上还需要一定的修改来进行适配。
+
+至此，Matrix TraceCanary部分的原理已经分析完毕。还有一个`AppMethodBeat`相关的插桩插件，插桩插件代码量比较多。留到后面进行专门分析。
 
 
 [^1]: [Matrix-Android-TraceCanary#实现细节](https://github.com/Tencent/matrix/wiki/Matrix-Android-TraceCanary#%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82)
