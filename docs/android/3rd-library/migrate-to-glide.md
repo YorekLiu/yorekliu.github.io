@@ -136,13 +136,17 @@ if (!TextUtils.isEmpty(child.getAvatar())) {
 
 解决办法是调用`ViewTarget.setTagId(int tagId)`给`ViewTarget`设置一个默认的tagId，这样Request会通过`setTag(int key, final Object tag)`保存，而不是`setTag(final Object tag)`，这样就不会冲突了。
 
-```java tab="java"
-ViewTarget.setTagId(R.id.glide_tag);
-```
+=== "java"
 
-```xml tab="xml"
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <item name="glide_tag" type="id" />
-</resources>
-```
+    ```java 
+    ViewTarget.setTagId(R.id.glide_tag);
+    ```
+
+=== "xml"
+
+    ```xml
+    <?xml version="1.0" encoding="utf-8"?>
+    <resources>
+        <item name="glide_tag" type="id" />
+    </resources>
+    ```
