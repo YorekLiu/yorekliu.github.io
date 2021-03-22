@@ -451,9 +451,9 @@ Java_com_tencent_matrix_iocanary_core_IOCanaryJniBridge_doHook(JNIEnv *env, jcla
     3. 调用 `xhook_elf_close` close 资源，防止资源泄漏  
     4. 如果需要还原 hook，也是调用 `xhook_hook_symbol` 进行 hook 点的还原
 
-### 2.2 检测流程
+### 2.2 统计流程
 
-native 部分的检测流程会分别在 `open`、`read`、`write` 时收集对应信息，然后在 `close` 时进行统一分析并上报。因此，前面三个操作的逻辑比较简单、清晰。
+native 部分的统计流程会分别在 `open`、`read`、`write` 时收集对应信息，然后在 `close` 时进行统一分析并上报。因此，前面三个操作的逻辑比较简单、清晰。
 
 #### 2.2.1 open
 
@@ -703,94 +703,353 @@ void IOInfoCollector::CountRWInfo(int fd, const FileOpType &fileOpType, long op_
 
 #### 2.2.3 close
 
+在文件经过 open、read、write 之后，终于来到了 close。close 时我们会对整个文件生命周期的一些操作进行最后的统计并通知 detector 进行检测上报。
 
+我们先看看 close 的代理方法，如下所示。可以看到，只是调用 IOCanary#OnClose 方法。
 
+**<small>matrix/matrix-android/matrix-io-canary/src/main/cpp/io_canary_jni.cc</small>**
 
+```C
+/**
+ *  Proxy for close: callback to the java layer
+ */
+int ProxyClose(int fd) {
+    if(!IsMainThread()) {
+        return original_close(fd);
+    }
 
+    int ret = original_close(fd);
 
+    //__android_log_print(ANDROID_LOG_DEBUG, kTag, "ProxyClose fd:%d ret:%d", fd, ret);
+    iocanary::IOCanary::Get().OnClose(fd, ret);
 
+    return ret;
+}
+```
 
+接着看看 IOCanary#OnClose 方法的实现，这里先调用了 IOInfoCollector#OnClose 方法进行最后的统计操作。  
+具体操作为：通过当前系统时间减去 IOInfo 创建的时间得到的文件操作的生命周期的总时间，以及 stat 函数获取文件的 size。最后从 map 中移除并返回该对象。
 
+然后通过 OfferFileIOInfo 方法将此 IOInfo 提交给检测线程中让各个 detector 进行检测。
 
+```C++
+// matrix/matrix-android/matrix-io-canary/src/main/cpp/core/io_canary.cc
+void IOCanary::OnClose(int fd, int close_ret) {
+    std::shared_ptr<IOInfo> info = collector_.OnClose(fd, close_ret);
+    if (info == nullptr) {
+        return;
+    }
 
+    OfferFileIOInfo(info);
+}
 
+// matrix/matrix-android/matrix-io-canary/src/main/cpp/core/io_info_collector.cc
+std::shared_ptr<IOInfo> IOInfoCollector::OnClose(int fd, int close_ret) {
 
+    if (info_map_.find(fd) == info_map_.end()) {
+        //__android_log_print(ANDROID_LOG_DEBUG, kTag, "OnClose fd:%d not in info_map_", fd);
+        return nullptr;
+    }
 
+    // 系统当前时间减去IOInfo对象初始化的时间，则为整个文件的生命周期时间
+    info_map_[fd]->total_cost_μs_ = GetSysTimeMicros() - info_map_[fd]->start_time_μs_;
+    // 通过stat函数获取文件的实际尺寸
+    info_map_[fd]->file_size_ = GetFileSize(info_map_[fd]->path_.c_str());
+    std::shared_ptr<IOInfo> info = info_map_[fd];
+    info_map_.erase(fd);
 
-### open
+    return info;
+}
 
-**io_canary_jni.cc**  
-ret = {path_name, flags, mode}  // ret: fd
-{path_name, flags, mode, ret}  
-{path_name, flags, mode, ret, java_context} // java_context: call java method, and converted fields to native
+// matrix/matrix-android/matrix-io-canary/src/main/cpp/comm/io_canary_utils.cc
+int GetFileSize(const char* file_path) {
+    struct stat stat_buf;
+    if (-1 == stat(file_path, &stat_buf)) {
+        return -1;
+    }
+    return stat_buf.st_size;
+}
+```
 
-**io_canary.cc**  
-IOInfoCollectore::OnOpen  
-info_map_: {ret, IOInfo(path_name, java_context)}
+下面我们看看 OfferFileIOInfo 的相关实现，这是 C++ 实现的一个生产者消费者模型。具体代码如下，这里不做过多讲解。  
+我们看到 Detect 函数，这个函数运行在 IOCanary 初始化时就创建的工作线程中，在取到 IOInfo 之后，就挨个调用 detector 进行检测，并将检测结果添加到 published_issues 这个数组中。最后调用 issued_callback_ 这个函数指针进行上报。实际上这里的 issued_callback_ 就是 io_canary_jni.cc 中的 OnIssuePublish 函数。
 
-### read
+```C++
+// io_canary.h
+class IOCanary {
+    ...
+private:
+    ...
+    std::deque<std::shared_ptr<IOInfo>> queue_;
+    std::mutex queue_mutex_;
+    std::condition_variable queue_cv_;
+}
 
-**io_canary_jni.cc**  
-ret = {fd, buf, size}  // ret: ssize_t  
-{fd, buf, size, ret, read_cost_us}  
+// io_canary.cc
+// 生产者
+void IOCanary::OfferFileIOInfo(std::shared_ptr<IOInfo> file_io_info) {
+    std::unique_lock<std::mutex> lock(queue_mutex_);
+    queue_.push_back(file_io_info);
+    queue_cv_.notify_one();
+    lock.unlock();
+}
 
-**io_canary.cc**  
-IOInfoCollectore::OnRead  
-IOInfoCollector::CountRWInfo(fd, kRead, size, read_cost_us) // 记录：累计读写操作次数、累计buffer size、累计操作耗时、单次读写最大耗时、当前连续读写操作耗时、最大连续读写操作耗时、本次操作时间戳、最大操作buffer size、操作类型
+IOCanary::IOCanary() {
+    exit_ = false;
+    std::thread detect_thread(&IOCanary::Detect, this);
+    detect_thread.detach();
+}
 
-???+ question "__read_chk中buffer_size为什么要取count而不是buf_size"  
-    等后面上报的时候查查到底是什么含义
+void IOCanary::Detect() {
+    std::vector<Issue> published_issues;
+    std::shared_ptr<IOInfo> file_io_info;
+    while (true) {
+        published_issues.clear();
 
-### write
+        // 阻塞直到获取到IOInfo
+        int ret = TakeFileIOInfo(file_io_info);
 
-**io_canary_jni.cc**  
-ret = {fd, buf, size}  // ret: ssize_t  
-{fd, buf, size, ret, write_cost_us}  
+        if (ret != 0) {
+            break;
+        }
 
-**io_canary.cc**  
-IOInfoCollectore::OnWrite  
-IOInfoCollector::CountRWInfo(fd, kWrite, size, write_cost_us) // 记录：累计读写操作次数、累计buffer size、累计操作耗时、单次读写最大耗时、当前连续读写操作耗时、最大连续读写操作耗时、本次操作时间戳、最大操作buffer size、操作类型
+        // 将IOInfo交给各个detector进行检测
+        for (auto detector : detectors_) {
+            detector->Detect(env_, *file_io_info, published_issues);
+        }
 
-???+ question "__write_chk中buffer_size为什么要取count而不是buf_size"  
-    等后面上报的时候查查到底是什么含义
+        // 若可以上报，则进行上报
+        if (issued_callback_ && !published_issues.empty()) {
+            issued_callback_(published_issues);
+        }
 
-### close
+        file_io_info = nullptr;
+    }
+}
 
-**io_canary_jni.cc**  
-ret = {fd} 
+// 消费者
+int IOCanary::TakeFileIOInfo(std::shared_ptr<IOInfo> &file_io_info) {
+    std::unique_lock<std::mutex> lock(queue_mutex_);
 
-**io_canary.cc**  
-IOInfo info = IOInfoCollectore::OnClose(fd, ret)  // 记录：IOInfo从open到close的整个耗时、查询path_name的文件大小  
-IOCanary::OfferFileIOInfo(info)  // 生产者消费者模式，offer之后会在IOCanary::Detect中获取到，然后提交给detector进行检测  
-detector->Detect(_env, *file_io_info, published_issues)  
-issued_callback_(published_issues)  
-上报到IOCanaryJniBridge#onIssuePublish方法  
+    while (queue_.empty()) {
+        queue_cv_.wait(lock);
+        if (exit_) {
+            return -1;
+        }
+    }
 
-### main_thread_detector  
+    file_io_info = queue_.front();
+    queue_.pop_front();
+    return 0;
+}
+```
 
-在主线程中：
-1. 单次读写超过13ms，置type=1
-2. 连续读写超过500ms，置type |= 2
+到目前为止，整个 IOCanary 对主线程 IO 的监控方案我们已经大致了解了。下面接着看看各个 detector 到底检测了些啥。
 
-将检测结果保存到repeat_read_cnt_中
+### 2.3 检测规则
 
-### small_buffer_detector
+我们前面说到，native 的部分负责  **主线程I/O、读写Buffer过小、重复读** 这三个方面的检测。实际上，在跟代码的时候，我们就找到了对应的负责检测的类。
 
-操作次数大于20次 且 平均操作buff_size小于4096 且 连续读写耗时大于等于13ms
+- 主线程I/O  
+    FileIOMainThreadDetector
+- 读写Buffer过小  
+    FileIOSmallBufferDetector
+- 重复读  
+    FileIORepeatReadDetector
 
-### repeat_read_detector
+那么，我们一个个看一下里面的检测规则是不是如 Wiki 所说的那样。
 
-没有发现操作记录且最大连续读写耗时小于13ms则直接return；否则以path_name作为key保存记录  
-若当前文件操作为写操作，则清空key对应的栈。  
-构造RepeatReadInfo对象，若key对应的数组为空栈，直接push后结束  
-否则检查当前时间与栈顶元素的构造时间进行比较，若时间只差超过17ms，则说明不构成重复读操作，清除栈。  
-否则从栈中找到与当前对象相等的info，累加重复读标志；  
-若找不到相等对象，则压入栈；**否则检查重复读次数是否超过阈值（5），若超过则进行上报**。
+#### 2.3.1 主线程I/O
+
+主线程 I/O ，代码里面判定的规则如下：
+
+1. 单次读写最长耗时不得超过13ms
+2. 或者连续读写最长耗时不得超过500ms
+
+???+ note "Wiki描述"
+    耗时的 IO 操作不能占据主线程太久。检测条件：  
+    1. 操作线程为主线程  
+    2. 连续读写耗时超过一定阈值或单次 write\read 耗时超过一定阈值
+
+这么看来代码里面的描述与 Wiki 一致，代码如下：
+
+**<small>matrix/matrix-android/matrix-io-canary/src/main/cpp/detector/main_thread_detector.cc</small>**
+
+```C++
+void FileIOMainThreadDetector::Detect(const IOCanaryEnv &env, const IOInfo &file_io_info,
+                                        std::vector<Issue>& issues) {
+
+    //__android_log_print(ANDROID_LOG_ERROR, "FileIOMainThreadDetector", "Detect  main-thread-id：%d, thread-id:%d max_continual_rw_cost_time_μs_:%d threshold:%d"
+        //      , env.GetJavaMainThreadID(), file_io_info.java_context_.thread_id_, file_io_info.max_continual_rw_cost_time_μs_, env.GetMainThreadThreshold());
+
+    if (GetMainThreadId() == file_io_info.java_context_.thread_id_) {
+        int type = 0;
+        if (file_io_info.max_once_rw_cost_time_μs_ > IOCanaryEnv::kPossibleNegativeThreshold) {
+            type = 1;
+        }
+        if(file_io_info.max_continual_rw_cost_time_μs_ > env.GetMainThreadThreshold()) {
+            type |= 2;
+        }
+
+        if (type != 0) {
+            Issue issue(kType, file_io_info);
+            issue.repeat_read_cnt_ = type;  //use repeat to record type
+            PublishIssue(issue, issues);
+        }
+    }
+}
+```
+
+#### 2.3.2 读写Buffer过小
+
+读写Buffer过小，代码里面判定的规则如下：
+
+1. 文件累计读写次数超过20次
+2. 且平均读写buffer小于4096
+3. 且文件最大连续读写耗时大于等于13ms
+
+???+ note "Wiki描述"
+    Buffer 过小，会导致 read/write 的次数增多，从而影响了性能。检测条件：  
+    1. buffer 小于一定阈值  
+    2. read/write 的次数超过一定的阈值
+
+代码中的判断与 Wiki 中基本类似，除了 Wiki 中没有提到的最大连续读写耗时的条件。检测代码如下：
+
+**<small>matrix/matrix-android/matrix-io-canary/src/main/cpp/detector/small_buffer_detector.cc</small>**
+
+```C++
+void FileIOSmallBufferDetector::Detect(const IOCanaryEnv &env, const IOInfo &file_io_info,
+                                        std::vector<Issue>& issues) {
+    //__android_log_print(ANDROID_LOG_ERROR, "FileIOSmallBufferDetector", "Detect buffer_size:%d threshold:%d op_cnt:%d rw_cost:%d",
+        //                  file_io_info.buffer_size_, env.GetSmallBufferThreshold(), file_io_info.op_cnt_, file_io_info.max_continual_rw_cost_time_μs_);
+
+    if (file_io_info.op_cnt_ > env.kSmallBufferOpTimesThreshold && (file_io_info.op_size_ / file_io_info.op_cnt_) < env.GetSmallBufferThreshold()
+            && file_io_info.max_continual_rw_cost_time_μs_ >= env.kPossibleNegativeThreshold) {
+
+        PublishIssue(Issue(kType, file_io_info), issues);
+    }
+}
+```
+
+#### 2.3.3 重复读
+
+重复读的检测相对于上面两个检测来说，就复杂那么一丢丢。原因在于重复读检测的不仅仅是文件的一个生命周期，而是需要保存一次次检测的输入文件，然后再整个应用的生命周期内进行检测。
+
+那么，略过一些准备工作，重复读的核心检测语句，在代码里面判定的规则如下：
+
+1. 同一文件两次检测的间隔不超过17ms
+2. 且文件在同一位置(堆栈判断)读取次数超过5次
+
+???+ note "Wiki描述"
+    如果频繁地读某个文件，证明这个文件的内容很常被用到，可以通过缓存来提高效率。检测条件如下：  
+    1. 同一线程读某个文件的次数超过一定阈值
+
+代码中的判断与 Wiki 中并不完全匹配。检测代码以及部分注释如下：
+
+**<small>matrix/matrix-android/matrix-io-canary/src/main/cpp/detector/repeat_read_detector.cc</small>**
+
+```C++
+RepeatReadInfo::RepeatReadInfo(const std::string &path, const std::string &java_stack,
+                                long java_thread_id, long op_size,
+                                int file_size) : path_(path), java_stack_(java_stack), java_thread_id_(java_thread_id) ,
+                                                                op_size_(op_size), file_size_(file_size), op_timems(GetTickCount()) {
+    repeat_cnt_ = 1;
+}
+
+bool RepeatReadInfo::operator==(const RepeatReadInfo &target) const {
+    return target.path_ == path_
+        && target.java_thread_id_ == java_thread_id_
+        && target.java_stack_ == java_stack_
+        && target.file_size_ == file_size_
+        && target.op_size_ == op_size_;
+}
+
+void RepeatReadInfo::IncRepeatReadCount() {
+    repeat_cnt_ ++;
+}
+
+int RepeatReadInfo::GetRepeatReadCount() {
+    return repeat_cnt_;
+}
+
+std::string RepeatReadInfo::GetStack() {
+    return java_stack_;
+}
+
+// 检测函数入口
+void FileIORepeatReadDetector::Detect(const IOCanaryEnv &env,
+                                        const IOInfo &file_io_info,
+                                        std::vector<Issue>& issues) {
+
+    // 若没有发现操作记录且最大连续读写耗时小于13ms则直接return；否则以path作为key保存重复读的记录  
+    const std::string& path = file_io_info.path_;
+    if (observing_map_.find(path) == observing_map_.end()) {
+        if (file_io_info.max_continual_rw_cost_time_μs_ < env.kPossibleNegativeThreshold) {
+            return;
+        }
+
+        observing_map_.insert(std::make_pair(path, std::vector<RepeatReadInfo>()));
+    }
+
+    std::vector<RepeatReadInfo>& repeat_infos = observing_map_[path];
+    // 若当前文件操作为写操作，则不构成读，更不用说重复读了。清空key对应的数组
+    if (file_io_info.op_type_ == FileOpType::kWrite) {
+        repeat_infos.clear();
+        return;
+    }
+
+    // 构造RepeatReadInfo对象
+    RepeatReadInfo repeat_read_info(file_io_info.path_, file_io_info.java_context_.stack_, file_io_info.java_context_.thread_id_,
+                                    file_io_info.op_size_, file_io_info.file_size_);
+
+    // 若key对应的数组为空数组，则说明是首次读操作，肯定不会有重复，直接push后结束  
+    if (repeat_infos.size() == 0) {
+        repeat_infos.push_back(repeat_read_info);
+        return;
+    }
+
+    // 检查当前时间与栈顶元素的构造时间进行比较，若时间只差超过17ms，则说明不构成重复读操作，清除数组。  
+    if((GetTickCount() - repeat_infos[repeat_infos.size() - 1].op_timems) > 17) {   //17ms todo astrozhou add to params
+        repeat_infos.clear();
+    }
+
+    // 从栈中找到与当前对象相等的info，累加重复读次数
+    // 注意这里重载了RepeatIOInfo的==操作，java_stack字段也参与了判定，也就是说同一文件不同的使用位置不认为是同一个相等的对象
+    bool found = false;
+    int repeatCnt;
+    for (auto& info : repeat_infos) {
+        if (info == repeat_read_info) {
+            found = true;
+
+            info.IncRepeatReadCount();
+
+            repeatCnt = info.GetRepeatReadCount();
+            break;
+        }
+    }
+
+    // 若找不到相等对象，则push进数组
+    if (!found) {
+        repeat_infos.push_back(repeat_read_info);
+        return;
+    }
+
+    // 检查重复读次数是否超过阈值（5），若超过则进行上报
+    if (repeatCnt >= env.GetRepeatReadThreshold()) {
+        Issue issue(kType, file_io_info);
+        issue.repeat_read_cnt_ = repeatCnt;
+        issue.stack = repeat_read_info.GetStack();
+        PublishIssue(issue, issues);
+    }
+}
+```
+
+以上就是 IOCanary 中 C/C++ 部分实现的监控的内容了。剩下还有一个 Java 层实现的 Closeable 泄漏监控等待我们去分析。
+
+## 3. CloseGuardHooker
 
 ### Closeable泄漏监控
 
+// TODO
+
 hook `dalvik.system.CloseGuard#reporter`，动态代理其`report`方法。
-
-
-
-## 3. CloseGuardHooker
