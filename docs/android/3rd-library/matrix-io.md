@@ -1044,12 +1044,190 @@ void FileIORepeatReadDetector::Detect(const IOCanaryEnv &env,
 }
 ```
 
-以上就是 IOCanary 中 C/C++ 部分实现的监控的内容了。剩下还有一个 Java 层实现的 Closeable 泄漏监控等待我们去分析。
+以上就是 IOCanary 中 C/C++ 部分实现的监控的内容了。剩下的上报部分的源码应该不用进行分析，比较简单了。剩下还有一个 Java 层实现的 Closeable 泄漏监控等待我们去分析。
 
-## 3. CloseGuardHooker
+## 3. Closeable泄漏监控
 
-### Closeable泄漏监控
+接着，我们回到 IOCanaryCore，看看 Closeable 内存泄漏是如何检测的。我们看看最后的的几行代码，看来这里面的诀窍就在 CloseGuardHooker 中：
 
-// TODO
+**<small>matrix/matrix-android/matrix-io-canary/src/main/java/com/tencent/matrix/iocanary/core/IOCanaryCore.java</small>**
 
-hook `dalvik.system.CloseGuard#reporter`，动态代理其`report`方法。
+```java
+private void initDetectorsAndHookers(IOConfig ioConfig) {
+    ...
+
+    //if only detect io closeable leak use CloseGuardHooker is Better
+    if (ioConfig.isDetectIOClosableLeak()) {
+        mCloseGuardHooker = new CloseGuardHooker(this);
+        mCloseGuardHooker.hook();
+    }
+}
+```
+
+CloseGuardHooker 里面的 hook 点的确定可以看[Matrix Wiki -- Closeable Leak 监控](https://github.com/Tencent/matrix/wiki/Matrix-Android-IOCanary#%E4%BA%8C%E6%97%A0%E4%BE%B5%E5%85%A5%E5%AE%9E%E7%8E%B0%E5%80%9Fstrictmode%E4%B8%9C%E9%A3%8E)的介绍。这里我们直接看结论：
+
+1. 利用反射，把 warnIfOpen 那个 ENABLED 值设为 true
+2. 利用动态代理，把 REPORTER 替换成我定义的 proxy
+
+下面我们看下 CloseGuardHooker 的实现，看看里面是如何操作的。这里直接从 hook 方法开始跟进，代码和注释如下：
+
+**<small>matrix/matrix/matrix-android/matrix-io-canary/src/main/java/com/tencent/matrix/iocanary/detect/CloseGuardHooker.java</small>**
+
+```java
+public final class CloseGuardHooker {
+    ...
+
+    /**
+     * set to true when a certain thread try hook once; even failed.
+     */
+    public void hook() {
+        MatrixLog.i(TAG, "hook sIsTryHook=%b", mIsTryHook);
+        if (!mIsTryHook) {
+            boolean hookRet = tryHook();
+            MatrixLog.i(TAG, "hook hookRet=%b", hookRet);
+            mIsTryHook = true;
+        }
+    }
+
+    /**
+     * TODO comment
+     * Use a way of dynamic proxy to hook
+     * <p>
+     * warn of sth: detectLeakedClosableObjects may be disabled again after this tryHook once called
+     *
+     * @return
+     */
+    private boolean tryHook() {
+        try {
+            Class<?> closeGuardCls = Class.forName("dalvik.system.CloseGuard");
+            Class<?> closeGuardReporterCls = Class.forName("dalvik.system.CloseGuard$Reporter");
+            // CloseGuard#getReporter方法
+            Method methodGetReporter = closeGuardCls.getDeclaredMethod("getReporter");
+            // CloseGuard#setReporter方法
+            Method methodSetReporter = closeGuardCls.getDeclaredMethod("setReporter", closeGuardReporterCls);
+            // CloseGuard#setEnabled方法
+            Method methodSetEnabled = closeGuardCls.getDeclaredMethod("setEnabled", boolean.class);
+
+            // 保存原始的reporter对象
+            sOriginalReporter = methodGetReporter.invoke(null);
+
+            // 调用CloseGuard#setEnabled方法，设置为true
+            methodSetEnabled.invoke(null, true);
+
+            // 开启MatrixCloseGuard，这是类似于CloseGuard的一个东西，但是没有用到
+            // open matrix close guard also
+            MatrixCloseGuard.setEnabled(true);
+
+            ClassLoader classLoader = closeGuardReporterCls.getClassLoader();
+            if (classLoader == null) {
+                return false;
+            }
+
+            // 将动态代理的对象设置为REPORTER
+            methodSetReporter.invoke(null, Proxy.newProxyInstance(classLoader,
+                new Class<?>[]{closeGuardReporterCls},
+                new IOCloseLeakDetector(issueListener, sOriginalReporter)));
+
+            return true;
+        } catch (Throwable e) {
+            MatrixLog.e(TAG, "tryHook exp=%s", e);
+        }
+
+        return false;
+    }
+}
+```
+
+然后我们看下 IOCloseLeakDetector 这个类，这是一个典型的动态代理的用法，重点在于其 invoke 方法里面的处理，我们可以根据 method 的方法名以及 args 参数列表来匹配需要 hook 的方法。
+
+IOCloseLeakDetector 里面只 hook 了 report 方法，然后处理了 args[1] 这个 Throwable，将其作为参数进行上报。代码如下：
+
+**<small>matrix/matrix-android/matrix-io-canary/src/main/java/com/tencent/matrix/iocanary/detect/IOCloseLeakDetector.java</small>**
+
+```java
+public class IOCloseLeakDetector extends IssuePublisher implements InvocationHandler {
+    ...
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        MatrixLog.i(TAG, "invoke method: %s", method.getName());
+        if (method.getName().equals("report")) {
+            if (args.length != 2) {
+                MatrixLog.e(TAG, "closeGuard report should has 2 params, current: %d", args.length);
+                return null;
+            }
+            if (!(args[1] instanceof Throwable)) {
+                MatrixLog.e(TAG, "closeGuard report args 1 should be throwable, current: %s", args[1]);
+                return null;
+            }
+            Throwable throwable = (Throwable) args[1];
+
+            String stackKey = IOCanaryUtil.getThrowableStack(throwable);
+            if (isPublished(stackKey)) {
+                MatrixLog.d(TAG, "close leak issue already published; key:%s", stackKey);
+            } else {
+                Issue ioIssue = new Issue(SharePluginInfo.IssueType.ISSUE_IO_CLOSABLE_LEAK);
+                ioIssue.setKey(stackKey);
+                JSONObject content = new JSONObject();
+                try {
+                    content.put(SharePluginInfo.ISSUE_FILE_STACK, stackKey);
+                } catch (JSONException e) {
+//                e.printStackTrace();
+                    MatrixLog.e(TAG, "json content error: %s", e);
+                }
+                ioIssue.setContent(content);
+                publishIssue(ioIssue);
+                MatrixLog.i(TAG, "close leak issue publish, key:%s", stackKey);
+                markPublished(stackKey);
+            }
+
+
+            return null;
+        }
+        return method.invoke(originalReporter, args);
+    }
+}
+```
+
+**当然框架层很多代码都用了 CloseGuard ，就可以发现比如文件资源没 close ， Cursor 没有 close 等等，这个方式不仅仅可以监控文件，一下子满足了好多愿望。**
+
+## 4. Android P 以上版本的兼容
+
+Matrix 目前只兼容到了Android P，也就是 Android 9。  
+
+---
+
+对于 Closeable 泄露监控来说，在 Android 10 及上无法兼容的原因是 `CloseGuard#getReporter` 无法直接通过反射获取， `reporter` 字段也是无法直接通过反射获取。如果无法获取到原始的 reporter，那么原始的 reporter 在我们 hook 之后就会失效。如果我们狠下决心，这也是可以接受的，但是对于这种情况我们应该尽量避免。  
+
+那么我们现在的问题就是如何在高版本上获取到原始的 reporter，那么有办法吗？有的，因为我们前面说到了无法直接通过反射获取，但是可以间接获取到。这里我们可以通过 **反射的反射** 来获取。实例如下：
+
+```java
+private static void doHook() throws Exception {
+    Class<?> clazz = Class.forName("dalvik.system.CloseGuard");
+    Class<?> reporterClass = Class.forName("dalvik.system.CloseGuard$Reporter");
+
+    Method setEnabledMethod = clazz.getDeclaredMethod("setEnabled", boolean.class);
+    setEnabledMethod.invoke(null, true);
+
+    // 直接反射获取reporter
+//        Method getReporterMethod = clazz.getDeclaredMethod("getReporter");
+//        final Object originalReporter = getReporterMethod.invoke(null);
+
+    // 反射的反射获取
+    Method getDeclaredMethodMethod = Class.class.getDeclaredMethod("getDeclaredMethod", String.class, Class[].class);
+    Method getReporterMethod = (Method) getDeclaredMethodMethod.invoke(clazz, "getReporter", null);
+    final Object originalReporter = getReporterMethod.invoke(null);
+
+    Method setReporterMethod = clazz.getDeclaredMethod("setReporter", reporterClass);
+    Object proxy = Proxy.newProxyInstance(
+            reporterClass.getClassLoader(),
+            new Class<?>[]{reporterClass},
+            new InvocationHandler() {
+                @Override
+                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                    return method.invoke(originalReporter, args);
+                }
+            }
+    );
+    setReporterMethod.invoke(null, proxy);
+}
+```
