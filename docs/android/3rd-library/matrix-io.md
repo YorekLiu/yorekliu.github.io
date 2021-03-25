@@ -1192,7 +1192,7 @@ public class IOCloseLeakDetector extends IssuePublisher implements InvocationHan
 
 ## 4. Android P 以上版本的兼容
 
-Matrix 目前只兼容到了Android P，也就是 Android 9。  
+**Matrix 目前只兼容到了Android P，也就是 Android 9。**  下面对 Android 9 以上版本的适配，做了一定的兼容，当然下面的代码仅仅说明了适配的方向，可能还有一些其他问题需要处理。
 
 ---
 
@@ -1229,5 +1229,138 @@ private static void doHook() throws Exception {
             }
     );
     setReporterMethod.invoke(null, proxy);
+}
+```
+
+---
+
+对于 native hook 的三种场景来说，Android 9 版本以上无法适配的原因应该是 hook 失效导致的。所以这里研究了一下，发现目前（2021年03月25日） xhook 已经适配了 Android 10。更新了 xhook 的相关代码后，可以在 Android 10 上 hook 到文件的操作了。示例代码如下：
+
+```C
+#include <jni.h>
+#include <cstddef>
+#include <cstring>
+#include <android/log.h>
+#include <assert.h>
+#include <xhook.h>
+#include <string>
+#include <algorithm>
+
+namespace iocanary {
+
+    static const char* const kTag = "IOCanary.JNI";
+
+    static int (*original_open) (const char *pathname, int flags, mode_t mode);
+    static int (*original_open64) (const char *pathname, int flags, mode_t mode);
+    static ssize_t (*original_read) (int fd, void *buf, size_t size);
+    static ssize_t (*original_read_chk) (int fd, void* buf, size_t count, size_t buf_size);
+    static ssize_t (*original_write) (int fd, const void *buf, size_t size);
+    static ssize_t (*original_write_chk) (int fd, const void* buf, size_t count, size_t buf_size);
+    static int (*original_close) (int fd);
+
+    const static char* TARGET_MODULES[] = {
+        ".*/libopenjdkjvm.so$",
+        ".*/libjavacore.so$",
+        ".*/libopenjdk.so$"
+    };
+    const static size_t TARGET_MODULE_COUNT = sizeof(TARGET_MODULES) / sizeof(char*);
+
+    extern "C" {
+
+        /**
+         *  Proxy for open: callback to the java layer
+         */
+        //todo astrozhou 解决非主线程打开，主线程操作问题
+        int ProxyOpen(const char *pathname, int flags, mode_t mode) {
+            int ret = original_open(pathname, flags, mode);
+            __android_log_print(ANDROID_LOG_INFO, kTag, "ProxyOpen pathName:%s fd:%d", pathname, ret);
+            return ret;
+        }
+
+        int ProxyOpen64(const char *pathname, int flags, mode_t mode) {
+            int ret = original_open64(pathname, flags, mode);
+            __android_log_print(ANDROID_LOG_INFO, kTag, "ProxyOpen64 pathName:%s fd:%d", pathname, ret);
+            return ret;
+        }
+
+        /**
+         *  Proxy for read: callback to the java layer
+         */
+        ssize_t ProxyRead(int fd, void *buf, size_t size) {
+            size_t ret = original_read(fd, buf, size);
+            __android_log_print(ANDROID_LOG_INFO, kTag, "ProxyRead fd:%d ret:%d", fd, ret);
+            return ret;
+        }
+
+        ssize_t ProxyReadChk(int fd, void* buf, size_t count, size_t buf_size) {
+            ssize_t ret = original_read_chk(fd, buf, count, buf_size);
+            __android_log_print(ANDROID_LOG_INFO, kTag, "ProxyReadChk fd:%d ret:%d", fd, ret);
+            return ret;
+        }
+
+        /**
+         *  Proxy for write: callback to the java layer
+         */
+        ssize_t ProxyWrite(int fd, const void *buf, size_t size) {
+            size_t ret = original_write(fd, buf, size);
+            __android_log_print(ANDROID_LOG_INFO, kTag, "ProxyWrite fd:%d ret:%d", fd, ret);
+            return ret;
+        }
+
+        ssize_t ProxyWriteChk(int fd, const void* buf, size_t count, size_t buf_size) {
+            ssize_t ret = original_write_chk(fd, buf, count, buf_size);
+            __android_log_print(ANDROID_LOG_INFO, kTag, "ProxyWriteChk fd:%d ret:%d", fd, ret);
+            return ret;
+        }
+
+        /**
+         *  Proxy for close: callback to the java layer
+         */
+        int ProxyClose(int fd) {
+            int ret = original_close(fd);
+            __android_log_print(ANDROID_LOG_INFO, kTag, "ProxyClose fd:%d", fd);
+            return ret;
+        }
+
+        JNIEXPORT jboolean JNICALL
+        Java_sample_tencent_matrix_io_NativeHooker_doHook(JNIEnv *env, jclass type) {
+            __android_log_print(ANDROID_LOG_INFO, kTag, "doHook");
+
+            for (int i = 0; i < TARGET_MODULE_COUNT; ++i) {
+                const char* so_name = TARGET_MODULES[i];
+                __android_log_print(ANDROID_LOG_INFO, kTag, "try to hook function in %s.", so_name);
+
+                xhook_enable_debug(1);
+                xhook_register(so_name, "open", (void*)ProxyOpen, (void**)&original_open);
+                xhook_register(so_name, "open64", (void*)ProxyOpen64, (void**)&original_open64);
+
+                bool is_libjavacore = (strstr(so_name, ".*/libjavacore.so$") != nullptr);
+                if (is_libjavacore) {
+                    if (xhook_register(so_name, "read", (void*)ProxyRead, (void**)&original_read) != 0) {
+                        __android_log_print(ANDROID_LOG_WARN, kTag, "doHook hook read failed, try __read_chk");
+                        if (xhook_register(so_name, "__read_chk", (void*)ProxyReadChk, (void**)&original_read_chk) != 0) {
+                            __android_log_print(ANDROID_LOG_WARN, kTag, "doHook hook failed: __read_chk");
+                            return JNI_FALSE;
+                        }
+                    }
+
+                    if (xhook_register(so_name, "write", (void*)ProxyWrite, (void**)&original_write) != 0) {
+                        __android_log_print(ANDROID_LOG_WARN, kTag, "doHook hook write failed, try __write_chk");
+                        if (xhook_register(so_name, "__write_chk", (void*)ProxyWriteChk, (void**)&original_write_chk) != 0) {
+                            __android_log_print(ANDROID_LOG_WARN, kTag, "doHook hook failed: __write_chk");
+                            return JNI_FALSE;
+                        }
+                    }
+                }
+
+                xhook_register(so_name, "close", (void*)ProxyClose, (void**)&original_close);
+            }
+
+            xhook_refresh(0);
+
+            __android_log_print(ANDROID_LOG_INFO, kTag, "doHook done.");
+            return JNI_TRUE;
+        }
+    }
 }
 ```
