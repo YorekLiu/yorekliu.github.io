@@ -111,7 +111,7 @@ Resource Canary包含常见的内存泄漏监控、重复创建的冗余的Bitma
 - 对已判断为泄漏的Activity，记录其类名，避免重复提示该Activity已泄漏
 
 因为dump出的hprof文件通常比较大，因此直接拿原始文件进行上报，一方面会消耗大量带宽资源，另一方面服务端将Hprof文件长期存档时也会占用服务器的存储空间。这是不可取的，因此我们需要 **裁剪Hprof**。裁剪的算法有那么几种，使用爱奇艺native hook框架xHook的实现的美团的Probe（需要裁掉的部分直接不写入到hprof中）以及Java实现的裁剪（生成后再裁剪，例如LeakCanary）等。  
-裁剪的数据也类似，以Matrix中为例，Matrix只保留了“部分字符串数据和Bitmap的buffer数组”，其他的字符串数据以及所有的数组都可以直接剔除。——[细节与改进 - 裁剪Hprof](prof文件中buffer区存放了所有对象的数据，包括字符串数据、所有的数组等，而我们的分析过程却只需要用到部分字符串数据和Bitmap的buffer数组，其余的buffer数据都可以直接剔除，这样处理之后的Hprof文件通常能比原始文件小1/10以上。)
+裁剪的数据也类似，以Matrix中为例，Matrix只保留了“部分字符串数据和Bitmap的buffer数组”，其他的字符串数据以及所有的数组都可以直接剔除。prof文件中buffer区存放了所有对象的数据，包括字符串数据、所有的数组等，而我们的分析过程却只需要用到部分字符串数据和Bitmap的buffer数组，其余的buffer数据都可以直接剔除，这样处理之后的Hprof文件通常能比原始文件小1/10以上。——[细节与改进 - 裁剪Hprof](https://github.com/Tencent/matrix/wiki/Matrix-Android-ResourceCanary#%E8%A3%81%E5%89%AAhprof)
 
 拿到客户端上报的裁剪后的Hprof文件后，服务端可以对文件进行后续的内存泄漏检测以及 **重复Bitmap检测**，这里说说后者。  
 > 这个功能Android Monitor已经有完整实现了，原理简单粗暴——把所有未被回收的Bitmap的数据buffer取出来，然后先对比所有长度为1的buffer，找出相同的，记录所属的Bitmap对象；再对比所有长度为2的、长度为3的buffer……直到把所有buffer都比对完，这样就记录下了所有冗余的Bitmap对象了，接着再套用LeakCanary获取引用链的逻辑把这些Bitmap对象到GC Root的最短强引用链找出来即可。  
