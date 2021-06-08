@@ -16,4 +16,5 @@ title: "Matrix-ResourceCanary解析"
 
 因此，本篇文章的重点就是 ResourceCanary 的本体，以及 ApkChecker 与对应插件这两个部分了。
 
-## 1. Resources Canary
+## 1. Resource Canary
+

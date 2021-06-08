@@ -10,7 +10,7 @@ hide:
 Tips:
 
 1. 切换最上方Tab进行浏览
-2. 搜索挺好使的，就是键入首字时会卡顿一会儿，请喝杯茶
+2. 搜索挺好使的，只是首次索引有点耗时，请喝杯茶
 
 
 Good artists copy; Great artists steal.
