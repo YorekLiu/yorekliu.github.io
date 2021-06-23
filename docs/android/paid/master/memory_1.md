@@ -8,6 +8,28 @@ title: "03 | 内存优化（上）：4GB内存时代，再谈内存优化"
 **内存问题**  
 
 内存会引发两个问题：异常以及卡顿。  
+
+![memory_pss](/assets/images/android/master/memory_pss.webp)
+
+---
+
+关于lmk（low memory killer），可以查看event.log中被杀的日志：
+
+```log
+06-21 14:34:48.468 1000 1764 2416 I am_proc_died: [0,12111,com.ximalaya.ting.kid,700,16]
+06-21 14:34:48.475 1000 1764 2416 I am_low_memory: 61
+```
+
+am_proc_died的日志格式如下：
+
+```log
+am_proc_died (User|1|5),(PID|1|5),(Process Name|3),(OomAdj|1|5),(ProcState|1|5)
+```
+
+这就意味着，我们这个进程目前OomAdj为700，也就是上一个应用的优先级（`PREVIOUS_APP_ADJ`）。ProcState为16，即 `PROCESS_STATE_CACHED_ACTIVITY`。
+
+---
+
 内存的两个误区：  
 
 1. 内存占用越少越好？  
@@ -16,6 +38,91 @@ title: "03 | 内存优化（上）：4GB内存时代，再谈内存优化"
    当系统物理内存不足时，lmk 开始杀进程，从后台、桌面、服务、前台，直到手机重启  
 
 **测量方法**  
+
+
+
+``` shell
+adb shell dumpsys meminfo <package_name|pid> [-d]
+
+Applications Memory Usage (in Kilobytes):
+Uptime: 84070586 Realtime: 84070586
+
+** MEMINFO in pid 23094 [com.ximalaya.ting.kid] **
+                   Pss  Private  Private  SwapPss      Rss     Heap     Heap     Heap
+                 Total    Dirty    Clean    Dirty    Total     Size    Alloc     Free
+                ------   ------   ------   ------   ------   ------   ------   ------
+  Native Heap    80753    80672        0   102563    81020   219896   169726    37688
+  Dalvik Heap    30063    29948        0     1297    30268    42086    25702    16384
+ Dalvik Other    12028     7336        0       44    16880                           
+        Stack     2756     2756        0     1369     2760                           
+       Ashmem       18       12        0        0       40                           
+      Gfx dev    23712    23712        0        0    23712                           
+    Other dev       57       24       32        0      292                           
+     .so mmap    31272     2072    26500     1421    36808                           
+    .jar mmap     2731        0      576        0    20864                           
+    .apk mmap     4043       20     3568      164    15248                           
+    .ttf mmap      176        0      108        0      392                           
+    .dex mmap    23318    23180      132    32768    23328                           
+    .oat mmap      308        0       60        2      684                           
+    .art mmap     7411     5984       80     1990    11696                           
+   Other mmap     1658       12     1132        1     2760                           
+    GL mtrack    19880    19880        0        0    19880                           
+      Unknown     4451     4376        0     1515     4556                           
+        TOTAL   387769   199984    32188   143134   387769   261982   195428    54072
+ 
+ App Summary
+                       Pss(KB)                        Rss(KB)
+                        ------                         ------
+           Java Heap:    36012                          41964
+         Native Heap:    80672                          81020
+                Code:    56356                         106800
+               Stack:     2756                           2760
+            Graphics:    43592                          43592
+       Private Other:    12784
+              System:   155597
+             Unknown:                                   15052
+ 
+           TOTAL PSS:   387769            TOTAL RSS:   291188       TOTAL SWAP PSS:   143134
+ 
+ Objects
+               Views:     1263         ViewRootImpl:        3
+         AppContexts:       12           Activities:        3
+              Assets:       29        AssetManagers:        0
+       Local Binders:      155        Proxy Binders:       50
+       Parcel memory:       59         Parcel count:      220
+    Death Recipients:        3      OpenSSL Sockets:        0
+            WebViews:        0
+ 
+ SQL
+         MEMORY_USED:     3589
+  PAGECACHE_OVERFLOW:      447          MALLOC_SIZE:      117
+ 
+ DATABASES
+      pgsz     dbsz   Lookaside(b)          cache  Dbname
+         4       52             92        99/53/6  /data/user/0/com.ximalaya.ting.kid/databases/database_322264_202958003
+         4       44             66        24/45/4  /data/user/0/com.ximalaya.ting.kid/databases/database_201354_8648380003
+         4       44             92        39/53/6  /data/user/0/com.ximalaya.ting.kid/databases/database_201354_8648380003
+         4       24             38         6/35/6  /data/user/0/com.ximalaya.ting.kid/databases/tbsbeacon_db_com.ximalaya.ting.kid
+         4       24             47        12/24/3  /data/user/0/com.ximalaya.ting.kid/databases/tbsbeacon_db_com.ximalaya.ting.kid (3)
+         4       24             57        18/27/5  /data/user/0/com.ximalaya.ting.kid/databases/tbsbeacon_db_com.ximalaya.ting.kid (2)
+         4       44             92        27/51/6  /data/user/0/com.ximalaya.ting.kid/databases/database_201354_8648380003
+         4       44             29         1/39/2  /data/user/0/com.ximalaya.ting.kid/databases/database_0_0
+         4       16             59        43/29/6  /data/user/0/com.ximalaya.ting.kid/databases/kids_punch.db
+         4       40             39         2/26/3  /data/user/0/com.ximalaya.ting.kid/databases/db_diandu
+         4       20            100       32/51/21  :memory:
+         4       24             17         0/24/1  /data/user/0/com.ximalaya.ting.kid/databases/http_client_cache
+         4       44             53         1/39/2  /data/user/0/com.ximalaya.ting.kid/databases/database_0_0
+         4       20             28      5801/25/2  /data/user/0/com.ximalaya.ting.kid/databases/bigdata.db
+         4       36             67         4/28/5  /data/user/0/com.ximalaya.ting.kid/databases/okdownload-breakpoint.db
+         4       36             99       12/37/12  /data/user/0/com.ximalaya.ting.kid/databases/tes_db
+         4       44             87        21/41/4  /data/user/0/com.ximalaya.ting.kid/databases/database_0_0
+         4       20             25         1/25/2  /data/user/0/com.ximalaya.ting.kid/databases/play_event
+         4       20             27         3/25/2  /data/user/0/com.ximalaya.ting.kid/databases/tracker.db
+         4       52            100       86/38/15  /data/user/0/com.ximalaya.ting.kid/databases/bugly_db_
+         4       36             45        30/26/3  /data/user/0/com.ximalaya.ting.kid/databases/firework.db
+         4       52             92        99/53/6  /data/user/0/com.ximalaya.ting.kid/databases/database_322264_202958003
+         4       44             43         1/39/2  /data/user/0/com.ximalaya.ting.kid/databases/database_0_0
+```
 
 Java内存分配：
 
