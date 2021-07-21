@@ -18,7 +18,7 @@ theme:
       primary: white
       accent: blue
       toggle:
-        icon: material/weather-night
+        icon: material/toggle-switch-off-outline
         name: Switch to dark mode
     # Dark mode
     - media: "(prefers-color-scheme: dark)"
@@ -26,7 +26,7 @@ theme:
       primary: black
       accent: blue
       toggle:
-        icon: material/weather-sunny
+        icon: material/toggle-switch
         name: Switch to light mode
   font:
     text: Roboto
@@ -176,6 +176,7 @@ nav:
       - android/framework/binder1-mediaservice.md
       - android/framework/binder2.md
     - 日常记录:
+      - android/other/commands.md
       - android/other/android-tv.md
       - android/other/annotation.md
       - android/other/best_throttle_in_mvvm.md

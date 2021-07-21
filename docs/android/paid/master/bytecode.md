@@ -193,6 +193,9 @@ ICONST_1 将 int 类型 1 推送栈顶，ICONST_2 将 int 类型 2 推送栈顶�
     ![bytecode_14](/assets/images/android/master/bytecode_14.png)  
     如果想在一个方法执行完成后增加代码，ASM 相对也要简单很多，可以在字节码中出现的每一条 RETURN 系或者 ATHROW 的指令前，增加处理的逻辑即可。
 
+???+ success "ASM Bytecode Viewer"
+    可以安装这个插件查看代码的对应ASM语法，从而找到需要拦截的语法。
+
 ### 3. ReDex
 
 ReDex 不仅只是作为一款 Dex 优化工具，它也提供了很多的小工具和文档里没有提到的一些新奇功能。比如在 ReDex 里提供了一个简单的 Method Tracing 和 Block Tracing 工具，这个工具可以在所有方法或者指定方法前面插入一段跟踪代码。

@@ -92,7 +92,7 @@ GOT/PLT Hook 看似简单，但是实现起来也是有一些坑的，需要考�
 
 - 微信 Matrix 开源库的[ELF Hook](https://github.com/Tencent/matrix/tree/master/matrix/matrix-android/matrix-android-commons/src/main/cpp/elf_hook)，它使用的是 GOT Hook，主要使用它来做性能监控。  
    > 微信Matrix里面的hook已经换成了爱奇艺的xHook了
-- 爱奇艺开源的的[xHook](https://github.com/iqiyi/xHook)，它使用的也是 GOT Hook。
+- 爱奇艺开源的的[xHook](https://github.com/iqiyi/xHook)，它使用的也是 PLT Hook。
 - Facebook 的[PLT Hook](https://github.com/facebookincubator/profilo/tree/master/deps/plthooks)。
 
 如果不想深入它内部的原理，我们只需要直接使用这些开源的优秀方案就可以了。因为这种 Hook 方式非常成熟稳定，除了 Hook 线程的创建，我们还有很多其他的使用范例。
