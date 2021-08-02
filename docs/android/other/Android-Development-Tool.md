@@ -130,6 +130,20 @@ CPU Profiler -> Systrace、TraceView
 !!! danger
     TODO: 补充具体案例
 
+???+ question "Systrace、TraceView的区别"
+    Systrace 可以跟踪系统的 I/O 操作、CPU 负载、Surface 渲染、GC 等事件。systrace 工具只能监控特定系统调用的耗时情况，所以它是属于 sample 类型，而且性能开销非常低。但是它不支持应用程序代码的耗时分析，所以在使用时有一些局限性。  
+    
+    Traceview 可以用来查看整个Java层代码执行过程有哪些函数调用，但是工具本身带来的性能开销过大，有时无法反映真实的情况。属于instrument类型。
+
+
+???+ question "AS Profiler"
+    在 Android Studio 3.2 的 Profiler 中直接集成了几种性能分析工具，其中：  
+
+    -  Sample Java Methods 的功能类似于 Traceview 的 sample 类型。
+    -  Trace Java Methods 的功能类似于 Traceview 的 instrument 类型。
+    -  Trace System Calls 的功能类似于 systrace。
+    -  SampleNative (API Level 26+) 的功能类似于 Simpleperf。
+
 ## bugreport
 
 使用bugreport命令手机日志后，可以使用chkbugreport.jar来生成便于查看的日志文件：

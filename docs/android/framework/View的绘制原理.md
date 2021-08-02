@@ -895,13 +895,24 @@ public void draw(Canvas canvas) {
 上面的代码比较长，但是注释非常清楚，View的绘制过程遵循以下6步：
 
 1. 绘制背景 `drawBackground(canvas)` -> `background.draw(canvas);`
-2. 如果必要，为滚动的fading效果保存图层
+2. 如果必要，为 fading edge 效果保存图层
 3. 绘制自己 `onDraw(canvas)`
 4. 绘制children `dispatchDraw(canvas)`
-5. 如果必要，绘制滚动的fading效果并恢复图层
+5. 如果必要，绘制 fading edge 效果并恢复图层
 6. 绘制装饰（比如foreground、scrollbars）`onDrawForeground(canvas)`
 
-其中，如果View本身是透明的，则不需要绘制背景以及自身，所以跳过了1、3两步；其次，如果View本身不处于滑动状态，则不需要绘制滑动状态的fading效果，所以跳过2、5两步。
+其中，如果View本身是透明的，则不需要绘制背景以及自身，所以跳过了1、3两步；其次，如果View本身不需要绘制 fading edge，则跳过2、5两步。
+
+> fading edge 效果表现为 View 边缘有一个渐变的效果，效果图如下面的 TextView 所示：  
+> ![fading edge](/assets/images/android/view_fading_edge_demo.png)  
+> 例子中的TextView关键属性如下：  
+> 
+> ```xml
+> android:ellipsize="none"
+> android:singleLine="true"
+> android:requiresFadingEdge="horizontal"
+> android:fadingEdgeLength="100dp"
+> ```
 
 `onDraw`方法在View是一个空实现，供具体的View来实现draw效果；ViewGroup也更加不会实现该方法，但具体ViewGroup子类会根据自身需要进行重写该方法（比如LinearLayout）。  
 `dispatchDraw`方法在View内部也是一个空实现，因为其没有children，ViewGroup会重写该方法，ViewGroup子类不会重写该方法。

@@ -819,7 +819,7 @@ View首先会判断有没有设置OnTouchListener，若有则会先执行OnTouch
 
 ### 4.3 事件传递规则的一些结论
 
-1. 一般情况下，一个事件序列只能被一个View拦截且消耗。一旦某个View开始拦截，那么这个事件序列都只能由它来处理，且其`onInterceptTouchEvent`方法不会在调用。*mFirstTouchTarget*
+1. 一般情况下，一个事件序列只能被一个View拦截且消耗。一旦某个View开始拦截，那么这个事件序列都只能由它来处理，且其`onInterceptTouchEvent`方法不会在调用，但其parent的`onInterceptTouchEvent`会调用，这给滑动冲突的控制逻辑提供了机会。*mFirstTouchTarget*
 2. 某个View一旦开始处理事件，如果它不消耗ACTION_DOWN（既`onTouchEvent`方法返回了false），那么同一序列中其他事件不会交给它处理，事件将重新交给它的父元素去处理，即父元素的`onTouchEvent`会被调用。*mFirstTouchTarget*
 3. 如果View只消耗ACTION_DOWN，同时当前View可以持续收到后续事件。最后除了ACTION_DOWN之外的点击事件会传递给Activity处理。*对于ACTION_DOWN后面的事件，mFirstTouchTarget收到了事件，但是其不消耗，也就是返回false，这样Activity就会调用`onTouchEvent`方法*
 4. ViewGroup默认不拦截事件。
@@ -828,6 +828,7 @@ View首先会判断有没有设置OnTouchListener，若有则会先执行OnTouch
 7. View的enable属性不影响onTouchEvent的返回值。
 8. onClick事件发生的前提是当前View必须是可点击的，并且要收到down和up事件。
 9. 事件传递总是先传递给父布局，然后在传给子布局。子布局可以通过`requestDisallowInterceptTouchEvent`来干预父布局的事件分发，ACTION_DOWN除外。
+10. 在子View处理了ACTION_DOWN之后，如果在父View中拦截ACTION_UP或ACTION_MOVE，在第一次父View拦截消息的瞬间，子视图会收到ACTION_CANCEL事件，同时子View不再接受后续消息。
 
 ### 4.4 一句话概括
 
@@ -1200,11 +1201,13 @@ private boolean shouldParentIntercept() {
 }
 ```
 
-父容器的`onInterceptTouchEvent`
+父容器的`onInterceptTouchEvent`（一般的父容器都不会拦截事件，不需要特别注意）：
+
 ```java
 @Override
 public boolean onInterceptTouchEvent(MotionEvent ev) {
     return ev.getAction() != MotionEvent.ACTION_DOWN;
 }
 ```
+
 父布局不能拦截ACTION_DOWN，因为这样的话所有的事件无法传递到子View中。一个触摸事件由ACTION_DOWN开始，一旦有某个View处理了该事件，mFirstTouchTarget就被赋值了，后续事件全部会交给其处理。

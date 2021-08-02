@@ -390,7 +390,7 @@ class FocusView(
    <!-- 电视天线的辅助线 -->
    <Space
       android:id="@+id/space"
-      android:layout_width="wrap_content"
+      android:layout_width="wrap_content" 
       android:layout_height="wrap_content"
       app:layout_constraintTop_toTopOf="parent"/>
    <!-- 电视天线 -->
@@ -405,3 +405,5 @@ class FocusView(
       app:layout_constraintBottom_toBottomOf="@id/space" />
 </com.ximalaya.ting.kid.tv.widget.FocusContainer>
 ```
+
+### 2.6 draw order

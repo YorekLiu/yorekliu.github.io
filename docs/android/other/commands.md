@@ -4,8 +4,6 @@ title: "Android开发常见命令"
 
 ## 1. Linux相关
 
-### 1.1 CPU
-
 |  位置  | 说明 |
 | :- | :-- |
 | /sys/devices/system/cpu/ | CPU相关信息目录，可正则匹配"CPU[0-9]+"得知设备有几个核 |
@@ -13,6 +11,9 @@ title: "Android开发常见命令"
 | /proc/<pid\>/stat | 进程相关信息，包括PID、进程名、状态、CPU时间片等 |
 | /proc/<pid\>/task | 目录里面是所有线程的相关信息 |
 | /proc/<pid\>/task/<tid\>/stat | 线程相关信息，同进程信息 |
+| /proc/<pid\>/limits | 获取进程一些限制，比如文件描述符限制等 |
+| /proc/<pid\>/fd | 目录下面是已打开的文件描述符的链接，可查询到打开的文件路径 |
+| /proc/meminfo | 内存相关信息，总内存、没有分配的内存、可用内存、缓存等 |
 
 ???+ note "/proc/pid/stat信息如下" 
     样本:  

@@ -23,20 +23,19 @@ theme:
     # Dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: black
-      accent: blue
+      primary: red
+      accent: deep orange
       toggle:
         icon: material/toggle-switch
         name: Switch to light mode
   font:
-    text: Roboto
-    code: Roboto Mono
+    text: Noto Sans SC
+    code: JetBrains Mono
   language: 'zh'
   features:
     - navigation.tabs
     - navigation.instant
     - navigation.top
-    - toc.integrate
   logo: assets/images/favicon.webp
   icon:
     repo: material/github
