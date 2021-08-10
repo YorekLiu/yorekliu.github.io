@@ -101,7 +101,7 @@ google_analytics:
 # Page tree
 nav:
   - Android:
-    - 三方库源码解析: 
+    - 三方库系列: 
       - android/3rd-library/3rd-library-source-code.md
       - android/3rd-library/matrix.md
       - android/3rd-library/matrix-trace.md
@@ -125,6 +125,55 @@ nav:
       - android/3rd-library/permissiondispatcher.md
       - android/other/constraintlayout.md
       - android/other/dagger2.md
+    - framework系列: 
+      - android/framework/Android四大组件(1).md
+      - android/framework/Android四大组件(2).md
+      - android/framework/Android四大组件(3).md
+      - android/framework/Android四大组件(4).md
+      - android/framework/IPC机制.md
+      - android/framework/View的事件体系.md
+      - android/framework/View的绘制原理.md
+      - android/framework/RemoteViews.md
+      - android/framework/Drawable.md
+      - android/framework/Android动画.md
+      - android/framework/Window与WindowManager.md
+      - android/framework/四大组件启动过程.md
+      - android/framework/Android消息机制.md
+      - android/framework/Android线程与线程池.md
+      - android/framework/Bitmap的缓存与加载.md
+      - android/framework/JNI与NDK.md
+      - android/framework/性能优化.md
+      - android/framework/binder1-mediaservice.md
+      - android/framework/binder2.md
+    - 杂记:
+      - android/other/commands.md
+      - android/other/android-tv.md
+      - android/other/annotation.md
+      - android/other/best_throttle_in_mvvm.md
+      - android/other/android-jenkins.md
+      - android/other/SystemProrities.md
+      - android/other/recyclerview-cache.md
+      - android/other/recyclerview-item-docoration.md
+      - android/other/recyclerview-others.md
+      - android/other/RecyclerView-Sort&Delete.md
+      - android/other/FAB-Behavior.md
+      - android/other/nestedscrolling.md
+      - android/other/porterduff.md
+      - android/other/runtime.md
+      - android/other/android_alias.md
+      - android/other/Android-Development-Tool.md
+      - android/other/FileProvider.md
+      - android/other/Android判断导航栏高度.md
+      - android/other/Android图片选择器.md
+      - android/other/Android底部导航栏框架.md
+      - android/other/Android搜索栏的实现.md
+      - android/other/Android暂停音乐播放器的播放.md
+      - android/other/Android滑动返回实践.md
+      - android/other/Android程序反编译.md
+      - android/other/Android通讯录快速读取.md
+      - android/other/soft-keyboard-in-app.md
+      - android/other/腾讯X5内核入坑指南.md
+      - android/other/琐碎知识点.md
     - Android开发高手课:
       - android/paid/master/index.md
       - android/paid/master/crash_1.md
@@ -154,75 +203,24 @@ nav:
       - android/paid/master/compile.md
       - android/paid/master/bytecode.md
       - android/paid/master/native_hook.md
-    - Framework系列: 
-      - android/framework/Android四大组件(1).md
-      - android/framework/Android四大组件(2).md
-      - android/framework/Android四大组件(3).md
-      - android/framework/Android四大组件(4).md
-      - android/framework/IPC机制.md
-      - android/framework/View的事件体系.md
-      - android/framework/View的绘制原理.md
-      - android/framework/RemoteViews.md
-      - android/framework/Drawable.md
-      - android/framework/Android动画.md
-      - android/framework/Window与WindowManager.md
-      - android/framework/四大组件启动过程.md
-      - android/framework/Android消息机制.md
-      - android/framework/Android线程与线程池.md
-      - android/framework/Bitmap的缓存与加载.md
-      - android/framework/JNI与NDK.md
-      - android/framework/性能优化.md
-      - android/framework/binder1-mediaservice.md
-      - android/framework/binder2.md
-    - 日常记录:
-      - android/other/commands.md
-      - android/other/android-tv.md
-      - android/other/annotation.md
-      - android/other/best_throttle_in_mvvm.md
-      - android/other/android-jenkins.md
-      - android/other/SystemProrities.md
-      - android/other/recyclerview-cache.md
-      - android/other/recyclerview-item-docoration.md
-      - android/other/recyclerview-others.md
-      - android/other/RecyclerView-Sort&Delete.md
-      - android/other/FAB-Behavior.md
-      - android/other/nestedscrolling.md
-      - android/other/porterduff.md
-      - android/other/runtime.md
-      - android/other/android_alias.md
-      - android/other/Android-Development-Tool.md
-      - android/other/FileProvider.md
-      - android/other/Android判断导航栏高度.md
-      - android/other/Android图片选择器.md
-      - android/other/Android底部导航栏框架.md
-      - android/other/Android搜索栏的实现.md
-      - android/other/Android暂停音乐播放器的播放.md
-      - android/other/Android滑动返回实践.md
-      - android/other/Android程序反编译.md
-      - android/other/Android通讯录快速读取.md
-      - android/other/soft-keyboard-in-app.md
-      - android/other/腾讯X5内核入坑指南.md
-      - android/other/琐碎知识点.md
-    - 其他:
-      - 某些问题索引:
-        - android/paid/zsxq/zsxq_index.md
-        - android/paid/zsxq/week1-synchronized.md
-        - android/paid/zsxq/week2-service.md
-        - android/paid/zsxq/week3-activity.md
-        - android/paid/zsxq/week4-startActivityForResult.md
-        - android/paid/zsxq/week5-view.md
-        - android/paid/zsxq/week6-gradle.md
-        - android/paid/zsxq/week7-serialization.md
-        - android/paid/zsxq/week10-classloader.md
-        - android/paid/zsxq/week11-binder.md
-        - android/paid/zsxq/week12-retrofit-okhttp.md
-        - android/paid/zsxq/week14-jvm-gc.md
-        - android/paid/zsxq/week16-keep-app-alive.md
-        - android/paid/zsxq/week17-android-components.md
-        - android/paid/zsxq/week20-network-protocol.md
-        - android/paid/zsxq/week21-mvc&mvp&mvvm.md
-        - android/paid/zsxq/week22-android-studio-build.md
-        - android/paid/zsxq/week23-load-large-bitmap.md
+    - 常见问题索引:
+      - android/paid/zsxq/week1-synchronized.md
+      - android/paid/zsxq/week2-service.md
+      - android/paid/zsxq/week3-activity.md
+      - android/paid/zsxq/week4-startActivityForResult.md
+      - android/paid/zsxq/week5-view.md
+      - android/paid/zsxq/week6-gradle.md
+      - android/paid/zsxq/week7-serialization.md
+      - android/paid/zsxq/week10-classloader.md
+      - android/paid/zsxq/week11-binder.md
+      - android/paid/zsxq/week12-retrofit-okhttp.md
+      - android/paid/zsxq/week14-jvm-gc.md
+      - android/paid/zsxq/week16-keep-app-alive.md
+      - android/paid/zsxq/week17-android-components.md
+      - android/paid/zsxq/week20-network-protocol.md
+      - android/paid/zsxq/week21-mvc&mvp&mvvm.md
+      - android/paid/zsxq/week22-android-studio-build.md
+      - android/paid/zsxq/week23-load-large-bitmap.md
   - Flutter:
     - flutter/flutter_first_project_1.md
     - flutter/flutter_first_project_2.md
