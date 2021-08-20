@@ -107,8 +107,43 @@ type参数表示Window的类型，**Window可以分为三种类型：Application
 - 子Window不能单独存在，它需要附属在特定的父Window中，比如Dialog就是一个子Window；
 - 系统Window需要申明权限才能创建，比如Toast以及系统状态栏就是系统Window。
 
-Window是分层的，每个Window都有对应的Z-ordered，层级大的会覆盖在层级小的Window上面。在三种Window中，Application Window是1~99，子Window是1000~1999，系统Window是2000~2999。  
+Window是分层的，每个Window都有对应的Z-ordered，层级大的会覆盖在层级小的Window上面。在三种Window中，Application Window是 1 ~ 99，子Window是 1000 ~ 1999，系统Window是 2000 ~ 2999。  
 系统层级是最大的，我们一般可以选用`TYPE_SYSTEM_OVERLAY`或者`TYPE_SYSTEM_ERROR`，同时声明权限(`<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />`)。
+
+对应 Window 层级定义如下：
+
+| 名称 | 值 | 说明 |
+| :-- | :- | :-- |
+| FIRST_APPLICATION_WINDOW | 1 | Start of window types that represent normal application windows. |
+| TYPE_BASE_APPLICATION | 1 | Window type: an application window that serves as the "base" windowof the overall application; all other application windows will appear on top of it. In multiuser systems shows only on the owning user's window. |
+| TYPE_APPLICATION | 2 | Window type: a normal application window.  The {@link #token} must be an Activity token identifying who the window belongs to. In multiuser systems shows only on the owning user's window. |
+| TYPE_APPLICATION_STARTING | 3 | Window type: special application window that is displayed while the application is starting.  Not for use by applications themselves; this is used by the system to display something until the application can show its own windows. In multiuser systems shows on all users' windows. |
+| TYPE_DRAWN_APPLICATION | 4 | Window type: a variation on TYPE_APPLICATION that ensures the window manager will wait for this window to be drawn before the app is shown. In multiuser systems shows only on the owning user's window. |
+| LAST_APPLICATION_WINDOW | 99 | End of types of application windows. |
+| FIRST_SUB_WINDOW | 100 | Start of types of sub-windows.  The {@link #token} of these windows must be set to the window they are attached to.  These types of windows are kept next to their attached window in Z-order, and their coordinate space is relative to their attached window. |
+| TYPE_APPLICATION_PANEL | FIRST_SUB_WINDOW | Window type: a panel on top of an application window.  These windows appear on top of their attached window. |
+| TYPE_APPLICATION_MEDIA | FIRST_SUB_WINDOW + 1 | Window type: window for showing media (such as video).  These windows are displayed behind their attached window. |
+| TYPE_APPLICATION_SUB_PANEL | FIRST_SUB_WINDOW + 2 | Window type: a sub-panel on top of an application window.  These windows are displayed on top their attached window and any {@link #TYPE_APPLICATION_PANEL} panels. |
+| TYPE_APPLICATION_ATTACHED_DIALOG | FIRST_SUB_WINDOW + 3 | Window type: like {@link #TYPE_APPLICATION_PANEL}, but layout of the window happens as that of a top-level window, <em>not</em> as a child of its container. |
+| TYPE_APPLICATION_MEDIA_OVERLAY | FIRST_SUB_WINDOW + 4 | Window type: window for showing overlays on top of media windows. These windows are displayed between TYPE_APPLICATION_MEDIA and the application window.  They should be translucent to be useful.  This is a big ugly hack so: |
+| TYPE_APPLICATION_ABOVE_SUB_PANEL | FIRST_SUB_WINDOW + 5 | Window type: a above sub-panel on top of an application window and it's sub-panel windows. These windows are displayed on top of their attached window and any {@link #TYPE_APPLICATION_SUB_PANEL} panels. |
+| LAST_SUB_WINDOW | 1999 | End of types of sub-windows. |
+| FIRST_SYSTEM_WINDOW | 2000 | Start of system-specific window types.  These are not normally created by applications. |
+| TYPE_STATUS_BAR | FIRST_SYSTEM_WINDOW | Window type: the status bar.  There can be only one status bar window; it is placed at the top of the screen, and all other windows are shifted down so they are below it. In multiuser systems shows on all users' windows. |
+| TYPE_SEARCH_BAR | FIRST_SYSTEM_WINDOW+1 | Window type: the search bar.  There can be only one search bar window; it is placed at the top of the screen. In multiuser systems shows on all users' windows. |
+| ... | ... | ... |
+| TYPE_SYSTEM_ALERT | FIRST_SYSTEM_WINDOW+3 | Window type: system window, such as low power alert. These windows are always on top of application windows. In multiuser systems shows only on the owning user's window. @deprecated for non-system apps. Use {@link #TYPE_APPLICATION_OVERLAY} instead. |
+| ... | ... | ... |
+| TYPE_TOAST | FIRST_SYSTEM_WINDOW+5 | Window type: transient notifications. In multiuser systems shows only on the owning user's window. @deprecated for non-system apps. Use {@link #TYPE_APPLICATION_OVERLAY} instead. |
+| ... | ... | ... |
+| TYPE_APPLICATION_OVERLAY | FIRST_SYSTEM_WINDOW + 38 | Window type: Application overlay windows are displayed above all activity windows (types between {@link #FIRST_APPLICATION_WINDOW} and {@link #LAST_APPLICATION_WINDOW}) but below critical system windows like the status bar or IME. <p> The system may change the position, size, or visibility of these windows at anytime to reduce visual clutter to the user and also manage resources. <p> Requires {@link android.Manifest.permission#SYSTEM_ALERT_WINDOW} permission. <p> The system will adjust the importance of processes with this window type to reduce the chance of the low-memory-killer killing them. <p> In multi-user systems shows only on the owning user's screen. |
+| LAST_SYSTEM_WINDOW | 2999 | End of types of system windows. |
+| INVALID_WINDOW_TYPE | -1 | Used internally when there is no suitable type available. |
+
+???+ tips "常见的Window的type"
+    Activity类型是TYPE_BASE_APPLICATION  
+    DialogFragment是TYPE_APPLICATION  
+    PopupWindow是TYPE_APPLICATION_PANEL
 
 WindowManager提供的功能很简单，常用的方法只有三个：添加、更新、删除View。这三个方法定义在ViewManager中，而WindowManager继承至ViewManager：
 

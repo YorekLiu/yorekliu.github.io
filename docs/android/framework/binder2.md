@@ -1478,12 +1478,12 @@ status_t flatten_binder(const sp<ProcessState>& proc,
             obj.handle = handle;
             obj.cookie = NULL;
         } else {
+			// 所以走这里
             obj.type = BINDER_TYPE_BINDER;
             obj.binder = local->getWeakRefs();
             obj.cookie = local;
         }
     } else {
-        // 所以走这里
         obj.type = BINDER_TYPE_BINDER;
         obj.binder = NULL;
         obj.cookie = NULL;

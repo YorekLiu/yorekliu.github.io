@@ -6,6 +6,8 @@ title: "算法目录"
     剑指Offer(Code Interviews)简写CI  
     LeetCode简写LC  
 
+建议初刷者先跟着《剑指Offer》把算法的整体脉络梳理一遍，掌握各种题目的常用解题 **套路**，做到整体思路的把控，形成自己的知识网络。后面再刷 LeetCode 就事半功倍了。
+
 ## 剑指Offer 第二版
 
 | Question | Comment | topic |
