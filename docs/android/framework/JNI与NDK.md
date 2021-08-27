@@ -195,11 +195,15 @@ java -Djava.library.path=jni com.example.JniTest
 
 ![jni执行结果.png](/assets/images/android/jni执行结果.png)
 
+???+ note "JNI方法的动态注册"  
+    上述演示中使用的JNI函数的注册叫做静态注册，JNI还提供了另外一种动态注册的方式。我们可以在`int JNI_OnLoad(JavaVM *vm, void *reserved)`函数中通过`JniEnv->RegisterNatives`方式动态注册。  
+    JNI_OnLoad方法还有另外一个生命周期方法：JNI_OnUnload
+
 ## 3 NDK的开发流程
 
 NDK开发的基本框架官方已经很方便的支持了，查看[Getting Started with the NDK](https://developer.android.com/studio/projects/add-native-code.html#create-sources)
 
-### 3.1 NDK使用实例
+### 3.1 NDK使用实例(Makefile)
 
 1. 准备一个简单的Android项目
 2. 创建jni文件夹，如下所示：  
@@ -301,6 +305,110 @@ NDK开发的基本框架官方已经很方便的支持了，查看[Getting Start
         public static native String getHelloWorld();
     }
    ```
+
+### 3.2 NDK使用实例(CMake)  
+
+在 Android Studio Arctic Fox 的版本上，先在 Java或者Kotlin文件中写一个native 方法，然后右键这个文件有一个 `Add C++ to Module`。这个功能可以快速的生成CMakeList文件以及其他的配置，后面专注于实现生成的cpp文件即可。
+
+生成的代码涉及到的文件有如下：
+
+**build.gradle**
+
+```gradle
+android {
+    defaultConfig {
+        ...
+        externalNativeBuild {
+            cmake {
+                cppFlags ''
+            }
+        }
+    }
+    ...
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '3.10.2'
+        }
+    }
+}
+```
+
+**CMakeList.txt**
+
+```cmake
+
+# For more information about using CMake with Android Studio, read the
+# documentation: https://d.android.com/studio/projects/add-native-code.html
+
+# Sets the minimum version of CMake required to build the native library.
+
+cmake_minimum_required(VERSION 3.10.2)
+
+# Declares and names the project.
+
+project("database")
+
+# Creates and names a library, sets it as either STATIC
+# or SHARED, and provides the relative paths to its source code.
+# You can define multiple libraries, and CMake builds them for you.
+# Gradle automatically packages shared libraries with your APK.
+
+add_library( # Sets the name of the library.
+             database
+
+             # Sets the library as a shared library.
+             SHARED
+
+             # Provides a relative path to your source file(s).
+             database.cpp )
+
+# Searches for a specified prebuilt library and stores the path as a
+# variable. Because CMake includes system libraries in the search path by
+# default, you only need to specify the name of the public NDK library
+# you want to add. CMake verifies that the library exists before
+# completing its build.
+
+find_library( # Sets the name of the path variable.
+              log-lib
+
+              # Specifies the name of the NDK library that
+              # you want CMake to locate.
+              log )
+
+# Specifies libraries CMake should link to your target library. You
+# can link multiple libraries, such as libraries you define in this
+# build script, prebuilt third-party libraries, or system libraries.
+
+target_link_libraries( # Specifies the target library.
+                       database
+
+                       # Links the target library to the log library
+                       # included in the NDK.
+                       ${log-lib} )
+```
+
+**database.cpp**，系统自动生成的文件，需要我们在里面从JNI开始实现。
+
+```
+// Write C++ code here.
+//
+// Do not forget to dynamically load the C++ library into your application.
+//
+// For instance,
+//
+// In MainActivity.java:
+//    static {
+//       System.loadLibrary("database");
+//    }
+//
+// Or, in MainActivity.kt:
+//    companion object {
+//      init {
+//         System.loadLibrary("database")
+//      }
+//    }
+```
 
 ## 4 JNI的数据类型和类型签名
 JNI的数据包含两大种：基本类型和引用类型，基本类型主要有`jboolean`、`jchar`、`jint`等，它们和Java中的数据类型的对应关系如下：
