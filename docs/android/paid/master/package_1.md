@@ -236,6 +236,9 @@ oatmeal 的原理非常简单，就是根据 ODEX 文件的格式，自己生成
 
 #### Library 压缩
 
+???+ success "效果如何？"
+    经过测试，46M 的so使用 `com.tencent.mm:SevenZip:1.2.20` 打包之后，压缩包大小为44.2M，效果为44.2/46=0.960869565= **4%** 
+
 跟 Dex 压缩一样，Library 优化最有效果的方法也是使用 XZ 或者 7-Zip 压缩。
 
 ![package_1_11](/assets/images/android/master/package_1_11.png)

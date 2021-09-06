@@ -53,7 +53,7 @@ OOP三大基本特性
 
 **Checked Exception**
 
-- 指的是可被控制的异常，或称非运行时异常
+- 指的是可被控制的异常，或称非运行时异常，通常直接继承自Exception
 - 除了Error和RuntimeException及其子类之外，如：`ClassNotFoundException`,`SQLException`, `IOException`等
 - 需要try catch处理或throws声明抛出异常
 

@@ -69,3 +69,123 @@ def addChannel(File manifest) {
 [Gradle从入门到实战 - Groovy基础](https://blog.csdn.net/singwhatiwanna/article/details/76084580)  
 [全面理解Gradle - 执行时序](https://blog.csdn.net/singwhatiwanna/article/details/78797506)  
 [全面理解Gradle - 定义Task](https://blog.csdn.net/singwhatiwanna/article/details/78898113)  
+
+## One More Thing
+
+这里简单说一下AGP里面相关流程，一个plugin项目是如何定义以及如何使用的。我们以[MethodTracer](https://github.com/YorekLiu/MethodTracer)插件为例。
+
+**首先看 Plugin 入口的配置：**
+
+<small>**plugins/src/main/resources/META-INF/gradle-plugins/method-trace.properties**</small>
+
+```
+implementation-class=xyz.yorek.plugin.mt.MethodTracePlugin
+```
+
+这里说明一下：
+
+1. 插件入口配置都应该在 `/src/main/resources/META-INF/gradle-plugins/` 这个特定目录下。
+2. 该目录下的文件名就是 apply plugin 时需要填写的插件名，且该目录下可以有多个文件来对应多个不同功能的插件。
+3. 例子说明该插件入口类是 `xyz.yorek.plugin.mt.MethodTracePlugin`，且 apply plugin 时的名称应该是文件名 `method-trace`
+
+**其次在看插件的实现类是如何注册transform的：**
+
+这里的实现方式一般有两种：
+
+1. 通过系统 API 来注册 transform。下面的例子就注册两个 transform，执行顺序为 BTransform > ATransform > TransformClassedWithDexBuilderForDebug  
+    ```groovy
+    class MethodTracePlugin implements Plugin<Project> {
+
+        @Override
+        void apply(Project project) {
+            ...
+            def android = project.getExtensions().getByType(AppExtension.class)
+            def b = new SimpleBTransform()
+            def a = new SimpleATransform()
+            android.registerTransform(b)
+            android.registerTransform(a)
+        }
+    }
+
+
+    public class SimpleATransform extends Transform {
+
+        public SimpleATransform() {
+        }
+
+        @Override
+        public String getName() {
+            return "SimpleATransform";
+        }
+
+        @Override
+        public Set<QualifiedContent.ContentType> getInputTypes() {
+            return TransformManager.CONTENT_CLASS;
+        }
+
+        @Override
+        public Set<? super QualifiedContent.Scope> getScopes() {
+            return TransformManager.SCOPE_FULL_PROJECT;
+        }
+
+        @Override
+        public boolean isIncremental() {
+            return true;
+        }
+
+        @Override
+        public void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
+            super.transform(transformInvocation);
+            Log.w(getName(), "SimpleATransform registered by android.registerTransform ....... ");
+        }
+    }
+    ```
+
+2. 通过反射获取特定 Task 的 transfrom， 然后用我们的 transform wrap 原始的 transform。  
+    ```groovy
+    class MethodTracePlugin implements Plugin<Project> {
+        @Override
+        void apply(Project project) {
+            project.afterEvaluate {
+                android.applicationVariants.all { variant ->
+                    MethodTraceTransform.inject(project, variant)
+                }
+            }
+        }
+    }
+
+    class MethodTraceTransform extends ProxyTransformWrapper {
+        static void inject(Project project, MethodTraceExtension configuration, def variant, List<Class<BaseClassVisitor>> visitorList) {
+            String hackTransformTaskName = getTransformTaskName("", "", variant.name)
+            String hackTransformTaskNameForWrapper = getTransformTaskName("", "Builder", variant.name)
+
+            project.getGradle().getTaskGraph().addTaskExecutionGraphListener(new TaskExecutionGraphListener() {
+                @Override
+                void graphPopulated(TaskExecutionGraph taskGraph) {
+                    for (Task task : taskGraph.getAllTasks()) {
+                        if ((task.name.equalsIgnoreCase(hackTransformTaskName) || task.name.equalsIgnoreCase(hackTransformTaskNameForWrapper))
+                                && !(((TransformTask) task).getTransform() instanceof MethodTraceTransform)) {
+                            Field field = TransformTask.class.getDeclaredField("transform")
+                            field.setAccessible(true)
+                            field.set(task, new MethodTraceTransform(project, configuration, variant, task.transform, visitorList))
+                            break
+                        }
+                    }
+                }
+            })
+        }
+
+        static private String getTransformTaskName(String customDexTransformName, String wrapperSuffix, String buildTypeSuffix) {
+            if (customDexTransformName != null && customDexTransformName.length() > 0) {
+                return customDexTransformName + "For${buildTypeSuffix}"
+            }
+            return "transformClassesWithDex${wrapperSuffix}For${buildTypeSuffix}"
+        }
+    }
+    ```
+
+**最后看 plugin 传到maven的地址**  
+
+这一步决定了我们应用插件时 classpath 是如何填写的。  
+比如上面的示例 MathodTracer 插件通过 jitpack 进行的打包，打完包之后告诉我地址为 `com.github.YorekLiu.MethodTracer:plugins:1.0.0`。  
+因此，在应用插件时 classpath 就是 `com.github.YorekLiu.MethodTracer:plugins:1.0.0`。
