@@ -7,15 +7,18 @@ title: "Android开发常见命令"
 |  位置  | 说明 |
 | :- | :-- |
 | /sys/devices/system/cpu/ | CPU相关信息目录，可正则匹配"CPU[0-9]+"得知设备有几个核 |
-| /sys/devices/system/cpu/cpu<index\>/cpufreq/scaling_cur_freq | CPU频率 |
+| /sys/devices/system/cpu/<br/>cpu<index\>/cpufreq/scaling_cur_freq | CPU频率 |
 | /proc/<pid\>/stat | 进程相关信息，包括PID、进程名、状态、CPU时间片等 |
-| /proc/<pid\>/task | 目录里面是所有线程的相关信息 |
+| /proc/<pid\>/task/ | 目录里面是所有线程的相关信息 |
 | /proc/<pid\>/task/<tid\>/stat | 线程相关信息，同进程信息 |
 | /proc/<pid\>/limits | 获取进程一些限制，比如文件描述符限制等 |
-| /proc/<pid\>/fd | 目录下面是已打开的文件描述符的链接，可查询到打开的文件路径 |
+| /proc/<pid\>/fd/ | 目录下面是已打开的文件描述符的链接，可查询到打开的文件路径 |
 | /proc/meminfo | 内存相关信息，总内存、没有分配的内存、可用内存、缓存等 |
+| /proc/<pid\>/maps | 当前已经映射了的内存和它们的访问权限 |
+| /proc/<pid\>/smaps | 进程每个mapping的内存消耗，包括RSS PSS等 |
+| /proc/<pid\>/status | 虚拟内存使用大小、FD数、线程数等信息 |
 
-???+ note "/proc/pid/stat信息如下" 
+??? note "/proc/pid/stat信息如下" 
     样本:  
     10966 (terycanary.test) S 699 699 0 0 -1 1077952832 6187 0 0 0 22 2 0 0 20 0 17 0 9087400 5414273024
         24109 18446744073709551615 421814448128 421814472944 549131058960 0 0 0 4612 1 1073775864
