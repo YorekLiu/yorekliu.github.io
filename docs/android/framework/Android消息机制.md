@@ -363,6 +363,9 @@ MessageQueue主要包含两个操作：插入和读取，其对应的方法是`e
 
 ```java
 boolean enqueueMessage(Message msg, long when) {
+    if (msg.target == null) {
+        throw new IllegalArgumentException("Message must have a target.");
+    }
     ...
     synchronized (this) {
         ...
@@ -810,7 +813,127 @@ Handler处理消息的过程如下：
 
 ![Android消息机制简单描述](/assets/images/android/Android消息机制简单描述.png)
 
-## 3 主线程的消息循环
+## 3 SyncBarrier 与 Asynchronous message
+
+SyncBarrier 的作用在于阻拦同步消息的执行，一般与异步消息一起使用，这使得异步消息先于同步消息执行。  
+
+其典型的应用在系统源码 ViewRootImpl 与 Choreographer 中。我们知道在 Android 的绘制流程中，由 ViewRootImpl 向 Choreographer 注册 vsync 信号的回调，当 vsync 信号抵达时，会通知这个回调。  
+这里面的过程就使用到了消息机制里面的同步屏障与异步消息。限于篇幅，这里不贴绘制流程相关的代码了。  
+
+下面直接看看同步屏障与异步消息相关的代码。  
+
+先看看设置同步屏障的代码：
+
+<small>**android/os/MessageQueue.java**</small>
+
+```java
+public int postSyncBarrier() {
+    return postSyncBarrier(SystemClock.uptimeMillis());
+}
+
+private int postSyncBarrier(long when) {
+    // Enqueue a new sync barrier token.
+    // We don't need to wake the queue because the purpose of a barrier is to stall it.
+    synchronized (this) {
+        final int token = mNextBarrierToken++;
+        final Message msg = Message.obtain();
+        msg.markInUse();
+        msg.when = when;
+        msg.arg1 = token;
+
+        Message prev = null;
+        Message p = mMessages;
+        if (when != 0) {
+            while (p != null && p.when <= when) {
+                prev = p;
+                p = p.next;
+            }
+        }
+        if (prev != null) { // invariant: p == prev.next
+            msg.next = p;
+            prev.next = msg;
+        } else {
+            msg.next = p;
+            mMessages = msg;
+        }
+        return token;
+    }
+}
+```
+
+这里先 Message.obtain() 获取了一个没有设置 `target` 字段的 Message，然后将 when 与 token 保存了起来。最后将这个 Message 按照 when 的顺序插入到了 Message 链表中。
+
+**这里注意一下，没有设置 `target` 字段的 Message 就是同步屏障的标志**。且我们可以注意到，MessageQueue 在 `enqueueMessage` 时会检查 Message 的 `target` 字段是否为空。因此，这里创建同步屏障的 Message 后直接插入到了链表中，而不是调用 MessageQueue 的方法。
+
+再看异步消息的设置方法，该方法比较简单，仅仅设置了标志位而已：
+
+<small>**android/os/Message.java**</small>
+
+```java
+public void setAsynchronous(boolean async) {
+    if (async) {
+        flags |= FLAG_ASYNCHRONOUS;
+    } else {
+        flags &= ~FLAG_ASYNCHRONOUS;
+    }
+}
+```
+
+最后就是我们的重点，我们重新分析一下 `MessageQueue.next` 方法，来看看同步消息与异步屏障是如何协作的。
+
+<small>**android/os/MessageQueue.java**</small>
+
+```java
+Message next() {
+    ...
+    for (;;) {
+        ...
+        synchronized (this) {
+            // Try to retrieve the next message.  Return if found.
+            final long now = SystemClock.uptimeMillis();
+            Message prevMsg = null;
+            Message msg = mMessages;
+            if (msg != null && msg.target == null) {
+                // Stalled by a barrier.  Find the next asynchronous message in the queue.
+                do {
+                    prevMsg = msg;
+                    msg = msg.next;
+                } while (msg != null && !msg.isAsynchronous());
+            }
+            if (msg != null) {
+                if (now < msg.when) {
+                    // Next message is not ready.  Set a timeout to wake up when it is ready.
+                    nextPollTimeoutMillis = (int) Math.min(msg.when - now, Integer.MAX_VALUE);
+                } else {
+                    // Got a message.
+                    mBlocked = false;
+                    if (prevMsg != null) {
+                        prevMsg.next = msg.next;
+                    } else {
+                        mMessages = msg.next;
+                    }
+                    msg.next = null;
+                    if (DEBUG) Log.v(TAG, "Returning message: " + msg);
+                    msg.markInUse();
+                    return msg;
+                }
+            } else {
+                // No more messages.
+                nextPollTimeoutMillis = -1;
+            }
+        }
+    ...
+}
+```
+
+在取 Message 的时候，会先判断 `msg != null && msg.target == null`，前面我们说到了这就是同步屏障消息的特点。 因此，当遇到同步屏障的时候，会尝试在 Message 链表中找到异步消息。  
+这里分两种情况：   
+1. 若找到了异步消息，则后面就会返回这个消息；  
+2. 若没有找到，则执行 IdleHandler，并等待下次唤醒。
+
+因此，经过分析可得，当设置了同步屏障之后，消息队列里面的位于屏障之后的同步消息就不会执行了。直到移除同步屏障。
+
+## 4 主线程的消息循环
 
 Android的主线程就是ActivityThread，主线程的入口方法和Java程序一样也是`main`。我们看一下这个方法`ActivityThread#main`：
 
@@ -955,7 +1078,7 @@ private class H extends Handler {
 
 关于应用于AMS之间的通信，可以查看另外一篇文章[四大组件启动过程](/android/framework/%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/)
 
-## 4 经常用到的Handler
+## 5 经常用到的Handler
 
 ??? question "我们可以在应用中可以使用`View.post(Runnable)`方法。那么处理这个Message的Handler是谁呢？"
     是ViewRootImpl的`ViewRootHandler`。

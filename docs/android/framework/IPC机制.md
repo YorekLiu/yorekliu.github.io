@@ -101,6 +101,9 @@ Parcelable主要用在内存序列化上，但是通过Parcelable可以将对象
 
 ### 3.3 Binder
 
+???+ quote "Binder相较于其他IPC方式的优势"  
+    [Binder简介](/android/paid/zsxq/week11-binder/)
+
 直观来说，Binder是Android中的一个类，它实现了`IBinder`接口。  
 从IPC角度来说，Binder是Android中的一种跨进程通信方式。Binder还可以理解为一种虚拟的物理设备，它的设备驱动是`/dev/binder`，该通信方式在Linux中没有；  
 从Framework角度来说，Binder是ServiceManager连接各种Manager（ActivityManager、WindowManager等等）和相应的ManagerService的桥梁；  

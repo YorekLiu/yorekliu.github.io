@@ -388,7 +388,7 @@ sp<IServiceManager> IServiceManager::asInterface(const sp<IBinder>& obj)
 
 ## 5 BpServiceManager
 
-啥是佩奇(Bp)？？这里的p就是proxy的意思，Bp就是BinderProxy，BpServiceManager，就是ServiceManager的Binder代理。  
+啥是Bp？？这里的p就是proxy的意思，Bp就是BinderProxy，BpServiceManager，就是ServiceManager的Binder代理。  
 BpServiceManager就在IServiceManager.cpp中  
 
 ```c
