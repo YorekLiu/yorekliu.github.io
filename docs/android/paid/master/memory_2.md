@@ -5,7 +5,7 @@ title: "04 | 内存优化（下）：内存优化这件事，应该从哪里着�
 !!! note "极客时间——[Android开发高手课](https://time.geekbang.org/column/intro/142)"
     本博客上的这些内容全是CV自[Android开发高手课](https://time.geekbang.org/column/intro/142)的原始内容，外加Sample的个人练习小结。若CV这个行动让您感到不适，请移步即可。  
 
-**内存优化探讨**
+### 内存优化探讨
 
 那要进行内存优化，应该从哪里着手呢？我通常会从设备分级、Bitmap 优化和内存泄漏这三个方面入手
 
@@ -34,18 +34,79 @@ title: "04 | 内存优化（下）：内存优化这件事，应该从哪里着�
     讲完设备分级和 Bitmap 优化，我们发现架构和监控需要两手抓，一个好的架构可以减少甚至避免我们犯错，而一个好的监控可以帮助我们及时发现问题。
 
 3. 内存泄漏  
-    - Java内存泄漏
-    - OOM监控
-    - Native内存监控
-    - GC监控
+    - Java内存泄漏  
+      hprof文件优化，裁剪大部分图片对应的 byte 数组减少文件大小：**比如一个 100MB 的文件裁剪后一般只剩下 30MB 左右，使用 7zip 压缩最后小于 10MB，增加了文件上传的成功率。**
+    - OOM监控  
+      美团有一个 Android 内存泄露自动化链路分析组件[Probe](https://static001.geekbang.org/con/19/pdf/593bc30c21689.pdf)，它在发生 OOM 的时候生成 Hprof 内存快照，然后通过单独进程对这个文件做进一步的分析。不过在线上使用这个工具风险还是比较大，在崩溃的时候生成内存快照 **有可能会导致二次崩溃**，而且部分手机生成 Hprof 快照可能会耗时几分钟，这对用户造成的体验影响会比较大。另外，部分 OOM 是因为虚拟内存不足导致，这块需要具体问题具体分析。
+    - Native内存监控  
+      [微信 Android 终端内存优化实践](https://mp.weixin.qq.com/s/KtGfi5th-4YHOZsEmTOsjg?)  
+      > matrix中已经开源了采用xhook hook内存分配函数，从而达到Native内存监控目的的组件，代码位于[matrix/matrix-android/matrix-hooks/src/main/java/com/tencent/matrix/hook/memory](https://github.com/Tencent/matrix/tree/master/matrix/matrix-android/matrix-hooks/src/main/java/com/tencent/matrix/hook/memory)  
+        - **针对无法重编 so 的情况**，使用了 PLT Hook 拦截库的内存分配函数，其中 PLT Hook 是 Native Hook 的一种方案，后面我们还会讲到。然后重定向到我们自己的实现后记录分配的内存地址、大小、来源 so 库路径等信息，定期扫描分配与释放是否配对，对于不配对的分配输出我们记录的信息。  
+        - **针对可重编的 so 情况**，通过 GCC 的“-finstrument-functions”参数给所有函数插桩，桩中模拟调用栈入栈出栈操作；通过 ld 的“–wrap”参数拦截内存分配和释放函数，重定向到我们自己的实现后记录分配的内存地址、大小、来源 so 以及插桩记录的调用栈此刻的内容，定期扫描分配与释放是否配对，对于不配对的分配输出我们记录的信息。
 
 总的来说，内存优化应该看以下方面：
 
 - 设备分级：缓存管理、进程模型、安装包大小
 - Bitmap优化，Native内存，统一图片库、统一监控  
-- 内存泄漏：Java内存泄漏、OOM监控、Native内存监控、GC监控
+- 内存泄漏：Java内存泄漏、OOM监控、Native内存监控
 
-## 课后作业
+### 内存监控
+
+1. 采集方式  
+   用户在前台的时候，可以每 5 分钟采集一次 PSS、Java 堆、图片总内存。我建议通过采样只统计部分用户，需要注意的是要按照用户抽样，而不是按次抽样。简单来说一个用户如果命中采集，那么在一天内都要持续采集数据。
+
+2. 计算指标
+
+    **内存异常率**：可以反映内存占用的异常情况，如果出现新的内存使用不当或内存泄漏的场景，这个指标会有所上涨。其中 PSS 的值可以通过 Debug.MemoryInfo 拿到。
+
+    ```
+    内存 UV 异常率 = PSS 超过 400MB 的 UV / 采集 UV
+    ```
+    
+    **触顶率**：可以反映 Java 内存的使用情况，如果超过 85% 最大堆限制，GC 会变得更加频繁，容易造成 OOM 和卡顿。
+    
+    ```
+    内存 UV 触顶率 = Java 堆占用超过最大堆限制的 85% 的 UV / 采集 UV
+    ```
+    
+    其中是否触顶可以通过下面的方法计算得到。
+    
+    ```java
+    long javaMax = runtime.maxMemory();
+    long javaTotal = runtime.totalMemory();
+    long javaUsed = javaTotal - runtime.freeMemory();
+    // Java 内存使用超过最大限制的 85%
+    float proportion = (float) javaUsed / javaMax;
+    ```
+
+3. GC 监控
+
+    在实验室或者内部试用环境，我们也可以通过 Debug.startAllocCounting 来监控 Java 内存分配和 GC 的情况，需要注意    的是这个选项对性能有一定的影响，虽然目前还可以使用，但已经被 Android 标记为 deprecated。
+    
+    通过监控，我们可以拿到内存分配的次数和大小，以及 GC 发起次数等信息。
+    
+    ```java
+    long allocCount = Debug.getGlobalAllocCount();
+    long allocSize = Debug.getGlobalAllocSize();
+    long gcCount = Debug.getGlobalGcInvocationCount();
+    ```
+    
+    上面的这些信息似乎不太容易定位问题，在 Android 6.0 之后系统可以拿到更加精准的 GC 信息。
+    
+    ```java
+    // 运行的GC次数
+    Debug.getRuntimeStat("art.gc.gc-count");
+    // GC使用的总耗时，单位是毫秒
+    Debug.getRuntimeStat("art.gc.gc-time");
+    // 阻塞式GC的次数
+    Debug.getRuntimeStat("art.gc.blocking-gc-count");
+    // 阻塞式GC的总耗时
+    Debug.getRuntimeStat("art.gc.blocking-gc-time");
+    ```
+    
+    需要特别注意阻塞式 GC 的次数和耗时，因为它会暂停应用线程，可能导致应用发生卡顿。我们也可以更加细粒度地分应用场景统计，例如启动、进入朋友圈、进入聊天页面等关键场景。
+
+### 课后作业
 
 使用HAHA库快速判断内存中是否存在重复的图片，且将这些重复图片的PNG、堆栈等信息输出。
 
