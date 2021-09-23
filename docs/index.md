@@ -5,14 +5,8 @@ hide:
   - toc        # Hide table of contents
 ---
 
-# Yorek's Blog
-
-Tips:
-
-1. 切换最上方Tab进行浏览
-
-
-Good artists copy; Great artists steal.
+???+ quote ""
+    *Good artists copy; Great artists steal.*
 
 ## 上新
 

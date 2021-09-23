@@ -2,16 +2,23 @@
 title: "05 | 卡顿优化（上）：你要掌握的卡顿分析方法"
 ---
 
-!!! note "极客时间——[Android开发高手课](https://time.geekbang.org/column/intro/142)"
-    本博客上的这些内容全是CV自[Android开发高手课](https://time.geekbang.org/column/intro/142)的原始内容，外加Sample的个人练习小结。若CV这个行动让您感到不适，请移步即可。  
+!!! tip "极客时间——[Android开发高手课](https://time.geekbang.org/column/intro/142)"
+    本栏目内容源于[Android开发高手课](https://time.geekbang.org/column/intro/142)，外加Sample的个人练习小结。本栏目内的内容将会持续混合着博主个人的收集到的知识点。若本栏目内容令人不适，请移步原始课程。  
 
 ### 基础知识
 
 在具体讲卡顿工具前，你需要了解一些基础知识，它们主要都和 CPU 相关。造成卡顿的原因可能有千百种，不过最终都会反映到 **CPU 时间** 上。我们可以把 CPU 时间分为两种：用户时间和系统时间。用户时间就是执行用户态应用程序代码所消耗的时间；系统时间就是执行内核态系统调用所消耗的时间，包括 I/O、锁、中断以及其他系统调用的时间。
 
 1. CPU性能  
-    也因此在开发过程中，我们需要根据设备 CPU 性能来“看菜下饭”，例如线程池使用线程数根据 CPU 的核心数，一些高级的 AI 功能只在主频比较高或者带有 NPU 的设备开启。
+    也因此在开发过程中，我们需要根据设备 CPU 性能来“看菜下饭”，例如线程池使用线程数根据 CPU 的核心数，一些高级的 AI 功能只在主频比较高或者带有 NPU 的设备开启。  
+    可以通过读取下面的文件获取CPU核心数以及CPU频率：  
+    ```java
+    // 获取 CPU 核心数
+    cat /sys/devices/system/cpu/possible  
 
+    // 获取某个 CPU 的频率
+    cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq
+    ```
 2. 卡顿问题分析指标  
     出现卡顿问题后，首先我们应该查看 **CPU 的使用率**。怎么查呢？我们可以通过/proc/stat得到整个系统的 CPU 使用情况，通过/proc/[pid]/stat可以得到某个进程的 CPU 使用情况。比较重要的字段有：  
     ```text
@@ -69,7 +76,8 @@ Traceview利用 Android Runtime 函数调用的 event 事件，将函数运行�
 
 由此可见，Traceview 属于 instrument 类型，它可以用来查看整个过程有哪些函数调用，但是工具本身带来的性能开销过大，有时无法反映真实的情况。比如一个函数本身的耗时是 1 秒，开启 Traceview 后可能会变成 5 秒，而且这些函数的耗时变化并不是成比例放大。
 
-在 Android 5.0 之后，新增了startMethodTracingSampling方法，可以使用基于样本的方式进行分析，以减少分析对运行时的性能影响。新增了 sample 类型后，就需要我们在开销和信息丰富度之间做好权衡。
+使用`Debug.startMethodTracing()`以及`Debug.stopMethodTracing()`可以在程序中动态开启TraceView。  
+在 Android 5.0 之后，新增了`Debug.startMethodTracingSampling`方法，可以使用基于样本的方式进行分析，以减少分析对运行时的性能影响。新增了 sample 类型后，就需要我们在开销和信息丰富度之间做好权衡。
 
 #### Nanoscope
 

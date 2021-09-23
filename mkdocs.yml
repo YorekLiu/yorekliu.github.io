@@ -125,6 +125,7 @@ nav:
       - android/3rd-library/permissiondispatcher.md
       - android/other/constraintlayout.md
       - android/other/dagger2.md
+      - android/3rd-library/hotfix.md
     - framework系列: 
       - android/framework/Android四大组件(1).md
       - android/framework/Android四大组件(2).md

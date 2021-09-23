@@ -2,8 +2,8 @@
 title: "03 | 内存优化（上）：4GB内存时代，再谈内存优化"
 ---
 
-!!! note "极客时间——[Android开发高手课](https://time.geekbang.org/column/intro/142)"
-    本博客上的这些内容全是CV自[Android开发高手课](https://time.geekbang.org/column/intro/142)的原始内容，外加Sample的个人练习小结。若CV这个行动让您感到不适，请移步即可。  
+!!! tip "极客时间——[Android开发高手课](https://time.geekbang.org/column/intro/142)"
+    本栏目内容源于[Android开发高手课](https://time.geekbang.org/column/intro/142)，外加Sample的个人练习小结。本栏目内的内容将会持续混合着博主个人的收集到的知识点。若本栏目内容令人不适，请移步原始课程。  
 
 在写今天这篇文章前，我又翻了翻三年前我在 WeMobileDev 公众号写过的[《Android 内存优化杂谈》](https://mp.weixin.qq.com/s/Z7oMv0IgKWNkhLon_hFakg?)，今天再看，对里面的一句话更有感触：“我们并不能将内存优化中用到的所有技巧都一一说明，而且随着 Android 版本的更替，可能很多方法都会变的过时”。
 

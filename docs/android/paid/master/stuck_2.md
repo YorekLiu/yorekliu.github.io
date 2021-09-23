@@ -2,8 +2,8 @@
 title: "06 | 卡顿优化（下）：如何监控应用卡顿？"
 ---
 
-!!! note "极客时间——[Android开发高手课](https://time.geekbang.org/column/intro/142)"
-    本博客上的这些内容全是CV自[Android开发高手课](https://time.geekbang.org/column/intro/142)的原始内容，外加Sample的个人练习小结。若CV这个行动让您感到不适，请移步即可。  
+!!! tip "极客时间——[Android开发高手课](https://time.geekbang.org/column/intro/142)"
+    本栏目内容源于[Android开发高手课](https://time.geekbang.org/column/intro/142)，外加Sample的个人练习小结。本栏目内的内容将会持续混合着博主个人的收集到的知识点。若本栏目内容令人不适，请移步原始课程。  
 
 ### 卡顿监控
 
@@ -13,7 +13,7 @@ title: "06 | 卡顿优化（下）：如何监控应用卡顿？"
 
 #### 1. 消息队列
 
-我设计的第一套监控卡顿的方案是**基于消息队列实现**，通过替换 Looper 的 Printer 实现。在 2013 年的时候，我写过一个名为 WxPerformanceTool 的性能监控工具，其中耗时监控就使用了这个方法。后面这个工具在腾讯公共组件做了内部开源，还获得了 2013 年的年度十佳组件。
+我设计的第一套监控卡顿的方案是 **基于消息队列实现**，通过替换 Looper 的 Printer 实现。在 2013 年的时候，我写过一个名为 WxPerformanceTool 的性能监控工具，其中耗时监控就使用了这个方法。后面这个工具在腾讯公共组件做了内部开源，还获得了 2013 年的年度十佳组件。
 
 ![logger print](/assets/images/android/master/logger_printer.png)
 
@@ -24,6 +24,11 @@ title: "06 | 卡顿优化（下）：如何监控应用卡顿？"
 ![stuck_monitor_mq](/assets/images/android/master/stuck_monitor_mq.png)
 
 这个方案也存在一定的误差，那就是发送空消息的间隔时间。但这个间隔时间也不能太小，因为监控线程和主线程处理空消息都会带来一些性能损耗，但基本影响不大。
+
+???+ tip "两个方案"  
+    这里是两种不同的方案。  
+    1. 第一个方案利用Looper里面的printer在执行Message前后会通过这个对象打印出执行日志的机制，来获取一个Message执行的时长。从 Android 10 开始，Looper 里面提供了一个 sObserver 的静态变量可以用来观测 Message 的执行，这就可以避免字符串拼接带来的损耗了。  
+    2. 第二个方法则是间隔一段时间来判断Message有没有被消费掉，从而得知正在执行的Message是否有卡顿的现象。
 
 #### 2. 插桩
 

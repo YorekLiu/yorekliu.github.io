@@ -2,8 +2,8 @@
 title: "14 | 存储优化（下）：数据库SQLite的使用和优化"
 ---
 
-!!! note "极客时间——[Android开发高手课](https://time.geekbang.org/column/intro/142)"
-    本博客上的这些内容全是CV自[Android开发高手课](https://time.geekbang.org/column/intro/142)的原始内容，外加Sample的个人练习小结。若CV这个行动让您感到不适，请移步即可。  
+!!! tip "极客时间——[Android开发高手课](https://time.geekbang.org/column/intro/142)"
+    本栏目内容源于[Android开发高手课](https://time.geekbang.org/column/intro/142)，外加Sample的个人练习小结。本栏目内的内容将会持续混合着博主个人的收集到的知识点。若本栏目内容令人不适，请移步原始课程。  
 
 我们先来复习一下前面讲到的存储方法的使用场景：少量的 Key Value 数据可以直接使用 SharedPreferences，稍微复杂一些的数据类型也可以通过序列化成 JSON 或者 Protocol Buffers 保存，并且在开发中获取或者修改数据也很简单。
 

@@ -2,8 +2,8 @@
 title: "15 | 网络优化（上）：移动开发工程师必备的网络优化知识"
 ---
 
-!!! note "极客时间——[Android开发高手课](https://time.geekbang.org/column/intro/142)"
-    本博客上的这些内容全是CV自[Android开发高手课](https://time.geekbang.org/column/intro/142)的原始内容，外加Sample的个人练习小结。若CV这个行动让您感到不适，请移步即可。  
+!!! tip "极客时间——[Android开发高手课](https://time.geekbang.org/column/intro/142)"
+    本栏目内容源于[Android开发高手课](https://time.geekbang.org/column/intro/142)，外加Sample的个人练习小结。本栏目内的内容将会持续混合着博主个人的收集到的知识点。若本栏目内容令人不适，请移步原始课程。  
 
 专栏前面我们已经学习过文件 I/O 和存储优化，相信你已经掌握了文件 I/O 和存储的性能分析以及优化思路。今天我们就再接再厉，继续学习系统中另外一种常见的 I/O——网络 I/O。
 

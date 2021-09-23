@@ -7,7 +7,9 @@ title: "Android开发常见命令"
 |  位置  | 说明 |
 | :- | :-- |
 | /sys/devices/system/cpu/ | CPU相关信息目录，可正则匹配"CPU[0-9]+"得知设备有几个核 |
-| /sys/devices/system/cpu/<br/>cpu<index\>/cpufreq/scaling_cur_freq | CPU频率 |
+| /sys/devices/system/cpu/possible | CPU核心数。输出类似于“0-7”，也就是8个核 |
+| /sys/devices/system/cpu/<br/>cpu<index\>/cpufreq/scaling_cur_freq | CPU通过软件设置的频率，一般与cpuinfo_cur_freq一致 |
+| /sys/devices/system/cpu/<br/>cpu<index\>/cpufreq/cpuinfo_max_freq | CPU最大频率，关于cpufreq目录下面的文件，可以参考[Linux动态频率调节系统CPUFreq之一：概述](https://blog.csdn.net/gjy211/article/details/52223181) |
 | /proc/<pid\>/stat | 进程相关信息，包括PID、进程名、状态、CPU时间片等 |
 | /proc/<pid\>/task/ | 目录里面是所有线程的相关信息 |
 | /proc/<pid\>/task/<tid\>/stat | 线程相关信息，同进程信息 |

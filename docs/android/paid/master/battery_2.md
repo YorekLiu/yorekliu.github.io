@@ -2,8 +2,8 @@
 title: "19 | 耗电优化（下）：耗电的优化方法与线上监控"
 ---
 
-!!! note "极客时间——[Android开发高手课](https://time.geekbang.org/column/intro/142)"
-    本博客上的这些内容全是CV自[Android开发高手课](https://time.geekbang.org/column/intro/142)的原始内容，外加Sample的个人练习小结。若CV这个行动让您感到不适，请移步即可。  
+!!! tip "极客时间——[Android开发高手课](https://time.geekbang.org/column/intro/142)"
+    本栏目内容源于[Android开发高手课](https://time.geekbang.org/column/intro/142)，外加Sample的个人练习小结。本栏目内的内容将会持续混合着博主个人的收集到的知识点。若本栏目内容令人不适，请移步原始课程。  
 
 相比启动、卡顿、内存和网络的优化来说，可能大多数应用对耗电优化的关注不是太多。当然并不是我们不想做耗电优化，更多时候是感觉有些无从下手。
 
