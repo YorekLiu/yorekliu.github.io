@@ -233,6 +233,15 @@ Native Hook 技术的确非常复杂，即使我们不懂得它的内部原理�
 - [how-debuggers-work-part-2-breakpoints](https://eli.thegreenplace.net/2011/01/27/how-debuggers-work-part-2-breakpoints)
 - [how-debuggers-work-part-3-debugging-information](https://eli.thegreenplace.net/2011/02/07/how-debuggers-work-part-3-debugging-information)
 
+???+ tip "Name Mangling"  
+    C++函数名会有一个Name Mangling的机制。  
+    `readelf -s xxx.so` 可以查看so里面的函数名，对于C++是mangling的。
+    MacOS 内置了 `c++filt` 可以进行 demangle：  
+    ```shell
+    $ c++filt -n _ZNK3MapI10StringName3RefI8GDScriptE10ComparatorIS0_E16DefaultAllocatorE3hasERKS0_
+    Map<StringName, Ref<GDScript>, Comparator<StringName>, DefaultAllocator>::has(StringName const&) const
+    ```
+
 ## readelf指令
 
 **显示节头信息：readelf -S**

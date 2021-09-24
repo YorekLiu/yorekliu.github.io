@@ -58,7 +58,7 @@ python systrace.py --list-categories
 ```java
 class Trace {
   public static void i(String tag) {
-    Trace.beginSection(name);
+    Trace.beginSection(tag);
   }
 
 

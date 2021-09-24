@@ -135,7 +135,7 @@ Java 实现的方案看起来非常不错，也帮助我们发现了卡顿的原
 
 那有什么方法既可以拿到 ANR 日志，整个过程又不会影响用户的体验呢？
 
-再回想一下，在[崩溃分析](/android/paid/master/crash_1/)的时候我们就讲过一种获得所有线程堆栈的方法。它通过下面几个步骤实现。
+再回想一下，在[崩溃分析](/android/paid/master/crash_2/)的时候我们就讲过一种获得所有线程堆栈的方法。它通过下面几个步骤实现。
 
 - 通过libart.so、dlsym调用[ThreadList::ForEach](http://androidxref.com/9.0.0_r3/xref/art/runtime/thread_list.cc#1501)方法，拿到所有的 Native 线程对象。
 - 遍历线程对象列表，调用[Thread::DumpState](http://androidxref.com/9.0.0_r3/xref/art/runtime/thread.cc#1615)方法。

@@ -18,7 +18,8 @@ title: "Android开发常见命令"
 | /proc/meminfo | 内存相关信息，总内存、没有分配的内存、可用内存、缓存等 |
 | /proc/<pid\>/maps | 当前已经映射了的内存和它们的访问权限 |
 | /proc/<pid\>/smaps | 进程每个mapping的内存消耗，包括RSS PSS等 |
-| /proc/<pid\>/status | 虚拟内存使用大小、FD数、线程数等信息 |
+| /proc/<pid\>/status | 虚拟内存使用大小、FD数、线程数、上下文切换次数等信息 |
+| /proc/filesystems | 系统识别的文件系统列表 |
 
 ??? note "/proc/pid/stat信息如下" 
     样本:  
