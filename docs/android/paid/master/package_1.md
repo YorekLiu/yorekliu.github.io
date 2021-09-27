@@ -89,7 +89,7 @@ React Native 5MB、Flutter 4MB、浏览器内核 20MB、Chromium 网络库 2MB�
 -keep public class * extends android.view.View
 ```
 
-事实上，我们完全可以把**非 exported** 的四大组件以及 View 混淆，但是需要完成下面几个工作：
+事实上，我们完全可以把 **非 exported** 的四大组件以及 View 混淆，但是需要完成下面几个工作：
 
 - **XML 替换**。在代码混淆之后，需要同时修改 AndroidManifest 以及资源 XML 中引用的名称。
 - **代码替换**。需要遍历其他已经混淆好的代码，将变量或者方法体中定义的字符串也同时修改。**需要注意的是，代码中不能出现经过运算得到的类名，这种情况会导致替换失败**。  
