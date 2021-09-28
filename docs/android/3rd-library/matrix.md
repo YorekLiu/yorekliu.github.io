@@ -2,6 +2,10 @@
 title: "微信APM Matrix解析"
 ---
 
+!!! tip "Matrix"
+    Matrix系列文章在赏析全部源码完毕之后才开始写，写得也比较慢，在写的过程中Matrix版本号由0.6.5版本变成了现在的2.0.0版本。  
+    此版本新增了一些模块，也修复了之前的一些问题。但原来写好的文章全部更新一下比较费时，因此新更新的文章内容若是2.0.0版本新增的，会加上对应的版本号以示区别。
+
 前段时间终于看完了张绍文老师的《Android开发高手课》，在里面受益良多。而在文章中也一直提到Matrix这个项目，所以最近有空研读Matrix的源码，然后对比了我厂对应模块的APM实现，发现大致逻辑都是一样的。所以Matrix里面的代码，经过少数二次加工就可以上线了，不用重复造轮子，含金量还是极大的。
 
 刚下载完Matrix Android部分的代码，module比较多。一时不知道如何下手，博主这里按照sample中的顺序分为下面几个部分，每个部分的实现可能会涉及到多个module：
@@ -11,10 +15,16 @@ title: "微信APM Matrix解析"
     帧率监控模块
     - **EvilMethodTracer**  
     慢方法监控模块
-    - **AnrTracer**  
-    ANR监控模块
+    - **LooperAnrTracer**  
+    依赖于消息机制的ANR监控模块
+    - **SignalAnrTracer**  
+    依赖于SIGQUIT信号的ANR监控模块
     - **StartUpTracer**  
-    启动耗时  
+    启动耗时模块
+    - **ThreadPriorityTracer**  
+    检测主线程的优先级的改变，以及设置的timerslack_ns超过50000的情况  
+    - **IdleHandlerLagTracer**  
+    检查IdleHandler的执行时间，若超过2000ms则上报
 
 - **I/O Canary**  
     检测文件I/O的4类问题，包括：文件I/O监控（主线程I/O、重复读、buffer过小）和Closeable Leak监控
@@ -36,7 +46,7 @@ title: "微信APM Matrix解析"
 !!! tip "Wiki"  
     [Matrix - TraceCanary](https://github.com/Tencent/matrix/wiki/Matrix-Android-TraceCanary)
 
-TraceCanary分为帧率监控、慢方法监控、ANR监控以及启动耗时这4个功能。  
+TraceCanary分为帧率监控、慢方法监控、ANR监控、启动耗时、主线程优先级检测、IdleHandler耗时检测这6个功能。  
 那么，为什么这些功能会统一在Trace模块下呢，这是因为分析卡顿、分析慢方法以及ANR具体发生在哪个位置，耗时如何，确实是需要插桩去trace每个函数的调用的。
 
 如上面的Wiki所述，插桩方案确实比MessageQueue方案、Choreographer方案更优，**可以准确的获取各个函数的执行耗时，还可以准确的获取当前执行的堆栈信息**。  
@@ -56,11 +66,30 @@ TraceCanary分为帧率监控、慢方法监控、ANR监控以及启动耗时这
 
 通过监控主线程中每个Message执行的起止时间，如果时间差超过一定的阈值，就认为发生了慢函数调用。此时可以通过`AppMethodBeat`中的数据，分析出这段时间内函数执行的堆栈信息，以及每个函数执行的耗时。这样，慢函数无所遁形了。
 
-### 3. ANR监控AnrTracer
+### 3. ANR监控LooperAnrTracer
 
 ANR的监控更加简单了，在主线程中一般认为超过5s就会发生ANR。所以在Message开始执行时，抛出一个5s后爆炸的炸弹，在Message执行完毕之后remove。若这颗炸弹最终还是爆炸了，那就说明发生了ANR。此时还是通过分析`AppMethodBeat`中的数据得到函数执行的堆栈以及耗时。
 
-### 4. 启动耗时StartUpTracer
+在2.0.0版本还新增了Message执行耗时超过2s的监控，实现原理和ANR一样。
+
+### 4. ANR监控SignalAnrTracer
+
+*2.0.0版本添加*
+
+Android在发生ANR时会发送出SIGQUIT信号，我们可以利用Linux的信号捕捉机制捕捉SIGQUIT信号。  
+
+信号捕捉机制在实现上可以分为三步：
+
+1. 通过`int sigaltstack(const stack_t* __new_signal_stack, stack_t* __old_signal_stack);`方法设置额外的栈空间。当遇到栈溢出时，就会使用这段栈空间，避免了signal handler无法正常运行
+2. 通过`int sigaction(int __signal, const struct sigaction* __new_action, struct sigaction* __old_action);`为对应的信号设置信号捕获函数，这样当信号发生时就会调用到我们设定的函数
+3. 使用`int pthread_sigmask(int __how, const sigset_t* __new_set, sigset_t* __old_set);` SIG_UNBLOCK SIGQUIT信号，这样signal handler才能处理SIGQUIT信号
+
+当捕获到SIGQUIT信号时，我们使用爱奇艺的xHook框架根据版本号hook ANR日志的打开以及写入，将写入原文件的内容复制一份到我们自己的日志文件，并调用原函数写入原ANR日志文件。最后调用原始的信号处理函数，完成整个流程的闭环。
+
+BTW，信号捕获机制在捕获Native代码的崩溃上也有使用，详见Bugly出品的[Android 平台 Native 代码的崩溃捕获机制及实现](https://mp.weixin.qq.com/s/g-WzYF3wWAljok1XjPoo7w?)。
+
+
+### 5. 启动耗时StartUpTracer
 
 启动耗时我们先要hook一下`ActivityThread.mH.mCallback`，获取`handleMessage`执行的Message，然后在`AppMethodBeat`的帮助下也很简单。
 
@@ -83,6 +112,26 @@ ANR的监控更加简单了，在主线程中一般认为超过5s就会发生ANR
 源码分析请移步：[Matrix-TraceCanary解析](/android/3rd-library/matrix-trace)
 
 > 通过`UIThreadMonitor`还可以写出更多好玩的东西，比如后台渲染的检测，获取引发后台渲染的堆栈信息还是可以通过`AppMethodBeat`来实行。
+
+### 6. ThreadPriorityTracer
+
+*2.0.0版本添加*
+
+监控主线程的优先级更改以及timerslack_ns的更改。前者有变动就进行上报，后者超过了默认值50000就进行上报。 
+
+原理就是通过xhook hook所有so的`setpriority`函数和`prctl`函数，在里面进行判断。
+
+### 7. IdleHandlerLagTracer
+
+*2.0.0版本添加*
+
+顾名思义，此Tracer就是监控IdleHandler任务执行耗时卡顿的情况。  
+
+具体实现如下：
+
+1. 通过反射获取 `MessageQueue.mIdleHandlers` 这个List，并这个List替换成自己的List实现。
+2. 当List的add、remove方法调用时，将传入的IdleHandler包装为自己的IdleHandler传入。
+3. 当IdleHandler执行的时候，调用原始IdleHandler的方法进行执行，执行前后postDelay、remove一个Runnable。这样当IdleHandler执行超时时，就会触发Runnable，在这里面可以进行分析上报。
 
 ## 2. I/O Canary
 
