@@ -1,0 +1,875 @@
+<!doctype html><html lang=zh class=no-js> <head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="An Android Developer."><meta name=author content="Yorek Liu"><link href=https://blog.yorek.xyz/flutter/flutter_first_project_2/ rel=canonical><link rel=icon href=../../assets/images/favicon.webp><meta name=generator content="mkdocs-1.1.2, mkdocs-material-7.1.0"><title>年轻人的第一个Flutter程序(2) - Yorek's</title><link rel=stylesheet href=../../assets/stylesheets/main.33e2939f.min.css><link rel=stylesheet href=../../assets/stylesheets/palette.ef6f36e2.min.css><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Noto+Sans+SC:300,400,400i,700%7CJetBrains+Mono&display=fallback"><style>:root{--md-text-font-family:"Noto Sans SC";--md-code-font-family:"JetBrains Mono"}</style><link rel=manifest href=../../manifest.webmanifest crossorigin=use-credentials><script>window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","UA-155096376-1","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){var e;this.value&&(e=document.location.pathname,ga("send","pageview",e+"?q="+this.value))}),"undefined"!=typeof location$&&location$.subscribe(function(e){ga("send","pageview",e.pathname)})})</script><script async src=https://www.google-analytics.com/analytics.js></script></head> <body dir=ltr data-md-color-scheme=default data-md-color-primary=white data-md-color-accent=blue> <script>function __prefix(e){return new URL("../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script> <script>var palette=__get("__palette");if(null!==palette&&"object"==typeof palette.color)for(var key in palette.color)document.body.setAttribute("data-md-color-"+key,palette.color[key])</script> <input class=md-toggle data-md-toggle=drawer type=checkbox id=__drawer autocomplete=off> <input class=md-toggle data-md-toggle=search type=checkbox id=__search autocomplete=off> <label class=md-overlay for=__drawer></label> <div data-md-component=skip> <a href=#1 class=md-skip> 跳转至 </a> </div> <div data-md-component=announce> </div> <header class=md-header data-md-component=header> <nav class="md-header__inner md-grid" aria-label=Header> <a href=../.. title="Yorek's" class="md-header__button md-logo" aria-label="Yorek's" data-md-component=logo> <img src=../../assets/images/favicon.webp alt=logo> </a> <label class="md-header__button md-icon" for=__drawer> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg> </label> <div class=md-header__title data-md-component=header-title> <div class=md-header__ellipsis> <div class=md-header__topic> <span class=md-ellipsis> Yorek's </span> </div> <div class=md-header__topic data-md-component=header-topic> <span class=md-ellipsis> 年轻人的第一个Flutter程序(2) </span> </div> </div> </div> <form class=md-header__option data-md-component=palette> <input class=md-option data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme=default data-md-color-primary=white data-md-color-accent=blue type=radio name=__palette id=__palette_1> <label class="md-header__button md-icon" title="Switch to dark mode" for=__palette_2 hidden> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M7 10a2 2 0 0 1 2 2 2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1 2-2m10-3a5 5 0 0 1 5 5 5 5 0 0 1-5 5H7a5 5 0 0 1-5-5 5 5 0 0 1 5-5h10M7 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3h10a3 3 0 0 0 3-3 3 3 0 0 0-3-3H7z"/></svg> </label> <input class=md-option data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme=slate data-md-color-primary=red data-md-color-accent=deep-orange type=radio name=__palette id=__palette_2> <label class="md-header__button md-icon" title="Switch to light mode" for=__palette_1 hidden> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3z"/></svg> </label> </form> <label class="md-header__button md-icon" for=__search> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg> </label> <div class=md-search data-md-component=search role=dialog> <label class=md-search__overlay for=__search></label> <div class=md-search__inner role=search> <form class=md-search__form name=search> <input type=text class=md-search__input name=query aria-label=搜索 placeholder=搜索 autocapitalize=off autocorrect=off autocomplete=off spellcheck=false data-md-component=search-query data-md-state=active required> <label class="md-search__icon md-icon" for=__search> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg> </label> <button type=reset class="md-search__icon md-icon" aria-label=Clear tabindex=-1> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg> </button> </form> <div class=md-search__output> <div class=md-search__scrollwrap data-md-scrollfix> <div class=md-search-result data-md-component=search-result> <div class=md-search-result__meta> 正在初始化搜索引擎 </div> <ol class=md-search-result__list></ol> </div> </div> </div> </div> </div> </nav> </header> <div class=md-container data-md-component=container> <nav class=md-tabs aria-label=Tabs data-md-component=tabs> <div class="md-tabs__inner md-grid"> <ul class=md-tabs__list> <li class=md-tabs__item> <a href=../../android/3rd-library/3rd-library-source-code/ class=md-tabs__link> Android </a> </li> <li class=md-tabs__item> <a href=../flutter_first_project_1/ class="md-tabs__link md-tabs__link--active"> Flutter </a> </li> <li class=md-tabs__item> <a href=../../leetcode/ class=md-tabs__link> LeetCode </a> </li> <li class=md-tabs__item> <a href=../../design-pattern/design-pattern/ class=md-tabs__link> Books </a> </li> </ul> </div> </nav> <main class=md-main data-md-component=main> <div class="md-main__inner md-grid"> <div class="md-sidebar md-sidebar--primary" data-md-component=sidebar data-md-type=navigation> <div class=md-sidebar__scrollwrap> <div class=md-sidebar__inner> <nav class="md-nav md-nav--primary md-nav--lifted" aria-label=Navigation data-md-level=0> <label class=md-nav__title for=__drawer> <a href=../.. title="Yorek's" class="md-nav__button md-logo" aria-label="Yorek's" data-md-component=logo> <img src=../../assets/images/favicon.webp alt=logo> </a> Yorek's </label> <ul class=md-nav__list data-md-scrollfix> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle" data-md-toggle=__nav_1 type=checkbox id=__nav_1> <label class=md-nav__link for=__nav_1> Android <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav aria-label=Android data-md-level=1> <label class=md-nav__title for=__nav_1> <span class="md-nav__icon md-icon"></span> Android </label> <ul class=md-nav__list data-md-scrollfix> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle" data-md-toggle=__nav_1_1 type=checkbox id=__nav_1_1> <label class=md-nav__link for=__nav_1_1> 三方库系列 <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav aria-label=三方库系列 data-md-level=2> <label class=md-nav__title for=__nav_1_1> <span class="md-nav__icon md-icon"></span> 三方库系列 </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../android/3rd-library/3rd-library-source-code/ class=md-nav__link> Android三方库源码分析 </a> </li> <li class=md-nav__item> <a href=../../android/3rd-library/matrix/ class=md-nav__link> 微信APM Matrix解析 </a> </li> <li class=md-nav__item> <a href=../../android/3rd-library/matrix-trace/ class=md-nav__link> Matrix-TraceCanary解析 </a> </li> <li class=md-nav__item> <a href=../../android/3rd-library/matrix-io/ class=md-nav__link> Matrix-IOCanary解析 </a> </li> <li class=md-nav__item> <a href=../../android/3rd-library/matrix-resource/ class=md-nav__link> Matrix-ResourceCanary解析 </a> </li> <li class=md-nav__item> <a href=../../android/3rd-library/matrix-sqlitelint/ class=md-nav__link> Matrix-SQLiteLint解析 </a> </li> <li class=md-nav__item> <a href=../../android/3rd-library/okhttp/ class=md-nav__link> OkHttp3源码解析 </a> </li> <li class=md-nav__item> <a href=../../android/3rd-library/retrofit/ class=md-nav__link> Retrofit2源码解析 </a> </li> <li class=md-nav__item> <a href=../../android/3rd-library/rxjava%26rxandroid/ class=md-nav__link> RxJava源码解析及使用实例 </a> </li> <li class=md-nav__item> <a href=../../android/other/RxJava/ class=md-nav__link> RxJava操作符大全 </a> </li> <li class=md-nav__item> <a href=../../android/3rd-library/glide1/ class=md-nav__link> Glide v4 源码解析（一） </a> </li> <li class=md-nav__item> <a href=../../android/3rd-library/glide2/ class=md-nav__link> Glide v4 源码解析（二） </a> </li> <li class=md-nav__item> <a href=../../android/3rd-library/glide3/ class=md-nav__link> Glide v4 源码解析（三） </a> </li> <li class=md-nav__item> <a href=../../android/3rd-library/glide4/ class=md-nav__link> Glide v4 源码解析（四） </a> </li> <li class=md-nav__item> <a href=../../android/3rd-library/glide5/ class=md-nav__link> Glide v4 源码解析（五） </a> </li> <li class=md-nav__item> <a href=../../android/3rd-library/glide6/ class=md-nav__link> Glide v4 源码解析（六） </a> </li> <li class=md-nav__item> <a href=../../android/3rd-library/glide7/ class=md-nav__link> Glide v4 源码解析（七） </a> </li> <li class=md-nav__item> <a href=../../android/3rd-library/migrate-to-glide/ class=md-nav__link> 杂记：从Picasso迁移至Glide </a> </li> <li class=md-nav__item> <a href=../../android/3rd-library/eventbus/ class=md-nav__link> EventBus源码解析 </a> </li> <li class=md-nav__item> <a href=../../android/3rd-library/leakcanary/ class=md-nav__link> LeakCanary2源码解析 </a> </li> <li class=md-nav__item> <a href=../../android/3rd-library/permissiondispatcher/ class=md-nav__link> PermissionDispatcher源码解析 </a> </li> <li class=md-nav__item> <a href=../../android/other/constraintlayout/ class=md-nav__link> ConstraintLayout使用大全 </a> </li> <li class=md-nav__item> <a href=../../android/other/dagger2/ class=md-nav__link> 初学者的Dagger2教程 </a> </li> <li class=md-nav__item> <a href=../../android/3rd-library/hotfix/ class=md-nav__link> Hotfix方案初探 </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle" data-md-toggle=__nav_1_2 type=checkbox id=__nav_1_2> <label class=md-nav__link for=__nav_1_2> framework系列 <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav aria-label=framework系列 data-md-level=2> <label class=md-nav__title for=__nav_1_2> <span class="md-nav__icon md-icon"></span> framework系列 </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../android/framework/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6%281%29/ class=md-nav__link> Activity </a> </li> <li class=md-nav__item> <a href=../../android/framework/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6%282%29/ class=md-nav__link> Service </a> </li> <li class=md-nav__item> <a href=../../android/framework/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6%283%29/ class=md-nav__link> Broadcasts </a> </li> <li class=md-nav__item> <a href=../../android/framework/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6%284%29/ class=md-nav__link> Content Providers与Fragment </a> </li> <li class=md-nav__item> <a href=../../android/framework/IPC%E6%9C%BA%E5%88%B6/ class=md-nav__link> IPC机制 </a> </li> <li class=md-nav__item> <a href=../../android/framework/View%E7%9A%84%E4%BA%8B%E4%BB%B6%E4%BD%93%E7%B3%BB/ class=md-nav__link> View的事件体系 </a> </li> <li class=md-nav__item> <a href=../../android/framework/View%E7%9A%84%E7%BB%98%E5%88%B6%E5%8E%9F%E7%90%86/ class=md-nav__link> View的绘制原理 </a> </li> <li class=md-nav__item> <a href=../../android/framework/RemoteViews/ class=md-nav__link> RemoteViews </a> </li> <li class=md-nav__item> <a href=../../android/framework/Drawable/ class=md-nav__link> Android中的Drawable资源 </a> </li> <li class=md-nav__item> <a href=../../android/framework/Android%E5%8A%A8%E7%94%BB/ class=md-nav__link> Android动画 </a> </li> <li class=md-nav__item> <a href=../../android/framework/Window%E4%B8%8EWindowManager/ class=md-nav__link> Window与WindowManager </a> </li> <li class=md-nav__item> <a href=../../android/framework/%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/ class=md-nav__link> 四大组件启动过程 </a> </li> <li class=md-nav__item> <a href=../../android/framework/Android%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/ class=md-nav__link> Android消息机制 </a> </li> <li class=md-nav__item> <a href=../../android/framework/Android%E7%BA%BF%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B%E6%B1%A0/ class=md-nav__link> Android线程与线程池 </a> </li> <li class=md-nav__item> <a href=../../android/framework/Bitmap%E7%9A%84%E7%BC%93%E5%AD%98%E4%B8%8E%E5%8A%A0%E8%BD%BD/ class=md-nav__link> Bitmap的缓存与加载 </a> </li> <li class=md-nav__item> <a href=../../android/framework/JNI%E4%B8%8ENDK/ class=md-nav__link> JNI与NDK编程简介 </a> </li> <li class=md-nav__item> <a href=../../android/framework/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/ class=md-nav__link> Android性能优化 </a> </li> <li class=md-nav__item> <a href=../../android/framework/binder1-mediaservice/ class=md-nav__link> Binder深入理解——以MediaService为例 </a> </li> <li class=md-nav__item> <a href=../../android/framework/binder2/ class=md-nav__link> Binder深入理解——罗老师系列 </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle" data-md-toggle=__nav_1_3 type=checkbox id=__nav_1_3> <label class=md-nav__link for=__nav_1_3> 杂记 <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav aria-label=杂记 data-md-level=2> <label class=md-nav__title for=__nav_1_3> <span class="md-nav__icon md-icon"></span> 杂记 </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../android/other/commands/ class=md-nav__link> Android开发常见命令 </a> </li> <li class=md-nav__item> <a href=../../android/other/android-tv/ class=md-nav__link> Android TV 专项 </a> </li> <li class=md-nav__item> <a href=../../android/other/annotation/ class=md-nav__link> 注解的定义及解析 </a> </li> <li class=md-nav__item> <a href=../../android/other/best_throttle_in_mvvm/ class=md-nav__link> 这可能是MVVM中最优雅的按键防抖方案 </a> </li> <li class=md-nav__item> <a href=../../android/other/android-jenkins/ class=md-nav__link> Jenkins for android </a> </li> <li class=md-nav__item> <a href=../../android/other/SystemProrities/ class=md-nav__link> 普通Android程序使用SystemProrities </a> </li> <li class=md-nav__item> <a href=../../android/other/recyclerview-cache/ class=md-nav__link> ListView、RecyclerView缓存策略解析 </a> </li> <li class=md-nav__item> <a href=../../android/other/recyclerview-item-docoration/ class=md-nav__link> RecyclerView高级特性——ItemDecoration </a> </li> <li class=md-nav__item> <a href=../../android/other/recyclerview-others/ class=md-nav__link> RecyclerView的一些使用细节 </a> </li> <li class=md-nav__item> <a href=../../android/other/RecyclerView-Sort%26Delete/ class=md-nav__link> RecyclerView高级特性——拖拽排序以及滑动删除 </a> </li> <li class=md-nav__item> <a href=../../android/other/FAB-Behavior/ class=md-nav__link> FloatingActionButton上滑隐藏下滑显示 </a> </li> <li class=md-nav__item> <a href=../../android/other/nestedscrolling/ class=md-nav__link> NestedScrolling机制 </a> </li> <li class=md-nav__item> <a href=../../android/other/porterduff/ class=md-nav__link> 使用Porter-Duff合成数字图像 </a> </li> <li class=md-nav__item> <a href=../../android/other/runtime/ class=md-nav__link> Android Runtime </a> </li> <li class=md-nav__item> <a href=../../android/other/android_alias/ class=md-nav__link> Android马甲包的那些事儿 </a> </li> <li class=md-nav__item> <a href=../../android/other/Android-Development-Tool/ class=md-nav__link> Android神兵利器 </a> </li> <li class=md-nav__item> <a href=../../android/other/FileProvider/ class=md-nav__link> FileProvider </a> </li> <li class=md-nav__item> <a href=../../android/other/Android%E5%88%A4%E6%96%AD%E5%AF%BC%E8%88%AA%E6%A0%8F%E9%AB%98%E5%BA%A6/ class=md-nav__link> Android判断虚拟按键(导航栏)显示与否、高度以及获取屏幕实际高度 </a> </li> <li class=md-nav__item> <a href=../../android/other/Android%E5%9B%BE%E7%89%87%E9%80%89%E6%8B%A9%E5%99%A8/ class=md-nav__link> Android图片选择器 </a> </li> <li class=md-nav__item> <a href=../../android/other/Android%E5%BA%95%E9%83%A8%E5%AF%BC%E8%88%AA%E6%A0%8F%E6%A1%86%E6%9E%B6/ class=md-nav__link> Android原生底部导航栏 </a> </li> <li class=md-nav__item> <a href=../../android/other/Android%E6%90%9C%E7%B4%A2%E6%A0%8F%E7%9A%84%E5%AE%9E%E7%8E%B0/ class=md-nav__link> Android搜索栏的实现 </a> </li> <li class=md-nav__item> <a href=../../android/other/Android%E6%9A%82%E5%81%9C%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE%E5%99%A8%E7%9A%84%E6%92%AD%E6%94%BE/ class=md-nav__link> Android暂停酷狗、网易云音乐等音乐播放器的播放 </a> </li> <li class=md-nav__item> <a href=../../android/other/Android%E6%BB%91%E5%8A%A8%E8%BF%94%E5%9B%9E%E5%AE%9E%E8%B7%B5/ class=md-nav__link> Android滑动返回实践 </a> </li> <li class=md-nav__item> <a href=../../android/other/Android%E7%A8%8B%E5%BA%8F%E5%8F%8D%E7%BC%96%E8%AF%91/ class=md-nav__link> MacOS下Android程序反编译 </a> </li> <li class=md-nav__item> <a href=../../android/other/Android%E9%80%9A%E8%AE%AF%E5%BD%95%E5%BF%AB%E9%80%9F%E8%AF%BB%E5%8F%96/ class=md-nav__link> Android通讯录快速读取 </a> </li> <li class=md-nav__item> <a href=../../android/other/soft-keyboard-in-app/ class=md-nav__link> App内自定义软键盘 </a> </li> <li class=md-nav__item> <a href=../../android/other/%E8%85%BE%E8%AE%AFX5%E5%86%85%E6%A0%B8%E5%85%A5%E5%9D%91%E6%8C%87%E5%8D%97/ class=md-nav__link> 腾讯TBS X5浏览器内核入坑指南 </a> </li> <li class=md-nav__item> <a href=../../android/other/%E7%90%90%E7%A2%8E%E7%9F%A5%E8%AF%86%E7%82%B9/ class=md-nav__link> 琐碎知识点 </a> </li> <li class=md-nav__item> <a href=../../android/paid/zsxq/week1-synchronized/ class=md-nav__link> 理解Java中synchronized关键词 </a> </li> <li class=md-nav__item> <a href=../../android/paid/zsxq/week2-service/ class=md-nav__link> 理解Service </a> </li> <li class=md-nav__item> <a href=../../android/paid/zsxq/week3-activity/ class=md-nav__link> 理解Activity的启动模式 </a> </li> <li class=md-nav__item> <a href=../../android/paid/zsxq/week4-startActivityForResult/ class=md-nav__link> 关于startActivityForResult </a> </li> <li class=md-nav__item> <a href=../../android/paid/zsxq/week5-view/ class=md-nav__link> 关于View的知识 </a> </li> <li class=md-nav__item> <a href=../../android/paid/zsxq/week6-gradle/ class=md-nav__link> 关于Gradle的知识 </a> </li> <li class=md-nav__item> <a href=../../android/paid/zsxq/week7-serialization/ class=md-nav__link> 关于序列化的知识 </a> </li> <li class=md-nav__item> <a href=../../android/paid/zsxq/week10-classloader/ class=md-nav__link> Android中的ClassLoader </a> </li> <li class=md-nav__item> <a href=../../android/paid/zsxq/week11-binder/ class=md-nav__link> Binder简介 </a> </li> <li class=md-nav__item> <a href=../../android/paid/zsxq/week12-retrofit-okhttp/ class=md-nav__link> OkHttp和Retrofit的作用以及两者之间的联系 </a> </li> <li class=md-nav__item> <a href=../../android/paid/zsxq/week14-jvm-gc/ class=md-nav__link> JVM中垃圾回收策略 </a> </li> <li class=md-nav__item> <a href=../../android/paid/zsxq/week16-keep-app-alive/ class=md-nav__link> 进程保活 </a> </li> <li class=md-nav__item> <a href=../../android/paid/zsxq/week17-android-components/ class=md-nav__link> 四大组件的作用以及多进程 </a> </li> <li class=md-nav__item> <a href=../../android/paid/zsxq/week20-network-protocol/ class=md-nav__link> 网络协议 </a> </li> <li class=md-nav__item> <a href=../../android/paid/zsxq/week21-mvc%26mvp%26mvvm/ class=md-nav__link> MVC、MVP和MVVM </a> </li> <li class=md-nav__item> <a href=../../android/paid/zsxq/week22-android-studio-build/ class=md-nav__link> Android Studio build过程 </a> </li> <li class=md-nav__item> <a href=../../android/paid/zsxq/week23-load-large-bitmap/ class=md-nav__link> 大尺寸图片加载问题 </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle" data-md-toggle=__nav_1_4 type=checkbox id=__nav_1_4> <label class=md-nav__link for=__nav_1_4> Android开发高手课 <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav aria-label=Android开发高手课 data-md-level=2> <label class=md-nav__title for=__nav_1_4> <span class="md-nav__icon md-icon"></span> Android开发高手课 </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../android/paid/master/ class=md-nav__link> Android开发高手课 </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/crash_1/ class=md-nav__link> 01 | 崩溃优化（上）：关于“崩溃”那些事儿 </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/crash_2/ class=md-nav__link> 02 | 崩溃优化（下）：应用崩溃了，你应该如何去分析？ </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/memory_1/ class=md-nav__link> 03 | 内存优化（上）：4GB内存时代，再谈内存优化 </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/memory_2/ class=md-nav__link> 04 | 内存优化（下）：内存优化这件事，应该从哪里着手？ </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/stuck_1/ class=md-nav__link> 05 | 卡顿优化（上）：你要掌握的卡顿分析方法 </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/stuck_2/ class=md-nav__link> 06 | 卡顿优化（下）：如何监控应用卡顿？ </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/stuck_3/ class=md-nav__link> 06补充篇 | 卡顿优化：卡顿现场与卡顿分析 </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/start_1/ class=md-nav__link> 07 | 启动优化（上）：从启动过程看启动速度优化 </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/start_2/ class=md-nav__link> 08 | 启动优化（下）：优化启动速度的进阶方法 </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/io_1/ class=md-nav__link> 09 | I/O优化（上）：开发工程师必备的I/O优化知识 </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/io_2/ class=md-nav__link> 10 | I/O优化（中）：不同I/O方式的使用场景是什么？ </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/io_3/ class=md-nav__link> 11 | I/O优化（下）：如何监控线上I/O操作？ </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/storage_1/ class=md-nav__link> 12 | 存储优化（上）：常见的数据存储方法有哪些？ </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/storage_2/ class=md-nav__link> 13 | 存储优化（中）：如何优化数据存储？ </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/storage_3/ class=md-nav__link> 14 | 存储优化（下）：数据库SQLite的使用和优化 </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/network_1/ class=md-nav__link> 15 | 网络优化（上）：移动开发工程师必备的网络优化知识 </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/network_2/ class=md-nav__link> 16 | 网络优化（中）：复杂多变的移动网络该如何优化？ </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/network_3/ class=md-nav__link> 17 | 网络优化（下）：大数据下网络该如何监控？ </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/battery_1/ class=md-nav__link> 18 | 耗电优化（上）：从电量优化的演进看耗电分析 </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/battery_2/ class=md-nav__link> 19 | 耗电优化（下）：耗电的优化方法与线上监控 </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/ui_1/ class=md-nav__link> 20 | UI 优化（上）：UI 渲染的几个关键概念 </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/ui_2/ class=md-nav__link> 21 | UI 优化（下）：如何优化 UI 渲染？ </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/package_1/ class=md-nav__link> 22 | 包体积优化（上）：如何减少安装包大小？ </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/package_2/ class=md-nav__link> 23 | 包体积优化（下）：资源优化的进阶实践 </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/compile/ class=md-nav__link> 26 | 关于编译，你需要了解什么？ </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/bytecode/ class=md-nav__link> 27 | 编译插桩的三种方法：AspectJ、ASM、ReDex </a> </li> <li class=md-nav__item> <a href=../../android/paid/master/native_hook/ class=md-nav__link> 35 | Native Hook 技术，天使还是魔鬼？ </a> </li> </ul> </nav> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--active md-nav__item--nested"> <input class="md-nav__toggle md-toggle" data-md-toggle=__nav_2 type=checkbox id=__nav_2 checked> <label class=md-nav__link for=__nav_2> Flutter <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav aria-label=Flutter data-md-level=1> <label class=md-nav__title for=__nav_2> <span class="md-nav__icon md-icon"></span> Flutter </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../flutter_first_project_1/ class=md-nav__link> 年轻人的第一个Flutter程序(1) </a> </li> <li class="md-nav__item md-nav__item--active"> <input class="md-nav__toggle md-toggle" data-md-toggle=toc type=checkbox id=__toc> <label class="md-nav__link md-nav__link--active" for=__toc> 年轻人的第一个Flutter程序(2) <span class="md-nav__icon md-icon"></span> </label> <a href=./ class="md-nav__link md-nav__link--active"> 年轻人的第一个Flutter程序(2) </a> <nav class="md-nav md-nav--secondary" aria-label=目录> <label class=md-nav__title for=__toc> <span class="md-nav__icon md-icon"></span> 目录 </label> <ul class=md-nav__list data-md-component=toc data-md-scrollfix> <li class=md-nav__item> <a href=#1 class=md-nav__link> 1. 本章成果 </a> </li> <li class=md-nav__item> <a href=#2 class=md-nav__link> 2. 底部导航栏 </a> <nav class=md-nav aria-label="2. 底部导航栏"> <ul class=md-nav__list> <li class=md-nav__item> <a href=#21-bottomnavigationbar class=md-nav__link> 2.1 BottomNavigationBar的大坑 </a> </li> <li class=md-nav__item> <a href=#22-asset class=md-nav__link> 2.2 Asset的使用——字体 </a> </li> <li class=md-nav__item> <a href=#23-animation class=md-nav__link> 2.3 Animation </a> <nav class=md-nav aria-label="2.3 Animation"> <ul class=md-nav__list> <li class=md-nav__item> <a href=#231-animation class=md-nav__link> 2.3.1 Animation的使用 </a> </li> <li class=md-nav__item> <a href=#232-animationanimatable class=md-nav__link> 2.3.2 关于Animation和Animatable </a> </li> <li class=md-nav__item> <a href=#233-animation class=md-nav__link> 2.3.3 Animation的源码 </a> </li> <li class=md-nav__item> <a href=#234-animation class=md-nav__link> 2.3.4 Animation源码总结 </a> </li> </ul> </nav> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#3-tab1 class=md-nav__link> 3. Tab1内容 </a> <nav class=md-nav aria-label="3. Tab1内容"> <ul class=md-nav__list> <li class=md-nav__item> <a href=#31 class=md-nav__link> 3.1 基本布局的写法 </a> </li> <li class=md-nav__item> <a href=#32 class=md-nav__link> 3.2 使用三方库 </a> </li> </ul> </nav> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=../flutter_first_project_3/ class=md-nav__link> 年轻人的第一个Flutter程序(3) </a> </li> <li class=md-nav__item> <a href=../flutter_first_project_4/ class=md-nav__link> 年轻人的第一个Flutter程序(4) </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle" data-md-toggle=__nav_3 type=checkbox id=__nav_3> <label class=md-nav__link for=__nav_3> LeetCode <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav aria-label=LeetCode data-md-level=1> <label class=md-nav__title for=__nav_3> <span class="md-nav__icon md-icon"></span> LeetCode </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../leetcode/ class=md-nav__link> 算法目录 </a> </li> <li class=md-nav__item> <a href=../../leetcode/code_interviews_1/ class=md-nav__link> 数据结构、算法和数据操作 </a> </li> <li class=md-nav__item> <a href=../../leetcode/code_interviews_3/ class=md-nav__link> 高质量的代码 </a> </li> <li class=md-nav__item> <a href=../../leetcode/code_interviews_4/ class=md-nav__link> 解决问题的思路 </a> </li> <li class=md-nav__item> <a href=../../leetcode/code_interviews_5/ class=md-nav__link> 优化时间和空间效率 </a> </li> <li class=md-nav__item> <a href=../../leetcode/code_interviews_6/ class=md-nav__link> 面试中的各项能力 </a> </li> <li class=md-nav__item> <a href=../../leetcode/array/ class=md-nav__link> Array </a> </li> <li class=md-nav__item> <a href=../../leetcode/leetcode1-10/ class=md-nav__link> LeetCode(1-10) </a> </li> <li class=md-nav__item> <a href=../../leetcode/leetcode11-20/ class=md-nav__link> LeetCode(11-20) </a> </li> <li class=md-nav__item> <a href=../../leetcode/leetcode21-30/ class=md-nav__link> LeetCode(21-30) </a> </li> <li class=md-nav__item> <a href=../../leetcode/leetcode31-40/ class=md-nav__link> LeetCode(31-40) </a> </li> <li class=md-nav__item> <a href=../../leetcode/leetcode41-50/ class=md-nav__link> LeetCode(41-50) </a> </li> <li class=md-nav__item> <a href=../../leetcode/leetcode51-60/ class=md-nav__link> LeetCode(51-60) </a> </li> <li class=md-nav__item> <a href=../../leetcode/leetcode61-70/ class=md-nav__link> LeetCode(61-70) </a> </li> <li class=md-nav__item> <a href=../../leetcode/leetcode71-80/ class=md-nav__link> LeetCode(71-80) </a> </li> <li class=md-nav__item> <a href=../../leetcode/leetcode81-90/ class=md-nav__link> LeetCode(81-90) </a> </li> <li class=md-nav__item> <a href=../../leetcode/leetcode91-100/ class=md-nav__link> LeetCode(91-100) </a> </li> <li class=md-nav__item> <a href=../../leetcode/leetcode101-110/ class=md-nav__link> LeetCode(101-110) </a> </li> <li class=md-nav__item> <a href=../../leetcode/leetcode111-120/ class=md-nav__link> LeetCode(111-120) </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle" data-md-toggle=__nav_4 type=checkbox id=__nav_4> <label class=md-nav__link for=__nav_4> Books <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav aria-label=Books data-md-level=1> <label class=md-nav__title for=__nav_4> <span class="md-nav__icon md-icon"></span> Books </label> <ul class=md-nav__list data-md-scrollfix> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle" data-md-toggle=__nav_4_1 type=checkbox id=__nav_4_1> <label class=md-nav__link for=__nav_4_1> Design Pattern <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav aria-label="Design Pattern" data-md-level=2> <label class=md-nav__title for=__nav_4_1> <span class="md-nav__icon md-icon"></span> Design Pattern </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../design-pattern/design-pattern/ class=md-nav__link> 设计模式概述 </a> </li> <li class=md-nav__item> <a href=../../design-pattern/design-principle/ class=md-nav__link> 面向对象的六大原则 </a> </li> <li class=md-nav__item> <a href=../../design-pattern/singleton/ class=md-nav__link> 单例模式(Singleton) </a> </li> <li class=md-nav__item> <a href=../../design-pattern/builder/ class=md-nav__link> 建造者模式(Builder) </a> </li> <li class=md-nav__item> <a href=../../design-pattern/prototype/ class=md-nav__link> 原型模式(Prototype) </a> </li> <li class=md-nav__item> <a href=../../design-pattern/factory-method/ class=md-nav__link> 工厂方法模式(Factory method) </a> </li> <li class=md-nav__item> <a href=../../design-pattern/abstract-factory/ class=md-nav__link> 抽象工厂模式(Abstract factory) </a> </li> <li class=md-nav__item> <a href=../../design-pattern/proxy/ class=md-nav__link> 代理模式(Proxy) </a> </li> <li class=md-nav__item> <a href=../../design-pattern/composite/ class=md-nav__link> 组合模式(Composite) </a> </li> <li class=md-nav__item> <a href=../../design-pattern/adapter/ class=md-nav__link> 适配器模式(Adapter) </a> </li> <li class=md-nav__item> <a href=../../design-pattern/decorator/ class=md-nav__link> 装饰模式(Decorator) </a> </li> <li class=md-nav__item> <a href=../../design-pattern/flyweight/ class=md-nav__link> 享元模式(Flyweight) </a> </li> <li class=md-nav__item> <a href=../../design-pattern/facade/ class=md-nav__link> 外观模式(Facade) </a> </li> <li class=md-nav__item> <a href=../../design-pattern/bridge/ class=md-nav__link> 桥接模式(Bridge) </a> </li> <li class=md-nav__item> <a href=../../design-pattern/strategy/ class=md-nav__link> 策略模式(Strategy) </a> </li> <li class=md-nav__item> <a href=../../design-pattern/state/ class=md-nav__link> 状态模式(State) </a> </li> <li class=md-nav__item> <a href=../../design-pattern/chain-of-responsibility/ class=md-nav__link> 责任链模式(Chain of responsibility) </a> </li> <li class=md-nav__item> <a href=../../design-pattern/interpreter/ class=md-nav__link> 解释器模式(Interpreter) </a> </li> <li class=md-nav__item> <a href=../../design-pattern/command/ class=md-nav__link> 命令模式(Command) </a> </li> <li class=md-nav__item> <a href=../../design-pattern/observer/ class=md-nav__link> 观察者模式(Observer) </a> </li> <li class=md-nav__item> <a href=../../design-pattern/memento/ class=md-nav__link> 备忘录模式(Memento) </a> </li> <li class=md-nav__item> <a href=../../design-pattern/iterator/ class=md-nav__link> 迭代器模式(Iterator) </a> </li> <li class=md-nav__item> <a href=../../design-pattern/template-method/ class=md-nav__link> 模版方法模式(Template method) </a> </li> <li class=md-nav__item> <a href=../../design-pattern/visitor/ class=md-nav__link> 访问者模式(Visitor) </a> </li> <li class=md-nav__item> <a href=../../design-pattern/mediator/ class=md-nav__link> 中介者模式(Mediator) </a> </li> <li class=md-nav__item> <a href=../../design-pattern/confusing-design-pattern/ class=md-nav__link> 易混淆的设计模式 </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle" data-md-toggle=__nav_4_2 type=checkbox id=__nav_4_2> <label class=md-nav__link for=__nav_4_2> Effective Java <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav aria-label="Effective Java" data-md-level=2> <label class=md-nav__title for=__nav_4_2> <span class="md-nav__icon md-icon"></span> Effective Java </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../effective-java/effective-java/ class=md-nav__link> Effective Java概述 </a> </li> <li class=md-nav__item> <a href=../../effective-java/chapter1/ class=md-nav__link> 创建和销毁对象 </a> </li> <li class=md-nav__item> <a href=../../effective-java/chapter2/ class=md-nav__link> 对于所有对象都通用的方法 </a> </li> <li class=md-nav__item> <a href=../../effective-java/chapter3/ class=md-nav__link> 类和接口 </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle" data-md-toggle=__nav_4_3 type=checkbox id=__nav_4_3> <label class=md-nav__link for=__nav_4_3> JVM <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav aria-label=JVM data-md-level=2> <label class=md-nav__title for=__nav_4_3> <span class="md-nav__icon md-icon"></span> JVM </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../jvm/jvm-content/ class=md-nav__link> 深入理解Java虚拟机 </a> </li> <li class=md-nav__item> <a href=../../jvm/java-memory-area-oom/ class=md-nav__link> Java内存区域与内存溢出异常 </a> </li> <li class=md-nav__item> <a href=../../jvm/java-gc/ class=md-nav__link> 垃圾收集器与内存分配策略 </a> </li> <li class=md-nav__item> <a href=../../jvm/class-struct/ class=md-nav__link> 类文件结构 </a> </li> <li class=md-nav__item> <a href=../../jvm/load-class/ class=md-nav__link> 虚拟机类加载机制 </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle" data-md-toggle=__nav_4_4 type=checkbox id=__nav_4_4> <label class=md-nav__link for=__nav_4_4> Java <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav aria-label=Java data-md-level=2> <label class=md-nav__title for=__nav_4_4> <span class="md-nav__icon md-icon"></span> Java </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../java/generics-java-kotlin/ class=md-nav__link> Java&Kotlin在泛型方面的区别 </a> </li> <li class=md-nav__item> <a href=../../java/java-collections/ class=md-nav__link> Java集合总结 </a> </li> <li class=md-nav__item> <a href=../../java/java-foundation/ class=md-nav__link> Java常见概念 </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle" data-md-toggle=__nav_4_5 type=checkbox id=__nav_4_5> <label class=md-nav__link for=__nav_4_5> Refactoring <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav aria-label=Refactoring data-md-level=2> <label class=md-nav__title for=__nav_4_5> <span class="md-nav__icon md-icon"></span> Refactoring </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../refactoring/refactoring/ class=md-nav__link> 重构：改善既有代码的设计 </a> </li> </ul> </nav> </li> </ul> </nav> </li> </ul> </nav> </div> </div> </div> <div class="md-sidebar md-sidebar--secondary" data-md-component=sidebar data-md-type=toc> <div class=md-sidebar__scrollwrap> <div class=md-sidebar__inner> <nav class="md-nav md-nav--secondary" aria-label=目录> <label class=md-nav__title for=__toc> <span class="md-nav__icon md-icon"></span> 目录 </label> <ul class=md-nav__list data-md-component=toc data-md-scrollfix> <li class=md-nav__item> <a href=#1 class=md-nav__link> 1. 本章成果 </a> </li> <li class=md-nav__item> <a href=#2 class=md-nav__link> 2. 底部导航栏 </a> <nav class=md-nav aria-label="2. 底部导航栏"> <ul class=md-nav__list> <li class=md-nav__item> <a href=#21-bottomnavigationbar class=md-nav__link> 2.1 BottomNavigationBar的大坑 </a> </li> <li class=md-nav__item> <a href=#22-asset class=md-nav__link> 2.2 Asset的使用——字体 </a> </li> <li class=md-nav__item> <a href=#23-animation class=md-nav__link> 2.3 Animation </a> <nav class=md-nav aria-label="2.3 Animation"> <ul class=md-nav__list> <li class=md-nav__item> <a href=#231-animation class=md-nav__link> 2.3.1 Animation的使用 </a> </li> <li class=md-nav__item> <a href=#232-animationanimatable class=md-nav__link> 2.3.2 关于Animation和Animatable </a> </li> <li class=md-nav__item> <a href=#233-animation class=md-nav__link> 2.3.3 Animation的源码 </a> </li> <li class=md-nav__item> <a href=#234-animation class=md-nav__link> 2.3.4 Animation源码总结 </a> </li> </ul> </nav> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#3-tab1 class=md-nav__link> 3. Tab1内容 </a> <nav class=md-nav aria-label="3. Tab1内容"> <ul class=md-nav__list> <li class=md-nav__item> <a href=#31 class=md-nav__link> 3.1 基本布局的写法 </a> </li> <li class=md-nav__item> <a href=#32 class=md-nav__link> 3.2 使用三方库 </a> </li> </ul> </nav> </li> </ul> </nav> </div> </div> </div> <div class=md-content data-md-component=content> <article class="md-content__inner md-typeset"> <h1>年轻人的第一个Flutter程序(2)</h1> <p>本章主要完成了首页底部导航栏以及Tab1的UI，另外记录了途中遇到的大坑。 </p> <p>主要内容有：</p> <ul> <li>Asset及默认字体</li> <li>BottomNavigationBar实现底部导航栏(<strong>有大坑</strong>)</li> <li>动画Animation以及源码分析</li> <li>列表ListView、卡片Card、水波纹点击效果InkWell、线性进度条LinearProgressIndicator</li> <li>日期DateTime及其格式化等</li> </ul> <h2 id=1>1. 本章成果<a class=headerlink href=#1 title="Permanent link">&para;</a></h2> <p>开门见山，直接上本章成果。</p> <iframe width=320 height=630 src=/assets/videos/flutter/flutter_chapter_01.mp4 frameborder=0 allowfullscreen></iframe> <p><em>底部导航栏以及Tab1 UI</em></p> <p>本系列文章也会阶段性地release对应的apk供对照查看。apk都会发布在<a href=https://github.com/YorekLiu/YLFlutterReady/releases>release</a>上。此外配合源码对应的tag一起食用，效果更加。 <br> 本章代码tag为<code>chapter01</code>，配合<a href=https://github.com/YorekLiu/YLFlutterReady/releases/download/chapter01/chapter01.apk>chapter01.apk</a>。</p> <h2 id=2>2. 底部导航栏<a class=headerlink href=#2 title="Permanent link">&para;</a></h2> <p>在Flutter中实现底部导航栏也非常容易，因为MaterialApp提供了这个参数，我们只需要定义自己的BottomNavigationBarItem，然后在Scaffold的body处根据<code>currentIndex</code>的值选择对应的Widget就行了。</p> <p>在<a href=https://docs.flutter.io/flutter/material/BottomNavigationBar-class.html>BottomNavigationBar</a>中有这么一段Sample Code</p> <p><strong>BottomNavigationBar Sample Code</strong> <div class=highlight><pre><span></span><code><span class=kd>class</span> <span class=nc>MyHomePage</span> <span class=kd>extends</span> <span class=n>StatefulWidget</span> <span class=p>{</span>
+ <span class=n>MyHomePage</span><span class=p>({</span><span class=n>Key</span> <span class=n>key</span><span class=p>})</span> <span class=o>:</span> <span class=k>super</span><span class=p>(</span><span class=nl>key:</span> <span class=n>key</span><span class=p>);</span>
+
+ <span class=nd>@override</span>
+ <span class=n>_MyHomePageState</span> <span class=n>createState</span><span class=p>()</span> <span class=o>=&gt;</span> <span class=n>_MyHomePageState</span><span class=p>();</span>
+<span class=p>}</span>
+
+<span class=kd>class</span> <span class=nc>_MyHomePageState</span> <span class=kd>extends</span> <span class=n>State</span><span class=o>&lt;</span><span class=n>MyHomePage</span><span class=o>&gt;</span> <span class=p>{</span>
+ <span class=kt>int</span> <span class=n>_selectedIndex</span> <span class=o>=</span> <span class=m>1</span><span class=p>;</span>
+ <span class=kd>final</span> <span class=n>_widgetOptions</span> <span class=o>=</span> <span class=p>[</span>
+   <span class=n>Text</span><span class=p>(</span><span class=s1>&#39;Index 0: Home&#39;</span><span class=p>),</span>
+   <span class=n>Text</span><span class=p>(</span><span class=s1>&#39;Index 1: Business&#39;</span><span class=p>),</span>
+   <span class=n>Text</span><span class=p>(</span><span class=s1>&#39;Index 2: School&#39;</span><span class=p>),</span>
+ <span class=p>];</span>
+
+ <span class=nd>@override</span>
+ <span class=n>Widget</span> <span class=n>build</span><span class=p>(</span><span class=n>BuildContext</span> <span class=n>context</span><span class=p>)</span> <span class=p>{</span>
+   <span class=k>return</span> <span class=n>Scaffold</span><span class=p>(</span>
+     <span class=nl>appBar:</span> <span class=n>AppBar</span><span class=p>(</span>
+       <span class=nl>title:</span> <span class=n>Text</span><span class=p>(</span><span class=s1>&#39;BottomNavigationBar Sample&#39;</span><span class=p>),</span>
+     <span class=p>),</span>
+     <span class=nl>body:</span> <span class=n>Center</span><span class=p>(</span>
+       <span class=nl>child:</span> <span class=n>_widgetOptions</span><span class=p>.</span><span class=n>elementAt</span><span class=p>(</span><span class=n>_selectedIndex</span><span class=p>),</span>
+     <span class=p>),</span>
+     <span class=nl>bottomNavigationBar:</span> <span class=n>BottomNavigationBar</span><span class=p>(</span>
+       <span class=nl>items:</span> <span class=o>&lt;</span><span class=n>BottomNavigationBarItem</span><span class=o>&gt;</span><span class=p>[</span>
+         <span class=n>BottomNavigationBarItem</span><span class=p>(</span><span class=nl>icon:</span> <span class=n>Icon</span><span class=p>(</span><span class=n>Icons</span><span class=p>.</span><span class=n>home</span><span class=p>),</span> <span class=nl>title:</span> <span class=n>Text</span><span class=p>(</span><span class=s1>&#39;Home&#39;</span><span class=p>)),</span>
+         <span class=n>BottomNavigationBarItem</span><span class=p>(</span><span class=nl>icon:</span> <span class=n>Icon</span><span class=p>(</span><span class=n>Icons</span><span class=p>.</span><span class=n>business</span><span class=p>),</span> <span class=nl>title:</span> <span class=n>Text</span><span class=p>(</span><span class=s1>&#39;Business&#39;</span><span class=p>)),</span>
+         <span class=n>BottomNavigationBarItem</span><span class=p>(</span><span class=nl>icon:</span> <span class=n>Icon</span><span class=p>(</span><span class=n>Icons</span><span class=p>.</span><span class=n>school</span><span class=p>),</span> <span class=nl>title:</span> <span class=n>Text</span><span class=p>(</span><span class=s1>&#39;School&#39;</span><span class=p>)),</span>
+       <span class=p>],</span>
+       <span class=nl>currentIndex:</span> <span class=n>_selectedIndex</span><span class=p>,</span>
+       <span class=nl>fixedColor:</span> <span class=n>Colors</span><span class=p>.</span><span class=n>deepPurple</span><span class=p>,</span>
+       <span class=nl>onTap:</span> <span class=n>_onItemTapped</span><span class=p>,</span>
+     <span class=p>),</span>
+   <span class=p>);</span>
+ <span class=p>}</span>
+
+ <span class=kt>void</span> <span class=n>_onItemTapped</span><span class=p>(</span><span class=kt>int</span> <span class=n>index</span><span class=p>)</span> <span class=p>{</span>
+   <span class=n>setState</span><span class=p>(()</span> <span class=p>{</span>
+     <span class=n>_selectedIndex</span> <span class=o>=</span> <span class=n>index</span><span class=p>;</span>
+   <span class=p>});</span>
+ <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div></p> <p>上面这段代码创建了三个BottomNavigationBarItem，它们的点击事件是<code>_onItemTapped</code>，此方法会更新<code>_selectedIndex</code>，并会刷新UI。刷新时body会根据<code>_selectedIndex</code>的值显示不同的内容，并且BottomNavigationBar的currentIndex也会更新为<code>_selectedIndex</code>。<br> 这就是底部导航栏的工作原理。</p> <p>那么我们在等什么？上就完事了！慢着，这样Tab之前切换太生硬了，我们参考<a href=https://github.com/flutter/flutter/blob/master/examples/flutter_gallery>flutter_gallery</a>中的<a href=https://github.com/flutter/flutter/blob/master/examples/flutter_gallery/lib/demo/material/bottom_navigation_demo.dart>bottom_navigation_demo.dart</a>来一点点过渡动画。 </p> <p>flutter_gallery已经包含在本地的SDK中了。位于<code>$FLUTTER_ROOT/examples/flutter_gallery</code>。<br> 建议参照README编译出来看看Flutter为我们提供那些方便的便利。</p> <p>直接上修改过的主页代码：<br> <strong>main.dart</strong> <div class=highlight><pre><span></span><code><span class=k>import</span> <span class=s1>&#39;package:flutter/material.dart&#39;</span><span class=p>;</span>
+
+<span class=k>import</span> <span class=s1>&#39;stats/stats.dart&#39;</span><span class=p>;</span>
+<span class=k>import</span> <span class=s1>&#39;task/task_list.dart&#39;</span><span class=p>;</span>
+
+<span class=kt>void</span> <span class=n>main</span><span class=p>()</span> <span class=o>=&gt;</span> <span class=n>runApp</span><span class=p>(</span><span class=n>MyApp</span><span class=p>());</span>
+
+<span class=kd>class</span> <span class=nc>MyApp</span> <span class=kd>extends</span> <span class=n>StatelessWidget</span> <span class=p>{</span>
+  <span class=nd>@override</span>
+  <span class=n>Widget</span> <span class=n>build</span><span class=p>(</span><span class=n>BuildContext</span> <span class=n>context</span><span class=p>)</span> <span class=p>{</span>
+    <span class=k>return</span> <span class=k>new</span> <span class=n>MaterialApp</span><span class=p>(</span>
+      <span class=nl>title:</span> <span class=s1>&#39;Ready?&#39;</span><span class=p>,</span>
+      <span class=nl>theme:</span> <span class=k>new</span> <span class=n>ThemeData</span><span class=p>(</span>
+        <span class=nl>primarySwatch:</span> <span class=n>Colors</span><span class=p>.</span><span class=n>indigo</span><span class=p>,</span>
+        <span class=nl>fontFamily:</span> <span class=s1>&#39;Roboto&#39;</span>   <span class=c1>// 指定默认字体</span>
+      <span class=p>),</span>
+      <span class=nl>home:</span> <span class=n>MainPage</span><span class=p>(),</span>
+    <span class=p>);</span>
+  <span class=p>}</span>
+<span class=p>}</span>
+
+<span class=c1>// 连接BottomNavigationBarItem与Tab内容的纽带</span>
+<span class=c1>// icon: BottomNavigationBarItem的icon</span>
+<span class=c1>// title: BottomNavigationBarItem的title</span>
+<span class=c1>// tabView: Tab内容</span>
+<span class=c1>// vsync: 动画需要的参数</span>
+<span class=kd>class</span> <span class=nc>NavigationIconView</span> <span class=p>{</span>
+  <span class=n>NavigationIconView</span><span class=p>({</span>
+    <span class=n>Widget</span> <span class=n>icon</span><span class=p>,</span>
+    <span class=kt>String</span> <span class=n>title</span><span class=p>,</span>
+    <span class=n>Widget</span> <span class=n>tabView</span><span class=p>,</span>
+    <span class=n>TickerProvider</span> <span class=n>vsync</span><span class=p>,</span>
+  <span class=p>})</span> <span class=o>:</span> <span class=n>_title</span> <span class=o>=</span> <span class=n>title</span><span class=p>,</span>
+      <span class=n>_tabView</span> <span class=o>=</span> <span class=n>tabView</span><span class=p>,</span>
+      <span class=n>item</span> <span class=o>=</span> <span class=n>BottomNavigationBarItem</span><span class=p>(</span>
+        <span class=nl>icon:</span> <span class=n>icon</span><span class=p>,</span>
+        <span class=nl>title:</span> <span class=n>Text</span><span class=p>(</span><span class=n>title</span><span class=p>),</span>
+      <span class=p>),</span> <span class=c1>// 创建BottomNavigationBarItem</span>
+      <span class=c1>// 创建动画控制器</span>
+      <span class=n>controller</span> <span class=o>=</span> <span class=n>AnimationController</span><span class=p>(</span>
+        <span class=nl>duration:</span> <span class=n>kThemeAnimationDuration</span><span class=p>,</span> <span class=c1>// 200ms</span>
+        <span class=nl>vsync:</span> <span class=n>vsync</span><span class=p>,</span>
+      <span class=p>)</span> <span class=p>{</span>
+    <span class=n>_animation</span> <span class=o>=</span> <span class=n>controller</span><span class=p>.</span><span class=n>drive</span><span class=p>(</span><span class=n>CurveTween</span><span class=p>(</span>
+      <span class=nl>curve:</span> <span class=k>const</span> <span class=n>Interval</span><span class=p>(</span><span class=m>0.5</span><span class=p>,</span> <span class=m>1.0</span><span class=p>,</span> <span class=nl>curve:</span> <span class=n>Curves</span><span class=p>.</span><span class=n>fastOutSlowIn</span><span class=p>),</span>
+    <span class=p>));</span> <span class=c1>// 动画值从0.5到1.0的快出满进(fastOutSlowIn)插值效果的动画</span>
+  <span class=p>}</span>
+
+  <span class=kd>final</span> <span class=kt>String</span> <span class=n>_title</span><span class=p>;</span>
+  <span class=kd>final</span> <span class=n>BottomNavigationBarItem</span> <span class=n>item</span><span class=p>;</span>
+  <span class=kd>final</span> <span class=n>AnimationController</span> <span class=n>controller</span><span class=p>;</span>
+  <span class=kd>final</span> <span class=n>Widget</span> <span class=n>_tabView</span><span class=p>;</span>
+  <span class=n>Animation</span><span class=o>&lt;</span><span class=kt>double</span><span class=o>&gt;</span> <span class=n>_animation</span><span class=p>;</span>
+
+  <span class=c1>// Tab切换时的动画效果——淡入淡出动画伴随着滑动动画</span>
+  <span class=n>FadeTransition</span> <span class=n>transition</span><span class=p>(</span><span class=n>BuildContext</span> <span class=n>context</span><span class=p>)</span> <span class=p>{</span>
+    <span class=c1>// 最外层是一个淡入淡出动画，值是_animation</span>
+    <span class=k>return</span> <span class=n>FadeTransition</span><span class=p>(</span>
+      <span class=nl>key:</span> <span class=n>Key</span><span class=p>(</span><span class=n>_title</span><span class=p>),</span>
+      <span class=nl>opacity:</span> <span class=n>_animation</span><span class=p>,</span>
+      <span class=c1>// 伴随着一个滑动动画，动画值从Offset(0.0, 0.02)到Offset.zero</span>
+      <span class=c1>// Offset表示的是偏移的百分比，即width * dx，height * dy</span>
+      <span class=nl>child:</span> <span class=n>SlideTransition</span><span class=p>(</span>
+        <span class=nl>position:</span> <span class=n>_animation</span><span class=p>.</span><span class=n>drive</span><span class=p>(</span>
+          <span class=n>Tween</span><span class=o>&lt;</span><span class=n>Offset</span><span class=o>&gt;</span><span class=p>(</span>
+            <span class=nl>begin:</span> <span class=k>const</span> <span class=n>Offset</span><span class=p>(</span><span class=m>0.0</span><span class=p>,</span> <span class=m>0.02</span><span class=p>),</span> <span class=c1>// Slightly down.</span>
+            <span class=nl>end:</span> <span class=n>Offset</span><span class=p>.</span><span class=n>zero</span><span class=p>,</span>
+          <span class=p>),</span>
+        <span class=p>),</span>
+        <span class=c1>// 作用在_tabView也就是Tab内容上</span>
+        <span class=nl>child:</span> <span class=n>_tabView</span>
+      <span class=p>),</span>
+    <span class=p>);</span>
+  <span class=p>}</span>
+<span class=p>}</span>
+
+<span class=kd>class</span> <span class=nc>MainPage</span> <span class=kd>extends</span> <span class=n>StatefulWidget</span> <span class=p>{</span>
+  <span class=kd>static</span> <span class=k>const</span> <span class=kt>String</span> <span class=n>routeName</span> <span class=o>=</span> <span class=s1>&#39;/&#39;</span><span class=p>;</span>
+
+  <span class=nd>@override</span>
+  <span class=n>createState</span><span class=p>()</span> <span class=o>=&gt;</span> <span class=n>_MainPageState</span><span class=p>();</span>
+<span class=p>}</span>
+
+<span class=c1>// TickerProviderStateMixin是动画的需要</span>
+<span class=kd>class</span> <span class=nc>_MainPageState</span> <span class=kd>extends</span> <span class=n>State</span><span class=o>&lt;</span><span class=n>MainPage</span><span class=o>&gt;</span> <span class=kd>with</span> <span class=n>TickerProviderStateMixin</span> <span class=p>{</span>
+  <span class=c1>// 当前选中的Tab</span>
+  <span class=kt>int</span> <span class=n>_currentIndex</span> <span class=o>=</span> <span class=m>0</span><span class=p>;</span>
+  <span class=n>List</span><span class=o>&lt;</span><span class=n>NavigationIconView</span><span class=o>&gt;</span> <span class=n>_navigationViews</span><span class=p>;</span>
+
+  <span class=c1>// initState是StatefulWidget非常重要的一个生命周期方法，与之对应的是dispose方法</span>
+  <span class=c1>// 对于StatefulWidget，我们可以在这创建不需要重复创建的变量</span>
+  <span class=nd>@override</span>
+  <span class=kt>void</span> <span class=n>initState</span><span class=p>()</span> <span class=p>{</span>
+    <span class=k>super</span><span class=p>.</span><span class=n>initState</span><span class=p>();</span>
+
+    <span class=n>_navigationViews</span> <span class=o>=</span> <span class=o>&lt;</span><span class=n>NavigationIconView</span><span class=o>&gt;</span><span class=p>[</span>
+      <span class=n>NavigationIconView</span><span class=p>(</span>
+        <span class=nl>icon:</span> <span class=k>const</span> <span class=n>Icon</span><span class=p>(</span><span class=n>Icons</span><span class=p>.</span><span class=n>timer_off</span><span class=p>),</span>
+        <span class=nl>title:</span> <span class=s2>&quot;Ready&quot;</span><span class=p>,</span>
+        <span class=nl>tabView:</span> <span class=n>TaskListPage</span><span class=p>(),</span>
+        <span class=nl>vsync:</span> <span class=k>this</span><span class=p>,</span>
+      <span class=p>),</span>
+      <span class=n>NavigationIconView</span><span class=p>(</span>
+        <span class=nl>icon:</span> <span class=k>const</span> <span class=n>Icon</span><span class=p>(</span><span class=n>Icons</span><span class=p>.</span><span class=n>timeline</span><span class=p>),</span>
+        <span class=nl>title:</span> <span class=s2>&quot;Stats&quot;</span><span class=p>,</span>
+        <span class=nl>tabView:</span> <span class=n>StatsPage</span><span class=p>(),</span>
+        <span class=nl>vsync:</span> <span class=k>this</span><span class=p>,</span>
+      <span class=p>),</span>
+    <span class=p>];</span>
+
+    <span class=c1>// 默认显示Tab1</span>
+    <span class=n>_navigationViews</span><span class=p>[</span><span class=n>_currentIndex</span><span class=p>].</span><span class=n>controller</span><span class=p>.</span><span class=n>value</span> <span class=o>=</span> <span class=m>1.0</span><span class=p>;</span>
+  <span class=p>}</span>
+
+  <span class=nd>@override</span>
+  <span class=kt>void</span> <span class=n>dispose</span><span class=p>()</span> <span class=p>{</span>
+    <span class=c1>// 回收资源</span>
+    <span class=k>for</span> <span class=p>(</span><span class=n>NavigationIconView</span> <span class=n>view</span> <span class=k>in</span> <span class=n>_navigationViews</span><span class=p>)</span>
+      <span class=n>view</span><span class=p>.</span><span class=n>controller</span><span class=p>.</span><span class=n>dispose</span><span class=p>();</span>
+    <span class=k>super</span><span class=p>.</span><span class=n>dispose</span><span class=p>();</span>
+  <span class=p>}</span>
+
+  <span class=c1>// 构建Scaffold的body</span>
+  <span class=c1>//</span>
+  <span class=c1>// 取出NavigationIconView对应的FadeTransition(这也是一个Widget)</span>
+  <span class=c1>// 按照其opacity从高到低进行排序，然后放入Stack(相当于Android中的FrameLayout)中</span>
+  <span class=n>Widget</span> <span class=n>_buildTransitionsStack</span><span class=p>()</span> <span class=p>{</span>
+    <span class=kd>final</span> <span class=n>List</span><span class=o>&lt;</span><span class=n>FadeTransition</span><span class=o>&gt;</span> <span class=n>transitions</span> <span class=o>=</span> <span class=o>&lt;</span><span class=n>FadeTransition</span><span class=o>&gt;</span><span class=p>[];</span>
+
+    <span class=k>for</span> <span class=p>(</span><span class=n>NavigationIconView</span> <span class=n>view</span> <span class=k>in</span> <span class=n>_navigationViews</span><span class=p>)</span>
+      <span class=n>transitions</span><span class=p>.</span><span class=n>add</span><span class=p>(</span><span class=n>view</span><span class=p>.</span><span class=n>transition</span><span class=p>(</span><span class=n>context</span><span class=p>));</span>
+
+    <span class=c1>// We want to have the newly animating (fading in) views on top.</span>
+    <span class=n>transitions</span><span class=p>.</span><span class=n>sort</span><span class=p>((</span><span class=n>FadeTransition</span> <span class=n>a</span><span class=p>,</span> <span class=n>FadeTransition</span> <span class=n>b</span><span class=p>)</span> <span class=p>{</span>
+      <span class=kd>final</span> <span class=n>Animation</span><span class=o>&lt;</span><span class=kt>double</span><span class=o>&gt;</span> <span class=n>aAnimation</span> <span class=o>=</span> <span class=n>a</span><span class=p>.</span><span class=n>opacity</span><span class=p>;</span>
+      <span class=kd>final</span> <span class=n>Animation</span><span class=o>&lt;</span><span class=kt>double</span><span class=o>&gt;</span> <span class=n>bAnimation</span> <span class=o>=</span> <span class=n>b</span><span class=p>.</span><span class=n>opacity</span><span class=p>;</span>
+      <span class=kd>final</span> <span class=kt>double</span> <span class=n>aValue</span> <span class=o>=</span> <span class=n>aAnimation</span><span class=p>.</span><span class=n>value</span><span class=p>;</span>
+      <span class=kd>final</span> <span class=kt>double</span> <span class=n>bValue</span> <span class=o>=</span> <span class=n>bAnimation</span><span class=p>.</span><span class=n>value</span><span class=p>;</span>
+
+      <span class=k>return</span> <span class=n>aValue</span><span class=p>.</span><span class=n>compareTo</span><span class=p>(</span><span class=n>bValue</span><span class=p>);</span>
+    <span class=p>});</span>
+
+    <span class=k>return</span> <span class=n>Stack</span><span class=p>(</span><span class=nl>children:</span> <span class=n>transitions</span><span class=p>);</span>
+  <span class=p>}</span>
+
+  <span class=nd>@override</span>
+  <span class=n>Widget</span> <span class=n>build</span><span class=p>(</span><span class=n>BuildContext</span> <span class=n>context</span><span class=p>)</span> <span class=p>{</span>
+    <span class=kd>final</span> <span class=n>BottomNavigationBar</span> <span class=n>botNavBar</span> <span class=o>=</span> <span class=n>BottomNavigationBar</span><span class=p>(</span>
+      <span class=nl>items:</span> <span class=n>_navigationViews</span>
+        <span class=p>.</span><span class=n>map</span><span class=o>&lt;</span><span class=n>BottomNavigationBarItem</span><span class=o>&gt;</span><span class=p>((</span><span class=n>NavigationIconView</span> <span class=n>navigationView</span><span class=p>)</span> <span class=o>=&gt;</span> <span class=n>navigationView</span><span class=p>.</span><span class=n>item</span><span class=p>)</span>
+        <span class=p>.</span><span class=n>toList</span><span class=p>(),</span> <span class=c1>// List的map操作</span>
+      <span class=nl>currentIndex:</span> <span class=n>_currentIndex</span><span class=p>,</span>
+      <span class=nl>type:</span> <span class=n>BottomNavigationBarType</span><span class=p>.</span><span class=n>fixed</span><span class=p>,</span>
+      <span class=nl>onTap:</span> <span class=p>(</span><span class=kt>int</span> <span class=n>index</span><span class=p>)</span> <span class=p>{</span>
+        <span class=n>setState</span><span class=p>(()</span> <span class=p>{</span>
+          <span class=c1>// 切换Tab时，先执行原来Tab页面的退场动画，然后更新_currentIndex，最后执行新Tab的进场动画</span>
+          <span class=n>_navigationViews</span><span class=p>[</span><span class=n>_currentIndex</span><span class=p>].</span><span class=n>controller</span><span class=p>.</span><span class=n>reverse</span><span class=p>();</span>
+          <span class=n>_currentIndex</span> <span class=o>=</span> <span class=n>index</span><span class=p>;</span>
+          <span class=n>_navigationViews</span><span class=p>[</span><span class=n>_currentIndex</span><span class=p>].</span><span class=n>controller</span><span class=p>.</span><span class=n>forward</span><span class=p>();</span>
+        <span class=p>});</span>
+
+        <span class=c1>// 延迟kThemeAnimationDuration，等待动画执行完之后再次刷新UI</span>
+        <span class=c1>//</span>
+        <span class=c1>// fix a bug that the current tab view can&#39;t interact with anything</span>
+        <span class=n>Future</span><span class=p>.</span><span class=n>delayed</span><span class=p>(</span><span class=n>kThemeAnimationDuration</span><span class=p>,</span> <span class=p>()</span> <span class=o>=&gt;</span> <span class=n>setState</span><span class=p>(()</span> <span class=p>{}));</span>
+      <span class=p>},</span>
+    <span class=p>);</span>
+
+    <span class=k>return</span> <span class=n>Scaffold</span><span class=p>(</span>
+      <span class=nl>body:</span> <span class=n>Center</span><span class=p>(</span><span class=nl>child:</span> <span class=n>_buildTransitionsStack</span><span class=p>()),</span>
+      <span class=c1>// 设置BottomNavigationBar的背景色为白色</span>
+      <span class=nl>bottomNavigationBar:</span> <span class=n>Theme</span><span class=p>(</span>
+        <span class=nl>data:</span> <span class=n>Theme</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=n>context</span><span class=p>).</span><span class=n>copyWith</span><span class=p>(</span><span class=nl>canvasColor:</span> <span class=n>Colors</span><span class=p>.</span><span class=n>white</span><span class=p>),</span>
+        <span class=nl>child:</span> <span class=n>botNavBar</span><span class=p>,</span>
+      <span class=p>),</span>
+    <span class=p>);</span>
+  <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div></p> <p>上面这段代码知识点比较多，可以分为以下三点</p> <ol> <li>BottomNavigationBar的 <strong>大坑</strong></li> <li>Asset的使用——字体、图片等</li> <li>动画Animation</li> </ol> <h3 id=21-bottomnavigationbar>2.1 BottomNavigationBar的大坑<a class=headerlink href=#21-bottomnavigationbar title="Permanent link">&para;</a></h3> <p>BottomNavigationBar从官方demo上来看很美好，使用很简单。但是在实际过程中，遇到了两个问题</p> <ol> <li>BottomNavigationBarItem的每次切换都伴随着Tab的重建</li> <li>解决了1之后，BottomNavigationBarItem来回切换后，Tab内容不能发生任何交互 </li> </ol> <p>其实这本质就是一个问题——如何完美使用BottomNavigationBar。</p> <p>参考<a href=https://github.com/flutter/flutter/blob/master/examples/flutter_gallery/lib/demo/material/bottom_navigation_demo.dart>bottom_navigation_demo.dart</a>来一点点过渡动画后，我们发现在两个Tab来回切换多次，会有重复构建现象。 <div class=highlight><pre><span></span><code>flutter: [StatsPage] [build]
+flutter: [TaskListPage] [build]
+flutter: [TaskListPage] [build]
+flutter: [StatsPage] [build]
+flutter: [StatsPage] [build]
+flutter: [TaskListPage] [build]
+flutter: [TaskListPage] [build]
+flutter: [StatsPage] [build]
+flutter: [StatsPage] [build]
+flutter: [TaskListPage] [build]
+flutter: [TaskListPage] [build]
+flutter: [StatsPage] [build]
+flutter: [StatsPage] [build]
+flutter: [TaskListPage] [build]
+flutter: [TaskListPage] [build]
+flutter: [StatsPage] [build]
+flutter: [StatsPage] [build]
+flutter: [TaskListPage] [build]
+flutter: [TaskListPage] [build]
+flutter: [StatsPage] [build]
+</code></pre></div></p> <p>经过多次google无果后，探索发现在<code>NavigationIconView#transition</code>方法中创建<code>FadeTransition</code>时加上key可以解决此问题: <div class=highlight><pre><span></span><code><span class=kd>class</span> <span class=nc>NavigationIconView</span> <span class=p>{</span>
+  <span class=p>...</span>
+  <span class=n>FadeTransition</span> <span class=n>transition</span><span class=p>(</span><span class=n>BuildContext</span> <span class=n>context</span><span class=p>)</span> <span class=p>{</span>
+    <span class=k>return</span> <span class=n>FadeTransition</span><span class=p>(</span>
+      <span class=nl>key:</span> <span class=n>Key</span><span class=p>(</span><span class=n>_title</span><span class=p>),</span>
+      <span class=p>...</span>
+    <span class=p>);</span>
+  <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div></p> <p>好景不长，随后又发现问题2。在关键节点打印日志后发现了问题所在。<br> 下面是启动App-&gt;点击tab2-&gt;点击tab1的过程中，点击tab1的日志 <div class=highlight><pre><span></span><code>flutter: [_MainPageState] [build] index=0
+flutter: [NavigationIconView] [NavigationIconView] title=Stats, status=AnimationStatus.reverse
+flutter: [NavigationIconView] [NavigationIconView] title=Ready, status=AnimationStatus.forward
+flutter: [_MainPageState] [_buildTransitionsStack] [&lt;&#39;Ready&#39;&gt;]=0.0, [&lt;&#39;Stats&#39;&gt;]=1.0
+flutter: [_MainPageState] [_buildTransitionsStack] index=0:[&lt;&#39;Ready&#39;&gt;] index=1:[&lt;&#39;Stats&#39;&gt;]
+flutter: [NavigationIconView] [NavigationIconView] title=Stats, status=AnimationStatus.dismissed
+flutter: [NavigationIconView] [NavigationIconView] title=Ready, status=AnimationStatus.completed
+</code></pre></div> 由Tab2切换回Tab1的点击事件发生之后(1)，先执行Tab2页面的退场动画，然后更新_currentIndex，最后执行Tab1的进场动画(2, 3)。这三行代码执行完之后，UI就会刷新，body方法也会重新执行，这时由于动画才刚开始，所以Tab2的opacity还是1.0，Tab1的opacity是0.0(4)。所以排序完的结果是<code>index=0:[&lt;'Ready'&gt;] index=1:[&lt;'Stats'&gt;]</code>(5)，然后Stack按此顺序显示。最后Tab2页面的退场动画和Tab1的进场动画执行完毕(6, 7)。而Stack的布局特点 <strong>顾名思义就是Stack形式—— “长子”在底部</strong> ，因此tab1实际上位于栈低，所以不能有交互。<br> 解决办法就是在动画完成时重新刷新下UI: <div class=highlight><pre><span></span><code><span class=nl>onTap:</span> <span class=p>(</span><span class=kt>int</span> <span class=n>index</span><span class=p>)</span> <span class=p>{</span>
+  <span class=p>...</span>
+  <span class=n>Future</span><span class=p>.</span><span class=n>delayed</span><span class=p>(</span><span class=n>kThemeAnimationDuration</span><span class=p>,</span> <span class=p>()</span> <span class=o>=&gt;</span> <span class=n>setState</span><span class=p>(()</span> <span class=p>{}));</span>
+<span class=p>},</span>
+</code></pre></div></p> <p>此外，关于此节问题，Stack注释中有这么一段话： <div class=highlight><pre><span></span><code><span class=c1>/// The stack paints its children in order with the first child being at the</span>
+<span class=c1>/// bottom. If you want to change the order in which the children paint, you</span>
+<span class=c1>/// can rebuild the stack with the children in the new order. If you reorder</span>
+<span class=c1>/// the children in this way, consider giving the children non-null keys.</span>
+<span class=c1>/// These keys will cause the framework to move the underlying objects for</span>
+<span class=c1>/// the children to their new locations rather than recreate them at their</span>
+<span class=c1>/// new location.</span>
+</code></pre></div> 上面就解释了stack布局特点以及 <strong>为何需要加一个key，才能避免被recreate</strong> 。 </p> <p><a href=https://flutter.io/docs/development/ui/layout#stack>Stack示例</a> </p> <h3 id=22-asset>2.2 Asset的使用——字体<a class=headerlink href=#22-asset title="Permanent link">&para;</a></h3> <p><a href=https://flutter.io/docs/cookbook/design/fonts>Using custom fonts</a><br> <a href=https://flutter.io/docs/development/ui/assets-and-images>Assets and images</a> </p> <blockquote> <p>While Android treats resources and assets as distinct items, Flutter apps have only assets. <cite><a href=https://flutter.io/docs/get-started/flutter-for/android-devs#where-do-i-store-my-resolution-dependent-image-files>Where do I store my resolution-dependent image files?</a></cite></p> </blockquote> <p>Flutter中本地资源管理都是用的Asset。字体可以放到fonts或者assets文件夹下面，但最后fonts打包时也会放到assets下面。在本程序中，字体是放到fonts文件夹下面的。</p> <p>定义程序默认字体非常简单： </p> <p>1、将字体文件放置到根目录/fonts文件夹下<br> <div class=highlight><pre><span></span><code>|--lib
+|   |--utils.dart
+|   |--main.dart
+|   |--task
+|   |   |--task_list.dart
+|   |--data
+|   |   |--task.dart
+|   |--stats
+|   |   |--stats.dart
+|--fonts
+|   |--Roboto-Medium.ttf
+|   |--Roboto-Regular.ttf
+|   |--Roboto-Bold.ttf
+</code></pre></div></p> <p>2、在pubspec.yaml中进行配置，此部分还有一个example在注释中可供参考<br> <div class=highlight><pre><span></span><code>flutter:
+  uses-material-design: true
+
+  fonts:
+      - family: Roboto
+        fonts:
+          - asset: fonts/Roboto-Regular.ttf
+          - asset: fonts/Roboto-Medium.ttf
+            weight: 500
+          - asset: fonts/Roboto-Bold.ttf
+            weight: 700
+</code></pre></div></p> <p>3、设置app默认字体<br> <div class=highlight><pre><span></span><code><span class=kt>void</span> <span class=n>main</span><span class=p>()</span> <span class=o>=&gt;</span> <span class=n>runApp</span><span class=p>(</span><span class=n>MyApp</span><span class=p>());</span>
+
+<span class=kd>class</span> <span class=nc>MyApp</span> <span class=kd>extends</span> <span class=n>StatelessWidget</span> <span class=p>{</span>
+  <span class=nd>@override</span>
+  <span class=n>Widget</span> <span class=n>build</span><span class=p>(</span><span class=n>BuildContext</span> <span class=n>context</span><span class=p>)</span> <span class=p>{</span>
+    <span class=k>return</span> <span class=k>new</span> <span class=n>MaterialApp</span><span class=p>(</span>
+      <span class=nl>theme:</span> <span class=k>new</span> <span class=n>ThemeData</span><span class=p>(</span>
+        <span class=nl>fontFamily:</span> <span class=s1>&#39;Roboto&#39;</span>
+      <span class=p>),</span>
+    <span class=p>);</span>
+  <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div></p> <h3 id=23-animation>2.3 Animation<a class=headerlink href=#23-animation title="Permanent link">&para;</a></h3> <p><a href=https://flutter.io/docs/cookbook/animation/opacity-animation>Cookbook - Fade a Widget in and out</a><br> <a href=https://flutter.io/docs/development/ui/animations>User Interface - Animations</a> </p> <h4 id=231-animation>2.3.1 Animation的使用<a class=headerlink href=#231-animation title="Permanent link">&para;</a></h4> <p>在本文中，关于Animation的代码有如下这些：</p> <p>1、创建AnimationController <div class=highlight><pre><span></span><code><span class=n>controller</span> <span class=o>=</span> <span class=n>AnimationController</span><span class=p>(</span>
+  <span class=nl>duration:</span> <span class=n>kThemeAnimationDuration</span><span class=p>,</span>
+  <span class=nl>vsync:</span> <span class=n>vsync</span><span class=p>,</span>
+<span class=p>)</span>
+</code></pre></div> kThemeAnimationDuration是定义在theme.dart中的常量<code>const Duration kThemeAnimationDuration = Duration(milliseconds: 200);</code>。</p> <p>2、创建一个Animation对象，用于改变Tab的不透明度 <div class=highlight><pre><span></span><code><span class=n>_animation</span> <span class=o>=</span> <span class=n>controller</span><span class=p>.</span><span class=n>drive</span><span class=p>(</span><span class=n>CurveTween</span><span class=p>(</span>
+  <span class=nl>curve:</span> <span class=k>const</span> <span class=n>Interval</span><span class=p>(</span><span class=m>0.5</span><span class=p>,</span> <span class=m>1.0</span><span class=p>,</span> <span class=nl>curve:</span> <span class=n>Curves</span><span class=p>.</span><span class=n>fastOutSlowIn</span><span class=p>),</span>
+<span class=p>))</span>
+</code></pre></div> <code>controller.drive(tween)</code>方法会返回一个Animation，其value的get方法为<code>tween.transform(controller.value)</code>。其具体源码分析将在下一节。<br> 而<code>CurveTween#transform</code>方法调用了curve参数的<code>transform(t)</code>。在本例中curve就是<code>Interval(0.5, 1.0, curve: Curves.fastOutSlowIn)</code>。 </p> <p><code>Interval</code>的特点在于下面这段代码：<br> <div class=highlight><pre><span></span><code><span class=n>t</span> <span class=o>=</span> <span class=p>((</span><span class=n>t</span> <span class=o>-</span> <span class=n>begin</span><span class=p>)</span> <span class=o>/</span> <span class=p>(</span><span class=n>end</span> <span class=o>-</span> <span class=n>begin</span><span class=p>)).</span><span class=n>clamp</span><span class=p>(</span><span class=m>0.0</span><span class=p>,</span> <span class=m>1.0</span><span class=p>);</span>
+<span class=k>return</span> <span class=n>curve</span><span class=p>.</span><span class=n>transform</span><span class=p>(</span><span class=n>t</span><span class=p>);</span>
+</code></pre></div> 也就是说使用Interval(0.5, 1.0)插值的6秒钟动画，播放时会延迟3秒然后3秒播放完毕。在播放的3秒内，动画如何播放取决于Interval内部的curve参数。</p> <p>3、创建一个Tween用户改变Tab的位置 <div class=highlight><pre><span></span><code><span class=n>_animation</span><span class=p>.</span><span class=n>drive</span><span class=p>(</span>
+  <span class=n>Tween</span><span class=o>&lt;</span><span class=n>Offset</span><span class=o>&gt;</span><span class=p>(</span>
+    <span class=nl>begin:</span> <span class=k>const</span> <span class=n>Offset</span><span class=p>(</span><span class=m>0.0</span><span class=p>,</span> <span class=m>0.02</span><span class=p>),</span> <span class=c1>// Slightly down.</span>
+    <span class=nl>end:</span> <span class=n>Offset</span><span class=p>.</span><span class=n>zero</span><span class=p>,</span>
+  <span class=p>),</span>
+<span class=p>)</span>
+</code></pre></div></p> <p>这步将一个<code>Tween</code>绑定到<code>_animation</code>上，这意味着<code>_animation.value</code>的值将作为Tween的输入。我们看下<code>Tween</code>的相关方法 <div class=highlight><pre><span></span><code><span class=kd>class</span> <span class=nc>Tween</span><span class=o>&lt;</span><span class=n>T</span> <span class=kd>extends</span> <span class=kt>dynamic</span><span class=o>&gt;</span> <span class=kd>extends</span> <span class=n>Animatable</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span> <span class=p>{</span>
+  <span class=n>Tween</span><span class=p>({</span> <span class=k>this</span><span class=p>.</span><span class=n>begin</span><span class=p>,</span> <span class=k>this</span><span class=p>.</span><span class=n>end</span> <span class=p>});</span>
+  <span class=n>T</span> <span class=n>begin</span><span class=p>;</span>
+  <span class=n>T</span> <span class=n>end</span><span class=p>;</span>
+
+  <span class=nd>@protected</span>
+  <span class=n>T</span> <span class=n>lerp</span><span class=p>(</span><span class=kt>double</span> <span class=n>t</span><span class=p>)</span> <span class=p>{</span>
+    <span class=k>assert</span><span class=p>(</span><span class=n>begin</span> <span class=o>!=</span> <span class=kc>null</span><span class=p>);</span>
+    <span class=k>assert</span><span class=p>(</span><span class=n>end</span> <span class=o>!=</span> <span class=kc>null</span><span class=p>);</span>
+    <span class=k>return</span> <span class=n>begin</span> <span class=o>+</span> <span class=p>(</span><span class=n>end</span> <span class=o>-</span> <span class=n>begin</span><span class=p>)</span> <span class=o>*</span> <span class=n>t</span><span class=p>;</span>
+  <span class=p>}</span>
+
+  <span class=nd>@override</span>
+  <span class=n>T</span> <span class=n>transform</span><span class=p>(</span><span class=kt>double</span> <span class=n>t</span><span class=p>)</span> <span class=p>{</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>t</span> <span class=o>==</span> <span class=m>0.0</span><span class=p>)</span>
+      <span class=k>return</span> <span class=n>begin</span><span class=p>;</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>t</span> <span class=o>==</span> <span class=m>1.0</span><span class=p>)</span>
+      <span class=k>return</span> <span class=n>end</span><span class=p>;</span>
+    <span class=k>return</span> <span class=n>lerp</span><span class=p>(</span><span class=n>t</span><span class=p>);</span>
+  <span class=p>}</span>
+  <span class=p>...</span>
+<span class=p>}</span>
+</code></pre></div> 由上面的代码，我们可以看出，<code>Tween</code>就是一个估值器的作用。</p> <p>4、点击的时候用AnimationController控制动画的播放 <div class=highlight><pre><span></span><code><span class=n>setState</span><span class=p>(()</span> <span class=p>{</span>
+  <span class=n>_navigationViews</span><span class=p>[</span><span class=n>_currentIndex</span><span class=p>].</span><span class=n>controller</span><span class=p>.</span><span class=n>reverse</span><span class=p>();</span>
+  <span class=n>_currentIndex</span> <span class=o>=</span> <span class=n>index</span><span class=p>;</span>
+  <span class=n>_navigationViews</span><span class=p>[</span><span class=n>_currentIndex</span><span class=p>].</span><span class=n>controller</span><span class=p>.</span><span class=n>forward</span><span class=p>();</span>
+<span class=p>});</span>
+</code></pre></div></p> <p>5、在dispose方法中对AnimationController进行回收 <div class=highlight><pre><span></span><code><span class=nd>@override</span>
+<span class=kt>void</span> <span class=n>dispose</span><span class=p>()</span> <span class=p>{</span>
+  <span class=k>for</span> <span class=p>(</span><span class=n>NavigationIconView</span> <span class=n>view</span> <span class=k>in</span> <span class=n>_navigationViews</span><span class=p>)</span>
+    <span class=n>view</span><span class=p>.</span><span class=n>controller</span><span class=p>.</span><span class=n>dispose</span><span class=p>();</span>
+  <span class=k>super</span><span class=p>.</span><span class=n>dispose</span><span class=p>();</span>
+<span class=p>}</span>
+</code></pre></div></p> <p>在上面这些代码中，涉及到了如下概念：</p> <ul> <li>AnimationController<br> 用来控制动画，可以进行<code>forward</code>、<code>reverse</code>、<code>fling</code>等操作</li> <li>Animation<br> 表示可以在动画生命周期内发生改变的特定类型的值，大部分Widget都可以接受一个Animation对象作为参数，从而监听动画值的改变、读取当前动画值<br> 可以用过<code>addListener</code>和<code>addStatusListener</code>添加监听器</li> <li>Tween<br> 抽象类，起到一个 <strong>估值器</strong> 的作用，即将0.0-1.0的进度映射为具体的动画值</li> <li> <p>Curve<br> 抽象类，起到一个 <strong>插值器</strong> 的作用，即将0.0-1.0的进度 <strong>曲线映射</strong> 为0.0-1.0的进度<br> Curve必须满足这两个条件：t=0.0 to 0.0 且 t=1.0 to 1.0 </p> <div class="admonition notice"> <p class=admonition-title>Notice</p> <p>Flutter可以Curve嵌套Curve，传入第一个Curve的t为动画流逝的百分比，传出最后一个Curve的结果为属性值改变的百分比。</p> </div> </li> </ul> <h4 id=232-animationanimatable>2.3.2 关于Animation和Animatable<a class=headerlink href=#232-animationanimatable title="Permanent link">&para;</a></h4> <p><code>Animatable</code>抽象类映射一个double值到特定类型的值。double值通常会在0.0到1.0的范围内。<code>Animatable</code>的主要子类是<code>Tween</code>。 </p> <p><code>Tween</code>还有一些子类：</p> <ul> <li>ColorTween</li> <li>SizeTween</li> <li>RectTween</li> <li>IntTween</li> <li>StepTween</li> <li>ConstantTween</li> <li>CurveTween</li> </ul> <p>另外，<code>Curve</code>也有一些子类：</p> <ul> <li><a href=https://flutter.github.io/assets-for-api-docs/assets/animation/curve_linear.mp4>_Linear</a>：线形</li> <li><a href=https://docs.flutter.io/flutter/animation/SawTooth-class.html>SawTooth</a>：锯齿形</li> <li><a href=https://docs.flutter.io/flutter/animation/Interval-class.html>Interval</a>：begin-end之间有效</li> <li><a href=https://docs.flutter.io/flutter/animation/Threshold-class.html>Threshold</a>：[threshold, 1.0]之间为1</li> <li><a href=https://docs.flutter.io/flutter/animation/Cubic-class.html>Cubic</a>：三次多项式的曲线</li> <li><a href=https://docs.flutter.io/flutter/animation/FlippedCurve-class.html>FlippedCurve</a>：翻转的曲线</li> <li><a href=https://flutter.github.io/assets-for-api-docs/assets/animation/curve_decelerate.mp4>_DecelerateCurve</a>：加速度减小的曲线，相当于Android中的DecelerateInterpolator</li> <li><a href=https://docs.flutter.io/flutter/animation/Curves-class.html>_BounceInCurve</a>：幅度越来越大的弹跳</li> <li><a href=https://docs.flutter.io/flutter/animation/Curves-class.html>_BounceOutCurve</a>：幅度越来越小的弹跳</li> <li><a href=https://docs.flutter.io/flutter/animation/Curves-class.html>_BounceInOutCurve</a>：先越来越大到0.5，然后越来越小到1.0的弹跳</li> <li><a href=https://docs.flutter.io/flutter/animation/Curves-class.html>_ElasticInCurve</a>：会超过范围的震荡曲线，不太好描述，看图更直观，下同</li> <li><a href=https://docs.flutter.io/flutter/animation/Curves-class.html>_ElasticOutCurve</a></li> <li><a href=https://docs.flutter.io/flutter/animation/Curves-class.html>ElasticInOutCurve</a></li> </ul> <p>里面有一些类是私有的，但是Flutter为我们提供了一些静态常量可以使用这些定义好的<code>Curve</code>。效果合集在<a href=https://docs.flutter.io/flutter/animation/Curves-class.html>Curves-class</a> <div class=highlight><pre><span></span><code><span class=c1>// PREDEFINED CURVES</span>
+
+<span class=c1>/// A collection of common animation curves.</span>
+<span class=kd>class</span> <span class=nc>Curves</span> <span class=p>{</span>
+  <span class=n>Curves</span><span class=p>.</span><span class=n>_</span><span class=p>();</span>
+
+  <span class=c1>/// A linear animation curve.</span>
+  <span class=c1>///</span>
+  <span class=c1>/// This is the identity map over the unit interval: its [Curve.transform]</span>
+  <span class=c1>/// method returns its input unmodified. This is useful as a default curve for</span>
+  <span class=c1>/// cases where a [Curve] is required but no actual curve is desired.</span>
+  <span class=c1>///</span>
+  <span class=c1>/// {@animation 464 192 https://flutter.github.io/assets-for-api-docs/assets/animation/curve_linear.mp4}</span>
+  <span class=kd>static</span> <span class=k>const</span> <span class=n>Curve</span> <span class=n>linear</span> <span class=o>=</span> <span class=n>_Linear</span><span class=p>.</span><span class=n>_</span><span class=p>();</span>
+
+  <span class=c1>/// A curve where the rate of change starts out quickly and then decelerates; an</span>
+  <span class=c1>/// upside-down `f(t) = t²` parabola.</span>
+  <span class=c1>///</span>
+  <span class=c1>/// This is equivalent to the Android `DecelerateInterpolator` class with a unit</span>
+  <span class=c1>/// factor (the default factor).</span>
+  <span class=c1>///</span>
+  <span class=c1>/// {@animation 464 192 https://flutter.github.io/assets-for-api-docs/assets/animation/curve_decelerate.mp4}</span>
+  <span class=kd>static</span> <span class=k>const</span> <span class=n>Curve</span> <span class=n>decelerate</span> <span class=o>=</span> <span class=n>_DecelerateCurve</span><span class=p>.</span><span class=n>_</span><span class=p>();</span>
+
+  <span class=c1>/// A cubic animation curve that speeds up quickly and ends slowly.</span>
+  <span class=c1>///</span>
+  <span class=c1>/// {@animation 464 192 https://flutter.github.io/assets-for-api-docs/assets/animation/curve_ease.mp4}</span>
+  <span class=kd>static</span> <span class=k>const</span> <span class=n>Cubic</span> <span class=n>ease</span> <span class=o>=</span> <span class=n>Cubic</span><span class=p>(</span><span class=m>0.25</span><span class=p>,</span> <span class=m>0.1</span><span class=p>,</span> <span class=m>0.25</span><span class=p>,</span> <span class=m>1.0</span><span class=p>);</span>
+
+  <span class=c1>/// A cubic animation curve that starts slowly and ends quickly.</span>
+  <span class=c1>///</span>
+  <span class=c1>/// {@animation 464 192 https://flutter.github.io/assets-for-api-docs/assets/animation/curve_ease_in.mp4}</span>
+  <span class=kd>static</span> <span class=k>const</span> <span class=n>Cubic</span> <span class=n>easeIn</span> <span class=o>=</span> <span class=n>Cubic</span><span class=p>(</span><span class=m>0.42</span><span class=p>,</span> <span class=m>0.0</span><span class=p>,</span> <span class=m>1.0</span><span class=p>,</span> <span class=m>1.0</span><span class=p>);</span>
+
+  <span class=c1>/// A cubic animation curve that starts quickly and ends slowly.</span>
+  <span class=c1>///</span>
+  <span class=c1>/// {@animation 464 192 https://flutter.github.io/assets-for-api-docs/assets/animation/curve_ease_out.mp4}</span>
+  <span class=kd>static</span> <span class=k>const</span> <span class=n>Cubic</span> <span class=n>easeOut</span> <span class=o>=</span> <span class=n>Cubic</span><span class=p>(</span><span class=m>0.0</span><span class=p>,</span> <span class=m>0.0</span><span class=p>,</span> <span class=m>0.58</span><span class=p>,</span> <span class=m>1.0</span><span class=p>);</span>
+
+  <span class=c1>/// A cubic animation curve that starts slowly, speeds up, and then and ends slowly.</span>
+  <span class=c1>///</span>
+  <span class=c1>/// {@animation 464 192 https://flutter.github.io/assets-for-api-docs/assets/animation/curve_ease_in_out.mp4}</span>
+  <span class=kd>static</span> <span class=k>const</span> <span class=n>Cubic</span> <span class=n>easeInOut</span> <span class=o>=</span> <span class=n>Cubic</span><span class=p>(</span><span class=m>0.42</span><span class=p>,</span> <span class=m>0.0</span><span class=p>,</span> <span class=m>0.58</span><span class=p>,</span> <span class=m>1.0</span><span class=p>);</span>
+
+  <span class=c1>/// A curve that starts quickly and eases into its final position.</span>
+  <span class=c1>///</span>
+  <span class=c1>/// Over the course of the animation, the object spends more time near its</span>
+  <span class=c1>/// final destination. As a result, the user isn’t left waiting for the</span>
+  <span class=c1>/// animation to finish, and the negative effects of motion are minimized.</span>
+  <span class=c1>///</span>
+  <span class=c1>/// {@animation 464 192 https://flutter.github.io/assets-for-api-docs/assets/animation/curve_fast_out_slow_in.mp4}</span>
+  <span class=kd>static</span> <span class=k>const</span> <span class=n>Cubic</span> <span class=n>fastOutSlowIn</span> <span class=o>=</span> <span class=n>Cubic</span><span class=p>(</span><span class=m>0.4</span><span class=p>,</span> <span class=m>0.0</span><span class=p>,</span> <span class=m>0.2</span><span class=p>,</span> <span class=m>1.0</span><span class=p>);</span>
+
+  <span class=c1>/// An oscillating curve that grows in magnitude.</span>
+  <span class=c1>///</span>
+  <span class=c1>/// {@animation 464 192 https://flutter.github.io/assets-for-api-docs/assets/animation/curve_bounce_in.mp4}</span>
+  <span class=kd>static</span> <span class=k>const</span> <span class=n>Curve</span> <span class=n>bounceIn</span> <span class=o>=</span> <span class=n>_BounceInCurve</span><span class=p>.</span><span class=n>_</span><span class=p>();</span>
+
+  <span class=c1>/// An oscillating curve that first grows and then shrink in magnitude.</span>
+  <span class=c1>///</span>
+  <span class=c1>/// {@animation 464 192 https://flutter.github.io/assets-for-api-docs/assets/animation/curve_bounce_out.mp4}</span>
+  <span class=kd>static</span> <span class=k>const</span> <span class=n>Curve</span> <span class=n>bounceOut</span> <span class=o>=</span> <span class=n>_BounceOutCurve</span><span class=p>.</span><span class=n>_</span><span class=p>();</span>
+
+  <span class=c1>/// An oscillating curve that first grows and then shrink in magnitude.</span>
+  <span class=c1>///</span>
+  <span class=c1>/// {@animation 464 192 https://flutter.github.io/assets-for-api-docs/assets/animation/curve_bounce_in_out.mp4}</span>
+  <span class=kd>static</span> <span class=k>const</span> <span class=n>Curve</span> <span class=n>bounceInOut</span> <span class=o>=</span> <span class=n>_BounceInOutCurve</span><span class=p>.</span><span class=n>_</span><span class=p>();</span>
+
+  <span class=c1>/// An oscillating curve that grows in magnitude while overshooting its bounds.</span>
+  <span class=c1>///</span>
+  <span class=c1>/// {@animation 464 192 https://flutter.github.io/assets-for-api-docs/assets/animation/curve_elastic_in.mp4}</span>
+  <span class=kd>static</span> <span class=k>const</span> <span class=n>ElasticInCurve</span> <span class=n>elasticIn</span> <span class=o>=</span> <span class=n>ElasticInCurve</span><span class=p>();</span>
+
+  <span class=c1>/// An oscillating curve that shrinks in magnitude while overshooting its bounds.</span>
+  <span class=c1>///</span>
+  <span class=c1>/// {@animation 464 192 https://flutter.github.io/assets-for-api-docs/assets/animation/curve_elastic_out.mp4}</span>
+  <span class=kd>static</span> <span class=k>const</span> <span class=n>ElasticOutCurve</span> <span class=n>elasticOut</span> <span class=o>=</span> <span class=n>ElasticOutCurve</span><span class=p>();</span>
+
+  <span class=c1>/// An oscillating curve that grows and then shrinks in magnitude while overshooting its bounds.</span>
+  <span class=c1>///</span>
+  <span class=c1>/// {@animation 464 192 https://flutter.github.io/assets-for-api-docs/assets/animation/curve_elastic_in_out.mp4}</span>
+  <span class=kd>static</span> <span class=k>const</span> <span class=n>ElasticInOutCurve</span> <span class=n>elasticInOut</span> <span class=o>=</span> <span class=n>ElasticInOutCurve</span><span class=p>();</span>
+<span class=p>}</span>
+</code></pre></div></p> <p>在Flutter中，<code>Animation.drive(Animatable)</code>等于<code>Animatable.animate(Animation)</code>，并返回一个<code>Animation</code>对象，该对象<code>value</code>的get方法会调用<code>Animatable.evaluate(Animation)</code>方法。就这样，Flutter将一个估值器绑定到了插值器上。 </p> <p>我们从<code>AnimationController.drive</code>开始，看看相应代码： <div class=highlight><pre><span></span><code><span class=c1>/// Animation</span>
+<span class=nd>@optionalTypeArgs</span>
+<span class=n>Animation</span><span class=o>&lt;</span><span class=n>U</span><span class=o>&gt;</span> <span class=n>drive</span><span class=o>&lt;</span><span class=n>U</span><span class=o>&gt;</span><span class=p>(</span><span class=n>Animatable</span><span class=o>&lt;</span><span class=n>U</span><span class=o>&gt;</span> <span class=n>child</span><span class=p>)</span> <span class=p>{</span>
+  <span class=k>assert</span><span class=p>(</span><span class=k>this</span> <span class=k>is</span> <span class=n>Animation</span><span class=o>&lt;</span><span class=kt>double</span><span class=o>&gt;</span><span class=p>);</span>
+  <span class=k>return</span> <span class=n>child</span><span class=p>.</span><span class=n>animate</span><span class=p>(</span><span class=k>this</span> <span class=k>as</span> <span class=kt>dynamic</span><span class=p>);</span> <span class=c1>// TODO(ianh): Clean this once https://github.com/dart-lang/sdk/issues/32120 is fixed.</span>
+<span class=p>}</span>
+
+<span class=c1>/// Animatable</span>
+<span class=n>Animation</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span> <span class=n>animate</span><span class=p>(</span><span class=n>Animation</span><span class=o>&lt;</span><span class=kt>double</span><span class=o>&gt;</span> <span class=n>parent</span><span class=p>)</span> <span class=p>{</span>
+  <span class=k>return</span> <span class=n>_AnimatedEvaluation</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span><span class=p>(</span><span class=n>parent</span><span class=p>,</span> <span class=k>this</span><span class=p>);</span>
+<span class=p>}</span>
+
+<span class=c1>/// _AnimatedEvaluation</span>
+<span class=kd>class</span> <span class=nc>_AnimatedEvaluation</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span> <span class=kd>extends</span> <span class=n>Animation</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span> <span class=kd>with</span> <span class=n>AnimationWithParentMixin</span><span class=o>&lt;</span><span class=kt>double</span><span class=o>&gt;</span> <span class=p>{</span>
+  <span class=n>_AnimatedEvaluation</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=n>parent</span><span class=p>,</span> <span class=k>this</span><span class=p>.</span><span class=n>_evaluatable</span><span class=p>);</span>
+
+  <span class=nd>@override</span>
+  <span class=kd>final</span> <span class=n>Animation</span><span class=o>&lt;</span><span class=kt>double</span><span class=o>&gt;</span> <span class=n>parent</span><span class=p>;</span>
+
+  <span class=kd>final</span> <span class=n>Animatable</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span> <span class=n>_evaluatable</span><span class=p>;</span>
+
+  <span class=nd>@override</span>
+  <span class=n>T</span> <span class=kd>get</span> <span class=n>value</span> <span class=o>=&gt;</span> <span class=n>_evaluatable</span><span class=p>.</span><span class=n>evaluate</span><span class=p>(</span><span class=n>parent</span><span class=p>);</span>
+  <span class=p>...</span>
+<span class=p>}</span>
+</code></pre></div></p> <h4 id=233-animation>2.3.3 Animation的源码<a class=headerlink href=#233-animation title="Permanent link">&para;</a></h4> <p>看一下相关源码可以加深我们对Flutter动画系统的了解，先从创建<code>AnimationController</code>开始</p> <p><strong>animation_controller.dart</strong> <div class=highlight><pre><span></span><code><span class=kd>class</span> <span class=nc>AnimationController</span> <span class=kd>extends</span> <span class=n>Animation</span><span class=o>&lt;</span><span class=kt>double</span><span class=o>&gt;</span>
+  <span class=kd>with</span> <span class=n>AnimationEagerListenerMixin</span><span class=p>,</span> <span class=n>AnimationLocalListenersMixin</span><span class=p>,</span> <span class=n>AnimationLocalStatusListenersMixin</span> <span class=p>{</span>
+
+  <span class=n>AnimationController</span><span class=p>({</span>
+    <span class=kt>double</span> <span class=n>value</span><span class=p>,</span>
+    <span class=k>this</span><span class=p>.</span><span class=n>duration</span><span class=p>,</span>
+    <span class=k>this</span><span class=p>.</span><span class=n>debugLabel</span><span class=p>,</span>
+    <span class=k>this</span><span class=p>.</span><span class=n>lowerBound</span> <span class=o>=</span> <span class=m>0.0</span><span class=p>,</span>
+    <span class=k>this</span><span class=p>.</span><span class=n>upperBound</span> <span class=o>=</span> <span class=m>1.0</span><span class=p>,</span>
+    <span class=k>this</span><span class=p>.</span><span class=n>animationBehavior</span> <span class=o>=</span> <span class=n>AnimationBehavior</span><span class=p>.</span><span class=n>normal</span><span class=p>,</span>
+    <span class=nd>@required</span> <span class=n>TickerProvider</span> <span class=n>vsync</span><span class=p>,</span>
+  <span class=p>})</span> <span class=o>:</span> <span class=p>...,</span>
+       <span class=n>_direction</span> <span class=o>=</span> <span class=n>_AnimationDirection</span><span class=p>.</span><span class=n>forward</span> <span class=p>{</span>
+    <span class=n>_ticker</span> <span class=o>=</span> <span class=n>vsync</span><span class=p>.</span><span class=n>createTicker</span><span class=p>(</span><span class=n>_tick</span><span class=p>);</span>
+    <span class=n>_internalSetValue</span><span class=p>(</span><span class=n>value</span> <span class=o>??</span> <span class=n>lowerBound</span><span class=p>);</span>
+  <span class=p>}</span>
+
+  <span class=kt>void</span> <span class=n>_internalSetValue</span><span class=p>(</span><span class=kt>double</span> <span class=n>newValue</span><span class=p>)</span> <span class=p>{</span>
+    <span class=n>_value</span> <span class=o>=</span> <span class=n>newValue</span><span class=p>.</span><span class=n>clamp</span><span class=p>(</span><span class=n>lowerBound</span><span class=p>,</span> <span class=n>upperBound</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>_value</span> <span class=o>==</span> <span class=n>lowerBound</span><span class=p>)</span> <span class=p>{</span>
+      <span class=n>_status</span> <span class=o>=</span> <span class=n>AnimationStatus</span><span class=p>.</span><span class=n>dismissed</span><span class=p>;</span>
+    <span class=p>}</span> <span class=k>else</span> <span class=k>if</span> <span class=p>(</span><span class=n>_value</span> <span class=o>==</span> <span class=n>upperBound</span><span class=p>)</span> <span class=p>{</span>
+      <span class=n>_status</span> <span class=o>=</span> <span class=n>AnimationStatus</span><span class=p>.</span><span class=n>completed</span><span class=p>;</span>
+    <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+      <span class=n>_status</span> <span class=o>=</span> <span class=p>(</span><span class=n>_direction</span> <span class=o>==</span> <span class=n>_AnimationDirection</span><span class=p>.</span><span class=n>forward</span><span class=p>)</span> <span class=o>?</span>
+        <span class=n>AnimationStatus</span><span class=p>.</span><span class=n>forward</span> <span class=o>:</span>
+        <span class=n>AnimationStatus</span><span class=p>.</span><span class=n>reverse</span><span class=p>;</span>
+    <span class=p>}</span>
+  <span class=p>}</span>
+
+  <span class=n>Ticker</span> <span class=n>_ticker</span><span class=p>;</span>
+  <span class=p>...</span>
+<span class=p>}</span>
+</code></pre></div> 创建<code>AnimationController</code>时内部首先会创建一个<code>Ticker</code>，然后初始化<code>AnimationController</code>的_value和_status。_value的值会被clamp在[lowerBound, upperBound]范围之内，然后根据_value与两个边界以及动画方向确定初始_status。 </p> <p>这里冒出了一个<code>Ticker</code>：</p> <ul> <li>Ticker类会hookScheduler的<code>scheduleFrameCallback()</code>机制，以便在每个tick中调用回调，在回调方法中会更新动画的进度并通知所有的(状态)监听器 </li> </ul> <p>然后来看看创建<code>Ticker</code>的过程。<br> 首先是在<code>AnimationController</code>的构造方法中调用了<code>vsync.createTicker(_tick)</code>，<code>vsync</code>我们实际传入的是<code>TickerProviderStateMixin</code>。我们看一下其源码。</p> <p><strong>ticker_provider.dart</strong><br> <div class=highlight><pre><span></span><code><span class=c1>/// If you only have a single [Ticker] (for example only a single</span>
+<span class=c1>/// [AnimationController]) for the lifetime of your [State], then using a</span>
+<span class=c1>/// [SingleTickerProviderStateMixin] is more efficient. This is the common case.</span>
+<span class=nd>@optionalTypeArgs</span>
+<span class=kd>mixin</span> <span class=nc>TickerProviderStateMixin</span><span class=o>&lt;</span><span class=n>T</span> <span class=kd>extends</span> <span class=n>StatefulWidget</span><span class=o>&gt;</span> <span class=kd>on</span> <span class=n>State</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span> <span class=kd>implements</span> <span class=n>TickerProvider</span> <span class=p>{</span>
+  <span class=n>Set</span><span class=o>&lt;</span><span class=n>Ticker</span><span class=o>&gt;</span> <span class=n>_tickers</span><span class=p>;</span>
+
+  <span class=nd>@override</span>
+  <span class=n>Ticker</span> <span class=n>createTicker</span><span class=p>(</span><span class=n>TickerCallback</span> <span class=n>onTick</span><span class=p>)</span> <span class=p>{</span>
+    <span class=c1>/// _tickers为空就new一个Set&lt;_WidgetTicker&gt;()，否则就等于自己</span>
+    <span class=n>_tickers</span> <span class=o>??=</span> <span class=n>Set</span><span class=o>&lt;</span><span class=n>_WidgetTicker</span><span class=o>&gt;</span><span class=p>();</span>
+    <span class=c1>/// 创建一个_WidgetTicker对象，并添加到set中</span>
+    <span class=kd>final</span> <span class=n>_WidgetTicker</span> <span class=n>result</span> <span class=o>=</span> <span class=n>_WidgetTicker</span><span class=p>(</span><span class=n>onTick</span><span class=p>,</span> <span class=k>this</span><span class=p>,</span> <span class=nl>debugLabel:</span> <span class=s1>&#39;created by </span><span class=si>$</span><span class=n>this</span><span class=s1>&#39;</span><span class=p>);</span>
+    <span class=n>_tickers</span><span class=p>.</span><span class=n>add</span><span class=p>(</span><span class=n>result</span><span class=p>);</span>
+    <span class=c1>/// 返回_WidgetTicker对象</span>
+    <span class=k>return</span> <span class=n>result</span><span class=p>;</span>
+  <span class=p>}</span>
+
+  <span class=c1>/// _WidgetTicker在其dispose方法中调用</span>
+  <span class=kt>void</span> <span class=n>_removeTicker</span><span class=p>(</span><span class=n>_WidgetTicker</span> <span class=n>ticker</span><span class=p>)</span> <span class=p>{</span>
+    <span class=p>...</span>
+    <span class=n>_tickers</span><span class=p>.</span><span class=n>remove</span><span class=p>(</span><span class=n>ticker</span><span class=p>);</span>
+  <span class=p>}</span>
+  <span class=p>...</span>
+<span class=p>}</span>
+
+<span class=c1>// This class should really be called _DisposingTicker or some such, but this</span>
+<span class=c1>// class name leaks into stack traces and error messages and that name would be</span>
+<span class=c1>// confusing. Instead we use the less precise but more anodyne &quot;_WidgetTicker&quot;,</span>
+<span class=c1>// which attracts less attention.</span>
+<span class=kd>class</span> <span class=nc>_WidgetTicker</span> <span class=kd>extends</span> <span class=n>Ticker</span> <span class=p>{</span>
+  <span class=n>_WidgetTicker</span><span class=p>(</span><span class=n>TickerCallback</span> <span class=n>onTick</span><span class=p>,</span> <span class=k>this</span><span class=p>.</span><span class=n>_creator</span><span class=p>,</span> <span class=p>{</span> <span class=kt>String</span> <span class=n>debugLabel</span> <span class=p>})</span> <span class=o>:</span> <span class=k>super</span><span class=p>(</span><span class=n>onTick</span><span class=p>,</span> <span class=nl>debugLabel:</span> <span class=n>debugLabel</span><span class=p>);</span>
+
+  <span class=kd>final</span> <span class=n>TickerProviderStateMixin</span> <span class=n>_creator</span><span class=p>;</span>
+
+  <span class=nd>@override</span>
+  <span class=kt>void</span> <span class=n>dispose</span><span class=p>()</span> <span class=p>{</span>
+    <span class=n>_creator</span><span class=p>.</span><span class=n>_removeTicker</span><span class=p>(</span><span class=k>this</span><span class=p>);</span>
+    <span class=k>super</span><span class=p>.</span><span class=n>dispose</span><span class=p>();</span>
+  <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div> 这部分源码比较简单，不过我们注意到<code>createTicker</code>的参数是一个<code>TickerCallback</code>类型，该类型定义在ticker.dart中。 <div class=highlight><pre><span></span><code><span class=kd>typedef</span> <span class=n>TickerCallback</span> <span class=o>=</span> <span class=kt>void</span> <span class=kt>Function</span><span class=p>(</span><span class=n>Duration</span> <span class=n>elapsed</span><span class=p>);</span>
+</code></pre></div> 该类型就是一个参数为<code>Duration</code>的方法，返回值为void。<br> 此处对应创建<code>AnimationController</code>时传入的<code>_tick</code>方法。我们看看这部分代码干了什么 <div class=highlight><pre><span></span><code><span class=kt>void</span> <span class=n>_tick</span><span class=p>(</span><span class=n>Duration</span> <span class=n>elapsed</span><span class=p>)</span> <span class=p>{</span>
+  <span class=n>_lastElapsedDuration</span> <span class=o>=</span> <span class=n>elapsed</span><span class=p>;</span>
+  <span class=kd>final</span> <span class=kt>double</span> <span class=n>elapsedInSeconds</span> <span class=o>=</span> <span class=n>elapsed</span><span class=p>.</span><span class=n>inMicroseconds</span><span class=p>.</span><span class=n>toDouble</span><span class=p>()</span> <span class=o>/</span> <span class=n>Duration</span><span class=p>.</span><span class=n>microsecondsPerSecond</span><span class=p>;</span>
+  <span class=k>assert</span><span class=p>(</span><span class=n>elapsedInSeconds</span> <span class=o>&gt;=</span> <span class=m>0.0</span><span class=p>);</span>
+  <span class=n>_value</span> <span class=o>=</span> <span class=n>_simulation</span><span class=p>.</span><span class=n>x</span><span class=p>(</span><span class=n>elapsedInSeconds</span><span class=p>).</span><span class=n>clamp</span><span class=p>(</span><span class=n>lowerBound</span><span class=p>,</span> <span class=n>upperBound</span><span class=p>);</span>
+  <span class=k>if</span> <span class=p>(</span><span class=n>_simulation</span><span class=p>.</span><span class=n>isDone</span><span class=p>(</span><span class=n>elapsedInSeconds</span><span class=p>))</span> <span class=p>{</span>
+    <span class=n>_status</span> <span class=o>=</span> <span class=p>(</span><span class=n>_direction</span> <span class=o>==</span> <span class=n>_AnimationDirection</span><span class=p>.</span><span class=n>forward</span><span class=p>)</span> <span class=o>?</span>
+      <span class=n>AnimationStatus</span><span class=p>.</span><span class=n>completed</span> <span class=o>:</span>
+      <span class=n>AnimationStatus</span><span class=p>.</span><span class=n>dismissed</span><span class=p>;</span>
+    <span class=n>stop</span><span class=p>(</span><span class=nl>canceled:</span> <span class=kc>false</span><span class=p>);</span>
+  <span class=p>}</span>
+  <span class=n>notifyListeners</span><span class=p>();</span>
+  <span class=n>_checkStatusChanged</span><span class=p>();</span>
+<span class=p>}</span>
+</code></pre></div> <code>elapsed</code>参数是动画开始到现在的duration，这会在后面讲到。<br> <code>_tick</code>方法干了3件事：</p> <ol> <li>根据elapsed计算当前动画的进度</li> <li>判断动画是否已经完成。若已完成，则设置对应的状态，并调用<code>stop</code>方法释放一些资源</li> <li>通知所有的由<code>addListener</code>监听的监听器以及由<code>addStatusListener</code>监听的状态监听器</li> </ol> <p>在计算时，还涉及到了一个<code>Simulation</code>类：</p> <ul> <li><code>Simulation</code>抽象类将一个相对时间值映射到时间流逝百分比</li> </ul> <p>我们以<code>AnimationController</code>的<code>forward</code>过程为例，其内部的调用流程为<code>_animateToInternal(upperBound)</code>-&gt;<code>_startSimulation(_InterpolationSimulation(_value, target, simulationDuration, curve, scale));</code><br> 在<code>_startSimulation</code>方法内部完成了<code>_simulation</code>的赋值，赋的值为<code>_InterpolationSimulation</code>。我们看一下该类的源码</p> <p><div class=highlight><pre><span></span><code><span class=kd>class</span> <span class=nc>_InterpolationSimulation</span> <span class=kd>extends</span> <span class=n>Simulation</span> <span class=p>{</span>
+  <span class=n>_InterpolationSimulation</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=n>_begin</span><span class=p>,</span> <span class=k>this</span><span class=p>.</span><span class=n>_end</span><span class=p>,</span> <span class=n>Duration</span> <span class=n>duration</span><span class=p>,</span> <span class=k>this</span><span class=p>.</span><span class=n>_curve</span><span class=p>,</span> <span class=kt>double</span> <span class=n>scale</span><span class=p>)</span>
+    <span class=o>:</span> <span class=k>assert</span><span class=p>(</span><span class=n>_begin</span> <span class=o>!=</span> <span class=kc>null</span><span class=p>),</span>
+      <span class=k>assert</span><span class=p>(</span><span class=n>_end</span> <span class=o>!=</span> <span class=kc>null</span><span class=p>),</span>
+      <span class=k>assert</span><span class=p>(</span><span class=n>duration</span> <span class=o>!=</span> <span class=kc>null</span> <span class=o>&amp;&amp;</span> <span class=n>duration</span><span class=p>.</span><span class=n>inMicroseconds</span> <span class=o>&gt;</span> <span class=m>0</span><span class=p>),</span>
+      <span class=n>_durationInSeconds</span> <span class=o>=</span> <span class=p>(</span><span class=n>duration</span><span class=p>.</span><span class=n>inMicroseconds</span> <span class=o>*</span> <span class=n>scale</span><span class=p>)</span> <span class=o>/</span> <span class=n>Duration</span><span class=p>.</span><span class=n>microsecondsPerSecond</span><span class=p>;</span>
+
+  <span class=kd>final</span> <span class=kt>double</span> <span class=n>_durationInSeconds</span><span class=p>;</span>
+  <span class=kd>final</span> <span class=kt>double</span> <span class=n>_begin</span><span class=p>;</span>
+  <span class=kd>final</span> <span class=kt>double</span> <span class=n>_end</span><span class=p>;</span>
+  <span class=kd>final</span> <span class=n>Curve</span> <span class=n>_curve</span><span class=p>;</span>
+
+  <span class=nd>@override</span>
+  <span class=kt>double</span> <span class=n>x</span><span class=p>(</span><span class=kt>double</span> <span class=n>timeInSeconds</span><span class=p>)</span> <span class=p>{</span>
+    <span class=kd>final</span> <span class=kt>double</span> <span class=n>t</span> <span class=o>=</span> <span class=p>(</span><span class=n>timeInSeconds</span> <span class=o>/</span> <span class=n>_durationInSeconds</span><span class=p>).</span><span class=n>clamp</span><span class=p>(</span><span class=m>0.0</span><span class=p>,</span> <span class=m>1.0</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>t</span> <span class=o>==</span> <span class=m>0.0</span><span class=p>)</span>
+      <span class=k>return</span> <span class=n>_begin</span><span class=p>;</span>
+    <span class=k>else</span> <span class=k>if</span> <span class=p>(</span><span class=n>t</span> <span class=o>==</span> <span class=m>1.0</span><span class=p>)</span>
+      <span class=k>return</span> <span class=n>_end</span><span class=p>;</span>
+    <span class=k>else</span>
+      <span class=k>return</span> <span class=n>_begin</span> <span class=o>+</span> <span class=p>(</span><span class=n>_end</span> <span class=o>-</span> <span class=n>_begin</span><span class=p>)</span> <span class=o>*</span> <span class=n>_curve</span><span class=p>.</span><span class=n>transform</span><span class=p>(</span><span class=n>t</span><span class=p>);</span>
+  <span class=p>}</span>
+
+  <span class=nd>@override</span>
+  <span class=kt>double</span> <span class=n>dx</span><span class=p>(</span><span class=kt>double</span> <span class=n>timeInSeconds</span><span class=p>)</span> <span class=p>{</span>
+    <span class=kd>final</span> <span class=kt>double</span> <span class=n>epsilon</span> <span class=o>=</span> <span class=n>tolerance</span><span class=p>.</span><span class=n>time</span><span class=p>;</span>
+    <span class=k>return</span> <span class=p>(</span><span class=n>x</span><span class=p>(</span><span class=n>timeInSeconds</span> <span class=o>+</span> <span class=n>epsilon</span><span class=p>)</span> <span class=o>-</span> <span class=n>x</span><span class=p>(</span><span class=n>timeInSeconds</span> <span class=o>-</span> <span class=n>epsilon</span><span class=p>))</span> <span class=o>/</span> <span class=p>(</span><span class=m>2</span> <span class=o>*</span> <span class=n>epsilon</span><span class=p>);</span>
+  <span class=p>}</span>
+
+  <span class=nd>@override</span>
+  <span class=kt>bool</span> <span class=n>isDone</span><span class=p>(</span><span class=kt>double</span> <span class=n>timeInSeconds</span><span class=p>)</span> <span class=o>=&gt;</span> <span class=n>timeInSeconds</span> <span class=o>&gt;</span> <span class=n>_durationInSeconds</span><span class=p>;</span>
+<span class=p>}</span>
+</code></pre></div> 从上面的代码可以看出<code>x</code>方法先计算动画的进度，然后根据起始、结尾位置用<code>Curve</code>(默认是线性的)映射出新的进度。</p> <p>我们回过头看一下<code>AnimationController#_tick</code>方法是如何每一个tick都会触发的。<br> 上面我们说到，<code>TickerProviderStateMixin#createTicker</code>方法创建了<code>_WidgetTicker</code>，而<code>_WidgetTicker</code>又继承了<code>Ticker</code>。在<code>AnimationController</code>的<code>forward</code>过程中，最后在<code>_startSimulation</code>方法内部调用了<code>_ticker.start()</code>开始了动画。我们看一下相关代码：</p> <p><div class=highlight><pre><span></span><code><span class=kd>class</span> <span class=nc>Ticker</span> <span class=p>{</span>
+  <span class=n>Ticker</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=n>_onTick</span><span class=p>,</span> <span class=p>{</span> <span class=k>this</span><span class=p>.</span><span class=n>debugLabel</span> <span class=p>})</span> <span class=p>{</span>
+    <span class=p>...</span>
+  <span class=p>}</span>
+  <span class=p>...</span>
+
+  <span class=kt>bool</span> <span class=kd>get</span> <span class=n>muted</span> <span class=o>=&gt;</span> <span class=n>_muted</span><span class=p>;</span>
+  <span class=kt>bool</span> <span class=n>_muted</span> <span class=o>=</span> <span class=kc>false</span><span class=p>;</span>
+
+  <span class=kt>bool</span> <span class=kd>get</span> <span class=n>isActive</span> <span class=o>=&gt;</span> <span class=n>_future</span> <span class=o>!=</span> <span class=kc>null</span><span class=p>;</span>
+
+  <span class=n>TickerFuture</span> <span class=n>start</span><span class=p>()</span> <span class=p>{</span>
+    <span class=k>assert</span><span class=p>(()</span> <span class=p>{</span>
+      <span class=k>if</span> <span class=p>(</span><span class=n>isActive</span><span class=p>)</span> <span class=p>{</span>
+        <span class=k>throw</span> <span class=n>FlutterError</span><span class=p>(...);</span>
+      <span class=p>}</span>
+      <span class=k>return</span> <span class=kc>true</span><span class=p>;</span>
+    <span class=p>}());</span>
+    <span class=p>...</span>
+    <span class=n>_future</span> <span class=o>=</span> <span class=n>TickerFuture</span><span class=p>.</span><span class=n>_</span><span class=p>();</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>shouldScheduleTick</span><span class=p>)</span> <span class=p>{</span>
+      <span class=n>scheduleTick</span><span class=p>();</span>
+    <span class=p>}</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>SchedulerBinding</span><span class=p>.</span><span class=n>instance</span><span class=p>.</span><span class=n>schedulerPhase</span><span class=p>.</span><span class=n>index</span> <span class=o>&gt;</span> <span class=n>SchedulerPhase</span><span class=p>.</span><span class=n>idle</span><span class=p>.</span><span class=n>index</span> <span class=o>&amp;&amp;</span>
+        <span class=n>SchedulerBinding</span><span class=p>.</span><span class=n>instance</span><span class=p>.</span><span class=n>schedulerPhase</span><span class=p>.</span><span class=n>index</span> <span class=o>&lt;</span> <span class=n>SchedulerPhase</span><span class=p>.</span><span class=n>postFrameCallbacks</span><span class=p>.</span><span class=n>index</span><span class=p>)</span>
+      <span class=n>_startTime</span> <span class=o>=</span> <span class=n>SchedulerBinding</span><span class=p>.</span><span class=n>instance</span><span class=p>.</span><span class=n>currentFrameTimeStamp</span><span class=p>;</span>
+    <span class=k>return</span> <span class=n>_future</span><span class=p>;</span>
+  <span class=p>}</span>
+
+  <span class=nd>@protected</span>
+  <span class=kt>bool</span> <span class=kd>get</span> <span class=n>scheduled</span> <span class=o>=&gt;</span> <span class=n>_animationId</span> <span class=o>!=</span> <span class=kc>null</span><span class=p>;</span>
+
+  <span class=nd>@protected</span>
+  <span class=kt>bool</span> <span class=kd>get</span> <span class=n>shouldScheduleTick</span> <span class=o>=&gt;</span> <span class=o>!</span><span class=n>muted</span> <span class=o>&amp;&amp;</span> <span class=n>isActive</span> <span class=o>&amp;&amp;</span> <span class=o>!</span><span class=n>scheduled</span><span class=p>;</span>
+  <span class=p>...</span>
+  <span class=c1>/// Schedules a tick for the next frame.</span>
+  <span class=c1>///</span>
+  <span class=c1>/// This should only be called if [shouldScheduleTick] is true.</span>
+  <span class=nd>@protected</span>
+  <span class=kt>void</span> <span class=n>scheduleTick</span><span class=p>({</span> <span class=kt>bool</span> <span class=n>rescheduling</span> <span class=o>=</span> <span class=kc>false</span> <span class=p>})</span> <span class=p>{</span>
+    <span class=k>assert</span><span class=p>(</span><span class=o>!</span><span class=n>scheduled</span><span class=p>);</span>
+    <span class=k>assert</span><span class=p>(</span><span class=n>shouldScheduleTick</span><span class=p>);</span>
+    <span class=n>_animationId</span> <span class=o>=</span> <span class=n>SchedulerBinding</span><span class=p>.</span><span class=n>instance</span><span class=p>.</span><span class=n>scheduleFrameCallback</span><span class=p>(</span><span class=n>_tick</span><span class=p>,</span> <span class=nl>rescheduling:</span> <span class=n>rescheduling</span><span class=p>);</span>
+  <span class=p>}</span>
+  <span class=p>...</span>
+<span class=p>}</span>
+</code></pre></div> 首次调用<code>start</code>方法时，各项检查都通过了，然后调用了<code>scheduleTick</code>方法。在方法里面调用了<code>SchedulerBinding.instance.scheduleFrameCallback</code>方法，这就是每个动画帧我们都能收到回调的原因。 接着让下看相关代码: <div class=highlight><pre><span></span><code><span class=kd>mixin</span> <span class=nc>SchedulerBinding</span> <span class=kd>on</span> <span class=n>BindingBase</span><span class=p>,</span> <span class=n>ServicesBinding</span> <span class=p>{</span>
+  <span class=kt>int</span> <span class=n>scheduleFrameCallback</span><span class=p>(</span><span class=n>FrameCallback</span> <span class=n>callback</span><span class=p>,</span> <span class=p>{</span> <span class=kt>bool</span> <span class=n>rescheduling</span> <span class=o>=</span> <span class=kc>false</span> <span class=p>})</span> <span class=p>{</span>
+    <span class=n>scheduleFrame</span><span class=p>();</span>
+    <span class=n>_nextFrameCallbackId</span> <span class=o>+=</span> <span class=m>1</span><span class=p>;</span>
+    <span class=n>_transientCallbacks</span><span class=p>[</span><span class=n>_nextFrameCallbackId</span><span class=p>]</span> <span class=o>=</span> <span class=n>_FrameCallbackEntry</span><span class=p>(</span><span class=n>callback</span><span class=p>,</span> <span class=nl>rescheduling:</span> <span class=n>rescheduling</span><span class=p>);</span>
+    <span class=k>return</span> <span class=n>_nextFrameCallbackId</span><span class=p>;</span>
+  <span class=p>}</span>
+
+  <span class=c1>/// If necessary, schedules a new frame by calling</span>
+  <span class=c1>/// [Window.scheduleFrame].</span>
+  <span class=c1>///</span>
+  <span class=c1>/// After this is called, the engine will (eventually) call</span>
+  <span class=c1>/// [handleBeginFrame]. (This call might be delayed, e.g. if the device&#39;s</span>
+  <span class=c1>/// screen is turned off it will typically be delayed until the screen is on</span>
+  <span class=c1>/// and the application is visible.) Calling this during a frame forces</span>
+  <span class=c1>/// another frame to be scheduled, even if the current frame has not yet</span>
+  <span class=c1>/// completed.</span>
+  <span class=c1>///</span>
+  <span class=c1>/// Scheduled frames are serviced when triggered by a &quot;Vsync&quot; signal provided</span>
+  <span class=c1>/// by the operating system. The &quot;Vsync&quot; signal, or vertical synchronization</span>
+  <span class=c1>/// signal, was historically related to the display refresh, at a time when</span>
+  <span class=c1>/// hardware physically moved a beam of electrons vertically between updates</span>
+  <span class=c1>/// of the display. The operation of contemporary hardware is somewhat more</span>
+  <span class=c1>/// subtle and complicated, but the conceptual &quot;Vsync&quot; refresh signal continue</span>
+  <span class=c1>/// to be used to indicate when applications should update their rendering.</span>
+  <span class=c1>///</span>
+  <span class=c1>/// To have a stack trace printed to the console any time this function</span>
+  <span class=c1>/// schedules a frame, set [debugPrintScheduleFrameStacks] to true.</span>
+  <span class=c1>///</span>
+  <span class=c1>/// See also:</span>
+  <span class=c1>///</span>
+  <span class=c1>///  * [scheduleForcedFrame], which ignores the [lifecycleState] when</span>
+  <span class=c1>///    scheduling a frame.</span>
+  <span class=c1>///  * [scheduleWarmUpFrame], which ignores the &quot;Vsync&quot; signal entirely and</span>
+  <span class=c1>///    triggers a frame immediately.</span>
+  <span class=kt>void</span> <span class=n>scheduleFrame</span><span class=p>()</span> <span class=p>{</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>_hasScheduledFrame</span> <span class=o>||</span> <span class=o>!</span><span class=n>_framesEnabled</span><span class=p>)</span>
+      <span class=k>return</span><span class=p>;</span>
+    <span class=k>assert</span><span class=p>(()</span> <span class=p>{</span>
+      <span class=k>if</span> <span class=p>(</span><span class=n>debugPrintScheduleFrameStacks</span><span class=p>)</span>
+        <span class=n>debugPrintStack</span><span class=p>(</span><span class=nl>label:</span> <span class=s1>&#39;scheduleFrame() called. Current phase is </span><span class=si>$</span><span class=n>schedulerPhase</span><span class=s1>.&#39;</span><span class=p>);</span>
+      <span class=k>return</span> <span class=kc>true</span><span class=p>;</span>
+    <span class=p>}());</span>
+    <span class=n>ui</span><span class=p>.</span><span class=n>window</span><span class=p>.</span><span class=n>scheduleFrame</span><span class=p>();</span>
+    <span class=n>_hasScheduledFrame</span> <span class=o>=</span> <span class=kc>true</span><span class=p>;</span>
+  <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div> 我们可以看到<code>scheduleFrameCallback</code>方法首先会调用<code>scheduleFrame</code>方法在必要的时候开始一个新的帧。然后将tick回调封装成一个<code>_FrameCallbackEntry</code>注册到<code>_transientCallbacks</code>的最后，并返回这个下标。<br> 在<code>scheduleFrame</code>方法中的<code>ui.window.scheduleFrame()</code>是一个native方法：<code>void scheduleFrame() native 'Window_scheduleFrame'</code>我们就不接着往下追踪了。</p> <p>不过我们可以在<code>scheduleFrame</code>方法的注释中看到，<code>handleBeginFrame</code>方法会接着被引擎调用。我们看看里面的内容</p> <p><div class=highlight><pre><span></span><code><span class=n>Duration</span> <span class=n>_adjustForEpoch</span><span class=p>(</span><span class=n>Duration</span> <span class=n>rawTimeStamp</span><span class=p>)</span> <span class=p>{</span>
+  <span class=kd>final</span> <span class=n>Duration</span> <span class=n>rawDurationSinceEpoch</span> <span class=o>=</span> <span class=n>_firstRawTimeStampInEpoch</span> <span class=o>==</span> <span class=kc>null</span> <span class=o>?</span> <span class=n>Duration</span><span class=p>.</span><span class=n>zero</span> <span class=o>:</span> <span class=n>rawTimeStamp</span> <span class=o>-</span> <span class=n>_firstRawTimeStampInEpoch</span><span class=p>;</span>
+  <span class=k>return</span> <span class=n>Duration</span><span class=p>(</span><span class=nl>microseconds:</span> <span class=p>(</span><span class=n>rawDurationSinceEpoch</span><span class=p>.</span><span class=n>inMicroseconds</span> <span class=o>/</span> <span class=n>timeDilation</span><span class=p>).</span><span class=n>round</span><span class=p>()</span> <span class=o>+</span> <span class=n>_epochStart</span><span class=p>.</span><span class=n>inMicroseconds</span><span class=p>);</span>
+<span class=p>}</span>
+
+<span class=c1>/// Called by the engine to prepare the framework to produce a new frame.</span>
+<span class=c1>///</span>
+<span class=c1>/// This function calls all the transient frame callbacks registered by</span>
+<span class=c1>/// [scheduleFrameCallback]. It then returns, any scheduled microtasks are run</span>
+<span class=c1>/// (e.g. handlers for any [Future]s resolved by transient frame callbacks),</span>
+<span class=c1>/// and [handleDrawFrame] is called to continue the frame.</span>
+<span class=kt>void</span> <span class=n>handleBeginFrame</span><span class=p>(</span><span class=n>Duration</span> <span class=n>rawTimeStamp</span><span class=p>)</span> <span class=p>{</span>
+  <span class=n>_firstRawTimeStampInEpoch</span> <span class=o>??=</span> <span class=n>rawTimeStamp</span><span class=p>;</span>
+  <span class=n>_currentFrameTimeStamp</span> <span class=o>=</span> <span class=n>_adjustForEpoch</span><span class=p>(</span><span class=n>rawTimeStamp</span> <span class=o>??</span> <span class=n>_lastRawTimeStamp</span><span class=p>);</span>
+  <span class=k>if</span> <span class=p>(</span><span class=n>rawTimeStamp</span> <span class=o>!=</span> <span class=kc>null</span><span class=p>)</span>
+    <span class=n>_lastRawTimeStamp</span> <span class=o>=</span> <span class=n>rawTimeStamp</span><span class=p>;</span>
+  <span class=p>...</span>
+  <span class=n>_hasScheduledFrame</span> <span class=o>=</span> <span class=kc>false</span><span class=p>;</span>
+  <span class=k>try</span> <span class=p>{</span>
+    <span class=c1>// TRANSIENT FRAME CALLBACKS</span>
+    <span class=p>...</span>
+    <span class=kd>final</span> <span class=n>Map</span><span class=o>&lt;</span><span class=kt>int</span><span class=p>,</span> <span class=n>_FrameCallbackEntry</span><span class=o>&gt;</span> <span class=n>callbacks</span> <span class=o>=</span> <span class=n>_transientCallbacks</span><span class=p>;</span>
+    <span class=n>_transientCallbacks</span> <span class=o>=</span> <span class=o>&lt;</span><span class=kt>int</span><span class=p>,</span> <span class=n>_FrameCallbackEntry</span><span class=o>&gt;</span><span class=p>{};</span>
+    <span class=n>callbacks</span><span class=p>.</span><span class=n>forEach</span><span class=p>((</span><span class=kt>int</span> <span class=n>id</span><span class=p>,</span> <span class=n>_FrameCallbackEntry</span> <span class=n>callbackEntry</span><span class=p>)</span> <span class=p>{</span>
+      <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>_removedIds</span><span class=p>.</span><span class=n>contains</span><span class=p>(</span><span class=n>id</span><span class=p>))</span>
+        <span class=n>_invokeFrameCallback</span><span class=p>(</span><span class=n>callbackEntry</span><span class=p>.</span><span class=n>callback</span><span class=p>,</span> <span class=n>_currentFrameTimeStamp</span><span class=p>,</span> <span class=n>callbackEntry</span><span class=p>.</span><span class=n>debugStack</span><span class=p>);</span>
+    <span class=p>});</span>
+    <span class=n>_removedIds</span><span class=p>.</span><span class=n>clear</span><span class=p>();</span>
+  <span class=p>}</span>
+  <span class=p>...</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=n>_invokeFrameCallback</span><span class=p>(</span><span class=n>FrameCallback</span> <span class=n>callback</span><span class=p>,</span> <span class=n>Duration</span> <span class=n>timeStamp</span><span class=p>,</span> <span class=p>[</span> <span class=n>StackTrace</span> <span class=n>callbackStack</span> <span class=p>])</span> <span class=p>{</span>
+  <span class=p>...</span>
+  <span class=k>try</span> <span class=p>{</span>
+    <span class=n>callback</span><span class=p>(</span><span class=n>timeStamp</span><span class=p>);</span>
+  <span class=p>}</span> <span class=k>catch</span> <span class=p>(</span><span class=n>exception</span><span class=p>,</span> <span class=n>exceptionStack</span><span class=p>)</span> <span class=p>{</span>
+    <span class=p>...</span>
+  <span class=p>}</span>
+  <span class=p>...</span>
+<span class=p>}</span>
+</code></pre></div> 该方法首先利用<code>_adjustForEpoch</code>方法计算<code>_currentFrameTimeStamp</code>，<code>_adjustForEpoch</code>方法可以简单的理解为传入参数与<code>_firstRawTimeStampInEpoch</code>之间的差，其他情况与开发者设置有关。然后将<code>_hasScheduledFrame</code>复位为false，最后依次调用没有取消回调事件的回调。</p> <p>这里的回调是Ticker的_tick方法，此方法传入的是一个时间间隔，而不是一个时间戳： <div class=highlight><pre><span></span><code><span class=kt>void</span> <span class=n>_tick</span><span class=p>(</span><span class=n>Duration</span> <span class=n>timeStamp</span><span class=p>)</span> <span class=p>{</span>
+  <span class=k>assert</span><span class=p>(</span><span class=n>isTicking</span><span class=p>);</span>
+  <span class=k>assert</span><span class=p>(</span><span class=n>scheduled</span><span class=p>);</span>
+  <span class=n>_animationId</span> <span class=o>=</span> <span class=kc>null</span><span class=p>;</span>
+
+  <span class=n>_startTime</span> <span class=o>??=</span> <span class=n>timeStamp</span><span class=p>;</span>
+  <span class=n>_onTick</span><span class=p>(</span><span class=n>timeStamp</span> <span class=o>-</span> <span class=n>_startTime</span><span class=p>);</span>
+
+  <span class=c1>// The onTick callback may have scheduled another tick already, for</span>
+  <span class=c1>// example by calling stop then start again.</span>
+  <span class=k>if</span> <span class=p>(</span><span class=n>shouldScheduleTick</span><span class=p>)</span>
+    <span class=n>scheduleTick</span><span class=p>(</span><span class=nl>rescheduling:</span> <span class=kc>true</span><span class=p>);</span>
+<span class=p>}</span>
+</code></pre></div> 在该方法中最后回调了<code>AnimationController#_tick</code>方法。这里可以证明<code>AnimationController#_tick</code>方法接收到的是动画开始到现在的duration。</p> <h4 id=234-animation>2.3.4 Animation源码总结<a class=headerlink href=#234-animation title="Permanent link">&para;</a></h4> <p>在探索源码的时候，我们额外看到了三个动画相关的类</p> <ul> <li>Scheduler<br> The SchedulerBinding is a singleton class that exposes the Flutter scheduling primitives.<br> 在动画中，key primitive指的就是帧回调。</li> <li>Ticker<br> Ticker类会hookScheduler的scheduleFrameCallback()机制，以便在每个tick中调用回调，在回调方法中会更新动画的进度并通知所有的(状态)监听器</li> <li>Simulation<br> Simulation抽象类将一个相对时间值映射到时间流逝百分比</li> </ul> <p>我们总结一下Animation工作的流程。</p> <ol> <li>创建<code>AnimationController</code>时会调用<code>TickerProvider#createTicker</code>创建<code>Ticker</code>对象，并会注册回调到<code>_tick</code>方法</li> <li>调用<code>forward</code>时，会创建<code>Simulation</code>对象并作为参数传入<code>_startSimulation</code>方法</li> <li>在<code>_startSimulation</code>方法中会调用<code>_ticker.start()</code>开始动画</li> <li><code>Ticker#start</code>方法最后会调用<code>SchedulerBinding.instance.scheduleFrameCallback</code>方法开始新的帧，并在新帧产生后回调<code>Ticker#_tick</code>方法</li> <li><code>Ticker#_tick</code>方法回调<code>AnimationController#_tick</code>方法</li> <li>在该方法中会调用<code>Simulation#x</code>方法根据动画的进度利用<code>Curve</code>计算出<code>transform</code>出新的动画进度，并通知所有的(状态)监听器</li> <li>监听器收到通知后可以取Animation的<code>value</code>来更新UI，取<code>value</code>时可能会经过<code>Tween</code>的计算，把动画进度值转化为真正的动画属性值；</li> </ol> <h2 id=3-tab1>3. Tab1内容<a class=headerlink href=#3-tab1 title="Permanent link">&para;</a></h2> <h3 id=31>3.1 基本布局的写法<a class=headerlink href=#31 title="Permanent link">&para;</a></h3> <p>我们回顾下Tab1的UI。Tab1主要用来展示所有的任务，因此整体是一个列表。每一项是一个卡片。</p> <figure class=align-center style="width: 280px"> <img src=/assets/images/flutter/flutter_demo_tab1.png> <figcaption>Tab1的内容</figcaption> </figure> <p>我们分析一下Item的结构：在不考虑padding、margin的情况下，整个Item最外层应该是一个<code>Card</code>，内部是一个包裹着三行的<code>Column</code>。前两行都是<code>Row</code>，里面包含一个显示主要信息的Text和一个带有Icon的时间，带Icon的时间由<code>Row</code>组成。最后一行只有一个<code>LinearProgressIndicator</code>。<br> 考虑到<code>Card</code>没有点击事件，所以我们使用<code>InkWell</code>包裹<code>Card</code>的widget，这样点击<code>Card</code>就有水波纹效果，且可以响应点击事件。</p> <p>下面是Item的布局剖析图。</p> <figure class=half> <img src=/assets/images/flutter/flutter_demo_tab1_item.png> <img src=/assets/images/flutter/flutter_demo_tab_list_knife.png> <figcaption>Tab1 Item解析</figcaption> </figure> <p>我们解释一下Item的布局代码： <div class=highlight><pre><span></span><code><span class=k>return</span> <span class=n>Card</span><span class=p>(</span>
+  <span class=nl>margin:</span> <span class=k>const</span> <span class=n>EdgeInsets</span><span class=p>.</span><span class=n>fromLTRB</span><span class=p>(</span><span class=m>8.0</span><span class=p>,</span> <span class=m>8.0</span><span class=p>,</span> <span class=m>8.0</span><span class=p>,</span> <span class=m>0.0</span><span class=p>),</span>  <span class=c1>// Card距左上右8个逻辑像素，距下0个逻辑像素</span>
+  <span class=nl>color:</span> <span class=n>Colors</span><span class=p>.</span><span class=n>white</span><span class=p>,</span>                                    <span class=c1>// Card的背景为白色</span>
+  <span class=nl>clipBehavior:</span> <span class=n>Clip</span><span class=p>.</span><span class=n>antiAlias</span><span class=p>,</span>     <span class=c1>// 使用抗锯齿的方式裁切，这样Card底部的进度条下半部分也会有Card的圆角</span>
+  <span class=c1>// 使用InkWell可以让其子Widget有水波纹效果的点击事件</span>
+  <span class=nl>child:</span> <span class=n>InkWell</span><span class=p>(</span>
+    <span class=nl>onTap:</span> <span class=p>()</span> <span class=p>{},</span> <span class=c1>// InkWell的点击事件</span>
+    <span class=nl>child:</span> <span class=n>Container</span><span class=p>(</span>
+      <span class=nl>padding:</span> <span class=k>const</span> <span class=n>EdgeInsets</span><span class=p>.</span><span class=n>only</span><span class=p>(</span><span class=nl>top:</span> <span class=m>16.0</span><span class=p>),</span>
+      <span class=nl>child:</span> <span class=n>Column</span><span class=p>(</span>
+        <span class=nl>mainAxisAlignment:</span> <span class=n>MainAxisAlignment</span><span class=p>.</span><span class=n>spaceBetween</span><span class=p>,</span>
+        <span class=nl>crossAxisAlignment:</span> <span class=n>CrossAxisAlignment</span><span class=p>.</span><span class=n>start</span><span class=p>,</span>
+        <span class=nl>children:</span> <span class=o>&lt;</span><span class=n>Widget</span><span class=o>&gt;</span><span class=p>[</span>
+          <span class=n>Padding</span><span class=p>(</span>
+            <span class=c1>// 第一行，用来显示Task的title、截止时间</span>
+            <span class=nl>padding:</span> <span class=k>const</span> <span class=n>EdgeInsets</span><span class=p>.</span><span class=n>symmetric</span><span class=p>(</span><span class=nl>horizontal:</span> <span class=m>16.0</span><span class=p>),</span>
+            <span class=nl>child:</span> <span class=n>Row</span><span class=p>(</span>
+              <span class=nl>mainAxisAlignment:</span> <span class=n>MainAxisAlignment</span><span class=p>.</span><span class=n>spaceBetween</span><span class=p>,</span>
+              <span class=nl>crossAxisAlignment:</span> <span class=n>CrossAxisAlignment</span><span class=p>.</span><span class=n>center</span><span class=p>,</span>
+              <span class=nl>children:</span> <span class=o>&lt;</span><span class=n>Widget</span><span class=o>&gt;</span><span class=p>[</span>
+                <span class=n>Text</span><span class=p>(</span>
+                  <span class=n>task</span><span class=p>.</span><span class=n>title</span><span class=p>,</span>
+                  <span class=c1>// 指定text的样式</span>
+                  <span class=nl>style:</span> <span class=n>Theme</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=n>context</span><span class=p>).</span><span class=n>textTheme</span><span class=p>.</span><span class=n>headline</span><span class=p>,</span>
+                <span class=p>),</span>
+                <span class=n>Container</span><span class=p>(</span>
+                  <span class=nl>child:</span> <span class=n>Row</span><span class=p>(</span>
+                    <span class=nl>crossAxisAlignment:</span> <span class=n>CrossAxisAlignment</span><span class=p>.</span><span class=n>center</span><span class=p>,</span>
+                    <span class=nl>children:</span> <span class=o>&lt;</span><span class=n>Widget</span><span class=o>&gt;</span><span class=p>[</span>
+                      <span class=n>Container</span><span class=p>(</span>
+                        <span class=nl>margin:</span> <span class=k>const</span> <span class=n>EdgeInsets</span><span class=p>.</span><span class=n>only</span><span class=p>(</span><span class=nl>right:</span> <span class=m>4.0</span><span class=p>),</span>
+                        <span class=nl>child:</span> <span class=n>Icon</span><span class=p>(</span>
+                          <span class=n>Icons</span><span class=p>.</span><span class=n>timer_off</span><span class=p>,</span>
+                          <span class=nl>size:</span> <span class=m>12.0</span><span class=p>,</span>
+                          <span class=nl>color:</span> <span class=n>Theme</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=n>context</span><span class=p>).</span><span class=n>textTheme</span><span class=p>.</span><span class=n>caption</span><span class=p>.</span><span class=n>color</span><span class=p>,</span>
+                        <span class=p>),</span>
+                      <span class=p>),</span>
+                      <span class=n>Text</span><span class=p>(</span>
+                        <span class=c1>// Flutter格式化时间 1️⃣</span>
+                        <span class=n>Utils</span><span class=p>.</span><span class=n>duration</span><span class=p>(</span><span class=n>DateTime</span><span class=p>.</span><span class=n>fromMillisecondsSinceEpoch</span><span class=p>(</span><span class=n>task</span><span class=p>.</span><span class=n>deadline</span><span class=p>)),</span>
+                        <span class=nl>style:</span> <span class=n>Theme</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=n>context</span><span class=p>).</span><span class=n>textTheme</span><span class=p>.</span><span class=n>caption</span><span class=p>,</span>
+                      <span class=p>),</span>
+                    <span class=p>],</span>
+                  <span class=p>)</span>
+                <span class=p>),</span>
+              <span class=p>],</span>
+            <span class=p>),</span>
+          <span class=p>),</span>
+          <span class=n>Padding</span><span class=p>(</span>
+            <span class=c1>// 第二行，用来显示Task的message、上次操作时间</span>
+            <span class=nl>padding:</span> <span class=k>const</span> <span class=n>EdgeInsets</span><span class=p>.</span><span class=n>fromLTRB</span><span class=p>(</span><span class=m>16.0</span><span class=p>,</span> <span class=m>8.0</span><span class=p>,</span> <span class=m>16.0</span><span class=p>,</span> <span class=m>16.0</span><span class=p>),</span>
+            <span class=nl>child:</span> <span class=n>Row</span><span class=p>(</span>
+              <span class=nl>mainAxisAlignment:</span> <span class=n>MainAxisAlignment</span><span class=p>.</span><span class=n>spaceBetween</span><span class=p>,</span>
+              <span class=c1>// 子元素基线对齐，必须要指定textBaseline属性</span>
+              <span class=nl>crossAxisAlignment:</span> <span class=n>CrossAxisAlignment</span><span class=p>.</span><span class=n>baseline</span><span class=p>,</span>
+              <span class=nl>textBaseline:</span> <span class=n>TextBaseline</span><span class=p>.</span><span class=n>alphabetic</span><span class=p>,</span>
+              <span class=nl>children:</span> <span class=o>&lt;</span><span class=n>Widget</span><span class=o>&gt;</span><span class=p>[</span>
+                <span class=n>Text</span><span class=p>(</span>
+                  <span class=n>task</span><span class=p>.</span><span class=n>message</span><span class=p>,</span>
+                  <span class=nl>style:</span> <span class=n>Theme</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=n>context</span><span class=p>).</span><span class=n>textTheme</span><span class=p>.</span><span class=n>body1</span><span class=p>,</span>
+                <span class=p>),</span>
+                <span class=c1>// 如果有更新时间，显示更新时间，否则显示空的Text布局</span>
+                <span class=n>task</span><span class=p>.</span><span class=n>updated</span> <span class=o>!=</span> <span class=kc>null</span> <span class=o>?</span>
+                <span class=n>Container</span><span class=p>(</span>
+                  <span class=nl>child:</span> <span class=n>Row</span><span class=p>(</span>
+                    <span class=nl>crossAxisAlignment:</span> <span class=n>CrossAxisAlignment</span><span class=p>.</span><span class=n>center</span><span class=p>,</span>
+                    <span class=nl>children:</span> <span class=o>&lt;</span><span class=n>Widget</span><span class=o>&gt;</span><span class=p>[</span>
+                      <span class=n>Container</span><span class=p>(</span>
+                        <span class=nl>margin:</span> <span class=k>const</span> <span class=n>EdgeInsets</span><span class=p>.</span><span class=n>only</span><span class=p>(</span><span class=nl>right:</span> <span class=m>4.0</span><span class=p>),</span>
+                        <span class=nl>child:</span> <span class=n>Icon</span><span class=p>(</span>
+                          <span class=n>Icons</span><span class=p>.</span><span class=n>done</span><span class=p>,</span>
+                          <span class=nl>size:</span> <span class=m>12.0</span><span class=p>,</span>
+                          <span class=nl>color:</span> <span class=n>Theme</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=n>context</span><span class=p>).</span><span class=n>textTheme</span><span class=p>.</span><span class=n>caption</span><span class=p>.</span><span class=n>color</span><span class=p>,</span>
+                        <span class=p>),</span>
+                      <span class=p>),</span>
+                      <span class=n>Text</span><span class=p>(</span>
+                        <span class=n>Utils</span><span class=p>.</span><span class=n>duration</span><span class=p>(</span><span class=n>DateTime</span><span class=p>.</span><span class=n>fromMillisecondsSinceEpoch</span><span class=p>(</span><span class=n>task</span><span class=p>.</span><span class=n>updated</span><span class=p>)),</span>
+                        <span class=nl>style:</span> <span class=n>Theme</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=n>context</span><span class=p>).</span><span class=n>textTheme</span><span class=p>.</span><span class=n>caption</span><span class=p>,</span>
+                      <span class=p>),</span>
+                    <span class=p>],</span>
+                  <span class=p>)</span>
+                <span class=p>)</span> <span class=o>:</span> <span class=n>Text</span><span class=p>(</span><span class=s1>&#39;&#39;</span><span class=p>),</span>
+              <span class=p>],</span>
+            <span class=p>),</span>
+          <span class=p>),</span>
+          <span class=c1>// 线性进度条</span>
+          <span class=n>LinearProgressIndicator</span><span class=p>(</span>
+            <span class=nl>value:</span> <span class=n>task</span><span class=p>.</span><span class=n>currentCount</span> <span class=o>/</span> <span class=n>task</span><span class=p>.</span><span class=n>totalCount</span><span class=p>,</span>
+          <span class=p>),</span>
+        <span class=p>],</span>
+      <span class=p>),</span>
+    <span class=p>),</span>
+  <span class=p>)</span>
+<span class=p>);</span>
+</code></pre></div> 上面都是一些常用Widget的组合，没有什么特别的东西。不过也有一点小结</p> <ol> <li>Flutter中的Widget不像Android中的View那样，有非常多通用的布局属性。当我们需要在Flutter中加一些padding、margin或者color等属性时，如果某个具体的Widget没有提供这个属性，我们需要使用一个包含该属性的Widget包裹它。</li> <li> <p>在第二节的代码中，我们使用了如下代码来设置<code>BottomNavigationBar</code>的背景色为白色。 <div class=highlight><pre><span></span><code><span class=nl>bottomNavigationBar:</span> <span class=n>Theme</span><span class=p>(</span>
+  <span class=nl>data:</span> <span class=n>Theme</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=n>context</span><span class=p>).</span><span class=n>copyWith</span><span class=p>(</span><span class=nl>canvasColor:</span> <span class=n>Colors</span><span class=p>.</span><span class=n>white</span><span class=p>),</span>
+  <span class=nl>child:</span> <span class=n>botNavBar</span><span class=p>,</span>
+<span class=p>),</span>
+</code></pre></div> 这是因为没有属性可以直接修改<code>BottomNavigationBar</code>的背景色，其默认颜色是canvasColor。如果我们在<code>MaterialApp</code>中没有指定canvasColor，canvasColor默认就为<code>canvasColor ??= isDark ? Colors.grey[850] : Colors.grey[50];</code>。同时canvasColor也是<code>Scaffold</code>的颜色。<br> 所以我们copy一份主题，然后修改<code>canvasColor</code>为白色，传给<code>BottomNavigationBar</code>，这样就OK了。</p> <p><a href=https://flutter.io/docs/cookbook/design/themes>Using Themes to share colors and font styles</a></p> </li> </ol> <h3 id=32>3.2 使用三方库<a class=headerlink href=#32 title="Permanent link">&para;</a></h3> <p>在Flutter中，导包时可以加上一些限定词，比如<code>as</code>、<code>show</code>、<code>hide</code>。<br> <code>as</code>关键词可以避免混淆本文件的方法与包中的全局方法、常量，比如<code>duration</code>方法是utils.dart中的一个全局方法，我们使用<code>as</code>关键词可以这样： <div class=highlight><pre><span></span><code><span class=k>import</span> <span class=s1>&#39;../utils.dart&#39;</span> <span class=k>as</span> <span class=n>Utils</span><span class=p>;</span>
+
+<span class=n>Utils</span><span class=p>.</span><span class=n>duration</span><span class=p>(</span><span class=n>DateTime</span><span class=p>.</span><span class=n>fromMillisecondsSinceEpoch</span><span class=p>(</span><span class=n>task</span><span class=p>.</span><span class=n>deadline</span><span class=p>))</span>
+</code></pre></div> <code>show</code>、<code>hide</code>关键词可以让我们指定包中特定的类、方法等可见或不可见。下面指定了我们只能访问utils.dart的duration方法。 <div class=highlight><pre><span></span><code><span class=k>import</span> <span class=s1>&#39;../utils.dart&#39;</span> <span class=k>as</span> <span class=n>Utils</span> <span class=k>show</span> <span class=n>duration</span><span class=p>;</span>
+</code></pre></div></p> <p>在Flutter中，格式化时间需要导入<a href=https://pub.dartlang.org/packages/intl>intl</a>库</p> <p>1、在<code>pubspec.ymal</code>中添加依赖<br> <div class=highlight><pre><span></span><code>dependencies:
+  flutter:
+    sdk: flutter
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^0.1.2
+  intl: ^0.15.7  // add
+</code></pre></div></p> <p>2、在安装库后，可以参考如下代码进行日期的格式化 <div class=highlight><pre><span></span><code><span class=kt>String</span> <span class=n>formatDate</span><span class=p>(</span><span class=n>DateTime</span> <span class=n>dateTime</span><span class=p>)</span> <span class=p>{</span>
+  <span class=kd>var</span> <span class=n>dateFormat</span> <span class=o>=</span> <span class=n>DateFormat</span><span class=p>(</span><span class=s1>&#39;yyyy-MM-dd&#39;</span><span class=p>);</span>
+  <span class=k>return</span> <span class=n>dateFormat</span><span class=p>.</span><span class=n>format</span><span class=p>(</span><span class=n>dateTime</span><span class=p>);</span>
+<span class=p>}</span>
+</code></pre></div></p> <p><a href=https://flutter.io/docs/development/packages-and-plugins/using-packages>Using packages</a></p> <hr> <p>在了解完Item的结构后，我们在看一下Tab1的其他代码: <div class=highlight><pre><span></span><code><span class=k>import</span> <span class=s1>&#39;package:flutter/material.dart&#39;</span><span class=p>;</span>
+
+<span class=k>import</span> <span class=s1>&#39;../data/task.dart&#39;</span><span class=p>;</span>
+<span class=k>import</span> <span class=s1>&#39;../utils.dart&#39;</span> <span class=k>as</span> <span class=n>Utils</span><span class=p>;</span>
+
+<span class=kd>class</span> <span class=nc>TaskListPage</span> <span class=kd>extends</span> <span class=n>StatelessWidget</span> <span class=p>{</span>
+
+  <span class=nd>@override</span>
+  <span class=n>Widget</span> <span class=n>build</span><span class=p>(</span><span class=n>BuildContext</span> <span class=n>context</span><span class=p>)</span> <span class=p>{</span>
+    <span class=n>print</span><span class=p>(</span><span class=s2>&quot;build =&gt; </span><span class=si>${</span><span class=k>this</span><span class=p>.</span><span class=n>runtimeType</span><span class=p>.</span><span class=n>toString</span><span class=p>()</span><span class=si>}</span><span class=s2>&quot;</span><span class=p>);</span>
+
+    <span class=c1>// ListView的构造方法，只需要传入总个数以及每个item如何构建就行</span>
+    <span class=kd>final</span> <span class=n>body</span> <span class=o>=</span> <span class=n>ListView</span><span class=p>.</span><span class=n>builder</span><span class=p>(</span>
+        <span class=nl>itemCount:</span> <span class=m>2</span><span class=p>,</span>
+        <span class=nl>itemBuilder:</span> <span class=p>(</span><span class=n>context</span><span class=p>,</span> <span class=n>index</span><span class=p>)</span> <span class=p>{</span>
+          <span class=k>return</span> <span class=n>TaskListItem</span><span class=p>(</span><span class=n>index</span><span class=p>);</span>
+        <span class=p>}</span>
+      <span class=p>);</span>
+
+    <span class=k>return</span> <span class=n>Scaffold</span><span class=p>(</span>
+      <span class=nl>appBar:</span> <span class=n>AppBar</span><span class=p>(</span>
+        <span class=nl>title:</span> <span class=n>Text</span><span class=p>(</span><span class=s1>&#39;Ready&#39;</span><span class=p>),</span>
+      <span class=p>),</span>
+      <span class=nl>body:</span> <span class=n>body</span><span class=p>,</span>
+      <span class=nl>floatingActionButton:</span> <span class=n>FloatingActionButton</span><span class=p>(</span>
+        <span class=nl>onPressed:</span> <span class=p>()</span> <span class=p>{},</span>
+        <span class=nl>tooltip:</span> <span class=s2>&quot;添加Task&quot;</span><span class=p>,</span>
+        <span class=nl>child:</span> <span class=n>Icon</span><span class=p>(</span><span class=n>Icons</span><span class=p>.</span><span class=n>add</span><span class=p>),</span>
+      <span class=p>),</span>
+    <span class=p>);</span>
+  <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div> 上面就是Tab1的主要代码，暂时来看非常简单。<br> 我们在下一章中将会新增一个Task的详情/新增页面，编辑完成后会SQLite来存储数据。编辑的同时也会存下相关的日志，这样tab2就有数据可以展示了。</p> <p>另外，但是我们注意到Tab1也可以是一个Scaffold，在整个主页也是Scaffold的情况下，真是amazing。</p> <hr> <div class=md-source-date> <small> 最后更新: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2020年1月15日</span> </small> </div> <h2 id=__comments>评论</h2> <div id=disqus_thread></div> <script>var disqus_config=function(){this.page.url="https://blog.yorek.xyz/flutter/flutter_first_project_2/",this.page.identifier="/flutter/flutter_first_project_2/"};window.addEventListener("load",function(){var e=document,i=e.createElement("script");i.src="//yorekliu.disqus.com/embed.js",i.setAttribute("data-timestamp",+new Date),(e.head||e.body).appendChild(i)})</script> </article> </div> </div> <a href=# class="md-top md-icon" data-md-component=top data-md-state=hidden> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"/></svg> </a> </main> <footer class=md-footer> <nav class="md-footer__inner md-grid" aria-label=Footer> <a href=../flutter_first_project_1/ class="md-footer__link md-footer__link--prev" rel=prev> <div class="md-footer__button md-icon"> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg> </div> <div class=md-footer__title> <div class=md-ellipsis> <span class=md-footer__direction> 上一页 </span> 年轻人的第一个Flutter程序(1) </div> </div> </a> <a href=../flutter_first_project_3/ class="md-footer__link md-footer__link--next" rel=next> <div class=md-footer__title> <div class=md-ellipsis> <span class=md-footer__direction> 下一页 </span> 年轻人的第一个Flutter程序(3) </div> </div> <div class="md-footer__button md-icon"> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg> </div> </a> </nav> <div class="md-footer-meta md-typeset"> <div class="md-footer-meta__inner md-grid"> <div class=md-footer-copyright> <div class=md-footer-copyright__highlight> &copy; 2021 Yorek </div> Made with <a href=https://squidfunk.github.io/mkdocs-material/ target=_blank rel=noopener> Material for MkDocs </a> </div> <div class=md-footer-social> <a href=https://github.com/YorekLiu target=_blank rel=noopener title=github.com class=md-footer-social__link> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg> </a> <a href=lyytogether@gmail.com target=_blank rel=noopener title class=md-footer-social__link> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="m20 8-8 5-8-5V6l8 5 8-5m0-2H4c-1.11 0-2 .89-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/></svg> </a> </div> </div> </div> </footer> </div> <div class=md-dialog data-md-component=dialog> <div class="md-dialog__inner md-typeset"></div> </div> <script id=__config type=application/json>{"base": "../..", "features": ["navigation.tabs", "navigation.instant", "navigation.top"], "translations": {"clipboard.copy": "\u590d\u5236", "clipboard.copied": "\u5df2\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\uff0c\\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.fe42c31b.min.js", "version": null}</script> <script src=../../assets/javascripts/bundle.d892486b.min.js></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script> </body> </html>
