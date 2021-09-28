@@ -34,8 +34,6 @@ doCommit() {
 
     echo "push completed."
 
-    rm -f $url_txt
-
     git checkout master
 
     rm -rf docs/ mkdocs.yml serve.sh push2baidu.sh
@@ -44,6 +42,8 @@ doCommit() {
     cp -a site/* .
     echo ">>>>>>> copy site to root success"
 
+    rm -f $url_txt
+    rm -f 404.html
     git add .
 
     echo ">>>>>>> ready commit in master"
