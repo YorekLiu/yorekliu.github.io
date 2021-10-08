@@ -47,9 +47,9 @@ doCommit() {
     git add .
 
     echo ">>>>>>> ready commit in master"
-    # echo ">>>>>>> exec git status ."
+    echo ">>>>>>> exec git status ."
 
-    # git status .
+    git status .
 
     echo ">>>>>>> exec commit"
     git commit -m 'deploy from mkdocs'
