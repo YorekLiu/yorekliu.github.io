@@ -42,8 +42,7 @@ doCommit() {
     cp -a site/* .
     echo ">>>>>>> copy site to root success"
 
-    rm -f $url_txt
-    rm -f 404.html
+    rm -rf $url_txt 404.html
     git add .
 
     echo ">>>>>>> ready commit in master"
