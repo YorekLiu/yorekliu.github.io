@@ -54,7 +54,7 @@ doCommit() {
     echo ">>>>>>> exec commit"
     git commit -m 'deploy from mkdocs'
 
-    git push -f
+    # git push -f
 
     git checkout mkdocs
 
