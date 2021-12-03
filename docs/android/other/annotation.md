@@ -36,35 +36,35 @@ public @interface GET {
 - `@Retention`  
    注解的保留策略  
    取值是一个`RetentionPolicy`枚举类型，分别表示不同级别的保留策略，而根据保留策略的不同，处理该注解的方式也不相同  
-   - `SOURCE`  
-      源码级，注解信息只会保留到源代码中，编译器会在编译时丢弃调注解信息，因此不会保留到.class文件中
-   - `CLASS`  
-      编译时注解，默认值，注解信息会一直保留到.class文件阶段，但不会保存到运行时阶段。所以，需要在编译时通过注解处理器处理。
-   - `RUNTIME`  
-      运行时注解，注解信息在class文件阶段以及运行时阶段都会保留，因此可以通过反射获取注解信息。
+    - `SOURCE`  
+       源码级，注解信息只会保留到源代码中，编译器会在编译时丢弃调注解信息，因此不会保留到.class文件中
+    - `CLASS`  
+       编译时注解，默认值，注解信息会一直保留到.class文件阶段，但不会保存到运行时阶段。所以，需要在编译时通过注解处理器处理。
+    - `RUNTIME`  
+       运行时注解，注解信息在class文件阶段以及运行时阶段都会保留，因此可以通过反射获取注解信息。
 - `@Target`  
    注解可以修饰的范围  
    取值是一个`ElementType`枚举类型的数组，有以下枚举值可取：  
-   - `TYPE`  
-      修饰类、接口（包括注解类型）、枚举类型
-   - `FIELD`  
-      修饰成员变量（包括枚举常量）
-   - `METHOD`  
-      修饰方法
-   - `PARAMETER`  
-      修饰参数
-   - `CONSTRUCTOR`  
-      修饰构造器
-   - `LOCAL_VARIABLE`  
-      修饰局部变量
-   - `ANNOTATION_TYPE`  
-      修饰注解类型
-   - `PACKAGE`  
-      修饰包
-   - `TYPE_PARAMETER`  
-      Type parameter declaration，1.8新增
-   - `TYPE_USE`  
-      Use of a type，1.8新增
+    - `TYPE`  
+       修饰类、接口（包括注解类型）、枚举类型
+    - `FIELD`  
+       修饰成员变量（包括枚举常量）
+    - `METHOD`  
+       修饰方法
+    - `PARAMETER`  
+       修饰参数
+    - `CONSTRUCTOR`  
+       修饰构造器
+    - `LOCAL_VARIABLE`  
+       修饰局部变量
+    - `ANNOTATION_TYPE`  
+       修饰注解类型
+    - `PACKAGE`  
+       修饰包
+    - `TYPE_PARAMETER`  
+       Type parameter declaration，1.8新增
+    - `TYPE_USE`  
+       Use of a type，1.8新增
 
 自定义注解类型使用`@interface`关键字，这和定义一个接口非常像。注解只有成员变量，没有方法，注解的成员变量在注解定义中以“无形参的方法”形式来声明，其“方法名”定义了该成员变量的名字，其返回值定义了该成员变量的类型。成员变量可以使用`default`关键词指定默认值。
 
@@ -73,9 +73,14 @@ public @interface GET {
 ## 2. 注解的处理
 
 在上面我们知道了，`@Retention`注解可以设定自定义注解的保留策略，这3个策略的生命周期长度为SOURCE＜CLASS＜RUNTIME。生命周期短的能起作用的地方，生命周期长的一定也能起作用。  
+
 一般如果需要在运行时去动态获取注解信息，那只能用`RetentionPolicy.RUNTIME`；如果要在编译时进行一些预处理操作，比如生成一些辅助代码，就用`RetentionPolicy.CLASS`；如果只是做一些检查性的操作，比如`@Override`和`@SuppressWarnings`，则可选用`RetentionPolicy.SOURCE`。  
+
 当设定为`RetentionPolicy.RUNTIME`时，这个注解就是运行时注解。同样地，设定为`RetentionPolicy.CLASS`，这个注解就是编译时注解。  
-如果没有处理注解的工具，那么注解也不会有什么大的作用。对于不同的注解有不同的注解处理器。针对运行时注解会采用反射机制处理，针对编译时注解会采用注解处理器`AbstractProcessor`来处理。
+
+如果没有处理注解的工具，那么注解也不会有什么大的作用。对于不同的注解有不同的注解处理器。
+
+**针对运行时注解会采用反射机制处理，针对编译时注解会采用注解处理器`AbstractProcessor`来处理。*当然，编译时注解在编译时搭配ASM等字节码插桩技术也是可以读取并利用上的。***
 
 ### 2.1 运行时注解的处理
 
@@ -441,3 +446,4 @@ BUILD SUCCESSFUL in 8s
 以上就是一个最简单的编译时注解处理器的编写过程了。
 
 至此，注解的全方面介绍已经完毕，剩下的编译时生成辅助文件的相关代码我们会在[PermissionDispatcher源码解析——基于注解的动态权限请求框架PermissionDispatcher源码解析](/android/3rd-library/permissiondispatcher/)这篇文章中进行具体描述。
+

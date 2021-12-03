@@ -417,3 +417,4 @@ Parent constructor
 Child
 Child constructor
 ```
+普通代码块的执行顺序一定先于构造器，不管两者的先后顺序。
