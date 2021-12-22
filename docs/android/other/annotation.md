@@ -447,3 +447,31 @@ BUILD SUCCESSFUL in 8s
 
 至此，注解的全方面介绍已经完毕，剩下的编译时生成辅助文件的相关代码我们会在[PermissionDispatcher源码解析——基于注解的动态权限请求框架PermissionDispatcher源码解析](/android/3rd-library/permissiondispatcher/)这篇文章中进行具体描述。
 
+### 2.3 SOURCE注解妙用
+
+SOURCE 级别注解搭配 `@IntDef` 可以用来替代枚举类型，用以提示开发者该方法的入参、出参的可选项：
+
+```java
+public static final int MODE_SCROLLABLE = 0;
+public static final int MODE_FIXED = 1;
+public static final int MODE_AUTO = 2;
+
+@IntDef(value = {MODE_SCROLLABLE, MODE_FIXED, MODE_AUTO})
+@Retention(RetentionPolicy.SOURCE)
+public @interface Mode {}
+
+/////////////////////////////////////////////////////////
+@Mode int mode;
+
+public void setTabMode(@Mode int mode) {
+   if (mode != this.mode) {
+      this.mode = mode;
+      applyModeAndGravity();
+   }
+}
+
+@Mode
+public int getTabMode() {
+   return mode;
+}
+```

@@ -117,12 +117,12 @@ extends、super与通配符 `?` 搭配可以造成不同的效果。
 
 怎么理解上面的这段话呢？我们以Number为例，下面是要用到的继承关系图，注意图中的extends、super关键词的范围。
 
-![Number的部分继承关系](/assets/images/android/generics-wildcard.png)  
+![Number的部分继承关系](/assets/images/android/generics-wildcard.jpg)  
 <center>Number的部分继承关系</center>
 
 在`List<? extends Number>`中，泛型的具体类型在运行时只能是一个特定的，该类型是Number或者Number的子类都可以，但是由于不确定是哪个具体的类，所以不能添加任何对象，因为添加的对象可能不兼容。比如说，当里面存放的是Float时，我们动态的添加Integer，这是不允许的。同时，从其中读取数据，数据的类型肯定是Number类型的。
 
-`List<? super Number>`含义与上面相反，泛型的具体类型在运行时只能是一个特定的，该类型是Number或者Number的父类都可以。因此，Number以及其父类都是可以添加进去的。正是因为这个原因，在取出时，所以无法找到一个最高公共父类，除了Object，所以取出时只能是Object类型了。
+`List<? super Number>`含义与上面相反，泛型的具体类型在运行时只能是一个特定的，该类型是Number或者Number的父类都可以。但是，Number以及其子类都是可以添加进去的。正是因为这个原因，在取出时，所以无法找到一个最高公共父类，除了Object，所以取出时只能是Object类型了。
 
 下面是测试的例子，被注释掉的代码就是编译器报错的代码：
 
