@@ -23,7 +23,7 @@ theme:
     # Dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: red
+      primary: black
       accent: deep orange
       toggle:
         icon: material/toggle-switch
