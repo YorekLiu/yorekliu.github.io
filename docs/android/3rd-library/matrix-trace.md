@@ -662,7 +662,7 @@ private void dispatch(boolean isBegin, String log) {
 
 ???+ note "关于Plugin"
     Matrix master分支的插件（0.6.5版本）代码不支持R8以及AGP4.x。在feature分支有一个`upgrade-agp-4.1-wip`分支对此做了支持。但是不影响我们对其原理的分析解读。  
-    但是这部分源码颇费笔墨，所以另开一章进行解读。
+    但是这部分源码颇费笔墨，所以在[Matrix-ASM插桩插件解析](/android/3rd-library/matrix-trace-plugin)中进行解读。
 
 AppMethodBeat会被Plugin在编译时进行调用，调用位置为Java方法的出入口以及`Activity#onWindowFocusChange`，Plugin会在这些位置分别调用其`i(int methodId)`、`o(int methodId)`以及`at`方法。  
 对于`i/o`方法里面的参数`methodId`，Plugin在插桩时会为每一个函数生成一个唯一的id，保证通过这个id可以找到对应的方法，methodId可以在编译文件`app/build/outputs/mapping/debug/methodMapping.txt`中得到。  

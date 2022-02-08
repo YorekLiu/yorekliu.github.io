@@ -7,7 +7,7 @@ site_url: 'https://blog.yorek.xyz'
 # repo_url: 'https://github.com/YorekLiu/yorekliu.github.io'
 edit_uri: ""
 
-copyright: '&copy; 2021 Yorek'
+copyright: '&copy; 2022 Yorek'
 
 theme:
   name: 'material'
@@ -105,6 +105,7 @@ nav:
       - android/3rd-library/3rd-library-source-code.md
       - android/3rd-library/matrix.md
       - android/3rd-library/matrix-trace.md
+      - android/3rd-library/matrix-trace-plugin.md
       - android/3rd-library/matrix-io.md
       - android/3rd-library/matrix-resource.md
       - android/3rd-library/matrix-sqlitelint.md
