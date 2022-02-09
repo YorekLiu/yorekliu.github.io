@@ -12,4 +12,5 @@ hide:
 
 ## 上新
 
+- [浅析AGP+ASM：Matrix插桩插件解析](/android/3rd-library/matrix-trace-plugin)
 - [微信开源APM框架——Matrix源码解析](/android/3rd-library/matrix)
