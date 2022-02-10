@@ -66,11 +66,13 @@ class MatrixPlugin implements Plugin<Project> {
                         RemoveUnusedResourcesTask removeUnusedResourcesTask = project.tasks.create("remove" + variant.name.capitalize() + "UnusedResources", RemoveUnusedResourcesTask)
                         removeUnusedResourcesTask.inputs.property(RemoveUnusedResourcesTask.BUILD_VARIANT, variant.name)
                         project.tasks.add(removeUnusedResourcesTask)
+                        // RemoveUnusedResourcesTask依赖于packageApplication，即packageApplication先执行
                         removeUnusedResourcesTask.dependsOn variant.packageApplication
+                        // assemble依赖于RemoveUnusedResourcesTask，即RemoveUnusedResourcesTask先执行
+                        // 也就是说，执行顺序为packageApplication -> RemoveUnusedResourcesTask -> assemble
                         variant.assemble.dependsOn removeUnusedResourcesTask
                     }
                 }
-
             }
         }
     }
@@ -500,3 +502,248 @@ private class TraceMethodAdapter extends AdviceAdapter {
     看完整个trace模块，我们会发现，其实插桩入门真的很简单。  
     transform的注入流程、src/jar包中class文件的读写、以及ASM的流程都可以套用。只是ClassVisitor需要自己写，而这部分的代码又可以参考`ASM Bytecode Viewer`插件。  
     后面我将以自己在Github开源的`MethodTracer`插件为例子，说说他是怎么实现的。
+
+## 4. RemoveUnusedResourcesTask
+
+`RemoveUnusedResourcesTask`的任务是在打包后以ZIP形式读取老包，按照[ApkChecker](https://github.com/Tencent/matrix/wiki/Matrix-Android-ApkChecker)在打包时检测出来的没有用到的资源列表（该检测任务的代码在`matrix/matrix-android/matrix-apk-canary/src/main/java/com/tencent/matrix/apk/model/task/UnusedResourcesTask.java`，里面的其他相关代码也非常具有参考价值）以及其他配置项，选择性的复制里面的项目到新包，然后签名等任务。  
+这个任务针对的是apk，我们在分析`MatrixPlugin`的代码时提到了其Task之间的依赖关系可以推理出这一点。
+
+???+ error "RemoveUnusedResourcesTask 与 shrinkResources 的区别？"  
+    shrinkResources对资源的自动移除，指的是将没有用到的资源替换为占位的非常小的资源，但是不会彻底从资源库中进行删除；此外，也没有处理resources.arsc文件。至于为什么Google没有解决这两个问题，原因可以参考[包体积优化——shrinkResources](/android/paid/master/package_2/#shrinkresources)。  
+    而RemoveUnusedResourcesTask则会物理删除这些资源文件。
+
+回到`RemoveUnusedResourcesTask`的具体实现，这是一个Task。Task执行时会从`@TaskAction`修饰的方法开始执行。
+
+<small>**src/main/groovy/com/tencent/matrix/plugin/task/RemoveUnusedResourcesTask.groovy**</small>
+
+```groovy
+public class RemoveUnusedResourcesTask extends DefaultTask {
+    @TaskAction
+    void removeResources() {
+        // variantName的值在MatrixPlugin中就进行了设置
+        String variantName = this.inputs.properties.get(BUILD_VARIANT);
+        Log.i(TAG, "variant %s, removeResources", variantName);
+
+        project.extensions.android.applicationVariants.all { variant ->
+            if (variant.name.equalsIgnoreCase(variantName)) {
+                variant.outputs.forEach { output ->
+                    // apk包的地址
+                    String unsignedApkPath = output.outputFile.getAbsolutePath();
+                    Log.i(RemoveUnusedResourcesTask.TAG, "original apk file %s", unsignedApkPath);
+                    long startTime = System.currentTimeMillis();
+                    removeUnusedResources(unsignedApkPath, project.getBuildDir().getAbsolutePath() + "/intermediates/symbols/${variant.name}/R.txt", variant.variantData.variantConfiguration.signingConfig);
+                    Log.i(RemoveUnusedResourcesTask.TAG, "cost time %f s" , (System.currentTimeMillis() - startTime) / 1000.0f );
+                }
+            }
+        }
+    }
+}
+```
+
+`removeResources`方法的作用是获取到apk包的地址、拼凑出R.txt文件的地址、签名配置，最后调用`removeUnusedResources`方法开始移除资源。这个方法比较长，我们分段看一下。
+
+首先是获取了一些自定义配置项，然后做了一些 sanity check。
+
+```java
+void removeUnusedResources(String originalApk, String rTxtFile, SigningConfig signingConfig) {
+    ZipOutputStream zipOutputStream = null;
+    boolean needSign = project.extensions.matrix.removeUnusedResources.needSign;
+    boolean shrinkArsc = project.extensions.matrix.removeUnusedResources.shrinkArsc;
+    String apksigner = project.extensions.matrix.removeUnusedResources.apksignerPath;
+    if (needSign) {
+        if (Util.isNullOrNil(apksigner)) {
+            throw new GradleException("need sign apk but apksigner not found!");
+        } else if (! new File(apksigner).exists()) {
+            throw new GradleException( "need sign apk but apksigner " + apksigner + " was not exist!");
+        } else if (signingConfig == null) {
+            throw new GradleException("need sign apk but signingConfig not found!");
+        }
+    }
+    ...
+}
+```
+
+接着获取unusedResources和ignoreRes，并在unusedResources中剔除需要忽略的资源。这样剩下的都是需要一个个删除的资源了。
+
+```java
+File inputFile = new File(originalApk);
+Set<String> ignoreRes = project.extensions.matrix.removeUnusedResources.ignoreResources;
+for (String res : ignoreRes) {
+    ignoreResources.add(Util.globToRegexp(res));
+}
+Set<String> unusedResources = project.extensions.matrix.removeUnusedResources.unusedResources;
+Iterator<String> iterator = unusedResources.iterator();
+String res = null;
+while (iterator.hasNext()) {
+    res = iterator.next();
+    if (ignoreResource(res)) {
+        iterator.remove();
+        Log.i(TAG, "ignore unused resources %s", res);
+    }
+}
+Log.i(TAG, "unused resources count:%d", unusedResources.size());
+```
+
+接下来，在apk目录下创建_shrinked后缀的apk空文件，作为处理后的apk。然后调用`readResourceTxtFile`方法读取r.txt文件并将里面的资源信息、样式信息保存到各自的map中。
+
+```java
+String outputApk = inputFile.getParentFile().getAbsolutePath() + "/" + inputFile.getName().substring(0, inputFile.getName().indexOf('.')) + "_shrinked.apk";
+
+File outputFile = new File(outputApk);
+if (outputFile.exists()) {
+    Log.w(TAG, "output apk file %s is already exists! It will be deleted anyway!", outputApk);
+    outputFile.delete();
+    outputFile.createNewFile();
+}
+
+ZipFile zipInputFile = new ZipFile(inputFile);
+
+zipOutputStream = new ZipOutputStream(new FileOutputStream(outputFile));
+
+Map<String, Integer> resourceMap = new HashMap();
+Map<String, Pair<String, Integer>[]> styleableMap = new HashMap();
+File resTxtFile = new File(rTxtFile);
+readResourceTxtFile(resTxtFile, resourceMap, styleableMap);
+```
+
+`readResourceTxtFile`方法会解析R.txt文件，该文件中的数据格式可能有两种：
+
+1. 资源数据，每一行代表一个资源，这些数据保存到了`resourceMap`中。  
+    key为资源名（`R.dimen.vip_text_size_small`），value为id值：
+    ```txt
+    int dimen vip_text_size_small 0x7f070468
+    int drawable _50200_rd_attachment_item_save_selector 0x7f080006
+    int styleable ActionBar_titleTextStyle 28
+    ```
+
+2. 样式数据，多行表示，数据保存在`styleableMap`中。  
+    key为资源名（`R.styleable.AVLoadingIndicatorView`），value为子资源名与id值的二元组数组（
+    [`R.styleable.AVLoadingIndicatorView_indicator` -> 0, `R.styleable.AVLoadingIndicatorView_indicator_color` -> 1]）。
+    ```txt
+    int[] styleable AVLoadingIndicatorView { 0x7f0401f3, 0x7f0401fc }
+    int styleable AVLoadingIndicatorView_indicator 0
+    int styleable AVLoadingIndicatorView_indicator_color 1
+    ```
+
+回到主干上，在解析完R.txt文件并将解析结果保存到两个map后，就可以先将`unusedResources`对应的资源从`resourceMap`中进行移除。等待后面回写R.txt文件时，`unusedResources`就不会出现在R.txt中了。同时，使用`removeResources`保存要删除的资源名与对应的id。
+
+```java
+Map<String, Integer> removeResources = new HashMap<>();
+for (String resName : unusedResources) {
+    // 这里的ignoreResource判断都是false，因为前面的操作已经将所有需要过滤的都过滤掉了
+    if (!ignoreResource(resName)) {
+        removeResources.put(resName, resourceMap.remove(resName));
+    }
+}
+```
+
+下面开始真正的执行remove操作了。这里的思路是遍历APK这个ZIP文件的每一项：
+
+1. 如果该项是以res/开头的，说明是资源文件。根据ZipEntry的名称拼出对应的资源名，如果该资源名需要被删除，则不添加到output的APK包中；否则，如果不需要被删除，则添加到output的APK中。
+2. 如果自定义配置中配置了需要签名，则META-INF/目录都忽略，不需要执行复制的操作。因为output的APK在后面的签名环节会生成这些内容。
+3. 如果需要删除resources.arsc中的没有用到的资源项。则会将输入的APK中的这个ZipEntry解压到本地，然后使用`ArscReader`读取并从中移除没有用到的资源项，操作完成后写回到resources_shrinked.arsc文件中，并将这个文件添加到output的APK中。这样就达到了删除resources.arsc中的没有用到的资源项的目的。当然，这一步的操作比较繁琐，需要对arsc文件了解非常深，这里限于篇幅不做过多讨论。
+
+```java
+for (ZipEntry zipEntry : zipInputFile.entries()) {
+    if (zipEntry.name.startsWith("res/")) {
+        // 第一步，操作资源文件
+        String resourceName = entryToResouceName(zipEntry.name);
+        if (!Util.isNullOrNil(resourceName)) {
+            if (removeResources.containsKey(resourceName)) {
+                Log.i(TAG, "remove unused resource %s", resourceName);
+                continue;
+            } else {
+                addZipEntry(zipOutputStream, zipEntry, zipInputFile);
+            }
+        } else {
+            addZipEntry(zipOutputStream, zipEntry, zipInputFile);
+        }
+    } else {
+        if (needSign && zipEntry.name.startsWith("META-INF/")) {
+            // 第二步，META-INF签名文件
+            continue;
+        } else {
+            if (shrinkArsc && zipEntry.name.equalsIgnoreCase("resources.arsc") && unusedResources.size() > 0) {
+                // 第三步，处理resources.arsc文件
+                File srcArscFile = new File(inputFile.getParentFile().getAbsolutePath() + "/resources.arsc");
+                File destArscFile = new File(inputFile.getParentFile().getAbsolutePath() + "/resources_shrinked.arsc");
+                if (srcArscFile.exists()) {
+                    srcArscFile.delete();
+                    srcArscFile.createNewFile();
+                }
+                unzipEntry(zipInputFile, zipEntry, srcArscFile);
+
+                ArscReader reader = new ArscReader(srcArscFile.getAbsolutePath());
+                ResTable resTable = reader.readResourceTable();
+                for (String resName : removeResources.keySet()) {
+                    ArscUtil.removeResource(resTable, removeResources.get(resName), resName);
+                }
+                ArscWriter writer = new ArscWriter(destArscFile.getAbsolutePath());
+                writer.writeResTable(resTable);
+                Log.i(TAG, "shrink resources.arsc size %f KB", (srcArscFile.length() - destArscFile.length()) / 1024.0);
+                addZipEntry(zipOutputStream, zipEntry, destArscFile);
+            } else {
+                addZipEntry(zipOutputStream, zipEntry, zipInputFile);
+            }
+        }
+    }
+}
+```
+
+这样，我们得到了一个处理之后的APK文件，下面就是对其进行签名的操作了。签名完成之后，将老包备份为xxx_back.apk，新包重命名为老包的名称。这样操作之后，不会影响该task之后的打包流程，对其他流程来说是没有任何感知的。
+
+```java
+Log.i(TAG, "shrink apk size %f KB", (inputFile.length() - outputFile.length()) / 1024.0);
+if (needSign) {
+    Log.i(TAG, "resign apk...");
+    ProcessBuilder processBuilder = new ProcessBuilder();
+    processBuilder.command(apksigner, "sign", "-v",
+            "--ks", signingConfig.storeFile.getAbsolutePath(),
+            "--ks-pass", "pass:" + signingConfig.storePassword,
+            "--key-pass", "pass:" + signingConfig.keyPassword,
+            "--ks-key-alias", signingConfig.keyAlias,
+            outputFile.getAbsolutePath());
+    //Log.i(TAG, "%s", processBuilder.command());
+    Process process = processBuilder.start();
+    process.waitFor();
+    if (process.exitValue() != 0) {
+        throw new GradleException(process.getErrorStream().text);
+    }
+}
+String backApk = inputFile.getParentFile().getAbsolutePath() + "/" + inputFile.getName().substring(0, inputFile.getName().indexOf('.')) + "_back.apk";
+inputFile.renameTo(new File(backApk));
+outputFile.renameTo(new File(originalApk));
+```
+
+最后，清理一下样式资源文件，并将留下来的资源、样式重新写回到R.txt中。在这一步中，一个样式资源只要有一个子项被用到，都不会被剔除。
+
+```java
+//modify R.txt to delete the removed resources
+if (!removeResources.isEmpty()) {
+    Iterator<String> styleableItera =  styleableMap.keySet().iterator();
+    while (styleableItera.hasNext()) {
+        String styleable = styleableItera.next();
+        Pair<String, Integer>[] attrs = styleableMap.get(styleable);
+        int i = 0;
+        for (i = 0; i < attrs.length; i++) {
+            if (!removeResources.containsValue(attrs[i].right)) {
+                break
+            }
+        }
+        if (attrs.length > 0 && i == attrs.length) {
+            Log.i(TAG, "removed styleable " + styleable);
+            styleableItera.remove();
+        }
+    }
+    //Log.d(TAG, "styleable %s", styleableMap.keySet().size());
+    String newResTxtFile = resTxtFile.getParentFile().getAbsolutePath() + "/" + resTxtFile.getName().substring(0, resTxtFile.getName().indexOf('.')) + "_shrinked.txt";
+    shrinkResourceTxtFile(newResTxtFile, resourceMap, styleableMap);
+
+    //Other plugins such as "Tinker" may depend on the R.txt file, so we should not modify R.txt directly .
+    //new File(newResTxtFile).renameTo(resTxtFile);
+}
+```
+
+上面就是`RemoveUnusedResourcesTask`在清理资源时的逻辑。我们发现，除了`ArscReader`这一块需要深入研究一下之外，逻辑总体上还是非常清晰的。`ArscReader`这一块代码在单独的`matrix-arscutil`模块中，有需求可以参考一下。  
+
+`RemoveUnusedResourcesTask`依赖的输入源[`ApkChecker`](https://github.com/Tencent/matrix/wiki/Matrix-Android-ApkChecker)在做包体积大小监控中的规则监控时，非常好用，可以帮助我们分析出具体的包增长的原因。后面有空了，也将分析一下ApkChecker中的各种Task的实现原理。
