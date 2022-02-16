@@ -108,6 +108,7 @@ nav:
       - android/3rd-library/matrix-trace-plugin.md
       - android/3rd-library/matrix-io.md
       - android/3rd-library/matrix-resource.md
+      - android/3rd-library/matrix-apk-checker.md
       - android/3rd-library/matrix-sqlitelint.md
       - android/3rd-library/okhttp.md
       - android/3rd-library/retrofit.md

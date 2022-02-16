@@ -109,10 +109,6 @@ BTW，信号捕获机制在捕获Native代码的崩溃上也有使用，详见Bu
  .                         |<-----warmCost---->|
 ```
 
-源码分析请移步：[Matrix-TraceCanary解析](/android/3rd-library/matrix-trace)
-
-> 通过`UIThreadMonitor`还可以写出更多好玩的东西，比如后台渲染的检测，获取引发后台渲染的堆栈信息还是可以通过`AppMethodBeat`来实行。
-
 ### 6. ThreadPriorityTracer
 
 *2.0.0版本添加*
@@ -132,6 +128,12 @@ BTW，信号捕获机制在捕获Native代码的崩溃上也有使用，详见Bu
 1. 通过反射获取 `MessageQueue.mIdleHandlers` 这个List，并这个List替换成自己的List实现。
 2. 当List的add、remove方法调用时，将传入的IdleHandler包装为自己的IdleHandler传入。
 3. 当IdleHandler执行的时候，调用原始IdleHandler的方法进行执行，执行前后postDelay、remove一个Runnable。这样当IdleHandler执行超时时，就会触发Runnable，在这里面可以进行分析上报。
+
+---
+
+源码分析请移步：[Matrix-TraceCanary解析](/android/3rd-library/matrix-trace)、[Matrix-ASM插桩插件解析](/android/3rd-library/matrix-trace-plugin/)
+
+> 通过`UIThreadMonitor`还可以写出更多好玩的东西，比如后台渲染的检测，获取引发后台渲染的堆栈信息还是可以通过`AppMethodBeat`来实行。
 
 ## 2. I/O Canary
 
@@ -171,7 +173,7 @@ Resource Canary中除了上面功能之外，还有一个`matrix-apk-canary`的j
 最后，Resource Canary还提供了一个重要的功能：**自动移除没有用到的资源**。在第一节Trace Canary中，我们说到了插桩，这里插桩是通过Gradle Plugin + ASM实现的。在该Plugin中还有另外一个Task：`RemoveUnusedResourcesTask`。  
 这里所谓的UnusedResources是依靠于上面的ApkChecker中检测。`RemoveUnusedResourcesTask`将原app包zip格式读取到内存，然后过滤掉不需要的res/文件，并同样过滤处理resources.arsc文件，完毕将shrink后的app写回磁盘中。并进行签名，同步修改R.txt文件等。
 
-源码分析请移步：[Matrix-ResourceCanary解析](/android/3rd-library/matrix-resource)
+源码分析请移步：[Matrix-ResourceCanary解析](/android/3rd-library/matrix-resource)、[Matrix-ApkChecker：安装包分析检测工具](/android/3rd-library/matrix-apk-checker)
 
 ## 4. SQLite Lint
 

@@ -438,7 +438,7 @@ private void insertWindowFocusChangeMethod(ClassVisitor cv, String classname) {
 }
 ```
 
-上面这段代码可能看着头疼，因为这涉及到了字节码的层面。不过也不用太担心，我们可以在AS上下载`ASM Bytecode Viewer`插件，先写号要插桩的代码，然后使用此插件查看ASM的对应写法，可以增加效率。
+上面这段代码可能看着头疼，因为这涉及到了字节码的层面。不过也不用太担心，我们可以在AS上下载`ASM Bytecode Viewer`插件，先写好要插桩的代码，然后使用此插件查看ASM的对应写法，可以增加效率。
 
 最后，我们看看`TraceMethodAdapter`是如何处理方法的。其实熟悉了字节码之后，看下面的代码非常简单，具体意思贴在注释中了。
 
@@ -746,4 +746,6 @@ if (!removeResources.isEmpty()) {
 
 上面就是`RemoveUnusedResourcesTask`在清理资源时的逻辑。我们发现，除了`ArscReader`这一块需要深入研究一下之外，逻辑总体上还是非常清晰的。`ArscReader`这一块代码在单独的`matrix-arscutil`模块中，有需求可以参考一下。  
 
-`RemoveUnusedResourcesTask`依赖的输入源[`ApkChecker`](https://github.com/Tencent/matrix/wiki/Matrix-Android-ApkChecker)在做包体积大小监控中的规则监控时，非常好用，可以帮助我们分析出具体的包增长的原因。后面有空了，也将分析一下ApkChecker中的各种Task的实现原理。
+`RemoveUnusedResourcesTask`依赖的输入源[`ApkChecker`](https://github.com/Tencent/matrix/wiki/Matrix-Android-ApkChecker)在做包体积大小监控中的规则监控时，非常好用，可以帮助我们分析出具体的包大小增长的原因。
+
+ApkChecker中的各种Task的实现原理将在[Matrix-ApkChecker](/android/3rd-library/matrix-apk-checker)这篇文章中进行分析。

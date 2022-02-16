@@ -4,9 +4,11 @@ title: "Android三方库源码分析"
 
 - [微信开源APM框架 Matrix-2.0.0 总纲](/android/3rd-library/matrix)
     - [Matrix-TraceCanary解析](/android/3rd-library/matrix-trace)
+    - [Matrix-ASM插桩插件解析](/android/3rd-library/matrix-trace-plugin/)
     - [Matrix-IOCanary解析](/android/3rd-library/matrix-io)
-    - [Matrix-ResourceCanary解析](/android/3rd-library/matrix-resource)
-    - [Matrix-SQLiteLint解析](/android/3rd-library/matrix-sqlitelint)
+    - [Matrix-ResourceCanary解析<small>(更新中)</small>](/android/3rd-library/matrix-resource)
+    - [Matrix-ApkChecker：安装包分析检测工具](/android/3rd-library/matrix-apk-checker/)
+    - [Matrix-SQLiteLint解析<small>(待更新)</small>](/android/3rd-library/matrix-sqlitelint)
 - [OkHttp-3.8.0](/android/3rd-library/okhttp/)
 - [Retrofit-2.3.0](/android/3rd-library/retrofit/)
 - [RxJava-2.1.13 & RxAndroid-2.0.2 & 部分使用例子](/android/3rd-library/rxjava&rxandroid/)
