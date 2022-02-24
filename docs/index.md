@@ -12,6 +12,7 @@ hide:
 
 ## 上新
 
+- [AndResGuard资源混淆原理浅析](/android/3rd-library/andresguard)
 - [Matrix-ApkChecker：安装包分析检测工具](/android/3rd-library/matrix-apk-checker)
 - [浅析AGP+ASM：Matrix插桩插件解析](/android/3rd-library/matrix-trace-plugin)
 - [微信开源APM框架——Matrix源码解析](/android/3rd-library/matrix)
