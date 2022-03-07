@@ -179,6 +179,7 @@ nav:
       - android/other/腾讯X5内核入坑指南.md
       - android/other/琐碎知识点.md
       - android/other/琐碎知识点2.md
+    - 基础知识:
       - android/paid/zsxq/week1-synchronized.md
       - android/paid/zsxq/week2-service.md
       - android/paid/zsxq/week3-activity.md
@@ -196,6 +197,9 @@ nav:
       - android/paid/zsxq/week21-mvc&mvp&mvvm.md
       - android/paid/zsxq/week22-android-studio-build.md
       - android/paid/zsxq/week23-load-large-bitmap.md
+      - java/generics-java-kotlin.md
+      - java/java-collections.md
+      - java/java-foundation.md
     - Android开发高手课:
       - android/paid/master/index.md
       - android/paid/master/crash_1.md
@@ -289,9 +293,5 @@ nav:
       - jvm/java-gc.md
       - jvm/class-struct.md
       - jvm/load-class.md
-    - Java:
-      - java/generics-java-kotlin.md
-      - java/java-collections.md
-      - java/java-foundation.md
     - Refactoring:
       - refactoring/refactoring.md
