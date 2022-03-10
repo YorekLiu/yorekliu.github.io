@@ -15,7 +15,20 @@ title: "04 | 内存优化（下）：内存优化这件事，应该从哪里着�
     - 设备分级。使用类似 [device-year-class]((https://github.com/facebook/device-year-class)) 的策略对设备分级，对于低端机用户可以关闭复杂的动画，或者是某些功能；使用 565 格式的图片，使用更小的缓存内存等。在现实环境下，不是每个用户的设备都跟我们的测试机一样高端，在开发过程我们要学会思考功能要不要对低端机开启、在系统资源吃紧的时候能不能做降级。
     - 缓存管理。我们需要有一套统一的缓存管理机制，可以适当地使用内存；当“系统有难”时，也要义不容辞地归还。我们可以使用 OnTrimMemory 回调，根据不同的状态决定释放多少内存。对于大项目来说，可能存在几十上百个模块，统一缓存管理可以更好地监控每个模块的缓存大小。
     - 进程模型。**一个空的进程也会占用 10MB 的内存**，而有些应用启动就有十几个进程，甚至有些应用已经从双进程保活升级到四进程保活，所以减少应用启动的进程数、减少常驻进程、有节操的保活，对低端机内存优化非常重要。  
-    - 线程优化。每个线程初始化都需要 mmap 一定的 stack size，**在默认的情况下一般初始化一个线程需要 mmap 1M 左右的内存空间**。所以需要收拢线程到线程池，并且可以考虑对默认栈空间进行减半的操作。matrix开源了这个方案[matrix/matrix-android/matrix-hooks/src/main/cpp/pthread](https://github.com/Tencent/matrix/tree/master/matrix/matrix-android/matrix-hooks/src/main/cpp/pthread)
+    - 线程优化。每个线程初始化都需要 mmap 一定的 stack size，**在默认的情况下一般初始化一个线程需要 mmap 1M 左右的内存空间**。所以需要收拢线程到线程池，并且可以考虑对默认栈空间进行减半的操作。matrix开源了这个方案[matrix/matrix-android/matrix-hooks/src/main/cpp/pthread](https://github.com/Tencent/matrix/tree/master/matrix/matrix-android/matrix-hooks/src/main/cpp/pthread)  
+    下面的方法可以获取到默认的栈大小：三星S10+ Android12上是1015808B=992KB，OnePlus3上是1032192B=1008KB。
+    ```c
+    JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
+        pthread_attr_t attr;
+        pthread_attr_init(&attr);
+        size_t default_size;
+        pthread_attr_getstacksize(&attr, &default_size);
+
+        __android_log_print(ANDROID_LOG_ERROR, "Yorek", "Stack size = %d", default_size);
+
+        return JNI_VERSION_1_6;
+    }
+    ```
     - 安装包大小。安装包中的代码、资源、图片以及 so 库的体积，跟它们占用的内存有很大的关系。一个 80MB 的应用很难在 512MB 内存的手机上流畅运行。这种情况我们需要考虑针对低端机用户推出 4MB 的轻量版本，例如 Facebook Lite、今日头条极速版都是这个思路。  
     安装包中的代码、图片、资源以及 so 库的大小跟内存究竟有哪些关系？你可以参考下面的这个表格。    
     ![安装包中代码、图片、资源、so库的大小与内存的关系](/assets/images/android/memory_in_apk.png)  
