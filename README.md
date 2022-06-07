@@ -2,7 +2,7 @@
 
 ➠ [前往博客🚀🚀🚀](https://blog.yorek.xyz/) 
 
-基于[Material for MkDocs V6.2.5](https://squidfunk.github.io/mkdocs-material/)
+基于[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
 
 - mkdocs分支  
   博客的源文件，包括CNAME等  
@@ -19,8 +19,10 @@
 
 1. 操作流程
     - fork项目或者随便怎么样
-    - 安装python环境、pip之后跟随[Getting started](https://squidfunk.github.io/mkdocs-material/getting-started/)进行安装
-    - 执行`mkdocs serve --dirtyreload`进行写作时的动态预览
+    - 安装python环境、pip、并配置好python的环境变量，之后跟随[Getting started](https://squidfunk.github.io/mkdocs-material/getting-started/)进行安装
+    - 目前使用了`git-revision-date-localized`与`mkdocs-minify-plugin`两个插件，使用`pip install <插件名>`安装上述插件
+    - 在mkdocs分支上写作，执行`mkdocs serve --dirtyreload`进行写作时的动态实时预览
+    - 写完之后commit并push一下，随后调用`deploy.sh`脚本进行博客的发布
 
 2. FAQ
 
@@ -30,7 +32,7 @@
 Config value: 'plugins'. Error: The "git-revision-date-localized" plugin is not installed
 ```
 请查阅对应repo上面的安装介绍[https://github.com/timvink/mkdocs-git-revision-date-localized-plugin](https://github.com/timvink/mkdocs-git-revision-date-localized-plugin)  
-目前来看，安装即可`mkdocs-git-revision-date-localized-plugin`即可  
+目前来看，安装`mkdocs-git-revision-date-localized-plugin`即可  
 
 **下面的问题同样是插件问题**：
 ```
