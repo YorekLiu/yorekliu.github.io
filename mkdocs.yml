@@ -40,6 +40,7 @@ theme:
   icon:
     repo: material/github
   favicon: assets/images/favicon.webp
+  custom_dir: overrides
 
 plugins:
   - search:
@@ -55,8 +56,10 @@ extra:
       link: https://github.com/YorekLiu
     - icon: material/email
       link: lyytogether@gmail.com
-  disqus: 'yorekliu'
   manifest: manifest.webmanifest
+  analytics:
+    provider: google
+    property: UA-155096376-1
 
 markdown_extensions:
   - admonition
@@ -93,10 +96,6 @@ markdown_extensions:
 
 extra_javascript:
   - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'
-
-google_analytics:
-  - 'UA-155096376-1'
-  - 'auto'
 
 # Page tree
 nav:
