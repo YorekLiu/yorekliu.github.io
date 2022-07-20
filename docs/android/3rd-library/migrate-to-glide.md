@@ -1,5 +1,7 @@
 ---
 title: "杂记：从Picasso迁移至Glide"
+tags:
+  - glide
 ---
 
 !!! note "Glide系列文章目录"

@@ -1,5 +1,7 @@
 ---
 title: "Android动画"
+tags:
+  - framework
 ---
 
 Android动画可以分为两种：View动画、属性动画。  

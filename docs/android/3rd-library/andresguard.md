@@ -1,11 +1,38 @@
 ---
 title: "AndResGuard资源混淆原理浅析"  
+tags:
+  - andresguard
+  - 包体积优化
+  - apm
 ---
+
+## 1. 前言
+
+???+ tip "AndResGuard"  
+    [安装包立减1M--微信Android资源混淆打包工具](https://mp.weixin.qq.com/s?__biz=MzAwNDY1ODY2OQ==&mid=208135658&idx=1&sn=ac9bd6b4927e9e82f9fa14e396183a8f#rd)
+
+AndResGuard是一款可以实现资源混淆的插件，可以达到立减1M的效果[^1]。实际上对于比较大型的工程来说，达到的效果不止1M。  
+
+这是因为其实现了以下功能：
+
+- 最主要的资源混淆功能（资源路径短链化：res/drawable/udgasudg.xml -> 成r/a/a.xml）
+- 重复资源合并（修改资源表中的路径值即可，冗余的文件不打进新的zip中）
+- 指定文件在zip包中采取DEFLATED压缩方式，而不是STORED压缩方式
+- 最后对zip进行了整包7z压缩
 
 本篇文章主要讲述的是AndResGuard是如何实现资源混淆的，这个功能的实现离不开解析、修改以及回写resources.arsc文件。  
 为了能够理清这里面的实现，我们得先介绍一下resources.arsc这个二进制文件的具体格式。
 
-## 1. resources.arsc格式
+???+ tips "AGP new features"  
+    AGP 4.2 支持了资源混淆的功能：https://jakewharton.com/smaller-apks-with-resource-optimization/  
+    可以使用`android.enableResourceOptimizations=false`关闭  
+
+    AGP 7.1 支持了无用资源的完全删除：https://developer.android.com/studio/releases/gradle-plugin#improved-resource-shrinker  
+    以往无用资源都是替换为非常小的占位图，现在可以使用`android.experimental.enableNewResourceShrinker.preciseShrinking=true`彻底删除了  
+    
+    AGP的逐渐迭代会使该库持续失去价值，但是对于大的项目工程来说，由于依赖了许许多多的插件，AGP版本的升级会导致许多插件需要适配，这是很庞大的工作量。而且一些小的优化点，AGP也没有支持到，所以AndResGuard仍然有它的使用价值。
+
+## 2. resources.arsc格式
 
 下面这张图是一张典型的格式图。这里简单叙述一下，具体的例子可以对照andresguard的实现来看。[点击跳转](#23-arscdecoder)  
 
@@ -333,16 +360,13 @@ struct ResTable_type
 
 ![ResTable_type](/assets/images/android/ResTable_type.jpg)
 
-## 2. AndResGuard原理解析
-
-???+ tip "AndResGuard"  
-    [安装包立减1M--微信Android资源混淆打包工具](https://mp.weixin.qq.com/s?__biz=MzAwNDY1ODY2OQ==&mid=208135658&idx=1&sn=ac9bd6b4927e9e82f9fa14e396183a8f#rd)
+## 3. AndResGuard原理解析
 
 AndResGuard实现资源混淆的主要原理就是将资源目录将res/drawable/udgasudg.xml这种目录 **混淆** 成r/a/a.xml这种。此外，对于包中相同的 **冗余资源**，也会采用修改Res_value中的值来重定向到同一份文件的方式来优化包体积。最后，也会对整包进行压缩率更大的 **7z** 来重新压缩安装包。  
 
 AndResGuard的源码位于[https://github.com/shwenzhang/AndResGuard](https://github.com/shwenzhang/AndResGuard)中。
 
-### 2.1 AndResGuardPlugin
+### 3.1 AndResGuardPlugin
 
 下面我们正式来看看神奇的AndResGuard插件到底干了些什么。
 
@@ -586,7 +610,7 @@ def RunGradleTask(config, String absPath, int minSDKVersion, int targetSDKVersio
 
 混淆过程先经过`ApkDecoder`进行解码，然后调用`buildApk`构建APK并签名。所以下面的内容就分这两步来进行。
 
-### 2.2 ApkDecoder
+### 3.2 ApkDecoder
 
 ```java
   protected void resourceProguard(
@@ -688,7 +712,7 @@ def RunGradleTask(config, String absPath, int minSDKVersion, int targetSDKVersio
 
 而`ARSCDecoder`则解析到ResTable_entry与Res_value时，进行里面涉及到的值的处理，以此来真正实现资源的混淆。所以这个部分才是重中之重。所以这里，我们看看`ARSCDecoder`的实现。
 
-### 2.3 ARSCDecoder
+### 3.3 ARSCDecoder
 
 `ARSCDecoder`在读取resources.arsc文件时，使用了`LEDataInputStream`来读取文件，这是`DataInputStream`的小端（Little-Endian）版本。  
 在构造函数中，还通过`proguardFileName`方法来为res下面的一级目录生成唯一的短路径名，这个映射关系保存在`mOldFileName`中，映射关系会被`generalFileResMapping`方法写入到resources_mapping文件中；此外，还会将res目录下出现的资源类型名保存到`mShouldResguardTypeSet`集合中。  
@@ -1303,7 +1327,7 @@ package的内容还是以`ResChunk_header`开头，紧接着的是4字节的pack
   }
 ```
 
-### 2.4 重写arsc文件
+### 3.4 重写arsc文件
 
 重写arsc文件时也会读原始的arsc文件，然后对比着进行写入。由于混淆后的很多chunk的size没法一下子进行确定，所以会先按照原始文件的chunk size进行写，并在写入时统计一下各个部分的diff。最后会 **二次写入**。
 
@@ -1534,7 +1558,7 @@ package的内容还是以`ResChunk_header`开头，紧接着的是4字节的pack
 
 上面就是对resources.arsc实现资源混淆的全部内容了。下面快速过一下重新打包的过程。
 
-### 2.5 buildApk
+### 3.5 buildApk
 
 buildApk会根据签名版本的配置，调用不用的命令来实现签名：
 
@@ -1658,3 +1682,5 @@ zipalign代码如下：
     }
   }
 ```
+
+[^1]:[安装包立减1M--微信Android资源混淆打包工具](https://mp.weixin.qq.com/s?__biz=MzAwNDY1ODY2OQ==&mid=208135658&idx=1&sn=ac9bd6b4927e9e82f9fa14e396183a8f#rd)

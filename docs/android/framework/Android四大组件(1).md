@@ -1,5 +1,7 @@
 ---
 title: "Activity"
+tags:
+  - framework
 ---
 
 Android四大组件分别是Activity、Service、ContentProvider以及BroadcastReceiver。其中，Activity是使用最频繁的一个组件，可以翻译为界面。当然，我们常见的界面除了Activity，还有Window(这里指悬浮窗，类似于360的悬浮球)、Dialog以及Toast。Android中所有的视图都是通过Window来呈现的。

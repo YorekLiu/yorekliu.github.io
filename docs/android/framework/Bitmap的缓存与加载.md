@@ -1,5 +1,8 @@
 ---
 title: "Bitmap的缓存与加载"
+tags:
+  - framework
+  - bitmap
 ---
 
 来自官方的建议：[Loading Large Bitmaps Efficiently](https://developer.android.com/topic/performance/graphics/load-bitmap.html)

@@ -1,5 +1,7 @@
 ---
 title: "Content Providers与Fragment"
+tags:
+  - framework
 ---
 
 本章的主要内容是[Content Providers](https://developer.android.com/guide/topics/providers/content-providers.html)以及[Fragment](https://developer.android.com/guide/components/fragments.html)

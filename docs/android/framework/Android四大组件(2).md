@@ -1,5 +1,7 @@
 ---
 title: "Service"
+tags:
+  - framework
 ---
 
 本章的主要角色是[Service](https://developer.android.com/guide/components/services.html)。

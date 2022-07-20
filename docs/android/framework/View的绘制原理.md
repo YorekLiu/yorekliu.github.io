@@ -1,5 +1,7 @@
 ---
-excerpt: "View的绘制原理以及自定义View"
+title: "View的绘制原理以及自定义View"
+tags:
+  - framework
 ---
 
 本文主要讲述View的绘制原理以及自定义View。

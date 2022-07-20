@@ -1,5 +1,7 @@
 ---
 title: "RemoteViews"
+tags:
+  - framework
 ---
 
 RemoteViews在Android中的使用场景有两种：通知栏和桌面小插件。为了更好的分析`RemoteViews`的内部机制，本章先介绍`RemoteViews`在通知栏和桌面小部件上的应用。

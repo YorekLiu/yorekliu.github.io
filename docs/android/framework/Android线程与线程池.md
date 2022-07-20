@@ -1,5 +1,8 @@
 ---
 title: "Android线程与线程池"
+tags:
+  - framework
+  - thread
 ---
 
 本章代码基于Android 7.1。

@@ -1,5 +1,8 @@
 ---
 title: "Retrofit2源码解析"
+tags:
+  - retrofit
+  - annotation
 ---
 
 本文代码基于[retrofit-2.3.0](https://github.com/square/retrofit/tree/parent-2.3.0)，源码包含三个库：

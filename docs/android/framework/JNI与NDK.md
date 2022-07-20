@@ -1,5 +1,8 @@
 ---
 title: "JNI与NDK编程简介"
+tags:
+  - framework
+  - ndk
 ---
 
 ## 1 JNI与NDK简介

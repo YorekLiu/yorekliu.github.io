@@ -1,5 +1,7 @@
 ---
 title: "Window与WindowManager"
+tags:
+  - framework
 ---
 
 Window表示一个窗口的概念，它存在于Window、Dialog以及Toast中，但是日常开发中并不多见，它可以实现悬浮窗。Window是一个抽象类，其具体实现是`PhoneWindow`。WindowManager是外界访问Window的入口，Window的具体实现在`WindowManagerService`中，WindowManager与`WindowManagerService`之间的交互是一个IPC过程。  

@@ -1,5 +1,7 @@
 ---
 title: "EventBus源码解析"
+tags:
+  - eventbus
 ---
 
 !!! info

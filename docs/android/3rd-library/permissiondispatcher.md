@@ -1,5 +1,8 @@
 ---
 title: "PermissionDispatcher源码解析"
+tags:
+  - annotation
+  - apt
 ---
 
 !!! info

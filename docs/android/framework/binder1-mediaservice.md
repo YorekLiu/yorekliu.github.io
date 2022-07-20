@@ -1,5 +1,8 @@
 ---
 title: "Binder深入理解——以MediaService为例"
+tags:
+  - framework
+  - binder
 ---
 
 本博客Binder系列：

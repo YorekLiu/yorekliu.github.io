@@ -1,5 +1,7 @@
 ---
 title: "Glide v4 源码解析（一）"
+tags:
+  - glide
 ---
 
 !!! tip

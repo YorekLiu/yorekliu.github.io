@@ -1,5 +1,7 @@
 ---
 title: "RxJava源码解析及使用实例"
+tags:
+  - rxjava
 ---
 
 ???+ note "用过RxJava和RxAndroid吗？RxAndroid切换线程是怎么实现的呢？"

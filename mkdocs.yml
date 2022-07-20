@@ -1,4 +1,4 @@
-site_name: Yorek's
+site_name: Yorek's Blog
 site_description: 'An Android Developer.'
 site_author: 'Yorek Liu'
 site_url: 'https://blog.yorek.xyz'
@@ -23,7 +23,7 @@ theme:
     # Dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: black
+      primary: deep orange
       accent: deep orange
       toggle:
         icon: material/toggle-switch
@@ -36,6 +36,11 @@ theme:
     - navigation.tabs
     - navigation.instant
     - navigation.top
+    - navigation.tracking
+    - navigation.expand
+    - search.suggest
+    - search.highlight
+    - search.share
   logo: assets/images/favicon.webp
   icon:
     repo: material/github
@@ -44,18 +49,18 @@ theme:
 
 plugins:
   - search:
-      prebuild_index: true
+      separator: '[\s\u200b\-]'
   - git-revision-date-localized
   - minify:
       minify_html: true
+  - tags:
+      tags_file: tags.md
 
 # Customization
 extra:
   social:
     - icon: material/github
       link: https://github.com/YorekLiu
-    - icon: material/email
-      link: lyytogether@gmail.com
   manifest: manifest.webmanifest
   analytics:
     provider: google
@@ -88,7 +93,8 @@ markdown_extensions:
       repo: mkdocs-material
   - pymdownx.mark
   - pymdownx.smartsymbols
-  - pymdownx.tabbed
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.superfences
   - pymdownx.tasklist:
       custom_checkbox: true
@@ -99,6 +105,7 @@ extra_javascript:
 
 # Page tree
 nav:
+  - Home: index.md
   - Android:
     - 三方库系列: 
       - android/3rd-library/3rd-library-source-code.md
@@ -229,31 +236,6 @@ nav:
       - android/paid/master/compile.md
       - android/paid/master/bytecode.md
       - android/paid/master/native_hook.md
-  - Flutter:
-    - flutter/flutter_first_project_1.md
-    - flutter/flutter_first_project_2.md
-    - flutter/flutter_first_project_3.md
-    - flutter/flutter_first_project_4.md
-  - LeetCode:
-    - leetcode/index.md
-    - leetcode/code_interviews_1.md
-    - leetcode/code_interviews_3.md
-    - leetcode/code_interviews_4.md
-    - leetcode/code_interviews_5.md
-    - leetcode/code_interviews_6.md
-    - leetcode/array.md
-    - leetcode/leetcode1-10.md
-    - leetcode/leetcode11-20.md
-    - leetcode/leetcode21-30.md
-    - leetcode/leetcode31-40.md
-    - leetcode/leetcode41-50.md
-    - leetcode/leetcode51-60.md
-    - leetcode/leetcode61-70.md
-    - leetcode/leetcode71-80.md
-    - leetcode/leetcode81-90.md
-    - leetcode/leetcode91-100.md
-    - leetcode/leetcode101-110.md
-    - leetcode/leetcode111-120.md
   - Books:
     - Design Pattern:
       - design-pattern/design-pattern.md
@@ -295,3 +277,28 @@ nav:
       - jvm/load-class.md
     - Refactoring:
       - refactoring/refactoring.md
+  - LeetCode:
+    - leetcode/index.md
+    - leetcode/code_interviews_1.md
+    - leetcode/code_interviews_3.md
+    - leetcode/code_interviews_4.md
+    - leetcode/code_interviews_5.md
+    - leetcode/code_interviews_6.md
+    - leetcode/array.md
+    - leetcode/leetcode1-10.md
+    - leetcode/leetcode11-20.md
+    - leetcode/leetcode21-30.md
+    - leetcode/leetcode31-40.md
+    - leetcode/leetcode41-50.md
+    - leetcode/leetcode51-60.md
+    - leetcode/leetcode61-70.md
+    - leetcode/leetcode71-80.md
+    - leetcode/leetcode81-90.md
+    - leetcode/leetcode91-100.md
+    - leetcode/leetcode101-110.md
+    - leetcode/leetcode111-120.md
+  - Flutter:
+    - flutter/flutter_first_project_1.md
+    - flutter/flutter_first_project_2.md
+    - flutter/flutter_first_project_3.md
+    - flutter/flutter_first_project_4.md

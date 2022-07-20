@@ -1,5 +1,7 @@
 ---
 title:  "View的事件体系"
+tags:
+  - framework
 ---
 
 本章的主要内容有：

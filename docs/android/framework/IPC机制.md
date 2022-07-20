@@ -1,5 +1,7 @@
 ---
 title: "IPC机制"
+tags:
+  - framework
 ---
 
 ## 1 Android IPC简介

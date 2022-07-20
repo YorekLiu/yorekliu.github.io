@@ -1,5 +1,7 @@
 ---
 title: "Android中的Drawable资源"
+tags:
+  - framework
 ---
 
 来自Google的文档：[https://developer.android.com/guide/topics/resources/drawable-resource.html](https://developer.android.com/guide/topics/resources/drawable-resource.html)

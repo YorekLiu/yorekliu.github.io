@@ -1,5 +1,8 @@
 ---
 title: "LeakCanary2源码解析"
+tags:
+  - leakcanary
+  - shark
 ---
 
 !!! info

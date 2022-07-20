@@ -1,5 +1,7 @@
 ---
 title: "Broadcasts"
+tags:
+  - framework
 ---
 
 本章的主要内容是[Broadcasts](https://developer.android.com/guide/components/broadcasts.html)

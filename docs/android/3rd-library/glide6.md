@@ -1,5 +1,8 @@
 ---
 title: "Glide v4 源码解析（六）"
+tags:
+  - glide
+  - apt
 ---
 
 !!! tip

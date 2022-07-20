@@ -1,5 +1,10 @@
 ---
 title: "Hotfix方案初探"
+tags:
+  - hotfix
+  - tinker
+  - sophix
+  - robust
 ---
 
 Hotfix方案分为三种：

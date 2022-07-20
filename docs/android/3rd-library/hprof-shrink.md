@@ -1,5 +1,11 @@
 ---
 title: "剖析hprof文件的两种主要裁剪流派"  
+tags:
+  - hprof
+  - KOOM
+  - Matrix
+  - Shark
+  - Probe
 ---
 
 ## 1. 前言
@@ -236,6 +242,31 @@ HprofKeptBufferCollectVisitor保存了Bitmap的buffer id数据、String的value 
 
 - hprof文件解析结束时，根据基本数据类型数组id在不在mBmpBufferIds中过滤mBufferIdToElementDataMap，这样留下来的都是Bitmap里面的buffer数据了。  
   然后将剩下的数据做md5，根据md5判断Bitmap像素数据是否有重复，若有重复，保存 重复id -> 重复id 和 此次id -> 重复id 这两组kv关系到mBmpBufferIdToDeduplicatedIdMap中。
+  ```java
+  @Override
+  public void visitEnd() {
+      final Set<Map.Entry<ID, byte[]>> idDataSet = mBufferIdToElementDataMap.entrySet();
+      final Map<String, ID> duplicateBufferFilterMap = new HashMap<>();
+      for (Map.Entry<ID, byte[]> idDataPair : idDataSet) {
+          final ID bufferId = idDataPair.getKey();
+          final byte[] elementData = idDataPair.getValue();
+          if (!mBmpBufferIds.contains(bufferId)) {
+              // Discard non-bitmap buffer.
+              continue;
+          }
+          final String buffMd5 = DigestUtil.getMD5String(elementData);
+          final ID mergedBufferId = duplicateBufferFilterMap.get(buffMd5);
+          if (mergedBufferId == null) {
+              duplicateBufferFilterMap.put(buffMd5, bufferId);
+          } else {
+              mBmpBufferIdToDeduplicatedIdMap.put(mergedBufferId, mergedBufferId);
+              mBmpBufferIdToDeduplicatedIdMap.put(bufferId, mergedBufferId);
+          }
+      }
+      // Save memory cost.
+      mBufferIdToElementDataMap.clear();
+  }
+  ```
 
 这一步操作的结果保存在mStringValueIds、mBmpBufferIdToDeduplicatedIdMap中。前者表示字符串value的id集合，后者用来将Bitmap的buffer进行去重处理。
 
