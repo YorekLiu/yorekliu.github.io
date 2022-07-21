@@ -17,6 +17,7 @@ AndResGuard是一款可以实现资源混淆的插件，可以达到立减1M的�
 
 - 最主要的资源混淆功能（资源路径短链化：res/drawable/udgasudg.xml -> 成r/a/a.xml）
 - 重复资源合并（修改资源表中的路径值即可，冗余的文件不打进新的zip中）
+- 统一资源项的EntryName（将资源项的名称统一为固定字符串，可以减少全剧字符串池的大小）
 - 指定文件在zip包中采取DEFLATED压缩方式，而不是STORED压缩方式
 - 最后对zip进行了整包7z压缩
 
@@ -1684,3 +1685,17 @@ zipalign代码如下：
 ```
 
 [^1]:[安装包立减1M--微信Android资源混淆打包工具](https://mp.weixin.qq.com/s?__biz=MzAwNDY1ODY2OQ==&mid=208135658&idx=1&sn=ac9bd6b4927e9e82f9fa14e396183a8f#rd)
+
+## 4. 总结
+
+AndResGuard的整体代码是为了实现资源混淆的功能，除此之外，还有一些其他功能：
+
+1. **重复资源合并**  
+   在3.3小节`ARSCDecoder#readValue`方法中实现：原理就是说，如果两个资源文件的md5一样，那么我只保留先出现的a文件，并记录a文件的路径。在遇到冗余文件b时，将b所在的资源项的值改为文件a的路径在字符串池中的索引即可。这样冗余文件b就没有被引用了，复制文件时就可以直接忽略了。
+2. **统一资源项的EntryName**  
+   在3.3小节`ARSCDecoder#dealWithNonWhiteList`方法中实现：解析entry时保存resId、entryName。若需要统一entryName，这里保存时替换即可。  
+   需要提醒一下，Glide加载本地resources时，会调用`Resources#getResourceEntryName`方法拼接出URL，需要在AndResGuard中keep一下。
+3. **指定文件采取DEFLATED压缩方式**  
+   在3.5小节`Main#buildApk`时会对每一项进行压缩方式的设置，DEFLATED方式有利于减小包体积。
+4. **最后对zip进行了整包7z压缩**  
+   在3.5小节`Main#buildApk`时会对整包进行7z压缩，如果压缩率比默认的更高的话，包体积就会更小。
