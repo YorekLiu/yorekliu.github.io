@@ -14,7 +14,7 @@ Repo: [YorekLiu/APMSample](https://github.com/YorekLiu/APMSample)
 
 #### 1.1.1 设备分级  
 
-使用Facebook的[devide-year-class](https://github.com/facebookarchive/device-year-class)库，区分出设备的高中低级。  
+使用Facebook的[devide-year-class](https://github.com/facebookarchive/device-year-class)库，区分出设备的高中低级。各个性能级别的设备可以采用不用的缓存策略、动画控制策略等。  
 
 主要原理是根据手机RAM的大小来分级，部分获取不到RAM的机型，会根据CPU的核心数、频率等来辅助分级。总体来说，获取信息的代价还是非常小的。
 
@@ -22,7 +22,8 @@ Repo: [YorekLiu/APMSample](https://github.com/YorekLiu/APMSample)
 
 “用时申请，及时释放”。可以监听`onTrimMemory`和`onLowMemory`事件。  
 但是堆内存不足时，不会触发这两个事件（实际上是PSS不足时才会触发，应用切后台也会触发）。需要我们在子线程中周期性计算堆内存使用量，内存触顶时可以主动触发回收。  
-这里也需要注意一下PSS、VSS的情况。
+这里也需要注意一下PSS、VSS的情况。  
+堆内存不足会导致GC卡顿甚至OOM，PSS不足会导致LMK甚至应用重启，VSS不足应用导致内存分配失败。
 
 - Java堆内存可以通过 `Runtime` 接口来获取
 - PSS可以通过cat `/proc/meminfo` 获取

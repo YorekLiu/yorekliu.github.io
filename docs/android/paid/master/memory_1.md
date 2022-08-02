@@ -25,7 +25,7 @@ Facebook 有一个叫[device-year-class](https://github.com/facebookarchive/devi
 内存造成的第二个问题是 **卡顿**。Java 内存不足会导致频繁 GC，这个问题在 Dalvik 虚拟机会更加明显。而 ART 虚拟机在内存管理跟回收策略上都做大量优化，内存分配和 GC 效率相比提升了 5～10 倍。如果想具体测试 GC 的性能，例如暂停挂起时间、总耗时、GC 吞吐量，我们可以通过发送 **SIGQUIT 信号获得 ANR 日志**。
 
 ```shell
-adb shell kill -S QUIT PID
+adb shell kill -s QUIT PID
 adb pull /data/anr/traces.txt
 ```
 

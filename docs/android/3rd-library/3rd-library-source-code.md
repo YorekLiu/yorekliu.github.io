@@ -9,6 +9,7 @@ title: "Android三方库源码分析"
     - [Matrix-ResourceCanary解析<small>(更新中)</small>](/android/3rd-library/matrix-resource)
     - [Matrix-ApkChecker：安装包分析检测工具](/android/3rd-library/matrix-apk-checker/)
     - [Matrix-SQLiteLint解析<small>(待更新)</small>](/android/3rd-library/matrix-sqlitelint)
+- [最常用的PLT Hook框架：xHook](/android/3rd-library/xhook)
 - [AndResGuard资源混淆原理浅析](/android/3rd-library/andresguard)
 - [剖析hprof文件的两种主要裁剪流派](android/3rd-library/hprof-shrink)
 - [OkHttp-3.8.0](/android/3rd-library/okhttp/)

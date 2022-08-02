@@ -116,6 +116,7 @@ nav:
       - android/3rd-library/matrix-resource.md
       - android/3rd-library/matrix-apk-checker.md
       - android/3rd-library/matrix-sqlitelint.md
+      - android/3rd-library/xhook.md
       - android/3rd-library/andresguard.md
       - android/3rd-library/hprof-shrink.md
       - android/3rd-library/okhttp.md

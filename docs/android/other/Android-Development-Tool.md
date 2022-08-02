@@ -157,3 +157,78 @@ java -jar chkbugreport.jar log/bugreport-NMF26X-2019-12-30-10-36-35.txt # 解析
 上面日志文件解析完毕后，会生成一个log/bugreport-NMF26X-2019-12-30-10-36-35_out的文件夹，打开里面的index.html文件即可。
 
 chkbugreport是Sony的一个开源项目，地址如下：[https://github.com/sonyxperiadev/ChkBugReport](https://github.com/sonyxperiadev/ChkBugReport)
+
+这里附上一个自动dump、解析并清理原始文件的脚本。将脚本与`chkbugreport-0.5-215.jar`文件存放在同一个目录下，执行此脚本。执行完毕之后，格式化后的文件会放在`~/Downloads`目录下。
+
+```shell
+#!/bin/bash
+
+outputDir=~/Downloads
+
+bugreport() {
+    devices_version=`adb shell getprop ro.build.version.sdk | awk '{print $1}' | tr -d $'\r'`
+    if [ $devices_version -ge 24 ]
+    then
+        bugreportV24
+    else
+        bugreportPre24
+    fi
+}
+
+bugreportV24() {
+    echo "generating bugreport.zip ... "
+    adb bugreport $outputDir/bugreport
+
+    unzip $outputDir/bugreport.zip -d $outputDir/bugreport
+
+    echo "parsing ... "
+    bugreport_file_name=`cat $outputDir/bugreport/main_entry.txt`
+    java -jar chkbugreport-0.5-215.jar $outputDir/bugreport/$bugreport_file_name
+
+    echo "zipping out dir ... "
+    bugreport_output_name=${bugreport_file_name%.txt}_out
+    cd $outputDir
+    zip -q -r bugreport_out bugreport/$bugreport_output_name/*
+    cd -
+
+    rm -rf $outputDir/bugreport $outputDir/bugreport.zip
+
+    echo "Completed ... "
+}
+
+bugreportPre24() {
+    bugreport_file_name="bugreport.txt"
+
+    echo "generating bugreport.zip ... "
+    adb bugreport > $outputDir/$bugreport_file_name
+
+    echo "parsing ... "
+    java -jar chkbugreport-0.5-215.jar $outputDir/$bugreport_file_name
+
+    echo "zipping out dir ... "
+    bugreport_output_name=${bugreport_file_name%.txt}_out
+    cd $outputDir
+    zip -q -r bugreport_out $bugreport_output_name
+    cd -
+
+    rm -rf $outputDir/bugreport.txt $outputDir/bugreport_out
+
+    cd -
+
+    echo "Completed ... "
+}
+
+read -r -p "Execute bugreport? [Y/N] " input
+
+case $input in
+    [Yy][Ee][Ss]|[Yy])
+        bugreport
+        ;;
+    
+    [Nn][Oo]|[Nn])
+        ;;
+        
+    *)
+        ;;
+esac
+```

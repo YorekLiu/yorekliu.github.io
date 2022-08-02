@@ -12,6 +12,7 @@ hide:
 
 ## 上新
 
+- [最常用的PLT Hook框架：xHook](/android/3rd-library/xhook)
 - [剖析hprof文件的两种主要裁剪流派](/android/3rd-library/hprof-shrink/)
 - [AndResGuard资源混淆原理浅析](/android/3rd-library/andresguard)
 - [Matrix-ApkChecker：安装包分析检测工具](/android/3rd-library/matrix-apk-checker)
