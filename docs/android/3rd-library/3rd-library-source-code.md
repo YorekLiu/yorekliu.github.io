@@ -6,7 +6,7 @@ title: "Android三方库源码分析"
     - [Matrix-TraceCanary解析](/android/3rd-library/matrix-trace)
     - [Matrix-ASM插桩插件解析](/android/3rd-library/matrix-trace-plugin/)
     - [Matrix-IOCanary解析](/android/3rd-library/matrix-io)
-    - [Matrix-ResourceCanary解析<small>(更新中)</small>](/android/3rd-library/matrix-resource)
+    - [Matrix-ResourceCanary解析](/android/3rd-library/matrix-resource)
     - [Matrix-ApkChecker：安装包分析检测工具](/android/3rd-library/matrix-apk-checker/)
     - [Matrix-SQLiteLint解析<small>(待更新)</small>](/android/3rd-library/matrix-sqlitelint)
 - [最常用的PLT Hook框架：xHook](/android/3rd-library/xhook)
