@@ -136,9 +136,9 @@ I/O 性能评估中最为核心的指标是吞吐量和 IOPS。今天文章开�
 总的来说，I/O 性能会跟很多因素有关，是读还是写、是否是连续、I/O 大小等。另外一个对 I/O 性能影响比较大的因素是负载，I/O 性能会随着负载的增加而降低，我们可以通过 I/O 的等待时间和次数来衡量。
 
 ```shell
-proc/self/schedstat:
+proc/self/sched:
   se.statistics.iowait_count：IO 等待的次数
-  se.statistics.iowait_sum：  IO 等待的时间
+  se.statistics.iowait_sum：  IO 等待的时间（单位都是ms）
 ```
 
 如果是 root 的机器，我们可以开启内核的 I/O 监控，将所有 block 读写 dump 到日志文件中，这样可以通过 dmesg 命令来查看。

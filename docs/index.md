@@ -18,3 +18,28 @@ hide:
 - [Matrix-ApkChecker：安装包分析检测工具](/android/3rd-library/matrix-apk-checker)
 - [浅析AGP+ASM：Matrix插桩插件解析](/android/3rd-library/matrix-trace-plugin)
 - [微信开源APM框架——Matrix源码解析](/android/3rd-library/matrix)
+
+## 新品关系图
+
+```mermaid
+graph LR;
+    xHook([xHook]) --- hprof([hprof裁剪 - KOOM流派]);
+    xHook --- IOCanary([Matrix - IOCanary]);
+    xHook --- SignalAnrTracer([Matrix - SignalAnrTracer]);
+    IOCanary --- Matrix([Matrix]);
+    SignalAnrTracer --- Matrix;
+    ApkChecher([Matrix - ApkChecher]) --- Matrix;
+    插桩([Matrix - 插桩插件]) --- Matrix;
+    hprof --- 性能优化;
+    Matrix --- 性能优化([性能优化]);
+    AndResGuard([AndResGuard]) --- 性能优化;
+
+    click xHook "/android/3rd-library/xhook"
+    click hprof "/android/3rd-library/hprof-shrink/"
+    click IOCanary "/android/3rd-library/matrix-io"
+    click SignalAnrTracer "/android/3rd-library/matrix/#4-anrsignalanrtracer"
+    click Matrix "/android/3rd-library/matrix"
+    click ApkChecher "/android/3rd-library/matrix-apk-checker/"
+    click 插桩 "/android/3rd-library/matrix-trace-plugin/"
+    click AndResGuard "/android/3rd-library/andresguard/"
+```

@@ -65,7 +65,7 @@ ssize_t write(int fd, const void *buf, size_t size); write_cuk
 int close(int fd);
 ```
 
-因为使用的是 GOT Hook，我们需要选择一些有调用上面几个方法的 library。微信 Matrix 中选择的是libjavacore.so、libopenjdkjvm.so、libopenjdkjvm.so，可以覆盖到所有的 Java 层的 I/O 调用，具体可以参考[io_canary_jni.cc](https://github.com/Tencent/matrix/blob/master/matrix/matrix-android/matrix-io-canary/src/main/cpp/io_canary_jni.cc#L161)。
+因为使用的是 GOT Hook，我们需要选择一些有调用上面几个方法的 library。微信 Matrix 中选择的是libjavacore.so、libopenjdkjvm.so、libopenjdk.so，可以覆盖到所有的 Java 层的 I/O 调用，具体可以参考[io_canary_jni.cc](https://github.com/Tencent/matrix/blob/master/matrix/matrix-android/matrix-io-canary/src/main/cpp/io_canary_jni.cc#L161)。
 
 不过我更推荐 Profilo 中[atrace.cpp](https://github.com/facebookincubator/profilo/blob/master/cpp/atrace/Atrace.cpp#L172)的做法，它直接遍历所有已经加载的 library，一并替换。
 

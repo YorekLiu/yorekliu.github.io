@@ -2671,48 +2671,52 @@ public synchronized <Model, Data> ModelLoader<Model, Data> build(@NonNull Class<
 
 我们看一下四个注册项调用`this.<Model, Data>build(entry)`后返回的值：
 
-`append(String.class, InputStream.class, new DataUrlLoader.StreamFactory<String>())`
+`append(String.class, InputStream.class, new DataUrlLoader.StreamFactory<String>())`  
+
 - build --> `DataUrlLoader`
 
 `append(String.class, InputStream.class, new StringLoader.StreamFactory())`  
+
 - build --> `StringLoader` 参数urlLoader = `multiFactory.build(Uri.class, InputStream.class)`  
   将String当作Uri来处理，下面开始在注册表中找所有modelClass为Uri.class，dataClass为InputStream.class的注册项  
-  - `append(Uri.class, InputStream.class, new DataUrlLoader.StreamFactory<Uri>())`  
-     - build --> `DataUrlLoader`
-  - `append(Uri.class, InputStream.class, new HttpUriLoader.Factory())`  
-     - build --> `HttpUriLoader` 参数urlLoader = `multiFactory.build(GlideUrl.class, InputStream.class)`  
-       Uri可能是一个GlideUrl，下面开始在注册表中找所有modelClass为GlideUrl.class，dataClass为InputStream.class的注册项
-        - `.append(GlideUrl.class, InputStream.class, new HttpGlideUrlLoader.Factory())`  
-           - build --> `HttpGlideUrlLoader`
-  - `append(Uri.class, InputStream.class, new AssetUriLoader.StreamFactory(context.getAssets()))`  
-     - build --> `AssetUriLoader`
-  - `append(Uri.class, InputStream.class, new MediaStoreImageThumbLoader.Factory(context))`  
-     - build --> `MediaStoreImageThumbLoader`
-  - `append(Uri.class, InputStream.class, new MediaStoreVideoThumbLoader.Factory(context))`  
-     - build --> `MediaStoreVideoThumbLoader`
-  - `append(Uri.class, InputStream.class, new UriLoader.StreamFactory(contentResolver))`  
-     - build --> `UriLoader`
-  - `append(Uri.class, InputStream.class, new UrlUriLoader.StreamFactory())`  
-     - build --> `UrlUriLoader` 参数urlLoader = `multiFactory.build(GlideUrl.class, InputStream.class)`  
-        Uri可能是一个GlideUrl，下面开始在注册表中找所有modelClass为GlideUrl.class，dataClass为InputStream.class的注册项
-        - `.append(GlideUrl.class, InputStream.class, new HttpGlideUrlLoader.Factory())`  
-           - build --> `HttpGlideUrlLoader`
-  - `MultiModelLoader`
+    - `append(Uri.class, InputStream.class, new DataUrlLoader.StreamFactory<Uri>())`  
+        - build --> `DataUrlLoader`
+    - `append(Uri.class, InputStream.class, new HttpUriLoader.Factory())`  
+        - build --> `HttpUriLoader` 参数urlLoader = `multiFactory.build(GlideUrl.class, InputStream.class)`  
+          Uri可能是一个GlideUrl，下面开始在注册表中找所有modelClass为GlideUrl.class，dataClass为InputStream.class的注册项
+            - `.append(GlideUrl.class, InputStream.class, new HttpGlideUrlLoader.Factory())`  
+                - build --> `HttpGlideUrlLoader`
+    - `append(Uri.class, InputStream.class, new AssetUriLoader.StreamFactory(context.getAssets()))`  
+        - build --> `AssetUriLoader`
+    - `append(Uri.class, InputStream.class, new MediaStoreImageThumbLoader.Factory(context))`  
+        - build --> `MediaStoreImageThumbLoader`
+    - `append(Uri.class, InputStream.class, new MediaStoreVideoThumbLoader.Factory(context))`  
+        - build --> `MediaStoreVideoThumbLoader`
+    - `append(Uri.class, InputStream.class, new UriLoader.StreamFactory(contentResolver))`  
+        - build --> `UriLoader`
+    - `append(Uri.class, InputStream.class, new UrlUriLoader.StreamFactory())`  
+        - build --> `UrlUriLoader` 参数urlLoader = `multiFactory.build(GlideUrl.class, InputStream.class)`  
+          Uri可能是一个GlideUrl，下面开始在注册表中找所有modelClass为GlideUrl.class，dataClass为InputStream.class的注册项
+            - `.append(GlideUrl.class, InputStream.class, new HttpGlideUrlLoader.Factory())`  
+                - build --> `HttpGlideUrlLoader`
+    - `MultiModelLoader`
 
 `append(String.class, ParcelFileDescriptor.class, new StringLoader.FileDescriptorFactory())`  
+
 - build --> `StringLoader` 参数urlLoader = `multiFactory.build(Uri.class, ParcelFileDescriptor.class)`  
   将String当作Uri来处理，下面开始在注册表中找所有modelClass为Uri.class，dataClass为ParcelFileDescriptor.class的注册项  
-  - `append(Uri.class, ParcelFileDescriptor.class, new AssetUriLoader.FileDescriptorFactory(context.getAssets()))`  
-     - build --> `AssetUriLoader`
-  - `append(Uri.class, ParcelFileDescriptor.class, new UriLoader.FileDescriptorFactory(contentResolver))`   
-     - build --> `UriLoader`
-  - `MultiModelLoader`
+    - `append(Uri.class, ParcelFileDescriptor.class, new AssetUriLoader.FileDescriptorFactory(context.getAssets()))`  
+        - build --> `AssetUriLoader`
+    - `append(Uri.class, ParcelFileDescriptor.class, new UriLoader.FileDescriptorFactory(contentResolver))`   
+        - build --> `UriLoader`
+    - `MultiModelLoader`
 
 `append(String.class, AssetFileDescriptor.class, new StringLoader.AssetFileDescriptorFactory())`  
+
 - build --> `StringLoader` 参数urlLoader = `multiFactory.build(Uri.class, AssetFileDescriptor.class)`  
   将String当作Uri来处理，下面开始在注册表中找所有modelClass为Uri.class，dataClass为AssetFileDescriptor.class的注册项  
-  - `append(Uri.class, AssetFileDescriptor.class, new UriLoader.AssetFileDescriptorFactory(contentResolver))`  
-     - build --> `UriLoader`
+    - `append(Uri.class, AssetFileDescriptor.class, new UriLoader.AssetFileDescriptorFactory(contentResolver))`  
+        - build --> `UriLoader`
   - `UriLoader`
 
 上面就是`this.<Model, Data>build(entry)`获得到的4个loader，然后在`modelLoaderRegistry.getModelLoaders(model)`方法中被过滤掉第一个，现在就返回3.6.1节刚开始的`DecodeHelper.getLoadData`方法里面了。
@@ -2812,37 +2816,40 @@ class MultiModelLoader<Model, Data> implements ModelLoader<Model, Data> {
 我们还是走一下`DecodeHelper.getLoadData`方法中的流程，遍历一下调用三个`StringLoader`的`buildLoadData`方法：
 
 `append(String.class, InputStream.class, new StringLoader.StreamFactory())`  
+
 - build --> `StringLoader` 参数urlLoader = `MultiModelLoader`
-  - `DataUrlLoader`  处理data:image资源  
-     1 *handles*: **false**  
-     3 *buildLoadData*: 跳过 因为*handles* return **false**
-  - `HttpUriLoader` 处理http、https资源 参数urlLoader = `HttpGlideUrlLoader`  
-     2 *handles*: **true**  
-     4 *buildLoadData*: `HttpGlideUrlLoader.buildLoadData(GlideUrl)` --> `LoadData<>(url, new HttpUrlFetcher(url, timeout))` ---> `fetchers.add(loadData.fetcher)`
-  - `AssetUriLoader` 处理file:///android_asset/资源  
-     5 *buildLoadData*: 跳过 因为*handles* return **false**
-  - `MediaStoreImageThumbLoader` 处理content://media/且path segments中不包含video字符串的资源  
-     6 *buildLoadData*: 跳过 因为*handles* return **false**
-  - `MediaStoreVideoThumbLoader` 处理content://media/且path segments中包含video字符串的资源  
-     7 *buildLoadData*: 跳过 因为*handles* return **false**
-  - `UriLoader` 处理scheme为file、android.resource、content的资源  
-     8 *buildLoadData*: 跳过 因为*handles* return **false**
-  - `UrlUriLoader` 处理http、https资源 参数urlLoader = `HttpGlideUrlLoader`  
-     9 *buildLoadData*: `HttpGlideUrlLoader.buildLoadData(GlideUrl)` ---> `LoadData<>(url, new HttpUrlFetcher(url, timeout))` ---> `fetchers.add(loadData.fetcher)`
+    - `DataUrlLoader`  处理data:image资源  
+       1 *handles*: **false**  
+       3 *buildLoadData*: 跳过 因为*handles* return **false**
+    - `HttpUriLoader` 处理http、https资源 参数urlLoader = `HttpGlideUrlLoader`  
+       2 *handles*: **true**  
+       4 *buildLoadData*: `HttpGlideUrlLoader.buildLoadData(GlideUrl)` --> `LoadData<>(url, new HttpUrlFetcher(url, timeout))` ---> `fetchers.add(loadData.fetcher)`
+    - `AssetUriLoader` 处理file:///android_asset/资源  
+       5 *buildLoadData*: 跳过 因为*handles* return **false**
+    - `MediaStoreImageThumbLoader` 处理content://media/且path segments中不包含video字符串的资源  
+       6 *buildLoadData*: 跳过 因为*handles* return **false**
+    - `MediaStoreVideoThumbLoader` 处理content://media/且path segments中包含video字符串的资源  
+       7 *buildLoadData*: 跳过 因为*handles* return **false**
+    - `UriLoader` 处理scheme为file、android.resource、content的资源  
+       8 *buildLoadData*: 跳过 因为*handles* return **false**
+    - `UrlUriLoader` 处理http、https资源 参数urlLoader = `HttpGlideUrlLoader`  
+       9 *buildLoadData*: `HttpGlideUrlLoader.buildLoadData(GlideUrl)` ---> `LoadData<>(url, new HttpUrlFetcher(url, timeout))` ---> `fetchers.add(loadData.fetcher)`
 - 得到 `LoadData<>(sourceKey, new MultiFetcher<>(fetchers, exceptionListPool))`
 
 `append(String.class, ParcelFileDescriptor.class, new StringLoader.FileDescriptorFactory())`  
+
 - build --> `StringLoader` 参数urlLoader = `MultiModelLoader`
-  - `AssetUriLoader` 处理file:///android_asset/资源  
-     1 *handles*: **false**  
-  - `UriLoader` 处理scheme为file、android.resource、content的资源  
-     2 *handles*: **false**  
+    - `AssetUriLoader` 处理file:///android_asset/资源  
+       1 *handles*: **false**  
+    - `UriLoader` 处理scheme为file、android.resource、content的资源  
+       2 *handles*: **false**  
 - 得到 `null`
 
 `append(String.class, AssetFileDescriptor.class, new StringLoader.AssetFileDescriptorFactory())`  
+
 - build --> `StringLoader` 参数urlLoader =
-  - `UriLoader` 处理scheme为file、android.resource、content的资源  
-     1 *handles*: **false**  
+    - `UriLoader` 处理scheme为file、android.resource、content的资源  
+       1 *handles*: **false**  
 - 得到 `null`
 
 由于`DecodeHelper.getLoadData`只添加不为null的`LoadData`，所以只返回了一个`StringLoader.StreamFactory()`生成的`LoadData`。  
@@ -2937,7 +2944,7 @@ public <Model, TResource, Transcode> List<Class<?>> getRegisteredResourceClasses
 
 这里涉及到了`ResourceDecoderRegistry`类，同样该类中的数据也是Glide创建时注入的，我们看一下相关的代码。
 
-```java
+```java linenums="1"
 // Glide
 .append(Registry.BUCKET_BITMAP, ByteBuffer.class, Bitmap.class, byteBufferBitmapDecoder)
 .append(Registry.BUCKET_BITMAP, InputStream.class, Bitmap.class, streamBitmapDecoder)
