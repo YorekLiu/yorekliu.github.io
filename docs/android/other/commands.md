@@ -67,3 +67,40 @@ title: "Android开发常见命令"
         
 
 ## 2. ADB相关
+
+## 3. 数据库相关
+
+- 连接远程mysql  
+    `mysql -u <user> -p -h <host>`
+
+- 连接本地mysql
+    `mysql -u <user> -p`
+
+## 4. docker相关  
+
+- build 
+    `docker build -t <image>:<tag> .`
+
+- build制定架构的image 
+    `docker buildx build --platform linux/amd64 -t  <image>:<tag> .`
+
+- docker-compose
+    `docker-compose up [<container>]`
+
+- docker推拉镜像（腾讯云）
+    ```
+    #docker_image_push.sh 推
+    #!/bin/sh
+    echo "$0 [imageId] [namespace]:[name]:[tag]"
+    docker login ccr.ccs.tencentyun.com --username=<userid>
+    docker tag $1 ccr.ccs.tencentyun.com/$2/$3:$4
+    docker push ccr.ccs.tencentyun.com/$2/$3:$4
+
+    ##### 拉
+    docker pull ccr.ccs.tencentyun.com/$2/$3:$4
+    ```
+
+- docker相关操作  
+    ```
+    docker logs/start/stop/restart/attach <container>
+    ```

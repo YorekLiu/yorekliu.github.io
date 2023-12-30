@@ -43,14 +43,17 @@ theme:
     - search.share
   logo: assets/images/favicon.webp
   icon:
-    repo: material/github
+    repo: fontawesome/brands/github
   favicon: assets/images/favicon.webp
   custom_dir: overrides
 
 plugins:
   - search:
       separator: '[\s\u200b\-]'
-  - git-revision-date-localized
+  - git-revision-date-localized:
+      type: timeago
+      enable_creation_date: true
+      fallback_to_build_date: true
   - minify:
       minify_html: true
   - tags:
