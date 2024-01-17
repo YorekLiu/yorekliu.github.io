@@ -4,3 +4,4 @@ _site/
 vendor/
 .vscode/
 site/
+.mdeditor
