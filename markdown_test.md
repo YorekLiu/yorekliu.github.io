@@ -16,6 +16,7 @@ another one with bold and italic text. ___This is some bold and italic text.___
 Here is another one with struckout text. ~~This is some struckout text.~~
 
 
+
 Links
 -----
 
@@ -32,9 +33,12 @@ Reference style [link][1].
 
 [1]: http://example.com  "Example"
 
+dasdada
 
 Images
 ------
+
+
 
 Image: ![My image](http://www.foo.bar/image.png)
 
@@ -162,14 +166,14 @@ Mixed:
 	* Foe
 3. Third
 
-
+ 
 
 Definition list:
-
+ 
 Some term
 : First definition
-: Second definition
-
+: Second definitionlist
+ 
 Tables:
 
 | Header 1 | Header 2 |
@@ -179,3 +183,10 @@ Tables:
 - [x] Write the press release
 - [ ] Update the website
 - [ ] Contact the media
+
+Latex
+-----
+
+$$
+\begin{bmatrix}f(n) & f(n-1) \\ f(n-1) & f(n-2)\end{bmatrix}=\begin{bmatrix}1 & 1 \\ 1 & 0\end{bmatrix}^{n-1}
+$$

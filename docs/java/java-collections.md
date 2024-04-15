@@ -166,7 +166,7 @@ LinkedHashMap底层使用哈希表与双向链表来保存所有元素，它维�
 - 按插入顺序的链表：在LinkedHashMap调用get方法后，输出的顺序和输入时的相同，这就是按插入顺序的链表，默认是按插入顺序排序
 - 按访问顺序的链表：在LinkedHashMap调用get方法后，会将这次访问的元素移至链表尾部，不断访问可以形成按访问顺序排序的链表。简单的说，按最近最少访问的元素进行排序（类似LRU算法），链表头就是最近最少访问的元素。
 
-LinkedHashMap在其父类的`put`方法中会调用`afterNodeAccess(e)`方法；且重写了`get`、`getOrDefault`方法中，在方法中，如果`accessOrder`字段为true，会调用`afterNodeAccess(e)`方法。这样，就会将访问的节点e移动至链表的末尾。关于这个的应用，可以参考Glide中的LruCache的实现，[Glide v4 源码解析（三）——深入探究Glide缓存机制——memoryCache介绍](/android/3rd-library/glide3/#2-memorycache)
+LinkedHashMap 在其父类的 `put `方法中会调用 `afterNodeAccess(e)`方法；且重写了`get`、`getOrDefault`方法中，在方法中，如果`accessOrder`字段为true，会调用`afterNodeAccess(e)`方法。这样，就会将访问的节点e移动至链表的末尾。关于这个的应用，可以参考Glide中的LruCache的实现，[Glide v4 源码解析（三）——深入探究Glide缓存机制——memoryCache介绍](/android/3rd-library/glide3/#2-memorycache)
 
 LinkedHashMap有序的原因，是因为节点除了带next指针之外，还额外有before、after指针；next指针用在桶中，before、after
 则用来统筹集合中所有元素的顺序。
