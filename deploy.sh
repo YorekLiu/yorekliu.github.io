@@ -44,6 +44,7 @@ doCommit() {
     cp -a site/* .
     echo ">>>>>>> copy site to root success"
 
+    rm -rf _draft/
     git add .
 
     echo ">>>>>>> ready commit in master"
