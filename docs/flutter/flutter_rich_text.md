@@ -374,9 +374,55 @@ class _WriterBackgroundPaint extends CustomPainter {
 }
 ```
 
-## 3. Desktop 相关
+## 3. 文本操作  
 
-### 3.1 快捷键
+文本编辑器在处理文本操作时需要使用到现成的一些 API：
+
+1. 使用 `TextEditingController.selection` 获取选中的文本的范围。  
+    由于 `TextSelection` 继承了 `TextRange`，所以用的最多的还是 `TextRange` 的 `start` 以及 `end` 属性。若两个属性相等，则表示处于收缩(collapsed)状态。  
+2.  `TextEditingController` 继承了 `ValueNotifier<TextEditingValue>`；`EditableTextState.textEditingValue` 也是 `TextEditingValue` 类型。实际上，想直接操作文本，就直接修改此变量即可。这样方式更可控，使用底层源码中提炼出来的一些 public API，可能会出现意想不到的一些情况。
+3. 正则表达式：这里使用了相当多的正则表达式来检索与处理文本，且 app 内的搜索也是使用的内置的正则表达式来完成的。在测试时发现，内置的文本搜索算法比手搓的要快3倍左右，同时支持大小写等参数。实际例子太多了，就不一一列举了。
+
+这是打开新文件场景下，`TextFieldController` 填充文本的代码。
+
+```dart
+final selection = markdownTextFieldController.selection;
+markdownTextFieldController.value =
+    markdownTextFieldController.value.copyWith(
+  text: content,
+  selection: selection.isCollapsed
+      ? selection
+      : TextSelection.collapsed(offset: selection.extentOffset),
+);
+```
+
+这是其他文本操作场景下的代码，新增、删除、修改都可以通过这个方法实现，这段代码含义就是将 `selection` 表示的文本替换成 `data`，替换后将 selection 置为 `afterSelection`：
+
+```dart
+static void replaceSelection(BuildContext context, String data, {TextSelection? selection, TextSelection? afterSelection, bool Function(EditableText)? where}) {print
+  EditableTextState? state = getEditableTextState(context, where: where);
+  if (state == null) {
+    return;
+  }
+
+  selection ??= state.textEditingValue.selection;
+  final textEditingValue = state.textEditingValue;
+
+  final TextEditingValue collapsedTextEditingValue = textEditingValue.copyWith();
+  final newValue = collapsedTextEditingValue.replaced(selection, data);
+  state.updateEditingValue(newValue);
+  
+  afterSelection?.let((it) {
+    state.textEditingValue.copyWith(
+      selection: it
+    );
+  });
+}
+```
+
+## 4. Desktop 相关
+
+### 4.1 快捷键
 
 快捷键的配置可以配置在 `MaterialApp` 的 `shortcuts`、`actions` 属性上，也可以通过 `Shortcuts`、`Actions` Widget 来配置。
 
@@ -414,7 +460,7 @@ Widget wrapKeyboard(
 }
 ```
 
-### 3.2 菜单
+### 4.2 菜单
 
 由于 MacOS 有顶部菜单栏，这里可以使用 `PlatformMenuBar`、`PlatformMenu`、`PlatformMenuItemGroup` 以及 `PlatformMenuItem` 组合达到这一目的。但该功能仅在 MacOS 上生效，需要提前判断一下平台，然后决定裹不裹。
 
@@ -506,7 +552,7 @@ class _MacOSMenuState extends State<MacOSMenu> {
 }
 ```
 
-### 3.3 上下文菜单 Context Menu
+### 4.3 上下文菜单 Context Menu
 
 目前 Flutter 有两种菜单的 API
 

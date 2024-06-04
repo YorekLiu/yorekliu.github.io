@@ -5,17 +5,16 @@ hide:
   - toc        # Hide table of contents
 ---
 
-# &nbsp;
+???+ info "提示"
+    <small >此博客托管在GitHub Pages ，直连效果可能不佳。</small>  
 
-<small>此博客托管在 GitHub Pages ，直连效果可能不佳。</small>  
-
-<small>导航快捷键</small>  
-<small>++f++ , ++s++ , ++slash++ : 开始搜索</small>  
-<small>++esc++ , ++tab++ : 关闭搜索</small>  
-<small>++arrow-down++ , ++arrow-up++ : 选择搜索结果</small>  
-<small>++enter++ : 确定搜索结果</small>  
-<small>++p++ , ++comma++ : 下一页</small>  
-<small>++n++ , ++period++ : 上一页</small>  
+??? tip "导航快捷键"    
+    <small>++f++ , ++s++ , ++slash++ : 开始搜索</small>  
+    <small>++esc++ , ++tab++ : 关闭搜索</small>  
+    <small>++arrow-down++ , ++arrow-up++ : 选择搜索结果</small>  
+    <small>++enter++ : 确定搜索结果</small>  
+    <small>++p++ , ++comma++ : 下一页</small>  
+    <small>++n++ , ++period++ : 上一页</small> 
 
 ???+ quote "&nbsp;"
     Good artists copy; Great artists steal.
@@ -31,7 +30,7 @@ hide:
 
 <br />
 
-新品文章关系图，label点击可跳转
+新品文章关系图，label 点击可跳转
 
 ```mermaid
 graph LR;
