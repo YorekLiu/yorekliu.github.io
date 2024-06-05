@@ -38,13 +38,12 @@ doCommit() {
 
     git checkout master
 
-    rm -rf docs/ mkdocs.yml serve.sh push2baidu.sh
+    rm -rf docs/ _draft/ mkdocs.yml serve.sh push2baidu.sh
 
     echo ">>>>>>> copy site to root .."
     cp -a site/* .
     echo ">>>>>>> copy site to root success"
 
-    rm -rf _draft/
     git add .
 
     echo ">>>>>>> ready commit in master"
