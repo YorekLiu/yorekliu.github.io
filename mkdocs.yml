@@ -317,6 +317,7 @@ nav:
     - leetcode/leetcode101-110.md
     - leetcode/leetcode111-120.md
   - Flutter:
+    - flutter/dart_lang.md
     - flutter/flutter_first_project_1.md
     - flutter/flutter_first_project_2.md
     - flutter/flutter_first_project_3.md
